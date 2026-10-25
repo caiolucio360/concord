@@ -56,9 +56,22 @@ export function formatVoiceTime(seconds: number): string {
   return rest > 0 ? `${hours} h ${rest} min` : `${hours} h`
 }
 
-/** Minutos de call que faltam para o próximo nível (10 XP por minuto). */
-export const XP_PER_MINUTE = 10
+/** Minutos de call que faltam para o próximo nível (5 XP por minuto, sem cansaço). */
+export const XP_PER_MINUTE = 5
 
 export function minutesToNext(intoLevel: number, forNext: number): number {
   return Math.max(0, Math.ceil((forNext - intoLevel) / XP_PER_MINUTE))
+}
+
+/** Cansaço diário do XP (igual ao backend): 2 h cheias, até 4 h pela metade. */
+export const FULL_RATE_SECONDS = 2 * 3600
+export const TIRED_SECONDS = 4 * 3600
+
+export type FatigueState = 'full' | 'tired' | 'done'
+
+/** Em que faixa do cansaço do dia a pessoa está. */
+export function fatigueState(dailySeconds: number): FatigueState {
+  if (dailySeconds >= TIRED_SECONDS) return 'done'
+  if (dailySeconds >= FULL_RATE_SECONDS) return 'tired'
+  return 'full'
 }

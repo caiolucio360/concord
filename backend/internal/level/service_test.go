@@ -11,12 +11,20 @@ import (
 )
 
 type fakeStore struct {
-	xp map[string]int64
+	xp      map[string]int64
+	daily   map[string]int64 // segundos de call no dia em dailyOn
+	dailyOn map[string]time.Time
 }
 
-func (f *fakeStore) AddVoiceXP(_ context.Context, userID string, xp int64, seconds int64) (int64, int64, error) {
+func (f *fakeStore) AddCallMinutes(_ context.Context, userID string, day time.Time, minutes int64) (Added, error) {
+	if !f.dailyOn[userID].Equal(day) {
+		f.dailyOn[userID] = day
+		f.daily[userID] = 0
+	}
+	xp := XPForMinutes(f.daily[userID]/60, minutes)
+	f.daily[userID] += minutes * 60
 	f.xp[userID] += xp
-	return f.xp[userID], 0, nil
+	return Added{XP: xp, TotalXP: f.xp[userID], DailySeconds: f.daily[userID]}, nil
 }
 
 type fakePublisher struct {
@@ -45,14 +53,14 @@ func (f *fakeVoice) ActiveVoiceUsers() []call.VoiceActivity { return f.active }
 var t0 = time.Date(2026, 10, 24, 12, 0, 0, 0, time.UTC)
 
 func newTestService(active ...string) (*Service, *fakeStore, *fakePublisher, *fakeVoice) {
-	store := &fakeStore{xp: map[string]int64{}}
+	store := &fakeStore{xp: map[string]int64{}, daily: map[string]int64{}, dailyOn: map[string]time.Time{}}
 	pub := &fakePublisher{}
 	voice := &fakeVoice{}
 	serverID := "server-1"
 	for _, id := range active {
 		voice.active = append(voice.active, call.VoiceActivity{UserID: id, CallID: "call-1", ServerID: &serverID})
 	}
-	s := &Service{store: store, publisher: pub, voice: voice, pending: map[string]time.Duration{}, lastTick: t0}
+	s := &Service{store: store, publisher: pub, voice: voice, location: brasilia(), pending: map[string]time.Duration{}, lastTick: t0}
 	return s, store, pub, voice
 }
 
@@ -130,5 +138,36 @@ func TestNoLevelUpEventWithoutNewLevel(t *testing.T) {
 		if sent != "user:ana level:update" {
 			t.Fatalf("unexpected event %q", sent)
 		}
+	}
+}
+
+func TestDailyFatigue(t *testing.T) {
+	s, store, _, _ := newTestService("ana")
+
+	// 5 h seguidas de call (ticks de 10 s): 2 h cheias + 2 h pela metade + 1 h sem nada.
+	run(s, t0, 5*60*6)
+	if store.xp["ana"] != MaxXPPerDay {
+		t.Fatalf("xp after 5h = %d, want %d (daily cap)", store.xp["ana"], MaxXPPerDay)
+	}
+}
+
+func TestFatigueResetsAtMidnightInBrasilia(t *testing.T) {
+	s, store, _, _ := newTestService("ana")
+
+	// 23h de Brasília (02h UTC do dia seguinte) com o dia já esgotado.
+	late := time.Date(2026, 10, 26, 2, 0, 0, 0, time.UTC)
+	s.lastTick = late
+	store.dailyOn["ana"] = s.today(late)
+	store.daily["ana"] = 5 * 3600
+	run(s, late, 6)
+	if store.xp["ana"] != 0 {
+		t.Fatalf("xp with the day exhausted = %d, want 0", store.xp["ana"])
+	}
+
+	// Passou da meia-noite em Brasília: o cansaço zera.
+	s.lastTick = time.Date(2026, 10, 26, 3, 0, 0, 0, time.UTC)
+	run(s, s.lastTick, 6)
+	if store.xp["ana"] != XPPerMinute {
+		t.Fatalf("xp after midnight = %d, want %d", store.xp["ana"], XPPerMinute)
 	}
 }

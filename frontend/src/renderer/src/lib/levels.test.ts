@@ -6,6 +6,7 @@ import {
   levelPercent,
   levelTier,
   minutesToNext,
+  fatigueState,
   sparkCount
 } from './levels'
 
@@ -44,12 +45,21 @@ describe('progresso', () => {
     expect(levelPercent(77, 155)).toBe(49)
     expect(levelPercent(0, 0)).toBe(0)
     expect(minutesToNext(150, 155)).toBe(1)
-    expect(minutesToNext(0, 155)).toBe(16)
+    expect(minutesToNext(0, 155)).toBe(31)
   })
 
   it('formata o tempo de voz', () => {
     expect(formatVoiceTime(45 * 60)).toBe('45 min')
     expect(formatVoiceTime(200 * 60)).toBe('3 h 20 min')
     expect(formatVoiceTime(12 * 3600)).toBe('12 h')
+  })
+})
+
+describe('fatigueState', () => {
+  it('2 h cheias, até 4 h pela metade, depois acabou o XP do dia', () => {
+    expect(fatigueState(0)).toBe('full')
+    expect(fatigueState(2 * 3600 - 1)).toBe('full')
+    expect(fatigueState(2 * 3600)).toBe('tired')
+    expect(fatigueState(4 * 3600)).toBe('done')
   })
 })

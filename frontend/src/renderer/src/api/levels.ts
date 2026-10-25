@@ -7,6 +7,8 @@ export interface LevelProgress {
   xp_into_level: number
   xp_for_next: number
   voice_seconds: number
+  /** Tempo de call de hoje (Brasília), para o cansaço diário. */
+  daily_seconds?: number
 }
 
 export type LevelMap = Record<string, LevelProgress>

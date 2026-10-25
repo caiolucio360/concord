@@ -1,5 +1,11 @@
 import { useLevelStore } from '../../store/levelStore'
-import { formatVoiceTime, levelPercent, levelTier, minutesToNext } from '../../lib/levels'
+import {
+  fatigueState,
+  formatVoiceTime,
+  levelPercent,
+  levelTier,
+  minutesToNext
+} from '../../lib/levels'
 
 /** Barra de XP de quem está logado, no painel "Voz conectada". */
 function VoiceXPBar({ paused }: { paused: boolean }): React.JSX.Element | null {
@@ -9,18 +15,27 @@ function VoiceXPBar({ paused }: { paused: boolean }): React.JSX.Element | null {
   const tier = levelTier(me.level)
   const percent = levelPercent(me.xp_into_level, me.xp_for_next)
   const minutes = minutesToNext(me.xp_into_level, me.xp_for_next)
+  const daily = me.daily_seconds ?? 0
+  const fatigue = fatigueState(daily)
+  const label = paused
+    ? 'XP pausado (mutado)'
+    : fatigue === 'done'
+      ? 'Limite de XP de hoje atingido'
+      : fatigue === 'tired'
+        ? `${me.xp_into_level}/${me.xp_for_next} XP · metade (cansaço)`
+        : `${me.xp_into_level}/${me.xp_for_next} XP`
 
   return (
     <div
       className="mt-2 px-0.5"
-      title={`${formatVoiceTime(me.voice_seconds)} de call no total · faltam ~${minutes} min para o nível ${me.level + 1}`}
+      title={`Hoje: ${formatVoiceTime(daily)} de call · ${formatVoiceTime(me.voice_seconds)} no total · faltam ~${minutes} min (sem cansaço) para o nível ${me.level + 1}`}
     >
       <div className="mb-1 flex items-baseline justify-between text-[10px]">
         <span className="font-bold" style={{ color: paused ? '#6b7280' : tier.color }}>
           Nível {me.level}
         </span>
-        <span className="text-gray-500">
-          {paused ? 'XP pausado (mutado)' : `${me.xp_into_level}/${me.xp_for_next} XP`}
+        <span className={fatigue === 'full' || paused ? 'text-gray-500' : 'text-amber-300/80'}>
+          {label}
         </span>
       </div>
       <div className="h-1.5 overflow-hidden rounded-full bg-white/10">

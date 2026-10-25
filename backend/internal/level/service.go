@@ -6,6 +6,7 @@ import (
 	"log"
 	"sync"
 	"time"
+	_ "time/tzdata" // fuso de Brasília também no Windows e em contêineres sem tzdata
 
 	"gin-quickstart/backend/internal/call"
 )
@@ -27,7 +28,7 @@ type VoiceSource interface {
 }
 
 type xpStore interface {
-	AddVoiceXP(ctx context.Context, userID string, xp int64, seconds int64) (int64, int64, error)
+	AddCallMinutes(ctx context.Context, userID string, day time.Time, minutes int64) (Added, error)
 }
 
 // grant é XP pronto para ser gravado.
@@ -42,6 +43,9 @@ type Service struct {
 	publisher  EventPublisher
 	voice      VoiceSource
 
+	// O dia do cansaço vira à meia-noite de Brasília.
+	location *time.Location
+
 	mu sync.Mutex
 	// pending: tempo elegível de cada usuário que ainda não fechou um minuto.
 	pending  map[string]time.Duration
@@ -54,8 +58,23 @@ func LevelService(repository *Repository, publisher EventPublisher, voice VoiceS
 		store:      repository,
 		publisher:  publisher,
 		voice:      voice,
+		location:   brasilia(),
 		pending:    make(map[string]time.Duration),
 	}
+}
+
+func brasilia() *time.Location {
+	location, err := time.LoadLocation("America/Sao_Paulo")
+	if err != nil {
+		return time.FixedZone("BRT", -3*60*60)
+	}
+	return location
+}
+
+// today: o dia de Brasília, à meia-noite em UTC (para gravar como DATE).
+func (s *Service) today(now time.Time) time.Time {
+	local := now.In(s.location)
+	return time.Date(local.Year(), local.Month(), local.Day(), 0, 0, 0, 0, time.UTC)
 }
 
 // Run conta o tempo de voz até ctx acabar.
@@ -78,7 +97,7 @@ func (s *Service) Run(ctx context.Context) {
 
 func (s *Service) tick(ctx context.Context, now time.Time) {
 	for _, g := range s.accrue(s.voice.ActiveVoiceUsers(), now) {
-		s.give(ctx, g)
+		s.give(ctx, g, s.today(now))
 	}
 }
 
@@ -119,19 +138,18 @@ func (s *Service) accrue(active []call.VoiceActivity, now time.Time) []grant {
 	return grants
 }
 
-func (s *Service) give(ctx context.Context, g grant) {
+func (s *Service) give(ctx context.Context, g grant, day time.Time) {
 	userID := g.activity.UserID
-	xp := g.minutes * XPPerMinute
-	totalXP, totalSeconds, err := s.store.AddVoiceXP(ctx, userID, xp, g.minutes*60)
+	added, err := s.store.AddCallMinutes(ctx, userID, day, g.minutes)
 	if err != nil {
 		log.Printf("[level] add xp for %s: %v", userID, err)
 		return
 	}
 
-	progress := newProgress(userID, totalXP, totalSeconds)
+	progress := newProgress(userID, added.TotalXP, added.TotalSeconds, added.DailySeconds)
 	s.publisher.SendToUser(userID, marshalEvent("level:update", progress))
 
-	previous, _, _ := FromXP(totalXP - xp)
+	previous, _, _ := FromXP(added.TotalXP - added.XP)
 	if progress.Level == previous {
 		return
 	}
@@ -150,7 +168,7 @@ func (s *Service) give(ctx context.Context, g grant) {
 }
 
 func (s *Service) FindByUserIDs(ctx context.Context, userIDs []string) (map[string]Progress, error) {
-	return s.repository.FindByUserIDs(ctx, userIDs)
+	return s.repository.FindByUserIDs(ctx, userIDs, s.today(time.Now()))
 }
 
 func marshalEvent(typ string, payload interface{}) []byte {
