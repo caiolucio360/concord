@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"gin-quickstart/backend/internal/bot"
 	"gin-quickstart/backend/internal/channel"
 	"gin-quickstart/backend/internal/message"
 	"gin-quickstart/backend/internal/permission"
@@ -226,6 +227,10 @@ func (h *Hub) broadcastPresence(userID, status string) {
 
 // effectiveStatusLocked: precisa de h.mu (leitura).
 func (h *Hub) effectiveStatusLocked(userID string) string {
+	// O Maestro (bot de música) não tem websocket, mas está sempre disponível.
+	if userID == bot.UserID {
+		return user.StatusOnline
+	}
 	connected := h.presence[userID] > 0
 	status, ok := h.statuses[userID]
 	if !ok {
