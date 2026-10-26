@@ -53,8 +53,8 @@ O multiplicador vale no instante em que o minuto fecha (sem média retroativa).
 - Helper em `lib/levels.ts`: `boostRank(percent)` devolve rank, texto, rótulo
   (`x1.25`) e a paleta/intensidade do degrau.
 - Componente `StyleRank` (letra do rank + texto + badge de multiplicador),
-  reutilizado em `VoiceXPBar` e no cabeçalho de `VoiceChannelView`. Só aparece
-  de A para cima. Apagado em cinza quando "XP pausado (mutado)".
+  usado em `VoiceXPBar` (o cabeçalho de `VoiceChannelView` não mostra o
+  badge; só a aura do SSS). Só aparece de A para cima. Apagado em cinza quando "XP pausado (mutado)".
 - Visual: letra grande em itálico pesado com contorno estilo grafite/stencil;
   cores A vermelho escuro, S vermelho vivo, SS laranja/dourado, SSS dourado
   brilhante.
