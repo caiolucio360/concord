@@ -17,6 +17,7 @@ import { roleColorCss } from '../lib/permissions'
 import { serverDisplayName } from '../lib/serverNames'
 import { ActivityLine } from '../../activity/components/ActivityLine'
 import { useActivity, useInVoice } from '../../activity/store/presenceActivityStore'
+import { useListening } from '../../activity/store/listeningStore'
 import StyledName from '../../profile/components/StyledName'
 import type { NameStyle } from '../../profile/lib/nameStyle'
 import type { Server } from '../api/servers'
@@ -53,8 +54,10 @@ export function MemberRow({
 }: MemberRowProps): React.JSX.Element {
   const meId = useAuthStore((s) => s.user?.id)
   const status = usePresenceStatus(userId)
-  // Só troca o @handle quando há jogo (ou "Em voz"): sem atividade, igual a antes.
-  const hasActivity = useActivity(userId) !== null
+  // Só troca o @handle quando há jogo, música (ou "Em voz"): sem atividade, igual a antes.
+  const playing = useActivity(userId) !== null
+  const listening = useListening(userId) !== null
+  const hasActivity = playing || listening
   const inVoice = useInVoice(userId)
   const activityShown = hasActivity || inVoice
   const look = useUserLook(userId, { name: displayName, avatarUrl })
@@ -132,9 +135,10 @@ export function MembersAside({ children }: { children: React.ReactNode }): React
 
 /**
  * Membros do servidor aberto, agrupados como no Discord: dono, cargos exibidos
- * separadamente (online), membros e offline.
+ * separadamente (online), membros e offline. Sem moldura: vai na coluna da
+ * direita (ServerMemberList) ou na gaveta do celular.
  */
-function ServerMemberList({ server }: { server: Server }): React.JSX.Element {
+export function ServerMemberGroups({ server }: { server: Server }): React.JSX.Element {
   const me = useAuthStore((s) => s.user)
   const currentMembers = useServerStore((s) => s.currentMembers)
   const roles = useServerStore((s) => s.roles)
@@ -150,7 +154,7 @@ function ServerMemberList({ server }: { server: Server }): React.JSX.Element {
   })
 
   return (
-    <MembersAside>
+    <>
       {memberGroups.map((group) => {
         const offline = group.key === 'offline'
         return (
@@ -182,6 +186,15 @@ function ServerMemberList({ server }: { server: Server }): React.JSX.Element {
           </div>
         )
       })}
+    </>
+  )
+}
+
+/** A coluna de membros à direita (do lg em diante). */
+function ServerMemberList({ server }: { server: Server }): React.JSX.Element {
+  return (
+    <MembersAside>
+      <ServerMemberGroups server={server} />
     </MembersAside>
   )
 }
