@@ -20,10 +20,22 @@ func BadgeRepository(db *pgxpool.Pool) *Repository {
 	return &Repository{db: db}
 }
 
+// donoMinMembers: membros além do dono (bots não contam) para o servidor
+// contar no badge Dono (servidor vazio criado em série não vale).
+const donoMinMembers = 3
+
+// amigoContaRealDias: no badge Amigos só conta amizade com conta real, de
+// e-mail confirmado e criada há pelo menos esses dias (conta criada só para
+// aceitar o pedido não vale).
+const amigoContaRealDias = 7
+
 // Stats junta os números da pessoa numa query só: contadores prontos, um
-// COUNT de servidores pelo índice de owner_id, um COUNT dos cards de propostas
-// pelo índice de author_id (Contribuinte), as amizades aceitas (Amigos) e se
-// ela está em dev_badge_users (Fundador).
+// COUNT de servidores pelo índice de owner_id (só os com donoMinMembers
+// membros além do dono, pela chave de server_members), um COUNT dos cards de propostas
+// pelo índice de author_id (Contribuinte), as mensagens distintas em que
+// reagiu pelo índice (user_id, message_id) (Reações: várias reações na mesma
+// mensagem contam 1), as amizades aceitas com conta real (Amigos) e se ela está em
+// dev_badge_users (Fundador).
 func (r *Repository) Stats(ctx context.Context, userID string) (Stats, error) {
 	var s Stats
 	var escolhas []string
@@ -35,19 +47,25 @@ func (r *Repository) Stats(ctx context.Context, userID string) (Stats, error) {
 			COALESCE(l.xp, 0),
 			COALESCE(l.voice_seconds, 0),
 			COALESCE(b.messages_sent, 0),
-			COALESCE(b.reactions_given, 0),
+			(SELECT COUNT(DISTINCT r.message_id) FROM message_reactions r WHERE r.user_id = u.id),
 			COALESCE(b.stream_seconds, 0),
 			COALESCE(b.watch_seconds, 0),
 			COALESCE(b.night_seconds, 0),
 			COALESCE(b.morning_seconds, 0),
 			COALESCE(b.peak_call_size, 0),
 			COALESCE(b.longest_session_seconds, 0),
-			(SELECT COUNT(*) FROM servers sv WHERE sv.owner_id = u.id),
+			(SELECT COUNT(*) FROM servers sv WHERE sv.owner_id = u.id AND (
+				SELECT COUNT(*) FROM server_members sm JOIN users mu ON mu.id = sm.user_id AND NOT mu.is_bot
+				WHERE sm.server_id = sv.id AND sm.user_id <> sv.owner_id
+			) >= $2),
 			(SELECT COUNT(*) FROM proposals p WHERE p.author_id = u.id),
-			(SELECT COUNT(*) FROM friendships f WHERE (f.requester_id = u.id OR f.addressee_id = u.id) AND f.status = 'accepted'),
+			(SELECT COUNT(*) FROM friendships f
+				JOIN users o ON o.id = CASE WHEN f.requester_id = u.id THEN f.addressee_id ELSE f.requester_id END
+				WHERE (f.requester_id = u.id OR f.addressee_id = u.id) AND f.status = 'accepted'
+				AND o.email_verified_at IS NOT NULL AND o.created_at <= NOW() - make_interval(days => $3)),
 			EXISTS (SELECT 1 FROM dev_badge_users d WHERE d.user_id = u.id),
 			ARRAY(SELECT e.enquete || ':' || e.opcao FROM escolhas e WHERE e.user_id = u.id),
-			COALESCE(b.songs_queued, 0),
+			COALESCE(b.songs_played, 0),
 			COALESCE(b.sounds_played, 0),
 			COALESCE(b.stickers_sent, 0),
 			COALESCE(b.streak_days, 0),
@@ -65,7 +83,7 @@ func (r *Repository) Stats(ctx context.Context, userID string) (Stats, error) {
 		LEFT JOIN user_badge_stats b ON b.user_id = u.id
 		WHERE u.id = $1
 		`,
-		userID,
+		userID, donoMinMembers, amigoContaRealDias,
 	).Scan(
 		&s.CreatedAt,
 		&s.XP,
@@ -83,7 +101,7 @@ func (r *Repository) Stats(ctx context.Context, userID string) (Stats, error) {
 		&s.Friends,
 		&s.IsDev,
 		&escolhas,
-		&s.SongsQueued,
+		&s.SongsPlayed,
 		&s.SoundsPlayed,
 		&s.StickersSent,
 		&s.StreakDays,
