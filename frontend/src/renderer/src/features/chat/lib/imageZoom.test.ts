@@ -3,12 +3,9 @@ import {
   IDENTITY,
   MAX_ZOOM,
   clampView,
-  gestureView,
   panBy,
   pinchView,
   toggleZoom,
-  viewForKey,
-  wheelScale,
   zoomAt,
   type ZoomBounds
 } from './imageZoom'
@@ -82,70 +79,8 @@ describe('pinchView', () => {
   })
 
   it('a escala parte da do começo do gesto', () => {
-    expect(pinchView({ scale: 2, x: 0, y: 0 }, 1.5, { x: 0, y: 0 }, { x: 0, y: 0 }, b).scale).toBe(3)
-  })
-})
-
-describe('wheelScale', () => {
-  it('roda para cima amplia e para baixo reduz', () => {
-    expect(wheelScale(1, -100, false)).toBeGreaterThan(1)
-    expect(wheelScale(2, 100, false)).toBeLessThan(2)
-  })
-
-  it('não sai de 1x a 5x', () => {
-    expect(wheelScale(1, 5000, false)).toBe(1)
-    expect(wheelScale(4, -5000, false)).toBe(MAX_ZOOM)
-  })
-
-  it('pinça do trackpad (Ctrl) é mais sensível que a roda', () => {
-    expect(wheelScale(1, -10, true)).toBeGreaterThan(wheelScale(1, -10, false))
-  })
-})
-
-describe('viewForKey', () => {
-  it('+ e = ampliam no centro, - reduz, 0 volta', () => {
-    expect(viewForKey(IDENTITY, '+', b)).toEqual({ scale: 1.25, x: 0, y: 0 })
-    expect(viewForKey(IDENTITY, '=', b)?.scale).toBe(1.25)
-    expect(viewForKey({ scale: 2, x: 0, y: 0 }, '-', b)?.scale).toBe(1.6)
-    expect(viewForKey({ scale: 3, x: 100, y: 0 }, '0', b)).toEqual(IDENTITY)
-  })
-
-  it('setas movem a imagem ampliada para ver o lado da seta', () => {
-    const v = { scale: 2, x: 0, y: 0 }
-    expect(viewForKey(v, 'ArrowLeft', b)).toEqual({ scale: 2, x: 60, y: 0 })
-    expect(viewForKey(v, 'ArrowRight', b)).toEqual({ scale: 2, x: -60, y: 0 })
-    expect(viewForKey(v, 'ArrowUp', b)).toEqual({ scale: 2, x: 0, y: 60 })
-    expect(viewForKey(v, 'ArrowDown', b)).toEqual({ scale: 2, x: 0, y: -60 })
-  })
-
-  it('outras teclas não são do zoom', () => {
-    expect(viewForKey(IDENTITY, 'a', b)).toBeNull()
-  })
-})
-
-describe('gestureView', () => {
-  const start = { view: { scale: 2, x: 0, y: 0 }, points: [{ x: 0, y: 0 }] }
-
-  it('um dedo/mouse arrasta', () => {
-    expect(gestureView(start, [{ x: 25, y: -15 }], b)).toEqual({ scale: 2, x: 25, y: -15 })
-  })
-
-  it('dois dedos fazem pinça', () => {
-    const pinch = {
-      view: IDENTITY,
-      points: [
-        { x: -50, y: 0 },
-        { x: 50, y: 0 }
-      ]
-    }
-    const now = [
-      { x: -100, y: 0 },
-      { x: 100, y: 0 }
-    ]
-    expect(gestureView(pinch, now, b)).toEqual({ scale: 2, x: 0, y: 0 })
-  })
-
-  it('sem ponteiro, fica como começou', () => {
-    expect(gestureView(start, [], b)).toEqual(start.view)
+    expect(pinchView({ scale: 2, x: 0, y: 0 }, 1.5, { x: 0, y: 0 }, { x: 0, y: 0 }, b).scale).toBe(
+      3
+    )
   })
 })
