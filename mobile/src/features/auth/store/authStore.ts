@@ -11,6 +11,10 @@ export interface User extends ProfileAppearance {
   email: string
   /** false até a pessoa abrir o link do e-mail de confirmação. */
   email_verified?: boolean
+  /** Quando a conta foi criada ("Membro desde"). */
+  created_at?: string
+  /** Quando o @ pode ser trocado de novo (uma troca a cada 7 dias); no passado ou ausente = livre. */
+  username_change_available_at?: string | null
 }
 
 export type AuthStatus = 'loading' | 'signedIn' | 'signedOut'
