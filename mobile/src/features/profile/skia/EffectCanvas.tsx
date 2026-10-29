@@ -1,0 +1,29 @@
+import { Canvas, Picture } from '@shopify/react-native-skia'
+import { StyleSheet } from 'react-native'
+import type { EffectParams } from '../lib/effects/types'
+import { useEffectsFocused } from './EffectsFocus'
+import { useAppActive, useReduceMotion } from './pauseSignals'
+import { useEffectPicture, type EffectMode } from './useEffectPicture'
+
+interface EffectCanvasProps {
+  effect: string
+  params: EffectParams
+  width: number
+  height: number
+}
+
+/** O efeito animado do tema por cima do cartão: não captura toque e não aparece para o leitor de tela. */
+export function EffectCanvas({ effect, params, width, height }: EffectCanvasProps) {
+  const focused = useEffectsFocused()
+  const appActive = useAppActive()
+  const reduceMotion = useReduceMotion()
+  // "Reduzir movimento" ganha da pausa: o quadro parado continua valendo.
+  const mode: EffectMode = reduceMotion ? 'still' : focused && appActive ? 'run' : 'pause'
+  const picture = useEffectPicture(effect, params, width, height, mode)
+  if (!picture) return null
+  return (
+    <Canvas testID="card-effect" accessible={false} pointerEvents="none" style={StyleSheet.absoluteFill}>
+      <Picture picture={picture} />
+    </Canvas>
+  )
+}

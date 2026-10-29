@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router'
 import { View } from 'react-native'
 import { AccountPanel } from '../../src/features/auth/components/AccountPanel'
+import { EffectsFocusProvider } from '../../src/features/profile/skia/EffectsFocus'
 import { colors } from '../../src/shared/theme/tokens'
 import { IconButton } from '../../src/shared/ui/IconButton'
 
@@ -11,7 +12,9 @@ export default function AccountRoute() {
       <View style={{ paddingHorizontal: 8 }}>
         <IconButton icon="arrow-back" label="Voltar" onPress={() => router.back()} />
       </View>
-      <AccountPanel />
+      <EffectsFocusProvider>
+        <AccountPanel />
+      </EffectsFocusProvider>
     </View>
   )
 }

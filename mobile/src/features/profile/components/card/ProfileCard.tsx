@@ -1,8 +1,11 @@
-import { StyleSheet, View } from 'react-native'
+import { useState } from 'react'
+import { StyleSheet, View, type LayoutChangeEvent } from 'react-native'
 import { radius, spacing } from '../../../../shared/theme/tokens'
 import type { PresenceStatus } from '../../../friends/lib/presenceStatus'
-import { cardLook } from '../../lib/cardLook'
+import { cardLook, needsFrame, type CardLook } from '../../lib/cardLook'
 import type { ProfileData } from '../../lib/profileTypes'
+import { CardFrame } from '../../skia/CardFrame'
+import { EffectCanvas } from '../../skia/EffectCanvas'
 import { CardAvatar } from './CardAvatar'
 import { CardBanner } from './CardBanner'
 import { CardBio } from './CardBio'
@@ -20,16 +23,31 @@ interface ProfileCardProps {
   onOpenLink?: (url: string) => void
 }
 
-/** O cartão do perfil como os outros o veem (sem os efeitos animados, que chegam com o Skia). */
+const NO_SIZE = { width: 0, height: 0 }
+
+/**
+ * Fundo e borda do React Native. Quando o quadro do Skia (degradê, arco-íris) desenha, a borda é dele e o
+ * fundo também, menos no fundo sólido, que continua daqui.
+ */
+function surfaceStyle(look: CardLook, framed: boolean) {
+  if (!framed) return { backgroundColor: look.backgroundColor, borderColor: look.borderColor, borderWidth: look.borderWidth }
+  return { backgroundColor: look.background.kind === 'solid' ? look.backgroundColor : 'transparent', borderWidth: 0 }
+}
+
+/** O cartão do perfil como os outros o veem, com o fundo, a borda e o efeito animado do tema. */
 export function ProfileCard({ profile, status, onOpenLink = openExternal }: ProfileCardProps) {
+  const [size, setSize] = useState(NO_SIZE)
   const look = cardLook(profile.profile_theme)
   const bio = profile.bio?.trim() ?? ''
   const links = profile.links ?? []
+  // O desenho do Skia precisa do tamanho real do cartão: antes de medir, valem os estilos do React Native.
+  const measured = size.width > 0 && size.height > 0
+  const framed = measured && needsFrame(look)
+  const onLayout = ({ nativeEvent: { layout } }: LayoutChangeEvent): void =>
+    setSize((prev) => (prev.width === layout.width && prev.height === layout.height ? prev : { width: layout.width, height: layout.height }))
   return (
-    <View
-      testID="profile-card"
-      style={[styles.card, { backgroundColor: look.backgroundColor, borderColor: look.borderColor, borderWidth: look.borderWidth }]}
-    >
+    <View testID="profile-card" onLayout={onLayout} style={[styles.card, surfaceStyle(look, framed)]}>
+      {framed ? <CardFrame look={look} width={size.width} height={size.height} /> : null}
       <CardBanner url={profile.banner_url} color={profile.banner_color} />
       <View style={styles.avatar}>
         <CardAvatar name={profile.display_name} uri={profile.avatar_url} status={status} cutout={look.backgroundColor} />
@@ -54,6 +72,7 @@ export function ProfileCard({ profile, status, onOpenLink = openExternal }: Prof
           </CardSection>
         ) : null}
       </View>
+      {measured && look.effect ? <EffectCanvas effect={look.effect.id} params={look.effect.params} width={size.width} height={size.height} /> : null}
     </View>
   )
 }

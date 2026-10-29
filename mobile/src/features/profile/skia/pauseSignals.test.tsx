@@ -28,6 +28,26 @@ describe('useAppActive', () => {
   })
 })
 
+describe('useAppActive: estado inicial desconhecido', () => {
+  afterEach(() => jest.restoreAllMocks())
+
+  // Regressão: no Android o AppState.currentState pode vir indefinido antes do primeiro evento; tratar isso
+  // como "segundo plano" deixava o efeito parado para sempre. Só background e inactive pausam.
+  it.each(['unknown', undefined, null])('estado inicial %s conta como primeiro plano', async (initial) => {
+    Object.defineProperty(AppState, 'currentState', { value: initial, configurable: true })
+    jest.spyOn(AppState, 'addEventListener').mockReturnValue({ remove: jest.fn() } as never)
+    const { result } = await renderHook(() => useAppActive())
+    expect(result.current).toBe(true)
+  })
+
+  it.each(['background', 'inactive'])('estado inicial %s pausa', async (initial) => {
+    Object.defineProperty(AppState, 'currentState', { value: initial, configurable: true })
+    jest.spyOn(AppState, 'addEventListener').mockReturnValue({ remove: jest.fn() } as never)
+    const { result } = await renderHook(() => useAppActive())
+    expect(result.current).toBe(false)
+  })
+})
+
 describe('useReduceMotion', () => {
   afterEach(() => jest.restoreAllMocks())
 

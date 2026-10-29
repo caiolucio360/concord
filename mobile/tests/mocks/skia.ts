@@ -148,5 +148,13 @@ export const Skia = {
   })
 }
 
-export const Canvas = ({ children }: { children?: unknown }) => createElement(View, { testID: 'skia-canvas' }, children as never)
-export const Picture = () => createElement(View, { testID: 'skia-picture' })
+// Componentes: viram View com o nome no testID (que os testes podem trocar) e todas as props, para conferir
+// o que o código pediu ao Skia (cores, posições, tamanho).
+const component = (name: string) => (props: Record<string, unknown>) =>
+  createElement(View, { testID: `skia-${name}`, ...props } as never, props.children as never)
+
+export const Canvas = component('canvas')
+export const Picture = component('picture')
+export const RoundedRect = component('RoundedRect')
+export const LinearGradient = component('LinearGradient')
+export const vec = (x: number, y: number) => ({ x, y })
