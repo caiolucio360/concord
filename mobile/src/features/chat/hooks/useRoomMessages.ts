@@ -8,7 +8,9 @@ import {
   listConversationMessages,
   MESSAGE_LIMIT,
   sendChannelMessage,
+  isCommandAck,
   sendConversationMessage,
+  type CommandAck,
   type ExtraMessageData,
   type Message
 } from '../api/messages'
@@ -45,7 +47,7 @@ function fetchPage(target: ChatTarget, before?: string): Promise<Message[]> {
   return before ? list(target.id, before) : list(target.id)
 }
 
-const sendTo = (target: ChatTarget, content: string, extra?: ExtraMessageData): Promise<Message> =>
+const sendTo = (target: ChatTarget, content: string, extra?: ExtraMessageData): Promise<Message | CommandAck> =>
   target.kind === 'channel' ? sendChannelMessage(target.id, content, extra) : sendConversationMessage(target.id, content, extra)
 
 /** Histórico, tempo real e envio do chat de um canal de texto ou de uma conversa. */
@@ -123,7 +125,7 @@ export function useRoomMessages(target: ChatTarget) {
       if (!content && !extra) return 'empty'
       try {
         const sent = await sendTo({ kind, id }, content, extra)
-        setMessages((current) => mergeMessages(current, [sent]))
+        if (!isCommandAck(sent)) setMessages((current) => mergeMessages(current, [sent]))
         return 'ok'
       } catch (err) {
         return err instanceof ApiError && err.status === 403 ? 'forbidden' : 'error'

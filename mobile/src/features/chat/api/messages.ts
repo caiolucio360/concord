@@ -72,8 +72,15 @@ const extraBody = (extra?: ExtraMessageData) => ({
   ...(extra?.gifMetadata ? { gif_metadata: extra.gifMetadata } : {})
 })
 
-export function sendChannelMessage(channelId: string, content: string, extra?: ExtraMessageData): Promise<Message> {
-  return request<Message>(`/channels/${channelId}/messages`, {
+/** Resposta a um comando do bot (ex.: "/play"): o servidor trata o comando e não cria mensagem. */
+export interface CommandAck {
+  command: true
+}
+
+export const isCommandAck = (sent: Message | CommandAck): sent is CommandAck => 'command' in sent
+
+export function sendChannelMessage(channelId: string, content: string, extra?: ExtraMessageData): Promise<Message | CommandAck> {
+  return request<Message | CommandAck>(`/channels/${channelId}/messages`, {
     method: 'POST',
     body: JSON.stringify({ content, attachment_ids: [], ...extraBody(extra) })
   })
