@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react-native'
+import { act, fireEvent, render, screen } from '@testing-library/react-native'
+import { useMusicStore } from '../../music/store/musicStore'
 import type { Message } from '../api/messages'
 import { MessageList } from './MessageList'
 
@@ -10,6 +11,26 @@ const msg = (id: string, minute: number): Message => ({
   created_at: `2026-10-28T10:${String(minute).padStart(2, '0')}:00Z`
 })
 const base = { hasMore: false, onLoadMore: () => {}, onRetry: () => {} }
+
+describe('MessageList: respostas do Maestro', () => {
+  const reply = (text: string) =>
+    act(() => useMusicStore.getState().handleWsEvent({ type: 'music:reply', payload: { channel_id: 'c1', text } }))
+  beforeEach(() => useMusicStore.setState({ ephemeral: [] }))
+
+  it('no fim da lista (e também com o canal vazio) aparecem as respostas só minhas', async () => {
+    await render(<MessageList {...base} messages={[msg('a', 1)]} status="ready" maestro={{ room: 'channel:c1', serverId: 's1' }} />)
+    await reply('Nada tocando')
+    expect(screen.getByText('Nada tocando')).toBeOnTheScreen()
+    await render(<MessageList {...base} messages={[]} status="ready" maestro={{ room: 'channel:c1', serverId: 's1' }} />)
+    expect(screen.getAllByText('Nada tocando').length).toBeGreaterThan(0)
+  })
+
+  it('sem a prop maestro (DM) não mostra nada', async () => {
+    await render(<MessageList {...base} messages={[msg('a', 1)]} status="ready" />)
+    await reply('Nada tocando')
+    expect(screen.queryByText('Nada tocando')).toBeNull()
+  })
+})
 
 describe('MessageList', () => {
   it('carregando: mostra o aviso', async () => {

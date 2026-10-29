@@ -24,6 +24,19 @@ const setup = (onSend: (t: string) => Promise<SendOutcome>, forbiddenNotice: str
 describe('Composer', () => {
   beforeEach(() => useNetworkStore.setState({ online: true }))
 
+  it('canal de servidor: digitar "/" sugere os comandos do Maestro e tocar completa', async () => {
+    await render(<Composer label="Mensagem para #geral" serverId="sv" onSend={jest.fn()} />)
+    await type('/pl')
+    await fireEvent.press(screen.getByRole('button', { name: '/play <link ou nome>' }))
+    expect(screen.getByLabelText('Mensagem para #geral').props.value).toBe('/play ')
+  })
+
+  it('DM (sem servidor): não sugere comandos do Maestro', async () => {
+    await setup(jest.fn())
+    await type('/pl')
+    expect(screen.queryByRole('button', { name: '/play <link ou nome>' })).toBeNull()
+  })
+
   const openPicker = () => fireEvent.press(screen.getByRole('button', { name: 'Emojis, GIFs e figurinhas' }))
 
   it('seletor: emoji entra no texto e fecha o seletor', async () => {

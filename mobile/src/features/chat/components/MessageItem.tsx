@@ -6,6 +6,8 @@ import { MessageGif } from './MessageGif'
 import { MessageSticker } from './MessageSticker'
 import { dayLabelText, timeText } from '../lib/dayLabel'
 import type { GroupedMessage } from '../lib/messageGroups'
+import { isMaestroMessageKind } from '../../music/lib/music'
+import { MusicMessage } from '../../music/components/MusicMessage'
 import { ProfileTap } from '../../profile/components/ProfileTap'
 
 interface MessageItemProps {
@@ -18,6 +20,9 @@ interface MessageItemProps {
 export function MessageItem({ item, timeZone, onOpenProfile }: MessageItemProps) {
   const { message, showHeader, dayLabel } = item
   const name = message.author?.display_name ?? 'Usuário'
+  if (isMaestroMessageKind(message.system_kind)) {
+    return <MusicMessage content={message.content} createdAt={message.created_at} timeZone={timeZone} />
+  }
   return (
     <View>
       {dayLabel ? (
