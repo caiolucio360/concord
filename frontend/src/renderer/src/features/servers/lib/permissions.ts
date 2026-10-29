@@ -23,6 +23,8 @@ export const Perm = {
   MENTION_EVERYONE: 1 << 11,
   MANAGE_MESSAGES: 1 << 12,
   READ_MESSAGE_HISTORY: 1 << 13,
+  /** Enviar emojis personalizados ao servidor (ADR 0028). */
+  ADD_EMOJIS: 1 << 15,
   CONNECT: 1 << 16,
   SPEAK: 1 << 17,
   STREAM: 1 << 18,
@@ -49,7 +51,7 @@ export const ALL_PERMISSIONS: number = Object.values(Perm).reduce((sum, bit) => 
 /**
  * O que todo membro faz num servidor novo (igual ao backend). "Alterar apelido"
  * vem ligado, como no Discord; nos servidores antigos a migration 000039 ligou.
- * "Adicionar sons", "Adicionar figurinhas" (migration 000125) e "Enviar
+ * "Adicionar sons", "Adicionar figurinhas" (migration 000125), "Adicionar emojis" (000172) e "Enviar
  * mensagens TTS" (a 000127 ligou nos antigos; ver docs/adr/0012-tts-no-cliente.md).
  */
 export const DEFAULT_EVERYONE: number =
@@ -66,7 +68,8 @@ export const DEFAULT_EVERYONE: number =
   Perm.CHANGE_NICKNAME |
   Perm.ADD_SOUNDS |
   Perm.ADD_STICKERS |
-  Perm.SEND_TTS_MESSAGES
+  Perm.SEND_TTS_MESSAGES |
+  Perm.ADD_EMOJIS
 
 export interface Role {
   id: string

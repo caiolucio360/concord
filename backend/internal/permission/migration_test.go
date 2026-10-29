@@ -39,6 +39,7 @@ func TestMigrationDefaultsMatchConstants(t *testing.T) {
 	added := nicknameMigrationBits(t)
 	disconnectBits := disconnectMigrationBits(t)
 	ttsBits := roleUpdateBits(t, "000127_tts_messages.up.sql")
+	emojiBits := roleUpdateBits(t, "000172_create_server_emojis.up.sql")
 	for name, want := range map[string]int64{"@everyone": DefaultEveryone, "Moderador": legacyModerator} {
 		needle := "'" + name + "', "
 		i := strings.Index(sql, "SELECT id, "+needle)
@@ -50,7 +51,7 @@ func TestMigrationDefaultsMatchConstants(t *testing.T) {
 		if err != nil {
 			t.Fatalf("%s: %v (%q)", name, err, fields)
 		}
-		total := got | added[name] | disconnectBits[name] | ttsBits[name] | expressionMigrationBits(t, got)
+		total := got | added[name] | disconnectBits[name] | ttsBits[name] | emojiBits[name] | expressionMigrationBits(t, got)
 		if total != want {
 			t.Errorf("%s: migrations = %d, Go = %d", name, total, want)
 		}
