@@ -1,14 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Image, StyleSheet } from 'react-native'
 
-/** Avatar do Maestro: círculo com o 🎻 (o desktop usa um GIF embutido; o app ainda não tem esse asset). */
+// O mesmo GIF do desktop e da web (frontend/src/renderer/src/assets/maestro.gif).
+const MAESTRO_GIF = require('../../../../assets/music/maestro.gif')
+
+/** Avatar do Maestro: o GIF embutido no app, sem imagem no banco. */
 export function MaestroAvatar({ size = 36 }: { size?: number }) {
-  return (
-    <View accessibilityLabel="Maestro" style={[styles.box, { width: size, height: size, borderRadius: size / 2 }]}>
-      <Text style={{ fontSize: size * 0.55 }}>🎻</Text>
-    </View>
-  )
+  return <Image accessibilityLabel="Maestro" source={MAESTRO_GIF} style={[styles.image, { width: size, height: size, borderRadius: size / 2 }]} />
 }
 
 const styles = StyleSheet.create({
-  box: { alignItems: 'center', justifyContent: 'center', backgroundColor: '#323237' }
+  image: { backgroundColor: '#323237' }
 })
