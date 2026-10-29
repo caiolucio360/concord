@@ -26,23 +26,51 @@ test('ANDROID_SDK_ROOT também vale', () => {
   assert.deepEqual(plan.problems, [])
 })
 
-test('com o keystore completo: argumentos de assinatura do Gradle', () => {
+const ABIS = '-PreactNativeArchitectures=arm64-v8a,armeabi-v7a'
+
+test('com o keystore completo: argumentos de assinatura do Gradle (e as arquiteturas)', () => {
   const plan = buildPlan({ ...OK, ...SIGNING })
   assert.deepEqual(plan.problems, [])
   assert.deepEqual(plan.warnings, [])
+  assert.equal(plan.signed, true)
   assert.deepEqual(plan.gradleArgs, [
     '-Pandroid.injected.signing.store.file=C:/chaves/salinha.jks',
     '-Pandroid.injected.signing.store.password=senha-loja',
     '-Pandroid.injected.signing.key.alias=salinha',
-    '-Pandroid.injected.signing.key.password=senha-chave'
+    '-Pandroid.injected.signing.key.password=senha-chave',
+    ABIS
   ])
 })
 
 test('sem keystore: avisa que o APK sai com a chave de debug', () => {
   const plan = buildPlan(OK)
   assert.deepEqual(plan.problems, [])
-  assert.deepEqual(plan.gradleArgs, [])
+  assert.equal(plan.signed, false)
+  assert.deepEqual(plan.gradleArgs, [ABIS])
   assert.match(plan.warnings.join('\n'), /chave de debug/)
+})
+
+// O APK de distribuição só leva as arquiteturas de celular: x86 e x86_64 são de emulador e cada uma
+// custa dezenas de MB (o Skia, o WebRTC e o React Native vêm em todas).
+test('release: por padrão só arm64-v8a e armeabi-v7a', () => {
+  assert.ok(buildPlan(OK).gradleArgs.includes(ABIS))
+})
+
+test('SALINHA_ABIS troca as arquiteturas do release', () => {
+  const plan = buildPlan({ ...OK, SALINHA_ABIS: 'arm64-v8a' })
+  assert.deepEqual(plan.problems, [])
+  assert.ok(plan.gradleArgs.includes('-PreactNativeArchitectures=arm64-v8a'))
+})
+
+test('SALINHA_ABIS com nome inválido é erro (o Gradle ignoraria calado)', () => {
+  const plan = buildPlan({ ...OK, SALINHA_ABIS: 'arm64,x86_64' })
+  assert.match(plan.problems.join('\n'), /arm64/)
+  assert.match(plan.problems.join('\n'), /SALINHA_ABIS/)
+})
+
+test('dev continua com todas as arquiteturas (o emulador é x86_64)', () => {
+  const plan = buildPlan({ ANDROID_HOME: 'C:/Android/Sdk', SALINHA_ABIS: 'arm64-v8a' }, 'dev')
+  assert.deepEqual(plan.gradleArgs, [])
 })
 
 test('keystore pela metade é erro (não assina calado com a chave errada)', () => {

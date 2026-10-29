@@ -22,22 +22,39 @@ function signingPlan(env) {
   return { args: SIGNING.map(([name, prop]) => `-Pandroid.injected.signing.${prop}=${env[name]}`), problems: [], warnings: [] }
 }
 
-// buildPlan: { problems, warnings, gradleArgs } a partir das variáveis de ambiente.
+// O APK de distribuição só leva as arquiteturas de celular. x86 e x86_64 são de emulador e cada uma custa
+// dezenas de MB (o Skia, o WebRTC e o React Native vêm em todas). SALINHA_ABIS troca a lista.
+const ABI_NAMES = ['arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64']
+const DEFAULT_ABIS = 'arm64-v8a,armeabi-v7a'
+
+function abiPlan(env) {
+  const abis = (env.SALINHA_ABIS || DEFAULT_ABIS).split(',').map((a) => a.trim()).filter(Boolean)
+  const invalid = abis.filter((a) => !ABI_NAMES.includes(a))
+  if (abis.length === 0 || invalid.length) {
+    const found = invalid.length ? invalid.join(', ') : 'lista vazia'
+    return { args: [], problems: [`SALINHA_ABIS inválido (${found}). Use: ${ABI_NAMES.join(', ')}.`] }
+  }
+  return { args: [`-PreactNativeArchitectures=${abis.join(',')}`], problems: [] }
+}
+
+// buildPlan: { problems, warnings, gradleArgs, signed } a partir das variáveis de ambiente.
 // As senhas só aparecem nos argumentos do Gradle, nunca nas mensagens.
 // Modo 'dev' (build de desenvolvimento): o Metro entrega o JS e a URL do servidor, e o APK é de debug,
 // então não precisa de EXPO_PUBLIC_SERVER_URL nem de keystore.
 export function buildPlan(env, mode = 'release') {
   const problems = []
   if (!env.ANDROID_HOME && !env.ANDROID_SDK_ROOT) problems.push('Defina ANDROID_HOME (pasta do Android SDK).')
-  if (mode === 'dev') return { problems, warnings: [], gradleArgs: [] }
+  if (mode === 'dev') return { problems, warnings: [], gradleArgs: [], signed: false }
   if (!env.EXPO_PUBLIC_SERVER_URL) {
     problems.push('Defina EXPO_PUBLIC_SERVER_URL (endereço do servidor): sem ele o APK aponta para o localhost.')
   }
   const signing = signingPlan(env)
+  const abis = abiPlan(env)
   return {
-    problems: [...problems, ...signing.problems],
+    problems: [...problems, ...signing.problems, ...abis.problems],
     warnings: signing.warnings,
-    gradleArgs: signing.args
+    gradleArgs: [...signing.args, ...abis.args],
+    signed: signing.args.length > 0
   }
 }
 
