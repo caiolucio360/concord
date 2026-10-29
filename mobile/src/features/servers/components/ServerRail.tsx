@@ -14,12 +14,14 @@ interface ServerRailProps {
   dmUnread?: number
   /** Não lidas por servidor (só na sessão): o ícone ganha um ponto. */
   unreadServers?: Record<string, number>
+  /** O diamante do fim do trilho: Melhorias (Rank global e, em breve, Propostas e Novidades). */
+  onOpenHub?: () => void
 }
 
 const SIZE = 48
 
 /** Trilho da esquerda: ícone de DMs no topo e um botão por servidor. */
-export function ServerRail({ servers, selectedId, onSelect, dmUnread = 0, unreadServers = {} }: ServerRailProps) {
+export function ServerRail({ servers, selectedId, onSelect, dmUnread = 0, unreadServers = {}, onOpenHub }: ServerRailProps) {
   return (
     <ScrollView style={styles.rail} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <Pressable
@@ -54,6 +56,11 @@ export function ServerRail({ servers, selectedId, onSelect, dmUnread = 0, unread
           ) : null}
         </Pressable>
       ))}
+      {onOpenHub ? (
+        <Pressable accessibilityRole="button" accessibilityLabel="Melhorias" onPress={onOpenHub} style={[styles.item, styles.hub]}>
+          <Ionicons name="diamond" size={22} color={colors.textBrand} />
+        </Pressable>
+      ) : null}
     </ScrollView>
   )
 }
@@ -64,6 +71,7 @@ const styles = StyleSheet.create({
   item: { width: SIZE, height: SIZE, minHeight: MIN_TOUCH, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center' },
   home: { backgroundColor: colors.bgAccent },
   selected: { backgroundColor: colors.brand },
+  hub: { backgroundColor: colors.bgAccent },
   badge: { position: 'absolute', right: -6, bottom: -6 },
   dot: { position: 'absolute', left: -10, top: SIZE / 2 - 4 },
   divider: { width: 32, height: 2, borderRadius: 1, backgroundColor: colors.borderSubtle }

@@ -29,3 +29,25 @@ export function levelTier(level: number): LevelTier {
   if (level >= 100) return LEGENDARY_TIER
   return TIERS[Math.max(0, Math.floor(level / 10))] ?? TIERS[0]
 }
+
+/** Percentual do nível atual já cumprido (0–100). */
+export function levelPercent(intoLevel: number, forNext: number): number {
+  if (forNext <= 0) return 0
+  return Math.min(100, Math.max(0, Math.floor((intoLevel / forNext) * 100)))
+}
+
+/** "45 min", "3 h 20 min", "12 h". */
+export function formatVoiceTime(seconds: number): string {
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes} min`
+  const hours = Math.floor(minutes / 60)
+  const rest = minutes % 60
+  return rest > 0 ? `${hours} h ${rest} min` : `${hours} h`
+}
+
+/** Minutos de call que faltam para o próximo nível (10 XP por minuto). */
+export const XP_PER_MINUTE = 10
+
+export function minutesToNext(intoLevel: number, forNext: number): number {
+  return Math.max(0, Math.ceil((forNext - intoLevel) / XP_PER_MINUTE))
+}

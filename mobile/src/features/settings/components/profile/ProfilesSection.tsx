@@ -13,6 +13,39 @@ import { useProfileApply } from '../../hooks/useProfileApply'
 import { linksSummary, nameStyleSummary, textSummary, themeName } from '../../lib/profileTiles'
 import { ProfileEditModal, type ProfileModalId } from './ProfileEditModal'
 
+interface MediaTilesProps {
+  user: { display_name: string; username: string; avatar_url?: string | null; banner_url?: string | null; banner_color?: string | null }
+  busy: boolean
+  onPick: (kind: ProfileImageKind) => void
+  onRemove: (kind: ProfileImageKind) => void
+}
+
+/** Avatar e banner lado a lado: tocar abre o seletor de imagem; "Remover" só aparece quando há imagem. */
+function MediaTiles({ user, busy, onPick, onRemove }: MediaTilesProps) {
+  return (
+    <View style={styles.tileGroup}>
+      <Text style={styles.tileTitle}>Avatar e banner</Text>
+      <View style={styles.media}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Alterar avatar" disabled={busy} onPress={() => onPick('avatar')} style={styles.avatarTile}>
+          <Avatar name={user.display_name || user.username} uri={user.avatar_url} size={56} />
+        </Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel="Alterar banner" disabled={busy} onPress={() => onPick('banner')} style={[styles.bannerTile, { backgroundColor: user.banner_color ?? colors.brand }]}>
+          <Text style={styles.bannerText}>Alterar banner</Text>
+        </Pressable>
+      </View>
+      <View style={styles.removeRow}>
+        {(['avatar', 'banner'] as const).map((kind) =>
+          user[`${kind}_url`] ? (
+            <Pressable key={kind} accessibilityRole="button" accessibilityLabel={`Remover ${kind}`} disabled={busy} onPress={() => onRemove(kind)} style={styles.remove}>
+              <Text style={styles.removeText}>Remover {kind}</Text>
+            </Pressable>
+          ) : null
+        )}
+      </View>
+    </View>
+  )
+}
+
 function Tile({ title, value, empty, onPress, label }: { title: string; value: string | null; empty?: string; onPress: () => void; label: string }) {
   return (
     <View style={styles.tileGroup}>
@@ -60,29 +93,7 @@ export function ProfilesSection() {
       ) : null}
       {error ? <Banner message={error} /> : null}
 
-      <View style={styles.tileGroup}>
-        <Text style={styles.tileTitle}>Avatar e banner</Text>
-        <View style={styles.media}>
-          <Pressable accessibilityRole="button" accessibilityLabel="Alterar avatar" disabled={profile.saving} onPress={() => void pick('avatar')} style={styles.avatarTile}>
-            <Avatar name={user.display_name || user.username} uri={user.avatar_url} size={56} />
-          </Pressable>
-          <Pressable accessibilityRole="button" accessibilityLabel="Alterar banner" disabled={profile.saving} onPress={() => void pick('banner')} style={[styles.bannerTile, { backgroundColor: user.banner_color ?? colors.brand }]}>
-            <Text style={styles.bannerText}>Alterar banner</Text>
-          </Pressable>
-        </View>
-        <View style={styles.removeRow}>
-          {user.avatar_url ? (
-            <Pressable accessibilityRole="button" accessibilityLabel="Remover avatar" disabled={profile.saving} onPress={() => setRemoving('avatar')} style={styles.remove}>
-              <Text style={styles.removeText}>Remover avatar</Text>
-            </Pressable>
-          ) : null}
-          {user.banner_url ? (
-            <Pressable accessibilityRole="button" accessibilityLabel="Remover banner" disabled={profile.saving} onPress={() => setRemoving('banner')} style={styles.remove}>
-              <Text style={styles.removeText}>Remover banner</Text>
-            </Pressable>
-          ) : null}
-        </View>
-      </View>
+      <MediaTiles user={user} busy={profile.saving} onPick={(kind) => void pick(kind)} onRemove={setRemoving} />
 
       <Tile title="Cor do banner" value={draft.banner_color ?? 'Padrão'} onPress={open('banner_color')} label="Mudar a cor do banner" />
       <Tile title="Tema do perfil" value={themeName(draft.profile_theme)} onPress={open('theme')} label="Mudar o tema do perfil" />
