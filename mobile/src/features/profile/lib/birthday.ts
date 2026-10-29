@@ -56,11 +56,6 @@ export function birthdayError(
   return null
 }
 
-/** Chave do "modal de aniversário já visto hoje" neste computador. */
-export function birthdayModalKey(userId: string, date: string): string {
-  return `concord:birthday-modal:${userId}:${date}`
-}
-
 /** "7 de março de 1998" (sem ano, só o dia e o mês); sem data, "Não informado". */
 export function formatBirthday({ day, month, year }: BirthdayValue): string {
   if (!day || !month) return 'Não informado'

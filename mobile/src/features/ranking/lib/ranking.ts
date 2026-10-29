@@ -30,8 +30,3 @@ export const formatXp = (xp: number): string => `${xp.toLocaleString('pt-BR')} X
 export function myPositionText(me: MyRank | null): string {
   return me ? `Sua posição: ${positionLabel(me.position)}` : 'Fique em call para entrar no ranking'
 }
-
-/** A pessoa tem posição, mas a linha dela não está na lista mostrada. */
-export function isOutsideList(me: MyRank | null, entries: RankingEntry[]): boolean {
-  return me !== null && !entries.some((e) => e.position === me.position)
-}

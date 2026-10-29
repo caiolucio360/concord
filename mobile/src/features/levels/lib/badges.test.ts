@@ -3,17 +3,13 @@ import {
   badgeLabel,
   formatThreshold,
   formatUnlockDate,
-  holoPointer,
-  isMythic,
   profileBadgeRow,
   progressPercent,
   publicStatText,
   RARITY,
   remainingText,
   statText,
-  unlockCount,
   selectedBadge,
-  unlocksComAviso,
   visibleBadges
 } from './badges'
 
@@ -239,18 +235,6 @@ describe('visão pública (perfil de outra pessoa)', () => {
   })
 })
 
-describe('unlockCount', () => {
-  it('conta badges (categorias), não tiers', () => {
-    expect(
-      unlockCount([
-        { category: 'voz', name: '', tier: 4, tier_name: '', rarity: 'epico' },
-        { category: 'voz', name: '', tier: 3, tier_name: '', rarity: 'raro' },
-        { category: 'conta', name: '', tier: 1, tier_name: '', rarity: 'comum' }
-      ])
-    ).toBe(2)
-  })
-})
-
 describe('raridade mítica (Fundador dos devs)', () => {
   const dev = badge({
     category: 'criador',
@@ -290,41 +274,12 @@ describe('raridade mítica (Fundador dos devs)', () => {
     )
   })
 
-  it('só mítico tem efeito', () => {
-    expect(isMythic('mitico')).toBe(true)
-    expect(isMythic('lendario')).toBe(false)
-    expect(isMythic(undefined)).toBe(false)
-  })
-
   it('não tem número, nem no próprio perfil nem no de outra pessoa', () => {
     expect(statText(dev)).toBe('Dev do Salinha')
     expect(publicStatText({ ...dev, value: undefined, progress: undefined })).toBe('Dev do Salinha')
     expect(formatThreshold('dev', 1)).toBe('Só para os devs')
     expect(remainingText(dev)).toBe('Tier máximo!')
     expect(remainingText({ ...dev, tier: 0, next_threshold: 1, value: 0 })).toBe('Só para os devs')
-  })
-})
-
-describe('holoPointer', () => {
-  const rect = { left: 100, top: 50, width: 200, height: 100 }
-
-  it('no centro não inclina', () => {
-    expect(holoPointer(200, 100, rect)).toEqual({ mx: 50, my: 50, rx: 0, ry: 0 })
-  })
-
-  it('nos cantos inclina até o máximo', () => {
-    expect(holoPointer(100, 50, rect, 10)).toEqual({ mx: 0, my: 0, rx: 10, ry: -10 })
-    expect(holoPointer(300, 150, rect, 10)).toEqual({ mx: 100, my: 100, rx: -10, ry: 10 })
-  })
-
-  it('fora da caixa ou caixa vazia não passa do limite', () => {
-    expect(holoPointer(9999, -9999, rect, 10)).toEqual({ mx: 100, my: 0, rx: 10, ry: 10 })
-    expect(holoPointer(5, 5, { left: 0, top: 0, width: 0, height: 0 })).toEqual({
-      mx: 50,
-      my: 50,
-      rx: 0,
-      ry: 0
-    })
   })
 })
 
@@ -443,17 +398,3 @@ describe('Fez o L (resposta única do segundo turno)', () => {
   })
 })
 
-describe('unlocksComAviso', () => {
-  const unlock = (category: string): BadgeUnlockEvent['unlocks'][number] => ({
-    category,
-    name: category,
-    tier: 1,
-    tier_name: category,
-    rarity: 'lendario'
-  })
-
-  it('l, v22 e nulo têm celebração própria e ficam fora do aviso genérico', () => {
-    const lista = [unlock('l'), unlock('voz'), unlock('v22'), unlock('nulo')]
-    expect(unlocksComAviso(lista).map((u) => u.category)).toEqual(['voz'])
-  })
-})

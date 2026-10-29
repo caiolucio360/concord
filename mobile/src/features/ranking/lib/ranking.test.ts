@@ -1,7 +1,6 @@
 import type { MyRank, RankingEntry } from '../api/ranking'
 import {
   formatXp,
-  isOutsideList,
   myPositionText,
   podiumSlots,
   positionLabel,
@@ -61,9 +60,4 @@ describe('textos', () => {
     expect(myPositionText(null)).toBe('Fique em call para entrar no ranking')
   })
 
-  it('isOutsideList: fora da lista mostrada', () => {
-    expect(isOutsideList(me, list(100))).toBe(true)
-    expect(isOutsideList({ ...me, position: 7 }, list(100))).toBe(false)
-    expect(isOutsideList(null, list(100))).toBe(false)
-  })
 })
