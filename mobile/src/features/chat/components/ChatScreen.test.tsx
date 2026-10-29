@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react-native'
+import { fireEvent, render, screen } from '@testing-library/react-native'
 import { useActiveRoomStore } from '../store/activeRoomStore'
 import { useConversationsStore } from '../store/conversationsStore'
 import { useUnreadStore } from '../store/unreadStore'
@@ -81,5 +81,28 @@ describe('ChatScreen', () => {
     expect(screen.queryByText('#')).toBeNull()
     expect(screen.queryByText('@')).toBeNull()
     expect(screen.getByLabelText('Mensagem para o grupo')).toBeOnTheScreen()
+  })
+
+  it('DM: tocar no nome do cabeçalho abre o perfil da outra pessoa', async () => {
+    const onOpenProfile = jest.fn()
+    await render(<ChatScreen variant="dm" id="d1" title="Paulo" peerId="u2" onOpenProfile={onOpenProfile} onBack={() => {}} />)
+    await fireEvent.press(screen.getByRole('button', { name: 'Paulo' }))
+    expect(onOpenProfile).toHaveBeenCalledWith('u2')
+  })
+
+  it('DM 1 a 1 mostra o botão de ligar; canal e grupo não (chamada privada é só 1 a 1)', async () => {
+    const onCall = jest.fn()
+    const { rerender } = await render(<ChatScreen variant="dm" id="d1" title="Paulo" onCall={onCall} onBack={() => {}} />)
+    await fireEvent.press(screen.getByRole('button', { name: 'Iniciar chamada de voz' }))
+    expect(onCall).toHaveBeenCalledTimes(1)
+    await rerender(<ChatScreen variant="group" id="g1" title="DEVS" onCall={onCall} onBack={() => {}} />)
+    expect(screen.queryByRole('button', { name: 'Iniciar chamada de voz' })).toBeNull()
+    await rerender(<ChatScreen variant="channel" id="c1" title="geral" onCall={onCall} onBack={() => {}} />)
+    expect(screen.queryByRole('button', { name: 'Iniciar chamada de voz' })).toBeNull()
+  })
+
+  it('canal e grupo: o nome do cabeçalho não abre perfil (não é uma pessoa só)', async () => {
+    await render(<ChatScreen variant="group" id="g1" title="DEVS" onOpenProfile={jest.fn()} onBack={() => {}} />)
+    expect(screen.queryByRole('button', { name: 'DEVS' })).toBeNull()
   })
 })

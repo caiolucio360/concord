@@ -27,10 +27,14 @@ interface HomeScreenProps {
   onOpenCall: () => void
   onLeaveCall: () => void
   onOpenSettings: () => void
+  /** O diamante do trilho abre a aba Melhorias. */
+  onOpenHub?: () => void
+  /** Tocar na foto do painel de baixo abre o perfil de quem está logado. */
+  onOpenProfile?: (userId: string) => void
 }
 
 /** Tela principal: trilho de servidores, lista de canais (ou DMs) e o painel do usuário. */
-export function HomeScreen({ onOpenChannel, onOpenConversation, onOpenFriends, onJoinVoice, onOpenCall, onLeaveCall, onOpenSettings }: HomeScreenProps) {
+export function HomeScreen({ onOpenChannel, onOpenConversation, onOpenFriends, onJoinVoice, onOpenCall, onLeaveCall, onOpenSettings, onOpenProfile, onOpenHub }: HomeScreenProps) {
   const servers = useServersStore((s) => s.servers)
   const status = useServersStore((s) => s.status)
   const channelsByServer = useServersStore((s) => s.channelsByServer)
@@ -63,7 +67,7 @@ export function HomeScreen({ onOpenChannel, onOpenConversation, onOpenFriends, o
   return (
     <View style={styles.screen}>
       <View style={styles.columns}>
-        <ServerRail servers={servers} selectedId={serverId} onSelect={select} dmUnread={dmUnread} unreadServers={unreadServers} />
+        <ServerRail servers={servers} selectedId={serverId} onSelect={select} dmUnread={dmUnread} unreadServers={unreadServers} onOpenHub={onOpenHub} />
         <View style={styles.main}>
           {status === 'error' && servers.length === 0 ? (
             <View style={styles.centered}>
@@ -88,7 +92,7 @@ export function HomeScreen({ onOpenChannel, onOpenConversation, onOpenFriends, o
       </View>
       <CallNotice />
       <CallBar onOpen={onOpenCall} onLeave={onLeaveCall} />
-      <UserPanel onOpenSettings={onOpenSettings} />
+      <UserPanel onOpenSettings={onOpenSettings} onOpenProfile={onOpenProfile} />
     </View>
   )
 }

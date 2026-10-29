@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { FlatList, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors, fontSize, spacing } from '../../../shared/theme/tokens'
@@ -7,19 +8,31 @@ import { VoiceControls } from '../../voice/components/VoiceControls'
 import { gridColumns, phaseLabel } from '../lib/callLayout'
 import { NO_VOICE, type CallUser } from '../lib/callTypes'
 import { useCallSessionStore } from '../store/callSessionStore'
+import { useScreenShareStore } from '../store/screenShareStore'
 import { useParticipantsStore, voiceOf } from '../store/participantsStore'
 import { useSpeakingStore } from '../store/speakingStore'
 import { CallNotice } from './CallNotice'
+import { XpBar } from '../../levels/components/XpBar'
+import { useVoiceControlsStore } from '../../voice/store/voiceControlsStore'
+import { MusicPanel } from '../../music/components/MusicPanel'
+import { useMusicStore } from '../../music/store/musicStore'
 import { ParticipantTile } from './ParticipantTile'
+import { ScreenViewer } from './ScreenViewer'
 
 interface CallScreenProps {
   onBack: () => void
   onLeave: () => void
   onOpenSettings?: () => void
+  /** Liga ou desliga a transmissão da minha tela. */
+  onToggleShare?: () => void
+  /** Assiste à transmissão de alguém (null para de assistir). */
+  onWatch?: (userId: string | null) => void
+  /** Desenha a transmissão (o componente do LiveKit); sem ele não dá para assistir. */
+  renderScreen?: (userId: string) => ReactNode
 }
 
 /** Tela cheia da chamada: quem está nela (grade que se adapta à largura), quem fala e os controles. */
-export function CallScreen({ onBack, onLeave, onOpenSettings }: CallScreenProps) {
+export function CallScreen({ onBack, onLeave, onOpenSettings, onToggleShare, onWatch, renderScreen }: CallScreenProps) {
   const { width } = useWindowDimensions()
   const name = useCallSessionStore((s) => s.name)
   const phase = useCallSessionStore((s) => s.phase)
@@ -27,6 +40,14 @@ export function CallScreen({ onBack, onLeave, onOpenSettings }: CallScreenProps)
   const voice = useParticipantsStore((s) => s.voice)
   const speaking = useSpeakingStore((s) => s.speaking)
   const me = useAuthStore((s) => s.user)
+  const serverId = useCallSessionStore((s) => s.serverId)
+  const hasMusic = useMusicStore((s) => s.state !== null)
+  const openMusic = useMusicStore((s) => s.openPanel)
+  const xpPaused = useVoiceControlsStore((s) => s.muted || s.deafened)
+  const sharers = useScreenShareStore((s) => s.sharers)
+  const sharing = useScreenShareStore((s) => s.sharing)
+  const watching = useScreenShareStore((s) => s.watching)
+  const canWatch = Boolean(onWatch && renderScreen)
 
   const people: CallUser[] = me ? [{ id: me.id, username: me.username, display_name: me.display_name, avatar_url: me.avatar_url }, ...others] : others
   const columns = gridColumns(width, people.length)
@@ -42,8 +63,13 @@ export function CallScreen({ onBack, onLeave, onOpenSettings }: CallScreenProps)
           </Text>
           {status ? <Text style={styles.status}>{status}</Text> : null}
         </View>
+        {hasMusic && serverId ? <IconButton icon="musical-notes" label="Tocando agora" onPress={openMusic} /> : null}
       </View>
       <CallNotice onOpenSettings={onOpenSettings} />
+      <XpBar paused={xpPaused} />
+      {watching && renderScreen ? (
+        <ScreenViewer name={people.find((p) => p.id === watching)?.display_name ?? 'transmissão'} userId={watching} onStop={() => onWatch?.(null)} renderScreen={renderScreen} />
+      ) : null}
       <FlatList
         key={columns}
         data={people}
@@ -52,13 +78,21 @@ export function CallScreen({ onBack, onLeave, onOpenSettings }: CallScreenProps)
         columnWrapperStyle={columns > 1 ? styles.row : undefined}
         contentContainerStyle={styles.grid}
         renderItem={({ item }) => (
-          <ParticipantTile user={item} speaking={speaking.includes(item.id)} voice={item.id === me?.id ? NO_VOICE : voiceOf(voice, item.id)} />
+          <ParticipantTile
+            user={item}
+            speaking={speaking.includes(item.id)}
+            voice={item.id === me?.id ? NO_VOICE : voiceOf(voice, item.id)}
+            live={sharers.includes(item.id)}
+            onWatch={canWatch && item.id !== me?.id && watching !== item.id ? () => onWatch?.(item.id) : undefined}
+          />
         )}
       />
       <View style={styles.controls}>
         <VoiceControls />
+        {onToggleShare ? <IconButton icon={sharing ? 'stop-circle' : 'tv-outline'} label={sharing ? 'Parar de compartilhar a tela' : 'Compartilhar tela'} onPress={onToggleShare} danger={sharing} /> : null}
         <IconButton icon="call" label="Sair da chamada" onPress={onLeave} danger />
       </View>
+      {serverId ? <MusicPanel serverId={serverId} /> : null}
     </SafeAreaView>
   )
 }

@@ -25,3 +25,19 @@ jest.mock('livekit-client', () => ({
   RoomEvent: {},
   ConnectionState: { Disconnected: 'disconnected' }
 }))
+
+// O Skia é módulo nativo: no Jest vem de um mock que grava as chamadas (tests/mocks/skia.ts).
+jest.mock('@shopify/react-native-skia', () => require('./tests/mocks/skia'))
+
+// O Reanimated é módulo nativo: no Jest só o useSharedValue é usado (o efeito do perfil grava a picture nele).
+jest.mock('react-native-reanimated', () => ({
+  useSharedValue: (initial) => {
+    const { useRef } = require('react')
+    const ref = useRef(null)
+    if (ref.current === null) ref.current = { value: initial }
+    return ref.current
+  }
+}))
+
+// Áudio nativo não existe no Jest; o player de sons é testado com uma porta falsa (soundPlayer.test.ts).
+jest.mock('expo-audio', () => ({ createAudioPlayer: jest.fn(() => ({ seekTo: jest.fn(), play: jest.fn() })) }))

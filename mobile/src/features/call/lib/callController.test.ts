@@ -3,9 +3,14 @@ import { useCallNoticeStore } from '../store/callNoticeStore'
 import { useCallSessionStore } from '../store/callSessionStore'
 import { useIncomingCallStore } from '../store/incomingCallStore'
 import { useParticipantsStore } from '../store/participantsStore'
+import { useScreenShareStore } from '../store/screenShareStore'
 import { useSpeakingStore } from '../store/speakingStore'
 import type { CallMedia, MediaConnection } from './callMedia'
 import { createCallController, type ControllerDeps } from './callController'
+
+import { playSound } from './sounds/soundPlayer'
+
+jest.mock('./sounds/soundPlayer', () => ({ playSound: jest.fn() }))
 
 const ana = { id: 'u1', username: 'ana', display_name: 'Ana' }
 const session = () => useCallSessionStore.getState()
@@ -13,11 +18,18 @@ const session = () => useCallSessionStore.getState()
 function rig(over: Partial<ControllerDeps> = {}) {
   let connection: (s: MediaConnection) => void = () => {}
   let speakers: (ids: string[]) => void = () => {}
+  let screens: (ids: string[]) => void = () => {}
   const media: jest.Mocked<CallMedia> = {
     connect: jest.fn().mockResolvedValue(undefined),
     disconnect: jest.fn().mockResolvedValue(undefined),
     setMicEnabled: jest.fn().mockResolvedValue(undefined),
     setListening: jest.fn(),
+    setScreenShareEnabled: jest.fn().mockResolvedValue(undefined),
+    watchScreen: jest.fn(),
+    onScreens: jest.fn((l) => {
+      screens = l
+      return () => {}
+    }),
     onSpeakers: jest.fn((l) => {
       speakers = l
       return () => {}
@@ -40,7 +52,7 @@ function rig(over: Partial<ControllerDeps> = {}) {
     ensureMicPermission: jest.fn().mockResolvedValue(true),
     ...over
   }
-  return { deps, media, controller: createCallController(deps), emitConnection: (s: MediaConnection) => connection(s), emitSpeakers: (ids: string[]) => speakers(ids) }
+  return { deps, media, controller: createCallController(deps), emitConnection: (s: MediaConnection) => connection(s), emitSpeakers: (ids: string[]) => speakers(ids), emitScreens: (ids: string[]) => screens(ids) }
 }
 
 beforeEach(() => {
@@ -49,6 +61,7 @@ beforeEach(() => {
   useIncomingCallStore.getState().clear()
   useCallNoticeStore.getState().dismiss()
   useSpeakingStore.getState().reset()
+  useScreenShareStore.getState().reset()
 })
 
 describe('joinChannel', () => {
@@ -152,6 +165,23 @@ describe('callDm / accept / decline', () => {
 })
 
 describe('leave e mídia', () => {
+  it('toca o som de entrar ao conectar e o de sair ao sair da chamada ativa', async () => {
+    const { controller } = rig()
+    jest.mocked(playSound).mockClear()
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    expect(playSound).toHaveBeenCalledWith('join')
+    await controller.leave()
+    expect(playSound).toHaveBeenLastCalledWith('leave')
+  })
+
+  it('sair de uma chamada que nem conectou não toca o som de sair', async () => {
+    const { controller } = rig()
+    await controller.callDm({ id: 'cv1', name: 'Ana' })
+    jest.mocked(playSound).mockClear()
+    await controller.leave()
+    expect(playSound).not.toHaveBeenCalled()
+  })
+
   it('sair avisa, desassina, desconecta e zera tudo', async () => {
     const { controller, deps, media } = rig()
     await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
@@ -212,5 +242,59 @@ describe('applyAudio', () => {
     const { controller, media } = rig()
     await controller.applyAudio()
     expect(media.setMicEnabled).not.toHaveBeenCalled()
+  })
+})
+
+describe('transmissão de tela', () => {
+  it('ligar e desligar a minha transmissão: avisa a mídia, guarda o estado e toca o som ao ligar', async () => {
+    const { controller, media } = rig()
+    await controller.toggleScreenShare()
+    expect(media.setScreenShareEnabled).toHaveBeenLastCalledWith(true)
+    expect(useScreenShareStore.getState().sharing).toBe(true)
+    expect(playSound).toHaveBeenLastCalledWith('liveStart')
+    await controller.toggleScreenShare()
+    expect(media.setScreenShareEnabled).toHaveBeenLastCalledWith(false)
+    expect(useScreenShareStore.getState().sharing).toBe(false)
+  })
+
+  it('captura de tela negada: avisa e fica desligada', async () => {
+    const { controller, media } = rig()
+    media.setScreenShareEnabled.mockRejectedValue(new Error('NotAllowedError'))
+    await controller.toggleScreenShare()
+    expect(useScreenShareStore.getState().sharing).toBe(false)
+    expect(useCallNoticeStore.getState().message).toMatch(/Não foi possível transmitir a tela/)
+  })
+
+  it('a lista de quem transmite vai para a store; som quando outra pessoa começa ou para (eu não conto)', async () => {
+    const { emitScreens } = rig({ meId: () => 'me' })
+    jest.mocked(playSound).mockClear()
+    emitScreens(['me'])
+    expect(playSound).not.toHaveBeenCalled()
+    emitScreens(['me', 'u1'])
+    expect(playSound).toHaveBeenLastCalledWith('liveStart')
+    emitScreens(['me'])
+    expect(playSound).toHaveBeenLastCalledWith('liveEnd')
+    expect(useScreenShareStore.getState().sharers).toEqual(['me'])
+  })
+
+  it('assistir pede a faixa à mídia; trocar de transmissão larga a anterior; parar zera', () => {
+    const { controller, media } = rig()
+    controller.watchScreen('u1')
+    expect(media.watchScreen).toHaveBeenLastCalledWith('u1', true)
+    expect(useScreenShareStore.getState().watching).toBe('u1')
+    controller.watchScreen('u2')
+    expect(media.watchScreen).toHaveBeenCalledWith('u1', false)
+    expect(media.watchScreen).toHaveBeenLastCalledWith('u2', true)
+    controller.watchScreen(null)
+    expect(media.watchScreen).toHaveBeenLastCalledWith('u2', false)
+    expect(useScreenShareStore.getState().watching).toBeNull()
+  })
+
+  it('sair da chamada zera as transmissões', async () => {
+    const { controller } = rig()
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    useScreenShareStore.getState().setSharing(true)
+    await controller.leave()
+    expect(useScreenShareStore.getState().sharing).toBe(false)
   })
 })

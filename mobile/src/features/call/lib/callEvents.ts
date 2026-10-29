@@ -3,6 +3,7 @@ import { useCallNoticeStore } from '../store/callNoticeStore'
 import { useCallSessionStore } from '../store/callSessionStore'
 import { useIncomingCallStore } from '../store/incomingCallStore'
 import { useParticipantsStore } from '../store/participantsStore'
+import { playSound } from './sounds/soundPlayer'
 import type { InvitePayload, MovedPayload, UserPayload, VoicePayload } from './callTypes'
 
 type Handler = (payload: never, meId: string | null) => void
@@ -41,12 +42,18 @@ function onDecline(p: UserPayload): void {
 
 function onJoined(p: UserPayload, meId: string | null): void {
   if (!isMine(p.call_id) || p.user.id === meId) return
-  if (session().kind === 'channel') people().upsert(p.user)
+  if (session().kind !== 'channel') return
+  people().upsert(p.user)
+  playSound('userJoin')
 }
 
 function onLeft(p: UserPayload, meId: string | null): void {
   if (!isMine(p.call_id) || p.user.id === meId) return
-  if (session().kind === 'channel') return people().remove(p.user.id)
+  if (session().kind === 'channel') {
+    people().remove(p.user.id)
+    playSound('userLeave')
+    return
+  }
   notice(`${p.user.display_name} saiu da chamada.`)
   endCall()
 }

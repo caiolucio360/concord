@@ -12,7 +12,7 @@ import { MessageList } from './MessageList'
 
 export type ChatVariant = 'channel' | 'dm' | 'group'
 
-interface ChatScreenProps {
+export interface ChatScreenProps {
   variant: ChatVariant
   /** Id do canal ou da conversa. */
   id: string
@@ -20,6 +20,11 @@ interface ChatScreenProps {
   title: string
   /** Servidor do canal (para descontar a não lida do servidor ao abrir). */
   serverId?: string
+  /** Só na DM 1 a 1: a outra pessoa (o nome do cabeçalho abre o perfil dela). */
+  peerId?: string
+  onOpenProfile?: (userId: string) => void
+  /** Liga para a outra pessoa (só aparece na DM 1 a 1). */
+  onCall?: () => void
   onBack: () => void
 }
 
@@ -32,7 +37,7 @@ const PRESENTATION: Record<ChatVariant, { prefix: string; label: (title: string)
 }
 
 /** Chat em tela cheia de um canal de texto, de uma DM ou de um grupo: cabeçalho, histórico e campo de envio. */
-export function ChatScreen({ variant, id, title, serverId, onBack }: ChatScreenProps) {
+export function ChatScreen({ variant, id, title, serverId, peerId, onOpenProfile, onCall, onBack }: ChatScreenProps) {
   const { prefix, label, target } = PRESENTATION[variant]
 
   // Chat aberto: as mensagens dele não contam como não lidas, e abrir zera o que já havia.
@@ -53,9 +58,19 @@ export function ChatScreen({ variant, id, title, serverId, onBack }: ChatScreenP
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={top}
     >
-      <ChannelHeader name={title} prefix={prefix} onBack={onBack} />
-      <MessageList messages={messages} status={status} hasMore={hasMore} onLoadMore={() => void loadMore()} onRetry={() => void retry()} />
-      <Composer label={label(title)} onSend={send} forbiddenNotice={variant === 'channel' ? NO_PERMISSION : undefined} />
+      <ChannelHeader name={title} prefix={prefix} onBack={onBack} onPressName={peerId && onOpenProfile ? () => onOpenProfile(peerId) : undefined}
+        onCall={variant === 'dm' ? onCall : undefined}
+      />
+      <MessageList
+        messages={messages}
+        status={status}
+        hasMore={hasMore}
+        onLoadMore={() => void loadMore()}
+        onRetry={() => void retry()}
+        onOpenProfile={onOpenProfile}
+        maestro={target === 'channel' ? { room: `channel:${id}`, serverId: serverId ?? null } : undefined}
+      />
+      <Composer label={label(title)} room={`${target}:${id}`} serverId={serverId} onSend={send} forbiddenNotice={variant === 'channel' ? NO_PERMISSION : undefined} />
     </KeyboardAvoidingView>
   )
 }

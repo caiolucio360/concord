@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs'
 import type { ExpoConfig } from 'expo/config'
+import { withProguardRules } from './plugins/withProguardRules'
 
 // google-services.json (Firebase) é segredo do dono: vem de GOOGLE_SERVICES_JSON no build e fica fora do git.
 // Sem ele o APK compila igual, só que sem push (docs/PUSH.md).
@@ -29,7 +30,8 @@ const config: ExpoConfig = {
       'android.permission.RECORD_AUDIO',
       'android.permission.MODIFY_AUDIO_SETTINGS',
       'android.permission.FOREGROUND_SERVICE',
-      'android.permission.FOREGROUND_SERVICE_MICROPHONE'
+      'android.permission.FOREGROUND_SERVICE_MICROPHONE',
+      'android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION'
     ],
     ...(googleServices && existsSync(googleServices) ? { googleServicesFile: googleServices } : {})
   },
@@ -40,9 +42,11 @@ const config: ExpoConfig = {
     '@livekit/react-native-expo-plugin',
     '@config-plugins/react-native-webrtc',
     'expo-status-bar',
+    ['expo-image-picker', { cameraPermission: 'A Salinha usa a câmera para você tirar fotos e gravar vídeos e enviar no chat.', microphonePermission: false }],
     ['expo-splash-screen', { image: './assets/splash-icon.png', backgroundColor: '#121214', imageWidth: 200 }]
   ],
   experiments: { typedRoutes: true }
 }
 
-export default config
+// O R8 do build de release precisa de uma regra para o LiveKit (plugins/withProguardRules.ts).
+export default withProguardRules(config)

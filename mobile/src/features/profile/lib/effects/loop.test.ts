@@ -1,0 +1,226 @@
+import { fakeCtx, type FakeCtx } from './fakeCtx'
+import { seededRand } from './index'
+import { createEffectLoop, MAX_DT, MAX_FAILURES, stepDt, type EffectLoop } from './loop'
+import type { EffectParams, Scene } from './types'
+
+interface Spy {
+  steps: number[]
+  draws: number
+}
+
+/** Cena de mentira que só anota os passos e os desenhos. */
+function spyScene(): { scene: Scene<Spy>; inits: number[][] } {
+  const inits: number[][] = []
+  const scene: Scene<Spy> = {
+    init: (w, h) => {
+      inits.push([w, h])
+      return { steps: [], draws: 0 }
+    },
+    step: (s, dt) => {
+      s.steps.push(dt)
+    },
+    draw: (_ctx, s) => {
+      s.draws++
+    }
+  }
+  return { scene, inits }
+}
+
+/** rAF manual: `frame(t)` roda o callback pendente no tempo t. */
+function fakeRaf(): {
+  raf: (cb: (t: number) => void) => number
+  caf: jest.Mock
+  frame: (t: number) => void
+  pending: () => boolean
+} {
+  let cb: ((t: number) => void) | null = null
+  let id = 0
+  return {
+    raf: (fn) => {
+      cb = fn
+      return ++id
+    },
+    caf: jest.fn(() => {
+      cb = null
+    }),
+    frame: (t) => {
+      const fn = cb
+      cb = null
+      fn?.(t)
+    },
+    pending: () => cb !== null
+  }
+}
+
+interface Setup {
+  loop: EffectLoop
+  r: ReturnType<typeof fakeRaf>
+  ctx: FakeCtx
+  inits: number[][]
+  state: () => Spy
+}
+
+function setup(params: Partial<EffectParams> = {}): Setup {
+  const { scene, inits } = spyScene()
+  const r = fakeRaf()
+  const ctx = fakeCtx()
+  let state: Spy | null = null
+  const wrapped: Scene<Spy> = {
+    ...scene,
+    init: (...args) => (state = scene.init(...args))
+  }
+  const loop = createEffectLoop({
+    scene: wrapped as Scene,
+    params: { density: 1, speed: 1, color: '#ffffff', ...params },
+    render: (draw) => draw(ctx),
+    width: 300,
+    height: 400,
+    rand: seededRand(1),
+    raf: r.raf,
+    caf: r.caf
+  })
+  return { loop, r, ctx, inits, state: () => state as unknown as Spy }
+}
+
+describe('stepDt', () => {
+  it('converte para segundos, aplica a velocidade e trava em 0,1', () => {
+    expect(stepDt(33, 1)).toBeCloseTo(0.033)
+    expect(stepDt(33, 2)).toBeCloseTo(0.066)
+    expect(stepDt(5000, 1)).toBe(MAX_DT)
+    expect(stepDt(-10, 1)).toBe(0)
+  })
+})
+
+describe('createEffectLoop', () => {
+  it('limita a ~30 fps: num rAF de 60 Hz desenha um quadro sim, outro não', () => {
+    const { loop, r, state } = setup()
+    loop.start()
+    for (let i = 0; i <= 60; i++) r.frame(i * (1000 / 60))
+    // Primeiro quadro + 30 quadros em 1 s.
+    expect(state().draws).toBe(31)
+    expect(state().steps[0]).toBe(0)
+    expect(state().steps[1]).toBeCloseTo(1 / 30)
+  })
+
+  it('multiplica o dt pela velocidade e trava depois de uma pausa longa', () => {
+    const { loop, r, state } = setup({ speed: 2 })
+    loop.start()
+    r.frame(0)
+    r.frame(40)
+    r.frame(10_000)
+    expect(state().steps[1]).toBeCloseTo(0.08)
+    expect(state().steps[2]).toBe(MAX_DT)
+  })
+
+  it('cada quadro limpa e desenha isolado em save/restore', () => {
+    const { loop, r, ctx } = setup()
+    loop.start()
+    r.frame(0)
+    expect(ctx.calls).toEqual(['clearRect', 'save', 'restore'])
+  })
+
+  it('stop cancela o rAF; start de novo não acumula laços', () => {
+    const { loop, r } = setup()
+    loop.start()
+    loop.start()
+    expect(r.pending()).toBe(true)
+    loop.stop()
+    expect(r.caf).toHaveBeenCalledTimes(1)
+    expect(r.pending()).toBe(false)
+    loop.stop()
+    expect(r.caf).toHaveBeenCalledTimes(1)
+  })
+
+  // Achado na revisão: uma exceção em step subia do requestAnimationFrame e derrubava o app em release.
+  describe('falhas', () => {
+    function failing(setupParams: Partial<EffectParams> = {}) {
+      let fail = true
+      const { scene } = spyScene()
+      const wrapped: Scene<Spy> = {
+        ...scene,
+        step: (s, dt) => {
+          if (fail) throw new Error('cena quebrada')
+          s.steps.push(dt)
+        }
+      }
+      const r = fakeRaf()
+      const loop = createEffectLoop({
+        scene: wrapped as Scene,
+        params: { density: 1, speed: 1, color: '#fff', ...setupParams },
+        render: (draw) => draw(fakeCtx()),
+        width: 300,
+        height: 400,
+        rand: seededRand(1),
+        raf: r.raf,
+        caf: r.caf,
+        fps: 1000
+      })
+      return { loop, r, heal: () => (fail = false) }
+    }
+    const run = (r: ReturnType<typeof fakeRaf>, frames: number, from = 0) => {
+      for (let i = 0; i < frames; i++) r.frame(from + i * 10)
+    }
+
+    it('step que lança não escapa do quadro e o laço segue tentando', () => {
+      const { loop, r } = failing()
+      loop.start()
+      expect(() => run(r, 5)).not.toThrow()
+      expect(r.pending()).toBe(true)
+    })
+
+    it('depois de MAX_FAILURES falhas seguidas o efeito se desliga (sem rAF pendente)', () => {
+      const { loop, r } = failing()
+      loop.start()
+      run(r, MAX_FAILURES + 1)
+      expect(r.pending()).toBe(false)
+    })
+
+    it('um quadro bom zera a contagem: falhas espaçadas nunca desligam o efeito', () => {
+      const { loop, r, heal } = failing()
+      loop.start()
+      run(r, MAX_FAILURES - 1)
+      heal()
+      run(r, 1, 10_000)
+      expect(r.pending()).toBe(true)
+    })
+
+    it('erro no desenho também conta', () => {
+      const { scene } = spyScene()
+      const r = fakeRaf()
+      const loop = createEffectLoop({
+        scene: scene as Scene,
+        params: { density: 1, speed: 1, color: '#fff' },
+        render: () => {
+          throw new Error('skia fora')
+        },
+        width: 300,
+        height: 400,
+        rand: seededRand(1),
+        raf: r.raf,
+        caf: r.caf,
+        fps: 1000
+      })
+      loop.start()
+      expect(() => run(r, MAX_FAILURES + 1)).not.toThrow()
+      expect(r.pending()).toBe(false)
+    })
+  })
+
+  it('resize recria o estado no tamanho novo', () => {
+    const { loop, inits } = setup()
+    loop.resize(280, 520)
+    expect(inits).toEqual([
+      [300, 400],
+      [280, 520]
+    ])
+  })
+
+  it('renderStill avança ~1,5 s em passos fixos e desenha uma vez', () => {
+    const { loop, r, state } = setup()
+    loop.renderStill()
+    expect(state().steps).toHaveLength(45)
+    expect(state().steps.every((dt) => Math.abs(dt - 1 / 30) < 1e-9)).toBe(true)
+    expect(state().draws).toBe(1)
+    expect(r.pending()).toBe(false)
+  })
+})

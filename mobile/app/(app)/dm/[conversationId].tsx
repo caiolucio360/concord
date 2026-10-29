@@ -1,15 +1,8 @@
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
 import { ChatScreen } from '../../../src/features/chat/components/ChatScreen'
+import { useDmScreenProps } from '../../../src/features/chat/hooks/useDmScreenProps'
 
 export default function ConversationRoute() {
-  const router = useRouter()
-  const { conversationId, name, type } = useLocalSearchParams<{ conversationId: string; name?: string; type?: string }>()
-  return (
-    <ChatScreen
-      variant={type === 'group' ? 'group' : 'dm'}
-      id={conversationId}
-      title={name ?? 'conversa'}
-      onBack={() => router.back()}
-    />
-  )
+  const params = useLocalSearchParams<{ conversationId: string; name?: string; type?: string }>()
+  return <ChatScreen {...useDmScreenProps(params)} />
 }

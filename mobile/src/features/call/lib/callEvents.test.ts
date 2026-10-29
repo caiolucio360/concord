@@ -4,6 +4,10 @@ import { useIncomingCallStore } from '../store/incomingCallStore'
 import { useParticipantsStore } from '../store/participantsStore'
 import { handleCallEvent } from './callEvents'
 
+import { playSound } from './sounds/soundPlayer'
+
+jest.mock('./sounds/soundPlayer', () => ({ playSound: jest.fn() }))
+
 const ana = { id: 'u1', username: 'ana', display_name: 'Ana' }
 const bia = { id: 'u2', username: 'bia', display_name: 'Bia' }
 const ev = (type: string, payload: unknown) => handleCallEvent({ type, payload }, 'me')
@@ -18,6 +22,24 @@ beforeEach(() => {
   useParticipantsStore.getState().reset()
   useIncomingCallStore.getState().clear()
   useCallNoticeStore.getState().dismiss()
+})
+
+describe('sons da sala', () => {
+  it('alguém entra ou sai de um canal de voz: toca userJoin e userLeave', () => {
+    inChannelCall()
+    jest.mocked(playSound).mockClear()
+    ev('call:joined', { call_id: 'c1', user: ana })
+    expect(playSound).toHaveBeenLastCalledWith('userJoin')
+    ev('call:left', { call_id: 'c1', user: ana })
+    expect(playSound).toHaveBeenLastCalledWith('userLeave')
+  })
+
+  it('eu entrando ou saindo não toca o som dos outros', () => {
+    inChannelCall()
+    jest.mocked(playSound).mockClear()
+    handleCallEvent({ type: 'call:joined', payload: { call_id: 'c1', user: ana } }, 'u1')
+    expect(playSound).not.toHaveBeenCalled()
+  })
 })
 
 describe('call:invite', () => {

@@ -6,6 +6,8 @@ import { useEffect } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useCallEvents } from '../src/features/call/hooks/useCallEvents'
+import { useLevelEvents } from '../src/features/levels/hooks/useLevelEvents'
+import { useMusicEvents } from '../src/features/music/hooks/useMusicEvents'
 import { useCallLifecycle } from '../src/features/call/hooks/useCallLifecycle'
 import { useCallPresence } from '../src/features/call/hooks/useCallPresence'
 import { useIncomingCallRoute } from '../src/features/call/hooks/useIncomingCallRoute'
@@ -35,6 +37,8 @@ function Gate() {
   usePushRegistration()
   useNotificationTap()
   useCallEvents()
+  useMusicEvents()
+  useLevelEvents()
   useCallPresence()
   useCallLifecycle()
   useIncomingCallRoute()

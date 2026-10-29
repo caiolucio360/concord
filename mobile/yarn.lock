@@ -2040,6 +2040,18 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
+"@shopify/react-native-skia@2.14.0":
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-2.14.0.tgz#bdccc54b61a4efed78f114df0f436218ae3d7831"
+  integrity sha512-mzizcTeUAgvam+m1BsxTs+K8ujUXkzoCmwumUhV5NWcoImmKJiWUMfQYgw2OOt1p6qpr7+G5pPOELAmNzZRvlw==
+  dependencies:
+    canvaskit-wasm "0.41.0"
+    react-native-skia-android "154.0.0"
+    react-native-skia-apple-ios "154.0.0"
+    react-native-skia-apple-macos "154.0.0"
+    react-native-skia-apple-tvos "154.0.0"
+    react-reconciler "0.31.0"
+
 "@sinclair/typebox@^0.27.8":
   version "0.27.12"
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.12.tgz#0cacd3cff047a32936b1ace47ea7c86eaab60a7f"
@@ -2337,6 +2349,11 @@
   version "1.12.2"
   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-win32-x64-msvc/-/resolver-binding-win32-x64-msvc-1.12.2.tgz#72da0da48d72b1e87831b9c0308931d3f4669027"
   integrity sha512-nAB74NfSNKknqQ1RrYj6uz8FcXEomu/MATJZxh/x+BArzN2U3JbOYC0APYzUIGhVY3m5hRxA8VPNdPBoG8txlA==
+
+"@webgpu/types@0.1.21":
+  version "0.1.21"
+  resolved "https://registry.yarnpkg.com/@webgpu/types/-/types-0.1.21.tgz#b181202daec30d66ccd67264de23814cfd176d3a"
+  integrity sha512-pUrWq3V5PiSGFLeLxoGqReTZmiiXwY3jRkIG5sLLKjyqNxrwm/04b4nw7LSmGWJcKk59XOM/YRTUwOzo4MMlow==
 
 "@xmldom/xmldom@^0.8.8":
   version "0.8.15"
@@ -2892,6 +2909,13 @@ caniuse-lite@^1.0.30001819:
   version "1.0.30001819"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001819.tgz#4a0f8d7552a15909ce8a0c1dc2ccad9c8c0fab9d"
   integrity sha512-LFUqIIAwpzsIuevnKnsR9qnStBcgzPShTX61lBwN9uFkkf8o8zLiebEjbW8AYtZiF+1YKDWfdt/pWDtMuG8Xwg==
+
+canvaskit-wasm@0.41.0:
+  version "0.41.0"
+  resolved "https://registry.yarnpkg.com/canvaskit-wasm/-/canvaskit-wasm-0.41.0.tgz#6068ad66313a70af0dd2d762f792011f553b4277"
+  integrity sha512-cnbL02NFB3yOYMF/MtxViZHgD1vh55Pvy+zR8q4JuFvyCPejZP3eClkt2GuZ0S7jOmGMCJXaHBasbMChbR9JZg==
+  dependencies:
+    "@webgpu/types" "0.1.21"
 
 chalk@^2.0.1, chalk@^2.4.2:
   version "2.4.2"
@@ -3551,6 +3575,11 @@ expo-asset@~58.0.18:
     "@expo/image-utils" "^0.12.5"
     expo-constants "~58.0.13"
 
+expo-audio@~58.0.10:
+  version "58.0.10"
+  resolved "https://registry.yarnpkg.com/expo-audio/-/expo-audio-58.0.10.tgz#2131be2aaefcf64a6f554084725580c33b29536b"
+  integrity sha512-GoOyd1JAb7l/bJ/UNc5QIrXqSK9QrEFF3ahjdONGt8V6PN3RXRsTcOJDMN6RmDc9kb0XPP34DJIxEd/ushH1RQ==
+
 expo-constants@~58.0.13:
   version "58.0.13"
   resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-58.0.13.tgz#766177f24940be1a57887f8689f0148a8e68cb9f"
@@ -3567,6 +3596,11 @@ expo-constants@~58.0.14:
     "@expo/env" "~2.5.3"
     "@expo/require-utils" "^58.0.5"
 
+expo-document-picker@~58.0.4:
+  version "58.0.4"
+  resolved "https://registry.yarnpkg.com/expo-document-picker/-/expo-document-picker-58.0.4.tgz#a2a15719bae4298c1cef4aeae38db501cb6e429e"
+  integrity sha512-rxs+9RrpI55/BEGNB/3sXjoBG6yZDLyn6Z7KzjbbBLdX8bE2cZT4IozQ3Q5wufaEEeaHQn48EgPiuMoTsAidpg==
+
 expo-file-system@~58.0.11:
   version "58.0.11"
   resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-58.0.11.tgz#dab6ecfd9f334cd6373a59984dcb0112ac48daae"
@@ -3581,6 +3615,18 @@ expo-glass-effect@^58.0.5:
   version "58.0.5"
   resolved "https://registry.yarnpkg.com/expo-glass-effect/-/expo-glass-effect-58.0.5.tgz#dfc73c5c2b580dfb2656194184cced9d7b044228"
   integrity sha512-PkL1X/r0cTs6NG47Xp3TxRvtqSeRmPYhPOHp3GDmZB2oOxpjXge6qLi/bSSv0asFWqf+MLOlXZ+hq2Imuh0Z1g==
+
+expo-image-loader@~58.0.3:
+  version "58.0.3"
+  resolved "https://registry.yarnpkg.com/expo-image-loader/-/expo-image-loader-58.0.3.tgz#a67add1a5a6545429ebefb3a5dc76c185964ad1a"
+  integrity sha512-zlHudxC8OObyqCHmvdxJqURI7886KJ0cUJyn7R/a8FOD9fP837xKDN+u4SIt7XsSSVPNXzMd4Y7mN0pmup8NGA==
+
+expo-image-picker@~58.0.10:
+  version "58.0.10"
+  resolved "https://registry.yarnpkg.com/expo-image-picker/-/expo-image-picker-58.0.10.tgz#060fb7abef9d322439666e5c590684d77ed7677c"
+  integrity sha512-yqQC9UYMWSUxk6U0jaS1vE1w+b9Ru0FJmQ3KjUf9Q9oVg5xBxmg8+Ts+usazMAuPoskNIXJ++VZ+uK6br9yUGQ==
+  dependencies:
+    expo-image-loader "~58.0.3"
 
 expo-keep-awake@~58.0.3:
   version "58.0.3"
@@ -6268,6 +6314,26 @@ react-native-safe-area-context@~5.10.1:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
+react-native-skia-android@154.0.0:
+  version "154.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-skia-android/-/react-native-skia-android-154.0.0.tgz#77fe77fc5b120d9d6488418faf5d522b29f77cb6"
+  integrity sha512-brjJaJcrYguSOwdbvMBlh+tHJdIvzOMUZSjTmIpiIe4/V9x0HsBZM9sy3q32+WGoSPWibylR7hbDmaO12EYAUA==
+
+react-native-skia-apple-ios@154.0.0:
+  version "154.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-skia-apple-ios/-/react-native-skia-apple-ios-154.0.0.tgz#b247ece4784f87b062bf9b43cee6a791bd223f15"
+  integrity sha512-7xq2XYEbcfQYcqyXEnTDXF9GjQzKHuDiUep6wOvOXzoK62108DR8dM3VYgOqJqCTqspPHC9fEJeT52fK3UU5Qg==
+
+react-native-skia-apple-macos@154.0.0:
+  version "154.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-skia-apple-macos/-/react-native-skia-apple-macos-154.0.0.tgz#2dc0e92e7f2200949b15718e998dfc7481e2dabf"
+  integrity sha512-0BE6/oVMXYOKsxI4JJP1MwwrgmaDnZAl9l6N+7q434MFiT+w0z96a0gTilZukzo1y+35sDi/sA+iAdTz16ElYA==
+
+react-native-skia-apple-tvos@154.0.0:
+  version "154.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-skia-apple-tvos/-/react-native-skia-apple-tvos-154.0.0.tgz#4ab94a2afe9443f98d75809d639a1daf6264a797"
+  integrity sha512-W06tUa+O3TJTYg5G+Lly/pwxE+2zKsmwJ/23yeR+25zSu7VmfdSz3VqFN3BM0jEioN4ASMm/0cMECocV7vxbMQ==
+
 react-native-url-polyfill@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-native-url-polyfill/-/react-native-url-polyfill-3.0.0.tgz#16b809c35d45f7d4cf968967bc35ab73b7542826"
@@ -6331,6 +6397,13 @@ react-native@0.88.0:
     whatwg-fetch "^3.0.0"
     ws "^7.5.10"
     yargs "^17.6.2"
+
+react-reconciler@0.31.0:
+  version "0.31.0"
+  resolved "https://registry.yarnpkg.com/react-reconciler/-/react-reconciler-0.31.0.tgz#6b7390fe8fab59210daf523d7400943973de1458"
+  integrity sha512-7Ob7Z+URmesIsIVRjnLoDGwBEG/tVitidU0nMsqX/eeJaLY89RISO/10ERe0MqmzuKUUB1rmY+h1itMbUHg9BQ==
+  dependencies:
+    scheduler "^0.25.0"
 
 react-reconciler@~0.34.0:
   version "0.34.0"
@@ -6543,6 +6616,11 @@ scheduler@0.28.0, scheduler@^0.28.0:
   version "0.28.0"
   resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.28.0.tgz#03d3ca348aeaf8b7502f64468f217b27523f9695"
   integrity sha512-juorfCmIkIw8tT+p5BXSm6PJjQF/ycEYmKyzURCIt/RaZIhL+PulbQ9Yu2z1HdOJDdqDTlxA1+xKBmHXJsczAw==
+
+scheduler@^0.25.0:
+  version "0.25.0"
+  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.25.0.tgz#336cd9768e8cceebf52d3c80e3dcf5de23e7e015"
+  integrity sha512-xFVuu11jh+xcO7JOAGJNOXld8/TcEHK/4CituBUeUb5hqxJLj9YuemAEuvm9gQ/+pgXYfbQuqAkiYu+u7YEsNA==
 
 sdp-transform@^2.15.0:
   version "2.15.0"

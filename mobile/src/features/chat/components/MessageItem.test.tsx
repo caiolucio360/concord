@@ -1,7 +1,9 @@
-import { render, screen } from '@testing-library/react-native'
+import { fireEvent, render, screen } from '@testing-library/react-native'
 import type { Message } from '../api/messages'
 import type { GroupedMessage } from '../lib/messageGroups'
 import { MessageItem } from './MessageItem'
+
+jest.mock('../store/mediaToken', () => ({ ensureMediaToken: jest.fn().mockResolvedValue('tk'), invalidateMediaToken: jest.fn() }))
 
 const message = (over: Partial<Message> = {}): Message => ({
   id: 'm1',
@@ -42,13 +44,53 @@ describe('MessageItem', () => {
     expect(screen.getByText('(editada)')).toBeOnTheScreen()
   })
 
-  it('só anexo/figurinha/GIF, sem texto: marcador de conteúdo não suportado', async () => {
-    await render(<MessageItem item={item({}, message({ content: '', attachments: [{ id: 'a1' }] }))} timeZone="UTC" />)
-    expect(screen.getByText('Anexo (ainda não aparece no app)')).toBeOnTheScreen()
+  it('GIF sem texto: mostra o GIF e nenhum texto', async () => {
+    await render(<MessageItem item={item({}, message({ content: '', gif_url: 'https://g/x.gif', gif_metadata: { width: 200, height: 100 } }))} timeZone="UTC" />)
+    expect(screen.getByLabelText('GIF')).toBeOnTheScreen()
+    expect(screen.queryByText('olá, pessoal')).toBeNull()
+  })
+
+  it('figurinha e anexos aparecem junto do texto', async () => {
+    const msg = message({
+      sticker: { id: 's1', server_id: 'sv', name: 'oi', content_type: 'image/png' },
+      attachments: [{ id: 'a1', kind: 'audio', content_type: 'audio/mpeg', filename: 'voz.mp3', size_bytes: 2048 }]
+    })
+    await render(<MessageItem item={item({}, msg)} timeZone="UTC" />)
+    expect(screen.getByText('olá, pessoal')).toBeOnTheScreen()
+    expect(screen.getByRole('button', { name: 'Ouvir voz.mp3' })).toBeOnTheScreen()
+  })
+
+  it('mensagem do Maestro (system_kind music): cartão do bot com o selo BOT', async () => {
+    await render(<MessageItem item={item({}, message({ system_kind: 'music', content: '🎵 tocando **Boa noite**' }))} timeZone="UTC" />)
+    expect(screen.getByText('BOT')).toBeOnTheScreen()
+    expect(screen.getByText('Boa noite')).toBeOnTheScreen()
   })
 
   it('autor ausente: não quebra', async () => {
     await render(<MessageItem item={item({}, message({ author: undefined }))} timeZone="UTC" />)
     expect(screen.getByText('olá, pessoal')).toBeOnTheScreen()
+  })
+
+  it('tocar no nome ou na foto do autor abre o perfil dele', async () => {
+    const onOpenProfile = jest.fn()
+    await render(<MessageItem item={item()} timeZone="UTC" onOpenProfile={onOpenProfile} />)
+    await fireEvent.press(screen.getByText('Ana Mobile'))
+    await fireEvent.press(screen.getByText('A'))
+    expect(onOpenProfile).toHaveBeenNthCalledWith(1, 'u1')
+    expect(onOpenProfile).toHaveBeenNthCalledWith(2, 'u1')
+  })
+
+  it('sem onOpenProfile o nome não é um botão', async () => {
+    await render(<MessageItem item={item()} timeZone="UTC" />)
+    expect(screen.queryByRole('button', { name: 'Ana Mobile' })).toBeNull()
+  })
+
+  it('autor ausente: ainda abre o perfil pelo id da mensagem', async () => {
+    const onOpenProfile = jest.fn()
+    await render(
+      <MessageItem item={item({}, message({ author: undefined, author_id: 'u7' }))} timeZone="UTC" onOpenProfile={onOpenProfile} />
+    )
+    await fireEvent.press(screen.getByText('Usuário'))
+    expect(onOpenProfile).toHaveBeenCalledWith('u7')
   })
 })
