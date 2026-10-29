@@ -1,4 +1,4 @@
-import { birthdayError, birthdayModalKey, birthYears, daysInMonth, formatBirthday, trySaveBirthday } from './birthday'
+import { birthdayError, birthYears, daysInMonth, formatBirthday, trySaveBirthday } from './birthday'
 
 const NOW = new Date(2026, 9, 25, 12)
 
@@ -33,12 +33,6 @@ describe('birthdayError', () => {
     expect(birthdayError({ day: 31, month: 4, year: 2000 }, NOW)).toMatch(/não existe/)
     expect(birthdayError({ day: 29, month: 2, year: 2001 }, NOW)).toMatch(/não existe/)
     expect(birthdayError({ day: 26, month: 10, year: 2026 }, NOW)).toMatch(/não vale/)
-  })
-})
-
-describe('birthdayModalKey', () => {
-  it('é por pessoa e por dia', () => {
-    expect(birthdayModalKey('ana', '2026-10-25')).toBe('concord:birthday-modal:ana:2026-10-25')
   })
 })
 

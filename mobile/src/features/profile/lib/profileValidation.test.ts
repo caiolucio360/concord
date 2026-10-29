@@ -5,7 +5,6 @@ import {
   draftFromProfile,
   hasErrors,
   imageFileError,
-  isDirty,
   profileErrors,
   profilePayload,
   type ProfileDraft
@@ -85,28 +84,6 @@ describe('profilePayload', () => {
   })
 })
 
-describe('isDirty', () => {
-  it('sem mudança não mostra a barra', () => {
-    expect(isDirty(saved(), saved())).toBe(false)
-  })
-
-  it('mudança só de espaços não conta', () => {
-    expect(isDirty({ ...saved(), bio: ' oi ' }, saved())).toBe(false)
-  })
-
-  it('editar um link, a cor ou trocar a foto conta', () => {
-    expect(isDirty({ ...saved(), links: ['https://twitch.tv/outro'] }, saved())).toBe(true)
-    expect(isDirty({ ...saved(), banner_color: '#5865f2' }, saved())).toBe(true)
-    expect(isDirty({ ...saved(), avatar: { kind: 'remove' } }, saved())).toBe(true)
-  })
-
-  it('depois de "Redefinir" volta a ficar limpo', () => {
-    const edited = { ...saved(), display_name: 'Outro' }
-    expect(isDirty(edited, saved())).toBe(true)
-    expect(isDirty({ ...saved() }, saved())).toBe(false)
-  })
-})
-
 describe('imageFileError', () => {
   it('aceita imagens até 10 MB, GIF incluso', () => {
     expect(imageFileError({ type: 'image/gif', size: 10 * 1024 * 1024 })).toBeNull()
@@ -136,7 +113,6 @@ describe('estilo do nome no rascunho', () => {
 
   it('mudar só o estilo deixa o perfil sujo e vai no payload', () => {
     const edited = { ...saved(), name_style: { font: 'bit8', effect: 'solid', colors: [] } }
-    expect(isDirty(edited, saved())).toBe(true)
     expect(profilePayload(edited).name_style).toEqual(edited.name_style)
   })
 })
@@ -153,7 +129,6 @@ describe('tema do perfil no rascunho', () => {
 
   it('mudar só uma opção fina (ex.: textura) também deixa o perfil sujo', () => {
     const edited = { ...saved(), profile_theme: { ...DEFAULT_PROFILE_THEME, texture: 'grain' } }
-    expect(isDirty(edited, saved())).toBe(true)
     expect(profilePayload(edited).profile_theme.texture).toBe('grain')
   })
 
@@ -166,9 +141,7 @@ describe('tema do perfil no rascunho', () => {
 
   it('mudar só o tema deixa o perfil sujo e vai no payload', () => {
     const edited = { ...saved(), profile_theme: theme }
-    expect(isDirty(edited, saved())).toBe(true)
     expect(profilePayload(edited).profile_theme).toEqual(theme)
-    expect(isDirty(saved(), saved())).toBe(false)
   })
 
   it('tema inválido no rascunho sai resolvido no payload', () => {

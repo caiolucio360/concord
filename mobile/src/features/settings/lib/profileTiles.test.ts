@@ -3,8 +3,6 @@ import { PROFILE_PRESETS } from '../../profile/lib/profilePresets'
 import {
   linksSummary,
   nameStyleSummary,
-  savingLabel,
-  soundSummary,
   textSummary,
   themeName
 } from './profileTiles'
@@ -45,19 +43,3 @@ describe('linksSummary', () => {
   })
 })
 
-describe('soundSummary', () => {
-  it('som próprio ou o padrão', () => {
-    expect(soundSummary('/api/x')).toBe('Som personalizado')
-    expect(soundSummary(null)).toBe('Som padrão')
-  })
-})
-
-describe('savingLabel', () => {
-  it('nada salvando: nada a dizer', () => {
-    expect(savingLabel(false, null)).toBeNull()
-  })
-  it('salvando: o progresso do envio, ou "Salvando…"', () => {
-    expect(savingLabel(true, null)).toBe('Salvando…')
-    expect(savingLabel(true, 0.42)).toBe('Enviando a imagem: 42%')
-  })
-})

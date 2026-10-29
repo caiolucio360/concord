@@ -26,13 +26,3 @@ export function linksSummary(links: string[]): string | null {
   if (links.length === 0) return null
   return links.length === 1 ? '1 link' : `${links.length} links`
 }
-
-export function soundSummary(url: string | null): string {
-  return url ? 'Som personalizado' : 'Som padrão'
-}
-
-/** A linha de situação embaixo do cartão enquanto uma mudança vai para o servidor. */
-export function savingLabel(saving: boolean, progress: number | null): string | null {
-  if (!saving) return null
-  return progress !== null ? `Enviando a imagem: ${Math.round(progress * 100)}%` : 'Salvando…'
-}

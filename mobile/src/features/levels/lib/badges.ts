@@ -1,4 +1,4 @@
-import type { Badge, BadgeRarity, BadgeUnit, BadgeUnlockEvent } from '../api/badges'
+import type { Badge, BadgeRarity, BadgeUnit } from '../api/badges'
 
 /**
  * Badges do perfil: textos e ordem. O catálogo (nomes, limites, raridade)
@@ -34,40 +34,6 @@ export function rarityMeta(rarity: BadgeRarity | undefined): RarityMeta {
  */
 export function badgeLabel(b: Pick<Badge, 'name' | 'tier_name'>): string {
   return !b.tier_name || b.tier_name === b.name ? b.name : `${b.tier_name} (${b.name})`
-}
-
-/** Mítico ganha o efeito holográfico (aura, brilho e partículas). */
-export function isMythic(rarity: BadgeRarity | undefined): boolean {
-  return rarity === 'mitico'
-}
-
-export interface HoloPointer {
-  /** Posição do brilho, 0–100 (%). */
-  mx: number
-  my: number
-  /** Inclinação em graus: o lado do mouse afunda. */
-  rx: number
-  ry: number
-}
-
-const clamp01 = (n: number): number => Math.min(1, Math.max(0, n))
-const round2 = (n: number): number => Math.round(n * 100) / 100 + 0
-
-/** Brilho e inclinação da arte mítica seguindo o mouse dentro de `rect`. */
-export function holoPointer(
-  x: number,
-  y: number,
-  rect: { left: number; top: number; width: number; height: number },
-  maxTilt = 12
-): HoloPointer {
-  const px = rect.width > 0 ? clamp01((x - rect.left) / rect.width) : 0.5
-  const py = rect.height > 0 ? clamp01((y - rect.top) / rect.height) : 0.5
-  return {
-    mx: round2(px * 100),
-    my: round2(py * 100),
-    rx: round2((0.5 - py) * 2 * maxTilt),
-    ry: round2((px - 0.5) * 2 * maxTilt)
-  }
 }
 
 const HOUR = 3600
@@ -332,17 +298,4 @@ export function selectedBadge<T extends { category?: string }>(
 ): Badge | undefined {
   const wanted = picked?.target === target ? picked.category : target.category
   return visible.find((b) => b.category === wanted) ?? visible[0]
-}
-
-/** Badges que têm celebração própria na tela e ficam de fora do aviso genérico. */
-const CELEBRACAO_PROPRIA = new Set(['l', 'v22', 'nulo'])
-
-/** Os desbloqueios que o aviso genérico mostra. */
-export function unlocksComAviso(unlocks: BadgeUnlockEvent['unlocks']): BadgeUnlockEvent['unlocks'] {
-  return unlocks.filter((u) => !CELEBRACAO_PROPRIA.has(u.category))
-}
-
-/** Quantos badges (categorias) o aviso de desbloqueio tem, não tiers. */
-export function unlockCount(unlocks: BadgeUnlockEvent['unlocks']): number {
-  return new Set(unlocks.map((u) => u.category)).size
 }

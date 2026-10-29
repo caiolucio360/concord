@@ -137,11 +137,6 @@ export function fieldsChanged(draft: ProfileFields, saved: ProfileFields): boole
   )
 }
 
-/** Tem algo para salvar (mostra a barra "alterações não salvas")? */
-export function isDirty(draft: ProfileDraft, saved: ProfileDraft): boolean {
-  return draft.avatar.kind !== 'keep' || draft.banner.kind !== 'keep' || fieldsChanged(draft, saved)
-}
-
 /** Erro do arquivo escolhido para avatar/banner, ou null. */
 export function imageFileError(file: { type: string; size: number }): string | null {
   if (!PROFILE_IMAGE_TYPES.includes(file.type)) return 'Use uma imagem PNG, JPG, GIF ou WebP.'
