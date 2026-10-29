@@ -71,13 +71,15 @@ type app struct {
 	liveKitPort   string
 	callService   *call.Service
 	// callAFK: o tempo de call (XP e badges) visto sem quem está 10 min sem falar.
-	callAFK      *call.AFK
+	callAFK *call.AFK
+	// callPresence: tira da call quem não está na sala de mídia (#374).
+	callPresence *call.MediaPresence
 	musicManager *music.Manager
 	// guestService: convite de visitante para uma call.
 	guestService *guest.Service
 
-	// badgeDone fecha quando os badges (e o nível do servidor) terminam de
-	// gravar no desligamento.
+	// badgeDone fecha quando os badges, o nível do servidor e o Maestro
+	// terminam de gravar no desligamento.
 	badgeDone chan struct{}
 
 	routes []func(router *gin.Engine, api *gin.RouterGroup)
@@ -114,6 +116,7 @@ func wire(ctx context.Context, db *pgxpool.Pool) *app {
 	a.wireMusic()
 	a.wireEngagement()
 	a.wireServerLevel()
+	a.wireMusicSessions()
 	a.wireRealtime()
 	a.wireAccount()
 	a.wireUpdates()
