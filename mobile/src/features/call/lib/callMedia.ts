@@ -11,6 +11,12 @@ export interface CallMedia {
   setMicEnabled(on: boolean): Promise<void>
   /** Liga ou desliga o áudio que chega (fone). */
   setListening(on: boolean): void
+  /** Liga ou desliga a transmissão da minha tela (o sistema pede a permissão de captura); rejeita se ela for negada. */
+  setScreenShareEnabled(on: boolean): Promise<void>
+  /** Quem está transmitindo a tela agora (ids das pessoas, eu inclusive). */
+  onScreens(listener: (userIds: string[]) => void): () => void
+  /** Começa ou para de receber a transmissão de alguém (só o que se assiste consome rede). */
+  watchScreen(userId: string, on: boolean): void
   onSpeakers(listener: (userIds: string[]) => void): () => void
   onConnection(listener: (state: MediaConnection) => void): () => void
 }

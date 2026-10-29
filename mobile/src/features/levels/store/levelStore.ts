@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { useAuthStore } from '../../auth/store/authStore'
+import type { WsEvent } from '../../../shared/api/ws'
 import { fetchLevels, fetchMyLevel, type LevelProgress } from '../api/levels'
 
 interface LevelState {
@@ -10,6 +11,8 @@ interface LevelState {
   /** Pede o nível de quem ainda não tem; vários pedidos juntos viram um request só. */
   ensureLevels: (userIds: string[]) => void
   loadMe: () => Promise<void>
+  /** `level:update` (XP ou nível novo de quem está logado). */
+  handleWsEvent: (event: WsEvent) => void
   reset: () => void
 }
 
@@ -46,6 +49,12 @@ export const useLevelStore = create<LevelState>()((set, get) => ({
 
   loadMe: async () => {
     const me = await fetchMyLevel()
+    set((s) => ({ me, levels: { ...s.levels, [me.user_id]: me.level } }))
+  },
+
+  handleWsEvent: (event) => {
+    if (event.type !== 'level:update') return
+    const me = event.payload as LevelProgress
     set((s) => ({ me, levels: { ...s.levels, [me.user_id]: me.level } }))
   },
 

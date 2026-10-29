@@ -2,7 +2,7 @@
 // mobile e na versão web em tela pequena. Porte do settingsNav do desktop, só com o que o app já tem
 // (atalhos, vídeo/fundo de câmera e "Aplicativo" são do desktop e não entram).
 
-export type SettingsSectionId = 'account'
+export type SettingsSectionId = 'account' | 'profiles'
 
 export interface SettingsSection {
   id: SettingsSectionId
@@ -15,7 +15,10 @@ export const SETTINGS_GROUPS: { id: SettingsSection['group']; label: string }[] 
   { id: 'app', label: 'Configurações do aplicativo' }
 ]
 
-export const SETTINGS_SECTIONS: SettingsSection[] = [{ id: 'account', label: 'Minha conta', group: 'user' }]
+export const SETTINGS_SECTIONS: SettingsSection[] = [
+  { id: 'account', label: 'Minha conta', group: 'user' },
+  { id: 'profiles', label: 'Perfis', group: 'user' }
+]
 
 export function findSection(id: string | undefined): SettingsSection | undefined {
   return SETTINGS_SECTIONS.find((s) => s.id === id)

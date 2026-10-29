@@ -3,6 +3,7 @@ import { colors, fontSize, spacing } from '../../../shared/theme/tokens'
 import { IconButton } from '../../../shared/ui/IconButton'
 import { findSection } from '../lib/settingsNav'
 import { MyAccountSection } from './account/MyAccountSection'
+import { ProfilesSection } from './profile/ProfilesSection'
 
 /** Uma seção das Configurações em tela cheia, com o voltar para a lista (como no Discord mobile). */
 export function SettingsSectionScreen({ id, onBack }: { id: string | undefined; onBack: () => void }) {
@@ -16,7 +17,9 @@ export function SettingsSectionScreen({ id, onBack }: { id: string | undefined; 
         </Text>
       </View>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        {section?.id === 'account' ? <MyAccountSection /> : <Text style={styles.empty}>Seção não encontrada.</Text>}
+        {section?.id === 'account' ? <MyAccountSection /> : null}
+        {section?.id === 'profiles' ? <ProfilesSection /> : null}
+        {section ? null : <Text style={styles.empty}>Seção não encontrada.</Text>}
       </ScrollView>
     </View>
   )

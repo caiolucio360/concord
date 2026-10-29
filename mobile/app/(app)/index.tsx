@@ -21,6 +21,7 @@ export default function HomeRoute() {
       onLeaveCall={() => void callController.leave()}
       onOpenSettings={() => router.push('/configuracoes')}
       onOpenProfile={openProfile}
+      onOpenHub={() => router.push('/melhorias')}
     />
   )
 }
