@@ -23,6 +23,12 @@ describe('app.config (voz)', () => {
     expect(names).toEqual(expect.arrayContaining(['@livekit/react-native-expo-plugin', '@config-plugins/react-native-webrtc']))
   })
 
+  it('registra o seletor de imagens com o texto da permissão da câmera (sem pedir microfone)', () => {
+    const entry = (config.plugins ?? []).find((p) => Array.isArray(p) && p[0] === 'expo-image-picker') as [string, Record<string, unknown>]
+    expect(entry[1]).toMatchObject({ microphonePermission: false })
+    expect(String(entry[1].cameraPermission)).toMatch(/câmera/)
+  })
+
   it('aplica as regras do R8 que o build de release exige (LiveKit)', () => {
     const mods = (config as { mods?: { android?: { dangerous?: unknown } } }).mods
     expect(mods?.android?.dangerous).toBeDefined()

@@ -41,6 +41,7 @@ const config: ExpoConfig = {
     '@livekit/react-native-expo-plugin',
     '@config-plugins/react-native-webrtc',
     'expo-status-bar',
+    ['expo-image-picker', { cameraPermission: 'A Salinha usa a câmera para você tirar fotos e gravar vídeos e enviar no chat.', microphonePermission: false }],
     ['expo-splash-screen', { image: './assets/splash-icon.png', backgroundColor: '#121214', imageWidth: 200 }]
   ],
   experiments: { typedRoutes: true }
