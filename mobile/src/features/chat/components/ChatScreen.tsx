@@ -65,7 +65,7 @@ export function ChatScreen({ variant, id, title, serverId, peerId, onOpenProfile
         onRetry={() => void retry()}
         onOpenProfile={onOpenProfile}
       />
-      <Composer label={label(title)} onSend={send} forbiddenNotice={variant === 'channel' ? NO_PERMISSION : undefined} />
+      <Composer label={label(title)} serverId={serverId} onSend={send} forbiddenNotice={variant === 'channel' ? NO_PERMISSION : undefined} />
     </KeyboardAvoidingView>
   )
 }

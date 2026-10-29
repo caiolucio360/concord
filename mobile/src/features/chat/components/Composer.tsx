@@ -2,12 +2,17 @@ import { useState } from 'react'
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
 import { useNetworkStore } from '../../../shared/store/networkStore'
 import { colors, fontSize, MIN_TOUCH, radius, spacing } from '../../../shared/theme/tokens'
+import type { ExtraMessageData } from '../api/messages'
 import type { SendOutcome } from '../hooks/useRoomMessages'
+import { MediaPickerSheet } from './MediaPickerSheet'
+import { IconButton } from '../../../shared/ui/IconButton'
 
 interface ComposerProps {
   /** Texto do campo (e rótulo para leitor de tela), ex.: "Mensagem para #geral". */
   label: string
-  onSend: (text: string) => Promise<SendOutcome>
+  onSend: (text: string, extra?: ExtraMessageData) => Promise<SendOutcome>
+  /** Servidor do canal (as figurinhas são do servidor); ausente na DM. */
+  serverId?: string | null
   /** Aviso do 403 (sem permissão); sem ele, vale o aviso genérico de falha. */
   forbiddenNotice?: string
 }
@@ -15,11 +20,12 @@ interface ComposerProps {
 const SEND_FAILED = 'Não foi possível enviar. Tente de novo.'
 
 /** Campo de envio do chat: texto, botão Enviar e aviso de falha (o texto volta ao campo). */
-export function Composer({ label, onSend, forbiddenNotice }: ComposerProps) {
+export function Composer({ label, onSend, serverId, forbiddenNotice }: ComposerProps) {
   const online = useNetworkStore((s) => s.online)
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
+  const [pickerOpen, setPickerOpen] = useState(false)
   const canSend = online && !sending && text.trim().length > 0
 
   async function submit(): Promise<void> {
@@ -32,6 +38,16 @@ export function Composer({ label, onSend, forbiddenNotice }: ComposerProps) {
     else setNotice(outcome === 'forbidden' ? (forbiddenNotice ?? SEND_FAILED) : SEND_FAILED)
   }
 
+  /** GIF e figurinha vão na hora, como no desktop; o texto digitado fica no campo. */
+  async function sendExtra(extra: ExtraMessageData): Promise<void> {
+    if (!online || sending) return
+    setSending(true)
+    setNotice(null)
+    const outcome = await onSend('', extra)
+    setSending(false)
+    if (outcome !== 'ok') setNotice(outcome === 'forbidden' ? (forbiddenNotice ?? SEND_FAILED) : SEND_FAILED)
+  }
+
   return (
     <View style={styles.container}>
       {notice ? (
@@ -40,6 +56,7 @@ export function Composer({ label, onSend, forbiddenNotice }: ComposerProps) {
         </Text>
       ) : null}
       <View style={styles.row}>
+        <IconButton icon="happy-outline" label="Emojis, GIFs e figurinhas" onPress={() => setPickerOpen(true)} />
         <TextInput
           accessibilityLabel={label}
           placeholder={label}
@@ -60,6 +77,17 @@ export function Composer({ label, onSend, forbiddenNotice }: ComposerProps) {
           <Text style={styles.sendText}>Enviar</Text>
         </Pressable>
       </View>
+      {pickerOpen ? (
+        <MediaPickerSheet
+          serverId={serverId}
+          onClose={() => setPickerOpen(false)}
+          onSelectEmoji={(emoji) => setText((t) => t + emoji)}
+          onSelectGif={(gif) =>
+            void sendExtra({ gifUrl: gif.url, gifMetadata: { width: gif.width, height: gif.height, preview_url: gif.preview_url } })
+          }
+          onSelectSticker={(sticker) => void sendExtra({ stickerId: sticker.id })}
+        />
+      ) : null}
     </View>
   )
 }

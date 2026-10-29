@@ -9,6 +9,7 @@ import {
   MESSAGE_LIMIT,
   sendChannelMessage,
   sendConversationMessage,
+  type ExtraMessageData,
   type Message
 } from '../api/messages'
 import { mergeMessages, oldestId, removeMessage } from '../lib/messageList'
@@ -44,8 +45,8 @@ function fetchPage(target: ChatTarget, before?: string): Promise<Message[]> {
   return before ? list(target.id, before) : list(target.id)
 }
 
-const sendTo = (target: ChatTarget, content: string): Promise<Message> =>
-  target.kind === 'channel' ? sendChannelMessage(target.id, content) : sendConversationMessage(target.id, content)
+const sendTo = (target: ChatTarget, content: string, extra?: ExtraMessageData): Promise<Message> =>
+  target.kind === 'channel' ? sendChannelMessage(target.id, content, extra) : sendConversationMessage(target.id, content, extra)
 
 /** Histórico, tempo real e envio do chat de um canal de texto ou de uma conversa. */
 export function useRoomMessages(target: ChatTarget) {
@@ -117,11 +118,11 @@ export function useRoomMessages(target: ChatTarget) {
   }, [kind, id, key, hasMore, messages, status])
 
   const send = useCallback(
-    async (text: string): Promise<SendOutcome> => {
+    async (text: string, extra?: ExtraMessageData): Promise<SendOutcome> => {
       const content = text.trim()
-      if (!content) return 'empty'
+      if (!content && !extra) return 'empty'
       try {
-        const sent = await sendTo({ kind, id }, content)
+        const sent = await sendTo({ kind, id }, content, extra)
         setMessages((current) => mergeMessages(current, [sent]))
         return 'ok'
       } catch (err) {

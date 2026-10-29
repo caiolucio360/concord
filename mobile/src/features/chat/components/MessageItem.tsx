@@ -1,7 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { colors, fontSize, spacing } from '../../../shared/theme/tokens'
 import { Avatar } from '../../../shared/ui/Avatar'
-import type { Message } from '../api/messages'
+import { MessageAttachments } from './MessageAttachments'
+import { MessageGif } from './MessageGif'
+import { MessageSticker } from './MessageSticker'
 import { dayLabelText, timeText } from '../lib/dayLabel'
 import type { GroupedMessage } from '../lib/messageGroups'
 import { ProfileTap } from '../../profile/components/ProfileTap'
@@ -12,10 +14,6 @@ interface MessageItemProps {
   /** Tocar no avatar ou no nome do autor abre o perfil dele. */
   onOpenProfile?: (userId: string) => void
 }
-
-/** Anexo, figurinha ou GIF sem texto: ainda não aparecem no app. */
-const hasUnsupportedOnly = (m: Message): boolean =>
-  !m.content.trim() && (!!m.attachments?.length || !!m.sticker_id || !!m.gif_url)
 
 export function MessageItem({ item, timeZone, onOpenProfile }: MessageItemProps) {
   const { message, showHeader, dayLabel } = item
@@ -46,14 +44,15 @@ export function MessageItem({ item, timeZone, onOpenProfile }: MessageItemProps)
               <Text style={styles.time}>{timeText(message.created_at, timeZone)}</Text>
             </View>
           ) : null}
-          {hasUnsupportedOnly(message) ? (
-            <Text style={styles.unsupported}>Anexo (ainda não aparece no app)</Text>
-          ) : (
+          {message.content.trim() ? (
             <Text style={styles.content}>
               {message.content}
               {message.edited_at ? <Text style={styles.edited}> (editada)</Text> : null}
             </Text>
-          )}
+          ) : null}
+          {message.sticker ? <MessageSticker sticker={message.sticker} /> : null}
+          {message.gif_url ? <MessageGif gifUrl={message.gif_url} metadata={message.gif_metadata} /> : null}
+          {message.attachments?.length ? <MessageAttachments attachments={message.attachments} /> : null}
         </View>
       </View>
     </View>
@@ -70,7 +69,6 @@ const styles = StyleSheet.create({
   time: { color: colors.textFaint, fontSize: fontSize.xs },
   content: { color: colors.textNormal, fontSize: fontSize.md, lineHeight: 22 },
   edited: { color: colors.textFaint, fontSize: fontSize.xs },
-  unsupported: { color: colors.textMuted, fontSize: fontSize.sm, fontStyle: 'italic' },
   day: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingHorizontal: spacing.md, marginTop: spacing.lg },
   line: { flex: 1, height: 1, backgroundColor: colors.borderSubtle },
   dayText: { color: colors.textMuted, fontSize: fontSize.xs, fontWeight: '600' }

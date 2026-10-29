@@ -107,13 +107,25 @@ describe('useRoomMessages', () => {
     expect(result.current.messages).toHaveLength(51)
   })
 
+  it('enviar GIF/figurinha sem texto vai com os extras; sem texto e sem extras é vazio', async () => {
+    send.mockResolvedValue(msg('g', 6))
+    const { result } = await renderHook(() => useRoomMessages({ kind: 'channel', id: 'c1' }))
+    await waitFor(() => expect(result.current.status).toBe('ready'))
+    let outcome = ''
+    await act(async () => void (outcome = await result.current.send('  ')))
+    expect(outcome).toBe('empty')
+    await act(async () => void (outcome = await result.current.send('', { stickerId: 's1' })))
+    expect(outcome).toBe('ok')
+    expect(send).toHaveBeenCalledWith('c1', '', { stickerId: 's1' })
+  })
+
   it('enviar: a resposta entra na lista e o evento do WS não duplica', async () => {
     send.mockResolvedValue(msg('n', 5))
     const { result } = await renderHook(() => useRoomMessages({ kind: 'channel', id: 'c1' }))
     await waitFor(() => expect(result.current.status).toBe('ready'))
     let outcome = ''
     await act(async () => void (outcome = await result.current.send('  oi  ')))
-    expect(send).toHaveBeenCalledWith('c1', 'oi')
+    expect(send).toHaveBeenCalledWith('c1', 'oi', undefined)
     expect(outcome).toBe('ok')
     await emit('message:create', { message: msg('n', 5) })
     expect(ids(result.current.messages)).toEqual(['n', 'b', 'a'])
@@ -217,7 +229,7 @@ describe('useRoomMessages: conversa (DM)', () => {
     const { result } = await open()
     await waitFor(() => expect(result.current.status).toBe('ready'))
     await act(async () => void (await result.current.send('oi')))
-    expect(sendDm).toHaveBeenCalledWith('d1', 'oi')
+    expect(sendDm).toHaveBeenCalledWith('d1', 'oi', undefined)
     expect(send).not.toHaveBeenCalled()
     expect(ids(result.current.messages)[0]).toBe('n')
   })
