@@ -1,3 +1,4 @@
+import type { EffectParams } from './effects/types'
 
 // Opções finas do tema do cartão (backend internal/profiletheme/extras.go):
 // cor, quantidade e velocidade do efeito, animação e espessura da borda,
@@ -85,5 +86,24 @@ export function resolveExtras(raw?: Partial<ProfileThemeExtras> | null): Profile
     border_width: level(raw?.border_width, MAX_BORDER_WIDTH, DEFAULT_BORDER_WIDTH),
     background_angle: level(raw?.background_angle, 360, DEFAULT_ANGLE),
     texture: pick(raw?.texture, PROFILE_TEXTURES)
+  }
+}
+
+/** Fator da quantidade (1–100 → ~0,38–2,7; 50 = 1). */
+export function densityFactor(value: number): number {
+  return 2 ** ((value - DEFAULT_LEVEL) / 35)
+}
+
+/** Fator da velocidade (1–100 → ~0,43–2,4; 50 = 1). */
+export function speedFactor(value: number): number {
+  return 2 ** ((value - DEFAULT_LEVEL) / 40)
+}
+
+/** Parâmetros do efeito a partir dos extras e da cor padrão dele. */
+export function effectParams(extras: ProfileThemeExtras, defaultColor: string): EffectParams {
+  return {
+    density: densityFactor(extras.effect_density),
+    speed: speedFactor(extras.effect_speed),
+    color: extras.effect_color || defaultColor
   }
 }

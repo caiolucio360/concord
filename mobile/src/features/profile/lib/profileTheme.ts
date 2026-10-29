@@ -38,8 +38,8 @@ export const PROFILE_BACKGROUNDS = [
 ] as const
 
 /**
- * Efeitos: os três primeiros são CSS (profileParticles.ts), os outros canvas
- * (lib/effects/). `color` é a cor de sempre do efeito; null = não tem cor
+ * Efeitos: `kind` é o do desktop (os três primeiros são CSS lá). No app todos são cenas do mesmo laço
+ * (lib/effects/), então quem desenha olha `canvasScene(id)`, não `kind`. `color` é a cor de sempre do efeito; null = não tem cor
  * para escolher (paleta própria).
  */
 export const PROFILE_EFFECTS: readonly {

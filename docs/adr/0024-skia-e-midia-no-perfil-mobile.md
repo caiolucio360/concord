@@ -39,7 +39,8 @@ Opção 1. Duas dependências novas no `mobile/package.json`:
 As fontes do estilo do nome são empacotadas como `.ttf` (licença OFL) em `mobile/assets/fonts/` e
 carregadas com o `expo-font`, que o app já tem; nenhum pacote `@expo-google-fonts`.
 
-O Skia fica atrás de módulos próprios (`features/profile/skia/`), como o SDK de voz fica atrás de
+O Skia fica atrás de módulos próprios (o adaptador em `features/profile/lib/skia/`, os hooks em `hooks/` e
+os componentes em `components/card/`: a catraca de estrutura do repo só aceita essas pastas), como o SDK de voz fica atrás de
 `CallMedia` ([ADR 0023](0023-voz-no-app-mobile.md)): a lógica (cenas, rascunho, GIF) é JS puro e roda no
 Jest sem módulo nativo.
 
@@ -48,9 +49,26 @@ Jest sem módulo nativo.
 - Mais fácil: visual igual ao desktop, lógica portada por cópia com os testes que ela já tem.
 - Mais difícil: APK de dev novo; o adaptador precisa cobrir `shadowBlur` e modos de composição; o
   tamanho do APK cresce (Skia e as fontes).
-- Risco aberto, resolvido por um **spike antes dos PRs 2 e 4**: o Skia precisa rodar o adaptador sem
-  travar e decodificar quadros de GIF no Android. Se falhar, este ADR é revisto.
+- Risco do spike (ver abaixo): o Skia precisava rodar o adaptador sem travar e decodificar quadros de GIF
+  no Android. Passou no emulador; o desempenho em celular físico ainda precisa de uma medida.
 - Reversível: o resto do app não importa o Skia.
+
+## Resultado do spike (2026-10-29)
+
+`@shopify/react-native-skia` 2.14.0 (a versão que o `expo install` escolhe no SDK 58), APK de dev,
+emulador Pixel 7 Pro sem GPU de verdade:
+
+- **Fogo pelo adaptador de contexto 2D:** a cena copiada do desktop rodou sem mudança, com gradiente
+  linear e mistura aditiva (`lighter` = `BlendMode.Plus`). 30 quadros por segundo estáveis (JS) e
+  3,5 a 3,6 ms por quadro entre simular e gravar, medidos por 25 s. O p90 de renderização do sistema
+  ficou em 18 ms. O emulador não mede fps de GPU de verdade: falta a medida em celular físico.
+- **Padrão que funcionou:** a cena grava o desenho num `Skia.PictureRecorder()` a cada quadro e o resultado
+  vai para um `SharedValue<SkPicture>` mostrado por `<Picture>`; não há re-render do React por quadro.
+- **GIF:** `Skia.AnimatedImage.MakeAnimatedImageFromEncoded` leu os 48 quadros com os tempos certos
+  (80 e 90 ms) e cada quadro foi desenhado numa superfície fora da tela e lido de volta.
+- **API do 2.14 que difere do que se espera:** o caminho é um `Skia.PathBuilder` (`build()` devolve o
+  `SkPath` imutável); `Skia.Color` aceita strings `rgba(...)`.
+- **Custo:** o APK de dev passou de 271,6 MB para 392,7 MB (debug, todas as arquiteturas).
 
 ## Referências
 
