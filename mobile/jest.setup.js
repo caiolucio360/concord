@@ -25,3 +25,6 @@ jest.mock('livekit-client', () => ({
   RoomEvent: {},
   ConnectionState: { Disconnected: 'disconnected' }
 }))
+
+// O Skia é módulo nativo: no Jest vem de um mock que grava as chamadas (tests/mocks/skia.ts).
+jest.mock('@shopify/react-native-skia', () => require('./tests/mocks/skia'))
