@@ -63,6 +63,12 @@ export const NAME_EFFECTS = [
 const COLOR = /^#[0-9a-f]{6}$/i
 const FALLBACK_COLORS = ['#5865f2', '#eb459e']
 
+/** Cores iniciais ao escolher um efeito (as que o efeito pede, ao menos). */
+export function defaultColorsFor(effectId: string): string[] {
+  const effect = NAME_EFFECTS.find((e) => e.id === effectId)
+  return FALLBACK_COLORS.slice(0, effect?.minColors ?? 0)
+}
+
 /** Estilo seguro para desenhar: ID desconhecido vira o padrão, cor inválida some. */
 export function resolveNameStyle(raw?: Partial<NameStyle> | null): NameStyle {
   const font = NAME_FONTS.some((f) => f.id === raw?.font) ? (raw!.font as string) : 'default'
