@@ -1,5 +1,6 @@
 import * as SecureStore from 'expo-secure-store'
 import { create } from 'zustand'
+import { playSound } from '../../call/lib/sounds/soundPlayer'
 
 // Microfone e fone do painel do usuário. Por ora só estado local (a fatia de voz liga
 // isso à chamada): fone mudo também silencia o microfone e, ao voltar, devolve o que estava.
@@ -48,6 +49,7 @@ export const useVoiceControlsStore = create<VoiceControlsState>()((set, get) => 
       ? { muted: false, deafened: false, mutedBeforeDeafen: false }
       : { ...get(), muted: !muted }
     set(next)
+    playSound(next.muted ? 'mute' : 'unmute')
     await persist(next)
   },
   toggleDeafen: async () => {
@@ -56,6 +58,7 @@ export const useVoiceControlsStore = create<VoiceControlsState>()((set, get) => 
       ? { muted: mutedBeforeDeafen, deafened: false, mutedBeforeDeafen: false }
       : { muted: true, deafened: true, mutedBeforeDeafen: muted }
     set(next)
+    playSound(next.deafened ? 'deafen' : 'undeafen')
     await persist(next)
   }
 }))

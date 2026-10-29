@@ -38,3 +38,6 @@ jest.mock('react-native-reanimated', () => ({
     return ref.current
   }
 }))
+
+// Áudio nativo não existe no Jest; o player de sons é testado com uma porta falsa (soundPlayer.test.ts).
+jest.mock('expo-audio', () => ({ createAudioPlayer: jest.fn(() => ({ seekTo: jest.fn(), play: jest.fn() })) }))

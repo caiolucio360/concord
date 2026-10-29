@@ -5,6 +5,7 @@ import { useIncomingCallStore } from '../store/incomingCallStore'
 import { useParticipantsStore, voiceOf } from '../store/participantsStore'
 import { useSpeakingStore } from '../store/speakingStore'
 import { callErrorMessage } from './callErrors'
+import { playSound } from './sounds/soundPlayer'
 import type { CallMedia, MediaConnection } from './callMedia'
 import { effectiveAudio, type LocalControls } from './voiceState'
 
@@ -79,6 +80,7 @@ export function createCallController(deps: ControllerDeps) {
     session().setMicDenied(!permitted)
     if (!permitted) notice('Sem permissão do microfone. Você entrou mudo.')
     session().setPhase('active')
+    playSound('join')
     await applyAudio()
   }
 
@@ -92,6 +94,7 @@ export function createCallController(deps: ControllerDeps) {
     const s = session()
     if (s.phase === 'idle') return
     const callId = s.callId
+    if (s.phase === 'active' || s.phase === 'reconnecting') playSound('leave')
     mediaCallId = null
     s.reset()
     useParticipantsStore.getState().reset()

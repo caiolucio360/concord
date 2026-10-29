@@ -1,5 +1,8 @@
 import * as SecureStore from 'expo-secure-store'
+import { playSound } from '../../call/lib/sounds/soundPlayer'
 import { useVoiceControlsStore } from './voiceControlsStore'
+
+jest.mock('../../call/lib/sounds/soundPlayer', () => ({ playSound: jest.fn() }))
 
 jest.mock('expo-secure-store')
 
@@ -18,6 +21,17 @@ describe('voiceControlsStore', () => {
 
   it('começa com microfone e fone ligados', () => {
     expect(state()).toMatchObject({ muted: false, deafened: false })
+  })
+
+  it('mutar e desmutar tocam o som; ensurdecer e voltar também', async () => {
+    await state().toggleMute()
+    expect(playSound).toHaveBeenLastCalledWith('mute')
+    await state().toggleMute()
+    expect(playSound).toHaveBeenLastCalledWith('unmute')
+    await state().toggleDeafen()
+    expect(playSound).toHaveBeenLastCalledWith('deafen')
+    await state().toggleDeafen()
+    expect(playSound).toHaveBeenLastCalledWith('undeafen')
   })
 
   it('toggleMute alterna o microfone', async () => {

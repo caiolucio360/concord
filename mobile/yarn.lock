@@ -3575,6 +3575,11 @@ expo-asset@~58.0.18:
     "@expo/image-utils" "^0.12.5"
     expo-constants "~58.0.13"
 
+expo-audio@~58.0.10:
+  version "58.0.10"
+  resolved "https://registry.yarnpkg.com/expo-audio/-/expo-audio-58.0.10.tgz#2131be2aaefcf64a6f554084725580c33b29536b"
+  integrity sha512-GoOyd1JAb7l/bJ/UNc5QIrXqSK9QrEFF3ahjdONGt8V6PN3RXRsTcOJDMN6RmDc9kb0XPP34DJIxEd/ushH1RQ==
+
 expo-constants@~58.0.13:
   version "58.0.13"
   resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-58.0.13.tgz#766177f24940be1a57887f8689f0148a8e68cb9f"
