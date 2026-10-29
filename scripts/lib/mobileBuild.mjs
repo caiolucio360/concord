@@ -23,9 +23,10 @@ function signingPlan(env) {
 }
 
 // O APK de distribuição só leva as arquiteturas de celular. x86 e x86_64 são de emulador e cada uma custa
-// dezenas de MB (o Skia, o WebRTC e o React Native vêm em todas). SALINHA_ABIS troca a lista.
+// dezenas de MB (o Skia, o WebRTC e o React Native vêm em todas). O padrão é só arm64-v8a (celulares de
+// 64 bits, ~62 MB medidos); SALINHA_ABIS=arm64-v8a,armeabi-v7a soma os de 32 bits.
 const ABI_NAMES = ['arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64']
-const DEFAULT_ABIS = 'arm64-v8a,armeabi-v7a'
+const DEFAULT_ABIS = 'arm64-v8a'
 
 function abiPlan(env) {
   const abis = (env.SALINHA_ABIS || DEFAULT_ABIS).split(',').map((a) => a.trim()).filter(Boolean)

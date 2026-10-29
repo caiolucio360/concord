@@ -10,8 +10,9 @@
 // Variáveis: ANDROID_HOME (Android SDK), EXPO_PUBLIC_SERVER_URL e, para um APK
 // distribuível, SALINHA_KEYSTORE_PATH / _PASSWORD e SALINHA_KEY_ALIAS / _PASSWORD
 // (keystore fora do repo, com backup: perdê-lo impede atualizar o APK instalado).
-// SALINHA_ABIS (só no release): arquiteturas do APK, padrão "arm64-v8a,armeabi-v7a" (celulares). x86 e
-// x86_64 são de emulador e custam dezenas de MB cada; o build --dev leva todas porque o emulador é x86_64.
+// SALINHA_ABIS (só no release): arquiteturas do APK, padrão "arm64-v8a" (celulares de 64 bits). Some o
+// "armeabi-v7a" para celulares de 32 bits antigos. x86 e x86_64 são de emulador e custam dezenas de MB
+// cada; o build --dev leva todas porque o emulador é x86_64.
 // JAVA_HOME deve ser um JDK aceito pelo Gradle do Expo (testado com 25).
 // No Windows, com o repo em caminho longo, o build roda numa cópia em pasta curta
 // (SALINHA_BUILD_DIR, padrão C:\sb) por causa do limite de 260 caracteres do ninja.

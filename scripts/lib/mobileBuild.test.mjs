@@ -26,7 +26,7 @@ test('ANDROID_SDK_ROOT também vale', () => {
   assert.deepEqual(plan.problems, [])
 })
 
-const ABIS = '-PreactNativeArchitectures=arm64-v8a,armeabi-v7a'
+const ABIS = '-PreactNativeArchitectures=arm64-v8a'
 
 test('com o keystore completo: argumentos de assinatura do Gradle (e as arquiteturas)', () => {
   const plan = buildPlan({ ...OK, ...SIGNING })
@@ -52,14 +52,14 @@ test('sem keystore: avisa que o APK sai com a chave de debug', () => {
 
 // O APK de distribuição só leva as arquiteturas de celular: x86 e x86_64 são de emulador e cada uma
 // custa dezenas de MB (o Skia, o WebRTC e o React Native vêm em todas).
-test('release: por padrão só arm64-v8a e armeabi-v7a', () => {
+test('release: por padrão só arm64-v8a (celulares de 64 bits)', () => {
   assert.ok(buildPlan(OK).gradleArgs.includes(ABIS))
 })
 
-test('SALINHA_ABIS troca as arquiteturas do release', () => {
-  const plan = buildPlan({ ...OK, SALINHA_ABIS: 'arm64-v8a' })
+test('SALINHA_ABIS troca as arquiteturas do release (ex.: somar o armeabi-v7a)', () => {
+  const plan = buildPlan({ ...OK, SALINHA_ABIS: 'arm64-v8a,armeabi-v7a' })
   assert.deepEqual(plan.problems, [])
-  assert.ok(plan.gradleArgs.includes('-PreactNativeArchitectures=arm64-v8a'))
+  assert.ok(plan.gradleArgs.includes('-PreactNativeArchitectures=arm64-v8a,armeabi-v7a'))
 })
 
 test('SALINHA_ABIS com nome inválido é erro (o Gradle ignoraria calado)', () => {
@@ -69,7 +69,7 @@ test('SALINHA_ABIS com nome inválido é erro (o Gradle ignoraria calado)', () =
 })
 
 test('dev continua com todas as arquiteturas (o emulador é x86_64)', () => {
-  const plan = buildPlan({ ANDROID_HOME: 'C:/Android/Sdk', SALINHA_ABIS: 'arm64-v8a' }, 'dev')
+  const plan = buildPlan({ ANDROID_HOME: 'C:/Android/Sdk', SALINHA_ABIS: 'arm64-v8a,armeabi-v7a' }, 'dev')
   assert.deepEqual(plan.gradleArgs, [])
 })
 
