@@ -121,8 +121,13 @@ function run(id: string, seed: number, steps: number, dt = DT, density = 1): unk
 }
 
 describe('cenas de canvas', () => {
-  it('o catálogo tem os 10 efeitos e cada um tem um caso de teste', () => {
-    expect(Object.keys(CANVAS_EFFECTS).sort()).toEqual(Object.keys(CASES).sort())
+  // Partículas, brilhos e neve são CSS no desktop e têm o próprio teste (cssScenes.test.ts).
+  const CSS_NO_DESKTOP = ['particles', 'sparkles', 'snow']
+
+  it('o catálogo tem os 10 efeitos de canvas, cada um com um caso de teste, mais os 3 que eram CSS', () => {
+    const canvas = Object.keys(CANVAS_EFFECTS).filter((id) => !CSS_NO_DESKTOP.includes(id))
+    expect(canvas.sort()).toEqual(Object.keys(CASES).sort())
+    expect(Object.keys(CANVAS_EFFECTS)).toHaveLength(13)
   })
 
   describe.each(Object.keys(CASES))('%s', (id) => {
@@ -187,7 +192,8 @@ describe('cenas de canvas', () => {
 describe('canvasScene', () => {
   it('acha as cenas e devolve null para o resto', () => {
     expect(canvasScene('fire')).toBe(CANVAS_EFFECTS.fire)
-    expect(canvasScene('snow')).toBeNull()
+    expect(canvasScene('snow')).toBe(CANVAS_EFFECTS.snow)
+    expect(canvasScene('fogos')).toBeNull()
     expect(canvasScene('none')).toBeNull()
     expect(canvasScene('toString')).toBeNull()
   })

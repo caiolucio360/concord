@@ -7,7 +7,10 @@ import { galaxyScene } from './galaxy'
 import { glitchScene } from './glitch'
 import { heartsScene } from './hearts'
 import { matrixScene } from './matrix'
+import { particlesScene } from './particles'
 import { rainScene } from './rain'
+import { snowScene } from './snow'
+import { sparklesScene } from './sparkles'
 import { stormScene } from './storm'
 import { synthwaveScene } from './synthwave'
 import type { Rand, Scene } from './types'
@@ -22,7 +25,11 @@ export const CANVAS_EFFECTS: Record<string, Scene> = {
   hearts: heartsScene,
   confetti: confettiScene,
   synthwave: synthwaveScene,
-  rain: rainScene
+  rain: rainScene,
+  // No desktop estes três são CSS; aqui são cenas do mesmo laço.
+  particles: particlesScene,
+  sparkles: sparklesScene,
+  snow: snowScene
 }
 
 /** A cena do efeito, ou null se o efeito não é de canvas (ou não existe). */
