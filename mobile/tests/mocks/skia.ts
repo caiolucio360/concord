@@ -26,6 +26,8 @@ function parseColor(value: string): Float32Array {
 }
 
 export interface PaintSnapshot {
+  /** Quantas vezes algum setter foi chamado até aqui (mede o custo de reaplicar o estilo). */
+  setCalls: number
   blendMode: number
   color: number[]
   alpha: number
@@ -36,28 +38,35 @@ export interface PaintSnapshot {
 }
 
 class MockPaint {
-  state: PaintSnapshot = { blendMode: BlendMode.SrcOver, color: [0, 0, 0, 1], alpha: 1, shader: null, style: PaintStyle.Fill, strokeWidth: 0, cap: StrokeCap.Butt }
+  state: PaintSnapshot = { setCalls: 0, blendMode: BlendMode.SrcOver, color: [0, 0, 0, 1], alpha: 1, shader: null, style: PaintStyle.Fill, strokeWidth: 0, cap: StrokeCap.Butt }
   setAntiAlias(): void {}
   setBlendMode(m: number): void {
+    this.state.setCalls++
     this.state.blendMode = m
   }
   setColor(c: ArrayLike<number>): void {
+    this.state.setCalls++
     this.state.color = Array.from(c)
     this.state.alpha = c[3] ?? 1
   }
   setAlphaf(a: number): void {
+    this.state.setCalls++
     this.state.alpha = a
   }
   setShader(s: unknown): void {
+    this.state.setCalls++
     this.state.shader = s
   }
   setStyle(s: number): void {
+    this.state.setCalls++
     this.state.style = s
   }
   setStrokeWidth(w: number): void {
+    this.state.setCalls++
     this.state.strokeWidth = w
   }
   setStrokeCap(c: number): void {
+    this.state.setCalls++
     this.state.cap = c
   }
   snapshot(): PaintSnapshot {
@@ -117,18 +126,22 @@ export function createRecordingCanvas(): { calls: CanvasCall[] } & Record<string
     scale: (x: number, y: number) => rec('scale', { x, y }),
     drawRect: (rect: unknown, paint: MockPaint) => rec('drawRect', { rect, paint: paint.snapshot() }),
     drawPath: (path: unknown, paint: MockPaint) => rec('drawPath', { path, paint: paint.snapshot() }),
-    drawText: (text: string, x: number, y: number, paint: MockPaint, font: { size: number }) =>
-      rec('drawText', { text, x, y, size: font.size, paint: paint.snapshot() })
+    drawText: (text: string, x: number, y: number, paint: MockPaint, font: { size: number; family: string }) =>
+      rec('drawText', { text, x, y, size: font.size, family: font.family, paint: paint.snapshot() })
   }
   return canvas as never
 }
 
-class MockFont {
-  constructor(readonly typeface: unknown, public size: number) {}
+export class MockFont {
+  measureCalls = 0
+  metricsCalls = 0
+  constructor(readonly typeface: unknown, public size: number, readonly family = 'default') {}
   measureText(text: string): { width: number } {
+    this.measureCalls++
     return { width: text.length * this.size * 0.6 }
   }
   getMetrics(): { ascent: number; descent: number } {
+    this.metricsCalls++
     return { ascent: -this.size * 0.9, descent: this.size * 0.25 }
   }
 }
@@ -141,7 +154,11 @@ export const Skia = {
   XYWHRect: (x: number, y: number, width: number, height: number) => ({ x, y, width, height }),
   PathBuilder: { Make: () => new MockPathBuilder() },
   Shader: { MakeLinearGradient: gradient('linear'), MakeTwoPointConicalGradient: gradient('conical') },
-  Font: (typeface?: unknown, size = 14) => new MockFont(typeface, size),
+  // O Skia real recusa fonte sem typeface ("Expected Typeface but got non-object"): o mock também.
+  Font: (typeface?: unknown, size = 14) => {
+    if (typeof typeface !== 'object' || typeface === null) throw new Error('Expected Typeface but got non-object')
+    return new MockFont(typeface, size)
+  },
   PictureRecorder: () => ({
     beginRecording: () => createRecordingCanvas(),
     finishRecordingAsPicture: () => ({ recorded: true })
@@ -152,6 +169,11 @@ export const Skia = {
 // o que o código pediu ao Skia (cores, posições, tamanho).
 const component = (name: string) => (props: Record<string, unknown>) =>
   createElement(View, { testID: `skia-${name}`, ...props } as never, props.children as never)
+
+export const matchFont = jest.fn((style: { fontFamily?: string; fontSize?: number } = {}) => {
+  if (style.fontFamily === 'sem-essa-familia') throw new Error('família não encontrada')
+  return new MockFont({}, style.fontSize ?? 14, style.fontFamily)
+})
 
 export const Canvas = component('canvas')
 export const Picture = component('picture')
