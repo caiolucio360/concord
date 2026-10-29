@@ -121,7 +121,10 @@ stores; nenhum arquivo concentra duas responsabilidades. Nada vai para `callStor
 
 1. **Base e cartão estático:** lógica portada, `ProfileCard` sem efeitos, aba "Você" com o cartão,
    rota `perfil/[id]` e o ADR 0024. Sem dependência nova: ela entra no PR que a usa.
-2. **Skia:** `@shopify/react-native-skia`, adaptador, efeitos do tema e nome estilizado, fontes.
+2. **Skia**, em três PRs (o spike do ADR 0024 passou):
+   - **2a:** `@shopify/react-native-skia`, adaptador, os 13 efeitos do tema e fundo e borda em degradê.
+   - **2b:** nome estilizado e fontes.
+   - **2c:** brilho neon, animação da borda e textura.
 3. **Editor:** as quatro seções, rascunho, prévia ao vivo, salvar e descartar.
 4. **Imagem e GIF:** `expo-image-picker`, seleção (galeria e câmera), recorte e `cropGif` com a superfície do Skia.
 
