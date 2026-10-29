@@ -9,6 +9,7 @@
     "@livekit/react-native-expo-plugin": "^1.1.0",
     "@livekit/react-native-webrtc": "^150.1.1",
     "@react-native-community/netinfo": "12.0.1",
+    "@shopify/react-native-skia": "2.14.0",
     "expo": "~58.0.19",
     "expo-constants": "~58.0.13",
     "expo-font": "~58.0.10",
