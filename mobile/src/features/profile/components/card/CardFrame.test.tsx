@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react-native'
-import { cardLook } from '../lib/cardLook'
-import { PRIDE_STRIPES } from '../lib/profilePride'
+import { cardLook } from '../../lib/cardLook'
+import { PRIDE_STRIPES } from '../../lib/profilePride'
 import { CardFrame } from './CardFrame'
 
 const W = 200

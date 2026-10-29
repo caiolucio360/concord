@@ -12,7 +12,7 @@ import {
   type SkPathBuilder,
   type SkShader
 } from '@shopify/react-native-skia'
-import type { Ctx, Gradient } from '../lib/effects/types'
+import type { Ctx, Gradient } from '../effects/types'
 
 // Implementa o contexto 2D que as cenas de efeito usam (lib/effects/types.ts) sobre o canvas do Skia.
 // Provado num spike (ADR 0024): gradiente linear e mistura aditiva (BlendMode.Plus) funcionam.

@@ -73,7 +73,7 @@ mobile/src/features/profile/
                                 profileThemeExtras, profilePresets, nameStyle, profileLinks, profileMedia,
                                 effects/ (cenas + loop), imageCrop, gifCrop, gifEncoder, gifQuantize,
                                 gifDelta, saveProfile
-  skia/                         ctx2d (adaptador), EffectCanvas, StyledName, gifFrames (decodifica quadros),
+  lib/skia/                     adaptador de contexto 2D (skiaCtx); no PR 4, gifFrames (decodifica quadros),
                                 cropSurface (recorte e exportação)
   store/                        profileDraftStore (rascunho do editor), profileCardStore (outros usuários)
   api/                          users.ts (updateProfile, uploadImage, removeImage, getProfile)
@@ -98,7 +98,7 @@ stores; nenhum arquivo concentra duas responsabilidades. Nada vai para `callStor
   só durante a sessão: abre na hora com ele e recarrega em seguida (escolha minha); status ao vivo vem
   do `presenceStore`.
 - O visual que o desktop descreve em CSS (`profileThemeLook`, `nameStyleCss`: degradês, bordas, sombras)
-  é traduzido para o Skia e para estilos do React Native dentro de `skia/` e `components/card/`; a
+  é traduzido para o Skia e para estilos do React Native dentro de `lib/skia/` e `components/card/`; a
   tradução de cada efeito do nome fica a cargo de quem implementa, com o desktop como referência.
 
 ## Erros

@@ -1,9 +1,9 @@
 import { Canvas, Picture } from '@shopify/react-native-skia'
 import { StyleSheet } from 'react-native'
-import type { EffectParams } from '../lib/effects/types'
-import { useEffectsFocused } from './EffectsFocus'
-import { useAppActive, useReduceMotion } from './pauseSignals'
-import { useEffectPicture, type EffectMode } from './useEffectPicture'
+import type { EffectParams } from '../../lib/effects/types'
+import { useEffectsFocused } from '../EffectsFocus'
+import { useAppActive, useReduceMotion } from '../../hooks/pauseSignals'
+import { useEffectPicture, type EffectMode } from '../../hooks/useEffectPicture'
 
 interface EffectCanvasProps {
   effect: string

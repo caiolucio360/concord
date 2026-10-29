@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router'
 import { View } from 'react-native'
 import { AccountPanel } from '../../src/features/auth/components/AccountPanel'
-import { EffectsFocusProvider } from '../../src/features/profile/skia/EffectsFocus'
+import { EffectsFocusProvider } from '../../src/features/profile/components/EffectsFocus'
 import { colors } from '../../src/shared/theme/tokens'
 import { IconButton } from '../../src/shared/ui/IconButton'
 

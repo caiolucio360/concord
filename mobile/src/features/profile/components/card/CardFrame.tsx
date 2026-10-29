@@ -1,8 +1,8 @@
 import { Canvas, LinearGradient, RoundedRect, vec } from '@shopify/react-native-skia'
 import { StyleSheet } from 'react-native'
-import { radius } from '../../../shared/theme/tokens'
-import { gradientLine, prideStops } from '../lib/cardGradient'
-import type { CardBackground, CardBorder, CardLook } from '../lib/cardLook'
+import { radius } from '../../../../shared/theme/tokens'
+import { gradientLine, prideStops } from '../../lib/cardGradient'
+import type { CardBackground, CardBorder, CardLook } from '../../lib/cardLook'
 
 interface Size {
   width: number

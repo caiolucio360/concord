@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { ProfileScreen } from '../../../src/features/profile/components/ProfileScreen'
-import { EffectsFocusProvider } from '../../../src/features/profile/skia/EffectsFocus'
+import { EffectsFocusProvider } from '../../../src/features/profile/components/EffectsFocus'
 
 export default function ProfileRoute() {
   const router = useRouter()

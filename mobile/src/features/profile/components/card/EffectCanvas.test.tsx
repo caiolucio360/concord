@@ -1,13 +1,13 @@
 import { act, render, screen } from '@testing-library/react-native'
 import { useIsFocused } from 'expo-router'
 import { EffectCanvas } from './EffectCanvas'
-import { EffectsFocusProvider } from './EffectsFocus'
-import { useAppActive, useReduceMotion } from './pauseSignals'
-import { useEffectPicture } from './useEffectPicture'
+import { EffectsFocusProvider } from '../EffectsFocus'
+import { useAppActive, useReduceMotion } from '../../hooks/pauseSignals'
+import { useEffectPicture } from '../../hooks/useEffectPicture'
 
 jest.mock('expo-router', () => ({ useIsFocused: jest.fn() }))
-jest.mock('./pauseSignals', () => ({ useAppActive: jest.fn(), useReduceMotion: jest.fn() }))
-jest.mock('./useEffectPicture', () => ({ useEffectPicture: jest.fn() }))
+jest.mock('../../hooks/pauseSignals', () => ({ useAppActive: jest.fn(), useReduceMotion: jest.fn() }))
+jest.mock('../../hooks/useEffectPicture', () => ({ useEffectPicture: jest.fn() }))
 
 const PARAMS = { density: 1, speed: 1, color: '#ff7a1a' }
 const picture = { value: {} }

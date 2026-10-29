@@ -4,7 +4,7 @@ import { useSharedValue, type SharedValue } from 'react-native-reanimated'
 import { canvasScene } from '../lib/effects'
 import { createEffectLoop } from '../lib/effects/loop'
 import type { EffectParams } from '../lib/effects/types'
-import { createSkiaCtx } from './skiaCtx'
+import { createSkiaCtx } from '../lib/skia/skiaCtx'
 
 /** run: anima a ~30 fps; pause: para (app em segundo plano, tela sem foco); still: um quadro só (reduzir movimento). */
 export type EffectMode = 'run' | 'pause' | 'still'

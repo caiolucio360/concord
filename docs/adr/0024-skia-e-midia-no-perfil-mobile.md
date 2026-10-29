@@ -39,7 +39,8 @@ Opção 1. Duas dependências novas no `mobile/package.json`:
 As fontes do estilo do nome são empacotadas como `.ttf` (licença OFL) em `mobile/assets/fonts/` e
 carregadas com o `expo-font`, que o app já tem; nenhum pacote `@expo-google-fonts`.
 
-O Skia fica atrás de módulos próprios (`features/profile/skia/`), como o SDK de voz fica atrás de
+O Skia fica atrás de módulos próprios (o adaptador em `features/profile/lib/skia/`, os hooks em `hooks/` e
+os componentes em `components/card/`: a catraca de estrutura do repo só aceita essas pastas), como o SDK de voz fica atrás de
 `CallMedia` ([ADR 0023](0023-voz-no-app-mobile.md)): a lógica (cenas, rascunho, GIF) é JS puro e roda no
 Jest sem módulo nativo.
 

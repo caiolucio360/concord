@@ -1,4 +1,4 @@
-import { BlendMode, MockFont, PaintStyle, StrokeCap, createRecordingCanvas, matchFont, type CanvasCall } from '../../../../tests/mocks/skia'
+import { BlendMode, MockFont, PaintStyle, StrokeCap, createRecordingCanvas, matchFont, type CanvasCall } from '../../../../../tests/mocks/skia'
 import { createSkiaCtx } from './skiaCtx'
 
 

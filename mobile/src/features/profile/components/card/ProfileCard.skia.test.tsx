@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react-native'
 import type { ProfileTheme } from '../../lib/profileTheme'
 import type { ProfileData } from '../../lib/profileTypes'
-import { useEffectPicture } from '../../skia/useEffectPicture'
+import { useEffectPicture } from '../../hooks/useEffectPicture'
 import { ProfileCard } from './ProfileCard'
 
-jest.mock('../../skia/useEffectPicture', () => ({ useEffectPicture: jest.fn() }))
+jest.mock('../../hooks/useEffectPicture', () => ({ useEffectPicture: jest.fn() }))
 
 const card = (theme?: Partial<ProfileTheme>): ProfileData => ({ id: 'u1', username: 'ana', display_name: 'Ana', profile_theme: theme })
 const layout = (width: number, height: number) =>

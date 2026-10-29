@@ -1,7 +1,7 @@
 import { act, render, renderHook, screen } from '@testing-library/react-native'
 import { useIsFocused } from 'expo-router'
 import { AccessibilityInfo, AppState, Text } from 'react-native'
-import { EffectsFocusProvider, useEffectsFocused } from './EffectsFocus'
+import { EffectsFocusProvider, useEffectsFocused } from '../components/EffectsFocus'
 import { useAppActive, useReduceMotion } from './pauseSignals'
 
 jest.mock('expo-router', () => ({ useIsFocused: jest.fn() }))

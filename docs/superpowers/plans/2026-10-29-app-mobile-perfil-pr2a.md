@@ -43,7 +43,7 @@ mobile/src/features/profile/
     fire.ts matrix.ts glitch.ts storm.ts galaxy.ts aurora.ts hearts.ts confetti.ts synthwave.ts rain.ts
     particles.ts sparkles.ts snow.ts                       NOVOS (no desktop eram CSS)
   lib/profileThemeExtras.ts                                (existe) + densityFactor, speedFactor, effectParams
-  skia/
+  lib/skia/ hooks/ components/ (a catraca só aceita estas pastas; antes estava em skia/)
     skiaCtx.ts                                             adaptador Ctx -> SkCanvas
     useEffectPicture.ts                                    laço + pausa + reduzir movimento -> SharedValue<SkPicture>
     EffectCanvas.tsx                                       <Canvas><Picture/></Canvas> sobre o cartão
@@ -93,7 +93,7 @@ mobile/src/features/profile/
 ### Task 3: Adaptador do Skia e mock do Skia no Jest
 
 **Files:**
-- Create: `skia/skiaCtx.ts`, `skia/skiaCtx.test.ts`
+- Create: `lib/skia/skiaCtx.ts`, `lib/skia/skiaCtx.test.ts`
 - Modify: `mobile/jest.setup.js` (mock global de `@shopify/react-native-skia`)
 
 **Interfaces:**
@@ -110,7 +110,7 @@ mobile/src/features/profile/
 ### Task 4: Laço do efeito (picture, pausa, reduzir movimento)
 
 **Files:**
-- Create: `skia/useEffectPicture.ts`, `skia/useEffectPicture.test.tsx`
+- Create: `hooks/useEffectPicture.ts`, `hooks/pauseSignals.ts`, `components/EffectsFocus.tsx` e testes
 
 **Interfaces:**
 - Consumes: `canvasScene`, `createEffectLoop`, `seededRand`, `createSkiaCtx`, `EffectParams`.
@@ -125,7 +125,7 @@ mobile/src/features/profile/
 ### Task 5: Fundo e borda em degradê e efeito no cartão
 
 **Files:**
-- Create: `skia/CardFrame.tsx`, `skia/EffectCanvas.tsx` e testes
+- Create: `components/card/CardFrame.tsx`, `components/card/EffectCanvas.tsx` e testes
 - Modify: `lib/cardLook.ts` (+ teste), `components/card/ProfileCard.tsx` (+ teste)
 
 **Interfaces:**
