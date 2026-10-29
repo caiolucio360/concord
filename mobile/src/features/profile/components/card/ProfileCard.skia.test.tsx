@@ -4,13 +4,16 @@ import type { ProfileData } from '../../lib/profileTypes'
 import { useEffectPicture } from '../../hooks/useEffectPicture'
 import { ProfileCard } from './ProfileCard'
 
+// As camadas do cartão ficam ocultas do leitor de tela de propósito: os testes as procuram assim mesmo.
+const HIDDEN = { includeHiddenElements: true } as const
+
 jest.mock('../../hooks/useEffectPicture', () => ({ useEffectPicture: jest.fn() }))
 
 const card = (theme?: Partial<ProfileTheme>): ProfileData => ({ id: 'u1', username: 'ana', display_name: 'Ana', profile_theme: theme })
 const layout = (width: number, height: number) =>
   fireEvent(screen.getByTestId('profile-card'), 'layout', { nativeEvent: { layout: { width, height } } })
-const frame = () => screen.queryByTestId('card-frame-background') ?? screen.queryByTestId('card-frame-border')
-const effect = () => screen.queryByTestId('card-effect')
+const frame = () => screen.queryByTestId('card-frame-background', HIDDEN) ?? screen.queryByTestId('card-frame-border', HIDDEN)
+const effect = () => screen.queryByTestId('card-effect', HIDDEN)
 
 describe('ProfileCard: fundo, borda e efeito do tema (Skia)', () => {
   beforeEach(() => {
@@ -79,11 +82,20 @@ describe('ProfileCard: fundo, borda e efeito do tema (Skia)', () => {
   it('só borda em degradê: monta só a camada da borda; só fundo: só a do fundo', async () => {
     const { rerender } = await render(<ProfileCard profile={card({ border: 'gradient', border_colors: ['#111111', '#222222'] })} />)
     await layout(300, 500)
-    expect(screen.queryByTestId('card-frame-border')).toBeOnTheScreen()
-    expect(screen.queryByTestId('card-frame-background')).toBeNull()
+    expect(screen.queryByTestId('card-frame-border', HIDDEN)).toBeOnTheScreen()
+    expect(screen.queryByTestId('card-frame-background', HIDDEN)).toBeNull()
     await rerender(<ProfileCard profile={card({ background: 'pride' })} />)
-    expect(screen.queryByTestId('card-frame-background')).toBeOnTheScreen()
-    expect(screen.queryByTestId('card-frame-border')).toBeNull()
+    expect(screen.queryByTestId('card-frame-background', HIDDEN)).toBeOnTheScreen()
+    expect(screen.queryByTestId('card-frame-border', HIDDEN)).toBeNull()
+  })
+
+  // Achado na revisão: ao medir, a borda do React Native saía e o conteúdo crescia 2 a 12 dp (um pulo visível).
+  it('o conteúdo não pula quando o quadro do Skia assume a borda: o padding ocupa o lugar dela', async () => {
+    const theme = { border: 'gradient', border_colors: ['#111111', '#222222'], border_width: 5 }
+    await render(<ProfileCard profile={card(theme)} />)
+    expect(screen.getByTestId('profile-card')).toHaveStyle({ borderWidth: 5 })
+    await layout(300, 500)
+    expect(screen.getByTestId('profile-card')).toHaveStyle({ borderWidth: 0, padding: 5 })
   })
 
   it('medir de novo com o mesmo tamanho não refaz nada', async () => {

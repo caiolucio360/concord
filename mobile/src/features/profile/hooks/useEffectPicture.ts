@@ -2,7 +2,7 @@ import { Skia, type SkPicture } from '@shopify/react-native-skia'
 import { useEffect, useState } from 'react'
 import { useSharedValue, type SharedValue } from 'react-native-reanimated'
 import { canvasScene } from '../lib/effects'
-import { createEffectLoop } from '../lib/effects/loop'
+import { createEffectLoop, type EffectLoop } from '../lib/effects/loop'
 import type { EffectParams } from '../lib/effects/types'
 import { createSkiaCtx } from '../lib/skia/skiaCtx'
 
@@ -40,27 +40,31 @@ export function useEffectPicture(
   const valid = scene !== null && width > 0 && height > 0
 
   useEffect(() => {
-    if (!scene || !valid) return
-    const loop = createEffectLoop({
-      scene,
-      params,
-      render: (draw) => {
-        try {
+    // Em pausa não há o que desenhar: a cena só é criada quando for rodar.
+    if (!scene || !valid || mode === 'pause') return
+    let loop: EffectLoop
+    try {
+      loop = createEffectLoop({
+        scene,
+        params,
+        // Falha ao gravar um quadro: o anterior fica na tela e o laço (que conta as falhas) tenta de novo.
+        render: (draw) => {
           const recorder = Skia.PictureRecorder()
           draw(createSkiaCtx(recorder.beginRecording(Skia.XYWHRect(0, 0, width, height))))
           picture.value = recorder.finishRecordingAsPicture()
-        } catch {
-          // Falha ao gravar um quadro: o anterior fica na tela e o efeito tenta de novo no próximo.
-        }
-      },
-      width,
-      height,
-      rand: Math.random,
-      raf: env.raf,
-      caf: env.caf
-    })
-    if (mode === 'run') loop.start()
-    else if (mode === 'still') loop.renderStill()
+        },
+        width,
+        height,
+        rand: Math.random,
+        raf: env.raf,
+        caf: env.caf
+      })
+      if (mode === 'run') loop.start()
+      else loop.renderStill()
+    } catch {
+      // A cena não inicializou (ou o quadro parado falhou): o cartão fica sem efeito, nunca sem tela.
+      return
+    }
     return () => loop.stop()
     // params entra pelos campos: o objeto muda de identidade a cada render do cartão.
     // eslint-disable-next-line react-hooks/exhaustive-deps

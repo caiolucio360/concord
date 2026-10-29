@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native'
 import { radius } from '../../../../shared/theme/tokens'
 import { gradientLine, prideStops } from '../../lib/cardGradient'
 import type { CardBackground, CardBorder, CardLook } from '../../lib/cardLook'
+import { NonInteractive } from './NonInteractive'
 
 interface Size {
   width: number
@@ -64,9 +65,11 @@ export function CardFrame({ look, layer, width, height }: CardFrameProps) {
   const showBorder = layer === 'border' && border.kind !== 'none' && border.width > 0
   if (!showBackground && !showBorder) return null
   return (
-    <Canvas testID={`card-frame-${layer}`} pointerEvents="none" style={StyleSheet.absoluteFill}>
-      {showBackground ? <Background background={background} width={width} height={height} /> : null}
-      {showBorder ? <Border border={border} width={width} height={height} /> : null}
-    </Canvas>
+    <NonInteractive testID={`card-frame-${layer}`}>
+      <Canvas style={StyleSheet.absoluteFill}>
+        {showBackground ? <Background background={background} width={width} height={height} /> : null}
+        {showBorder ? <Border border={border} width={width} height={height} /> : null}
+      </Canvas>
+    </NonInteractive>
   )
 }

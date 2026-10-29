@@ -1,9 +1,12 @@
-import { act, render, screen } from '@testing-library/react-native'
+import { act, render, screen, within } from '@testing-library/react-native'
 import { useIsFocused } from 'expo-router'
 import { EffectCanvas } from './EffectCanvas'
 import { EffectsFocusProvider } from '../EffectsFocus'
 import { useAppActive, useReduceMotion } from '../../hooks/pauseSignals'
 import { useEffectPicture } from '../../hooks/useEffectPicture'
+
+// As camadas do cartão ficam ocultas do leitor de tela de propósito: os testes as procuram assim mesmo.
+const HIDDEN = { includeHiddenElements: true } as const
 
 jest.mock('expo-router', () => ({ useIsFocused: jest.fn() }))
 jest.mock('../../hooks/pauseSignals', () => ({ useAppActive: jest.fn(), useReduceMotion: jest.fn() }))
@@ -37,7 +40,7 @@ describe('EffectCanvas', () => {
     await mount()
     expect(modeOf()).toBe('run')
     expect(jest.mocked(useEffectPicture)).toHaveBeenCalledWith('fire', PARAMS, 300, 200, 'run')
-    expect(screen.getByTestId('card-effect')).toBeOnTheScreen()
+    expect(screen.getByTestId('card-effect', HIDDEN)).toBeOnTheScreen()
   })
 
   it('pausa com o app em segundo plano ou com outra tela por cima', async () => {
@@ -62,14 +65,20 @@ describe('EffectCanvas', () => {
   it('sem picture (efeito inexistente ou cartão sem tamanho): não monta canvas', async () => {
     jest.mocked(useEffectPicture).mockReturnValue(null)
     await mount()
-    expect(screen.queryByTestId('card-effect')).toBeNull()
+    expect(screen.queryByTestId('card-effect', HIDDEN)).toBeNull()
   })
 
-  it('o canvas não captura toques nem aparece para o leitor de tela', async () => {
+  // Achado na revisão: o canvas cobre o cartão por cima dos links; um wrapper de View garante o "não toque"
+  // sem depender de como o Skia trata pointerEvents na view nativa.
+  it('o canvas fica num wrapper que não captura toques e some do leitor de tela', async () => {
     await mount()
-    const canvas = screen.getByTestId('card-effect')
-    expect(canvas.props.pointerEvents).toBe('none')
-    expect(canvas.props.accessible).toBe(false)
+    const wrapper = screen.getByTestId('card-effect', HIDDEN)
+    expect(wrapper.props).toMatchObject({
+      pointerEvents: 'none',
+      accessibilityElementsHidden: true,
+      importantForAccessibility: 'no-hide-descendants'
+    })
+    expect(within(wrapper).getByTestId('skia-canvas', HIDDEN)).toBeOnTheScreen()
   })
 
   it('volta a animar quando o app volta ao primeiro plano', async () => {

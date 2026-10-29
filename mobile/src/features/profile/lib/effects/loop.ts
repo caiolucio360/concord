@@ -5,6 +5,8 @@ import type { Ctx, EffectParams, Rand, Scene } from './types'
 
 /** Maior passo de simulação, em segundos (aba que volta não dá salto). */
 export const MAX_DT = 0.1
+/** Quadros seguidos que podem falhar antes de o efeito se desligar (30 = ~1 s a 30 fps). */
+export const MAX_FAILURES = 30
 /** Quanto o quadro parado avança antes de desenhar, em segundos. */
 export const STILL_SECONDS = 1.5
 const STILL_STEP = 1 / 30
@@ -54,11 +56,26 @@ export function createEffectLoop(o: EffectLoopOptions): EffectLoop {
       ctx.restore()
     })
 
+  let failures = 0
+  const stop = (): void => {
+    if (id === null) return
+    o.caf(id)
+    id = null
+  }
+
+  // Uma exceção da cena ou do desenho não pode escapar do rAF (em release derruba o app): o quadro é
+  // perdido, o seguinte tenta de novo, e depois de MAX_FAILURES seguidas o efeito se desliga.
   const advance = (time: number): void => {
     const elapsed = last < 0 ? 0 : time - last
     last = time
-    o.scene.step(state, stepDt(elapsed, o.params.speed), o.rand)
-    paint()
+    try {
+      o.scene.step(state, stepDt(elapsed, o.params.speed), o.rand)
+      paint()
+      failures = 0
+    } catch {
+      failures++
+      if (failures >= MAX_FAILURES) stop()
+    }
   }
 
   const tick = (time: number): void => {
@@ -73,11 +90,7 @@ export function createEffectLoop(o: EffectLoopOptions): EffectLoop {
       last = -1
       id = o.raf(tick)
     },
-    stop() {
-      if (id === null) return
-      o.caf(id)
-      id = null
-    },
+    stop,
     resize(width, height) {
       w = width
       h = height

@@ -1,5 +1,5 @@
 import { BlendMode, MockFont, PaintStyle, StrokeCap, createRecordingCanvas, matchFont, type CanvasCall } from '../../../../../tests/mocks/skia'
-import { createSkiaCtx } from './skiaCtx'
+import { COMPOSITE_MODES, createSkiaCtx } from './skiaCtx'
 
 
 
@@ -37,6 +37,23 @@ describe('cor, transparência e mistura', () => {
     ctx.globalCompositeOperation = 'source-over'
     ctx.fillRect(0, 0, 1, 1)
     expect(last('drawRect').paint).toMatchObject({ blendMode: BlendMode.SrcOver })
+  })
+
+  // Defeito achado na revisão: o synthwave apaga o sol com 'destination-out' e o adaptador só conhecia 'lighter';
+  // sem o mapeamento, o "apagar" virava um retângulo preto opaco sobre a metade de baixo do cartão.
+  it("'destination-out' apaga o que já foi desenhado (BlendMode.DstOut)", () => {
+    const { ctx, last } = setup()
+    ctx.globalCompositeOperation = 'destination-out'
+    ctx.fillRect(0, 0, 1, 1)
+    expect(last('drawRect').paint).toMatchObject({ blendMode: BlendMode.DstOut })
+  })
+
+  it('operação desconhecida cai na sobreposição normal em vez de lançar erro', () => {
+    const { ctx, last } = setup()
+    ctx.globalCompositeOperation = 'xor'
+    expect(() => ctx.fillRect(0, 0, 1, 1)).not.toThrow()
+    expect(last('drawRect').paint).toMatchObject({ blendMode: BlendMode.SrcOver })
+    expect(Object.keys(COMPOSITE_MODES).sort()).toEqual(['destination-out', 'lighter', 'source-over'])
   })
 
   it('cor inválida não lança erro e vira transparente', () => {

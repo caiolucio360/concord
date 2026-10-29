@@ -3,7 +3,7 @@
 import { createElement } from 'react'
 import { View } from 'react-native'
 
-export const BlendMode = { SrcOver: 3, Plus: 12 } as const
+export const BlendMode = { SrcOver: 3, DstOut: 8, Plus: 12 } as const
 export const PaintStyle = { Fill: 0, Stroke: 1 } as const
 export const StrokeCap = { Butt: 0, Round: 1, Square: 2 } as const
 export const TileMode = { Clamp: 0 } as const

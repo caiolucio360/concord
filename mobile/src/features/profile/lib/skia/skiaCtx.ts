@@ -19,6 +19,13 @@ import type { Ctx, Gradient } from '../effects/types'
 
 const TAU = Math.PI * 2
 const DEFAULT_FONT_SIZE = 10
+/** Operações de composição do canvas que as cenas usam; qualquer outra cai na sobreposição normal. */
+export const COMPOSITE_MODES: Record<string, BlendMode> = {
+  'source-over': BlendMode.SrcOver,
+  lighter: BlendMode.Plus,
+  'destination-out': BlendMode.DstOut
+}
+
 const CAPS: Record<string, StrokeCap> = { butt: StrokeCap.Butt, round: StrokeCap.Round, square: StrokeCap.Square }
 
 const COLOR_CACHE = new Map<string, SkColor>()
@@ -195,7 +202,7 @@ class SkiaCtx implements Ctx {
   private paintFor(kind: 'fill' | 'stroke'): SkPaint {
     const state = this.state
     state.setStyle(kind === 'fill' ? PaintStyle.Fill : PaintStyle.Stroke)
-    state.setBlend(this.globalCompositeOperation === 'lighter' ? BlendMode.Plus : BlendMode.SrcOver)
+    state.setBlend(COMPOSITE_MODES[this.globalCompositeOperation] ?? BlendMode.SrcOver)
     if (kind === 'stroke') state.setStroke(this.lineWidth, CAPS[this.lineCap] ?? StrokeCap.Butt)
     const source = kind === 'fill' ? this.fillStyle : this.strokeStyle
     const alpha = clamp01(this.globalAlpha)

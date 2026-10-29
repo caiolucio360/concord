@@ -31,7 +31,12 @@ const NO_SIZE = { width: 0, height: 0 }
  */
 function surfaceStyle(look: CardLook, framed: boolean) {
   if (!framed) return { backgroundColor: look.backgroundColor, borderColor: look.borderColor, borderWidth: look.borderWidth }
-  return { backgroundColor: look.background.kind === 'solid' ? look.backgroundColor : 'transparent', borderWidth: 0 }
+  // O padding ocupa o lugar da borda do React Native: sem ele o conteúdo cresceria 2 a 12 dp ao medir.
+  return {
+    backgroundColor: look.background.kind === 'solid' ? look.backgroundColor : 'transparent',
+    borderWidth: 0,
+    padding: look.border.width
+  }
 }
 
 /** O cartão do perfil como os outros o veem, com o fundo, a borda e o efeito animado do tema. */

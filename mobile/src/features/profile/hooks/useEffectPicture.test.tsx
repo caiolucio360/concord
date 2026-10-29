@@ -91,6 +91,27 @@ describe('useEffectPicture', () => {
     expect(r.pending()).toBe(false)
   })
 
+  // Achado na revisão: init que lança subia do useEffect e derrubava a tela do cartão.
+  it('cena cujo init lança não derruba o hook nem agenda quadros', async () => {
+    jest.spyOn(CANVAS_EFFECTS.fire, 'init').mockImplementation(() => {
+      throw new Error('init quebrado')
+    })
+    const { r, hook } = setup()
+    const { result } = await hook
+    expect(result.current).not.toBeNull()
+    expect(r.pending()).toBe(false)
+  })
+
+  // Pausa não precisa da cena: só cria quando for rodar.
+  it('em pausa não cria a cena; ao rodar, cria', async () => {
+    const init = jest.spyOn(CANVAS_EFFECTS.fire, 'init')
+    const { hook } = setup('fire', 300, 200, 'pause')
+    const { rerender } = await hook
+    expect(init).not.toHaveBeenCalled()
+    await rerender({ effect: 'fire', width: 300, height: 200, mode: 'run' })
+    expect(init).toHaveBeenCalledTimes(1)
+  })
+
   it('mudar o tamanho recria a cena no tamanho novo', async () => {
     const init = jest.spyOn(CANVAS_EFFECTS.fire, 'init')
     const { hook } = setup('fire', 300, 200)

@@ -1,6 +1,6 @@
 import { fakeCtx, type FakeCtx } from './fakeCtx'
 import { seededRand } from './index'
-import { createEffectLoop, MAX_DT, stepDt, type EffectLoop } from './loop'
+import { createEffectLoop, MAX_DT, MAX_FAILURES, stepDt, type EffectLoop } from './loop'
 import type { EffectParams, Scene } from './types'
 
 interface Spy {
@@ -129,6 +129,81 @@ describe('createEffectLoop', () => {
     expect(r.pending()).toBe(false)
     loop.stop()
     expect(r.caf).toHaveBeenCalledTimes(1)
+  })
+
+  // Achado na revisão: uma exceção em step subia do requestAnimationFrame e derrubava o app em release.
+  describe('falhas', () => {
+    function failing(setupParams: Partial<EffectParams> = {}) {
+      let fail = true
+      const { scene } = spyScene()
+      const wrapped: Scene<Spy> = {
+        ...scene,
+        step: (s, dt) => {
+          if (fail) throw new Error('cena quebrada')
+          s.steps.push(dt)
+        }
+      }
+      const r = fakeRaf()
+      const loop = createEffectLoop({
+        scene: wrapped as Scene,
+        params: { density: 1, speed: 1, color: '#fff', ...setupParams },
+        render: (draw) => draw(fakeCtx()),
+        width: 300,
+        height: 400,
+        rand: seededRand(1),
+        raf: r.raf,
+        caf: r.caf,
+        fps: 1000
+      })
+      return { loop, r, heal: () => (fail = false) }
+    }
+    const run = (r: ReturnType<typeof fakeRaf>, frames: number, from = 0) => {
+      for (let i = 0; i < frames; i++) r.frame(from + i * 10)
+    }
+
+    it('step que lança não escapa do quadro e o laço segue tentando', () => {
+      const { loop, r } = failing()
+      loop.start()
+      expect(() => run(r, 5)).not.toThrow()
+      expect(r.pending()).toBe(true)
+    })
+
+    it('depois de MAX_FAILURES falhas seguidas o efeito se desliga (sem rAF pendente)', () => {
+      const { loop, r } = failing()
+      loop.start()
+      run(r, MAX_FAILURES + 1)
+      expect(r.pending()).toBe(false)
+    })
+
+    it('um quadro bom zera a contagem: falhas espaçadas nunca desligam o efeito', () => {
+      const { loop, r, heal } = failing()
+      loop.start()
+      run(r, MAX_FAILURES - 1)
+      heal()
+      run(r, 1, 10_000)
+      expect(r.pending()).toBe(true)
+    })
+
+    it('erro no desenho também conta', () => {
+      const { scene } = spyScene()
+      const r = fakeRaf()
+      const loop = createEffectLoop({
+        scene: scene as Scene,
+        params: { density: 1, speed: 1, color: '#fff' },
+        render: () => {
+          throw new Error('skia fora')
+        },
+        width: 300,
+        height: 400,
+        rand: seededRand(1),
+        raf: r.raf,
+        caf: r.caf,
+        fps: 1000
+      })
+      loop.start()
+      expect(() => run(r, MAX_FAILURES + 1)).not.toThrow()
+      expect(r.pending()).toBe(false)
+    })
   })
 
   it('resize recria o estado no tamanho novo', () => {

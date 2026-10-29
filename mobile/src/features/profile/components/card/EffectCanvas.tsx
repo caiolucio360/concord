@@ -2,6 +2,7 @@ import { Canvas, Picture } from '@shopify/react-native-skia'
 import { StyleSheet } from 'react-native'
 import type { EffectParams } from '../../lib/effects/types'
 import { useEffectsFocused } from '../EffectsFocus'
+import { NonInteractive } from './NonInteractive'
 import { useAppActive, useReduceMotion } from '../../hooks/pauseSignals'
 import { useEffectPicture, type EffectMode } from '../../hooks/useEffectPicture'
 
@@ -12,7 +13,7 @@ interface EffectCanvasProps {
   height: number
 }
 
-/** O efeito animado do tema por cima do cartão: não captura toque e não aparece para o leitor de tela. */
+/** O efeito animado do tema por cima do cartão (camada não interativa: os links continuam tocáveis). */
 export function EffectCanvas({ effect, params, width, height }: EffectCanvasProps) {
   const focused = useEffectsFocused()
   const appActive = useAppActive()
@@ -22,8 +23,10 @@ export function EffectCanvas({ effect, params, width, height }: EffectCanvasProp
   const picture = useEffectPicture(effect, params, width, height, mode)
   if (!picture) return null
   return (
-    <Canvas testID="card-effect" accessible={false} pointerEvents="none" style={StyleSheet.absoluteFill}>
-      <Picture picture={picture} />
-    </Canvas>
+    <NonInteractive testID="card-effect">
+      <Canvas style={StyleSheet.absoluteFill}>
+        <Picture picture={picture} />
+      </Canvas>
+    </NonInteractive>
   )
 }
