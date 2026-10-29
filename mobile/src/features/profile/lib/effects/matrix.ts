@@ -9,10 +9,12 @@ export const MATRIX_FS = 14
 export const MATRIX_TRAIL = 20
 const MAX_DROPS = 60
 
-const GLYPHS: string[] = [
-  ...Array.from({ length: 0xff9d - 0xff66 + 1 }, (_, i) => String.fromCharCode(0xff66 + i)),
-  ...'0123456789'
-]
+/**
+ * Letras da chuva. No desktop são katakana meia-largura + dígitos; no app só ASCII, porque nenhuma família de
+ * fonte que o Skia enxerga no Android tem katakana (aparecia como quadradinhos) e ele não troca de fonte.
+ */
+export const MATRIX_GLYPHS: string[] = [...'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ:.=*+-<>']
+const GLYPHS = MATRIX_GLYPHS
 
 export interface Drop {
   col: number
