@@ -28,3 +28,15 @@ func TestValidateEmoji(t *testing.T) {
 		}
 	}
 }
+
+func TestValidateEmojiPersonalizado(t *testing.T) {
+	id := "3f2b6c1e-8a4d-4f7e-9b1a-2c3d4e5f6a7b"
+	if err := ValidateEmoji("<:" + id + ">"); err != nil {
+		t.Fatalf("reação <:id> deveria valer, veio %v", err)
+	}
+	for _, emoji := range []string{"<:nao-e-uuid>", "<:" + id, "<:>", "<:" + id + ">x"} {
+		if err := ValidateEmoji(emoji); err == nil {
+			t.Errorf("esperava %q inválido", emoji)
+		}
+	}
+}
