@@ -9,7 +9,7 @@ jest.mock('../../skia/useEffectPicture', () => ({ useEffectPicture: jest.fn() })
 const card = (theme?: Partial<ProfileTheme>): ProfileData => ({ id: 'u1', username: 'ana', display_name: 'Ana', profile_theme: theme })
 const layout = (width: number, height: number) =>
   fireEvent(screen.getByTestId('profile-card'), 'layout', { nativeEvent: { layout: { width, height } } })
-const frame = () => screen.queryByTestId('card-frame')
+const frame = () => screen.queryByTestId('card-frame-background') ?? screen.queryByTestId('card-frame-border')
 const effect = () => screen.queryByTestId('card-effect')
 
 describe('ProfileCard: fundo, borda e efeito do tema (Skia)', () => {
@@ -67,12 +67,23 @@ describe('ProfileCard: fundo, borda e efeito do tema (Skia)', () => {
     expect(useEffectPicture).not.toHaveBeenCalled()
   })
 
-  it('quadro atrás do conteúdo e efeito por cima de tudo', async () => {
-    await render(<ProfileCard profile={card({ background: 'pride', effect: 'rain' })} />)
+  // Defeito achado no aparelho: o banner cobria a borda no topo. O fundo fica atrás do conteúdo e a borda por cima.
+  it('fundo atrás do conteúdo, borda por cima do banner e efeito por cima de tudo', async () => {
+    await render(<ProfileCard profile={card({ background: 'pride', border: 'rainbow', effect: 'rain' })} />)
     await layout(300, 500)
-    const children = screen.getByTestId('profile-card').children as { props: { testID?: string } }[]
-    expect(children[0].props.testID).toBe('card-frame')
-    expect(children[children.length - 1].props.testID).toBe('card-effect')
+    const ids = (screen.getByTestId('profile-card').children as { props: { testID?: string } }[]).map((c) => c.props.testID)
+    expect(ids[0]).toBe('card-frame-background')
+    expect(ids.slice(-2)).toEqual(['card-frame-border', 'card-effect'])
+  })
+
+  it('só borda em degradê: monta só a camada da borda; só fundo: só a do fundo', async () => {
+    const { rerender } = await render(<ProfileCard profile={card({ border: 'gradient', border_colors: ['#111111', '#222222'] })} />)
+    await layout(300, 500)
+    expect(screen.queryByTestId('card-frame-border')).toBeOnTheScreen()
+    expect(screen.queryByTestId('card-frame-background')).toBeNull()
+    await rerender(<ProfileCard profile={card({ background: 'pride' })} />)
+    expect(screen.queryByTestId('card-frame-background')).toBeOnTheScreen()
+    expect(screen.queryByTestId('card-frame-border')).toBeNull()
   })
 
   it('medir de novo com o mesmo tamanho não refaz nada', async () => {

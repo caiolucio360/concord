@@ -47,7 +47,7 @@ export function ProfileCard({ profile, status, onOpenLink = openExternal }: Prof
     setSize((prev) => (prev.width === layout.width && prev.height === layout.height ? prev : { width: layout.width, height: layout.height }))
   return (
     <View testID="profile-card" onLayout={onLayout} style={[styles.card, surfaceStyle(look, framed)]}>
-      {framed ? <CardFrame look={look} width={size.width} height={size.height} /> : null}
+      {framed ? <CardFrame look={look} layer="background" width={size.width} height={size.height} /> : null}
       <CardBanner url={profile.banner_url} color={profile.banner_color} />
       <View style={styles.avatar}>
         <CardAvatar name={profile.display_name} uri={profile.avatar_url} status={status} cutout={look.backgroundColor} />
@@ -72,6 +72,7 @@ export function ProfileCard({ profile, status, onOpenLink = openExternal }: Prof
           </CardSection>
         ) : null}
       </View>
+      {framed ? <CardFrame look={look} layer="border" width={size.width} height={size.height} /> : null}
       {measured && look.effect ? <EffectCanvas effect={look.effect.id} params={look.effect.params} width={size.width} height={size.height} /> : null}
     </View>
   )

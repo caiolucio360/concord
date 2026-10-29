@@ -48,19 +48,25 @@ function Border({ border, width, height }: { border: CardBorder } & Size) {
 
 interface CardFrameProps extends Size {
   look: CardLook
+  /** O fundo vai atrás do conteúdo; a borda vai por cima, senão o banner a cobre no topo. */
+  layer: 'background' | 'border'
 }
 
 /**
- * Fundo em degradê (ou pride) e borda do tema, desenhados atrás do conteúdo do cartão. Só existe quando o
- * tema pede (needsFrame) e o cartão já tem tamanho. O brilho neon e a animação da borda são do PR 2c.
+ * Uma camada do desenho do tema (fundo em degradê ou pride, ou borda), em um canvas do Skia. Só desenha quando
+ * o tema pede (needsFrame) e o cartão já tem tamanho; sem nada a desenhar nessa camada, não monta canvas.
+ * O brilho neon e a animação da borda são do PR 2c.
  */
-export function CardFrame({ look, width, height }: CardFrameProps) {
+export function CardFrame({ look, layer, width, height }: CardFrameProps) {
   if (width <= 0 || height <= 0) return null
   const { background, border } = look
+  const showBackground = layer === 'background' && background.kind !== 'solid'
+  const showBorder = layer === 'border' && border.kind !== 'none' && border.width > 0
+  if (!showBackground && !showBorder) return null
   return (
-    <Canvas testID="card-frame" pointerEvents="none" style={StyleSheet.absoluteFill}>
-      {background.kind !== 'solid' ? <Background background={background} width={width} height={height} /> : null}
-      {border.kind !== 'none' && border.width > 0 ? <Border border={border} width={width} height={height} /> : null}
+    <Canvas testID={`card-frame-${layer}`} pointerEvents="none" style={StyleSheet.absoluteFill}>
+      {showBackground ? <Background background={background} width={width} height={height} /> : null}
+      {showBorder ? <Border border={border} width={width} height={height} /> : null}
     </Canvas>
   )
 }
