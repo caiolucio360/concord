@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router'
 import { View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { BadgesModal } from '../../src/features/levels/components/BadgesModal'
 import { colors } from '../../src/shared/theme/tokens'
 import { OfflineBanner } from '../../src/shared/ui/OfflineBanner'
 
@@ -11,6 +12,7 @@ export default function AppLayout() {
     <View style={{ flex: 1, backgroundColor: colors.bgApp, paddingTop: insets.top, paddingBottom: insets.bottom }}>
       <OfflineBanner />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bgPrimary } }} />
+      <BadgesModal />
     </View>
   )
 }
