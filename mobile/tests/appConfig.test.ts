@@ -23,6 +23,10 @@ describe('app.config (voz)', () => {
     expect(names).toEqual(expect.arrayContaining(['@livekit/react-native-expo-plugin', '@config-plugins/react-native-webrtc']))
   })
 
+  it('declara POST_NOTIFICATIONS: sem ela o Android 13+ não pergunta nem entrega notificação', () => {
+    expect(config.android?.permissions).toContain('android.permission.POST_NOTIFICATIONS')
+  })
+
   it('registra o seletor de imagens com o texto da permissão da câmera (sem pedir microfone)', () => {
     const entry = (config.plugins ?? []).find((p) => Array.isArray(p) && p[0] === 'expo-image-picker') as [string, Record<string, unknown>]
     expect(entry[1]).toMatchObject({ microphonePermission: false })

@@ -31,7 +31,9 @@ const config: ExpoConfig = {
       'android.permission.MODIFY_AUDIO_SETTINGS',
       'android.permission.FOREGROUND_SERVICE',
       'android.permission.FOREGROUND_SERVICE_MICROPHONE',
-      'android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION'
+      'android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION',
+      // Android 13+: sem ela o sistema nunca pergunta nem entrega notificação (mensagens e chamadas com o app fechado).
+      'android.permission.POST_NOTIFICATIONS'
     ],
     ...(googleServices && existsSync(googleServices) ? { googleServicesFile: googleServices } : {})
   },
