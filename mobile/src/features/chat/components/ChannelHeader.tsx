@@ -9,10 +9,12 @@ interface ChannelHeaderProps {
   onBack: () => void
   /** Na DM 1 a 1, tocar no nome abre o perfil da pessoa. Sem ele, o nome é só texto. */
   onPressName?: () => void
+  /** Chamada de voz privada (só na DM 1 a 1). Sem ele, não há botão de ligar. */
+  onCall?: () => void
 }
 
 /** Topo do chat: voltar para a lista e o nome do canal. */
-export function ChannelHeader({ name, prefix = '#', onBack, onPressName }: ChannelHeaderProps) {
+export function ChannelHeader({ name, prefix = '#', onBack, onPressName, onCall }: ChannelHeaderProps) {
   const title = (
     <Text style={styles.name} numberOfLines={1}>
       {name}
@@ -31,6 +33,7 @@ export function ChannelHeader({ name, prefix = '#', onBack, onPressName }: Chann
           title
         )}
       </View>
+      {onCall ? <IconButton icon="call" label="Iniciar chamada de voz" onPress={onCall} /> : null}
     </View>
   )
 }

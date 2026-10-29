@@ -29,6 +29,15 @@ describe('ChannelHeader', () => {
     expect(onPressName).toHaveBeenCalled()
   })
 
+  it('com onCall, o botão de ligar aparece e liga; sem onCall, não aparece', async () => {
+    const onCall = jest.fn()
+    const { rerender } = await render(<ChannelHeader name="Paulo" prefix="@" onBack={() => {}} onCall={onCall} />)
+    await fireEvent.press(screen.getByRole('button', { name: 'Iniciar chamada de voz' }))
+    expect(onCall).toHaveBeenCalled()
+    await rerender(<ChannelHeader name="Paulo" prefix="@" onBack={() => {}} />)
+    expect(screen.queryByRole('button', { name: 'Iniciar chamada de voz' })).toBeNull()
+  })
+
   it('sem onPressName o nome não é um botão', async () => {
     await render(<ChannelHeader name="geral" onBack={() => {}} />)
     expect(screen.queryByRole('button', { name: 'geral' })).toBeNull()

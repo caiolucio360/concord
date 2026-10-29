@@ -17,6 +17,26 @@ describe('UserPanel', () => {
     expect(screen.getByRole('button', { name: 'Ensurdecer' })).toBeOnTheScreen()
   })
 
+  // Pedido do teste do APK de prod: tocar na foto do painel de baixo não fazia nada.
+  it('tocar na foto ou no nome abre o meu perfil', async () => {
+    const onOpenProfile = jest.fn()
+    await render(<UserPanel onOpenSettings={() => {}} onOpenProfile={onOpenProfile} />)
+    await fireEvent.press(screen.getByText('Ana Mobile'))
+    await fireEvent.press(screen.getByText('A'))
+    expect(onOpenProfile).toHaveBeenCalledTimes(2)
+    expect(onOpenProfile).toHaveBeenCalledWith('u1')
+  })
+
+  it('o toque no perfil tem pelo menos 44 dp de altura', async () => {
+    await render(<UserPanel onOpenSettings={() => {}} onOpenProfile={() => {}} />)
+    expect(screen.getByRole('button', { name: 'Ana Mobile' })).toHaveStyle({ minHeight: 44 })
+  })
+
+  it('sem onOpenProfile o nome não é um botão', async () => {
+    await render(<UserPanel onOpenSettings={() => {}} />)
+    expect(screen.queryByRole('button', { name: 'Ana Mobile' })).toBeNull()
+  })
+
   it('a engrenagem abre as configurações', async () => {
     const onOpenSettings = jest.fn()
     await render(<UserPanel onOpenSettings={onOpenSettings} />)

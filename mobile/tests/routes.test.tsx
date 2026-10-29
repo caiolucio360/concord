@@ -4,6 +4,7 @@ import { loadTokens } from '../src/features/auth/lib/secureTokens'
 import { useAuthStore } from '../src/features/auth/store/authStore'
 import { useCallSessionStore } from '../src/features/call/store/callSessionStore'
 import { useIncomingCallStore } from '../src/features/call/store/incomingCallStore'
+import { startCall } from '../src/features/call/api/calls'
 import { listConversations } from '../src/features/chat/api/conversations'
 
 jest.mock('expo-splash-screen', () => ({
@@ -43,7 +44,11 @@ jest.mock('../src/features/auth/api/auth', () => ({
 jest.mock('../src/features/profile/api/users', () => ({
   getProfile: jest.fn().mockResolvedValue({ id: 'u9', username: 'zed', display_name: 'Zed' })
 }))
-jest.mock('../src/features/call/api/calls', () => ({ listServerCalls: jest.fn().mockResolvedValue([]), getCallState: jest.fn() }))
+jest.mock('../src/features/call/api/calls', () => ({
+  listServerCalls: jest.fn().mockResolvedValue([]),
+  getCallState: jest.fn(),
+  startCall: jest.fn().mockResolvedValue({ id: 'cl1', status: 'ringing' })
+}))
 jest.mock('@react-native-community/netinfo', () => ({
   __esModule: true,
   default: { addEventListener: jest.fn(() => jest.fn()) }
@@ -123,6 +128,14 @@ describe('rotas do app', () => {
     await renderRouter('./app', { initialUrl: '/dm/d1?name=Zed&type=dm' })
     await fireEvent.press(await screen.findByRole('button', { name: 'Zed' }))
     expect(await screen.findByText('@zed')).toBeOnTheScreen()
+  })
+
+  it('sessão salva: o botão de ligar da DM 1 a 1 inicia a chamada privada e abre a tela da chamada', async () => {
+    jest.mocked(loadTokens).mockResolvedValueOnce({ accessToken: 'a', refreshToken: 'r' })
+    await renderRouter('./app', { initialUrl: '/dm/d1?name=Zed&type=dm' })
+    await fireEvent.press(await screen.findByRole('button', { name: 'Iniciar chamada de voz' }))
+    expect(startCall).toHaveBeenCalledWith({ type: 'dm', conversation_id: 'd1' })
+    expect(await screen.findByRole('button', { name: 'Sair da chamada' })).toBeOnTheScreen()
   })
 
   it('sessão salva: /chamada mostra a tela da chamada em andamento', async () => {
