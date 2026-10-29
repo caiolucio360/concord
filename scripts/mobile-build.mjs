@@ -10,6 +10,9 @@
 // Variáveis: ANDROID_HOME (Android SDK), EXPO_PUBLIC_SERVER_URL e, para um APK
 // distribuível, SALINHA_KEYSTORE_PATH / _PASSWORD e SALINHA_KEY_ALIAS / _PASSWORD
 // (keystore fora do repo, com backup: perdê-lo impede atualizar o APK instalado).
+// SALINHA_ABIS (só no release): arquiteturas do APK, padrão "arm64-v8a" (celulares de 64 bits). Some o
+// "armeabi-v7a" para celulares de 32 bits antigos. x86 e x86_64 são de emulador e custam dezenas de MB
+// cada; o build --dev leva todas porque o emulador é x86_64.
 // JAVA_HOME deve ser um JDK aceito pelo Gradle do Expo (testado com 25).
 // No Windows, com o repo em caminho longo, o build roda numa cópia em pasta curta
 // (SALINHA_BUILD_DIR, padrão C:\sb) por causa do limite de 260 caracteres do ninja.
@@ -58,11 +61,11 @@ function useLongPathCmake(workDir, android) {
   appendFileSync(path.join(android, 'local.properties'), `${cmakeDirProperty(dir)}\n`)
 }
 
-function gradle(android, gradleArgs) {
+function gradle(android, gradleArgs, signed) {
   // No cmd.exe o executável da pasta atual precisa do ".\".
   const gradlew = process.platform === 'win32' ? String.raw`.\gradlew.bat` : './gradlew'
   // Não use run(): ele imprime os argumentos, e eles levam as senhas do keystore.
-  const signing = MODE === 'dev' ? 'debug' : gradleArgs.length ? 'assinado com o keystore' : 'chave de debug'
+  const signing = MODE === 'dev' ? 'debug' : signed ? 'assinado com o keystore' : 'chave de debug'
   console.log(`\n$ (${android}) ${gradlew} ${APK.task} (${signing})`)
   const result = spawnSync(gradlew, [APK.task, ...gradleArgs], {
     cwd: android,
@@ -87,7 +90,7 @@ function main() {
   if (run('npx', ['expo', 'prebuild', '--platform', 'android', '--no-install'], workDir) !== 0) process.exit(1)
   const android = path.join(workDir, 'android')
   if (short) useLongPathCmake(workDir, android)
-  const status = gradle(android, plan.gradleArgs)
+  const status = gradle(android, plan.gradleArgs, plan.signed)
   if (status !== 0) process.exit(status)
 
   const apk = path.join(android, APK.built)

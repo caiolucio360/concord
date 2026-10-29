@@ -22,4 +22,9 @@ describe('app.config (voz)', () => {
     const names = (config.plugins ?? []).map((p) => (Array.isArray(p) ? p[0] : p))
     expect(names).toEqual(expect.arrayContaining(['@livekit/react-native-expo-plugin', '@config-plugins/react-native-webrtc']))
   })
+
+  it('aplica as regras do R8 que o build de release exige (LiveKit)', () => {
+    const mods = (config as { mods?: { android?: { dangerous?: unknown } } }).mods
+    expect(mods?.android?.dangerous).toBeDefined()
+  })
 })
