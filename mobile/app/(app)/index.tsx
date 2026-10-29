@@ -19,7 +19,7 @@ export default function HomeRoute() {
       }}
       onOpenCall={() => router.push('/chamada')}
       onLeaveCall={() => void callController.leave()}
-      onOpenSettings={() => router.push('/conta')}
+      onOpenSettings={() => router.push('/configuracoes')}
       onOpenProfile={openProfile}
     />
   )
