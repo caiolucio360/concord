@@ -63,12 +63,15 @@ export function listChannelMessages(channelId: string, before?: string): Promise
 
 /** GIF ou figurinha enviados no lugar (ou junto) do texto. */
 export interface ExtraMessageData {
+  /** Anexos já enviados (ids devolvidos pelo upload). */
+  attachmentIds?: string[]
   stickerId?: string | null
   gifUrl?: string | null
   gifMetadata?: GifMetadata | null
 }
 
 const extraBody = (extra?: ExtraMessageData) => ({
+  ...(extra?.attachmentIds?.length ? { attachment_ids: extra.attachmentIds } : {}),
   ...(extra?.stickerId ? { sticker_id: extra.stickerId } : {}),
   ...(extra?.gifUrl ? { gif_url: extra.gifUrl } : {}),
   ...(extra?.gifMetadata ? { gif_metadata: extra.gifMetadata } : {})

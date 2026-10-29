@@ -70,7 +70,7 @@ export function ChatScreen({ variant, id, title, serverId, peerId, onOpenProfile
         onOpenProfile={onOpenProfile}
         maestro={target === 'channel' ? { room: `channel:${id}`, serverId: serverId ?? null } : undefined}
       />
-      <Composer label={label(title)} serverId={serverId} onSend={send} forbiddenNotice={variant === 'channel' ? NO_PERMISSION : undefined} />
+      <Composer label={label(title)} room={`${target}:${id}`} serverId={serverId} onSend={send} forbiddenNotice={variant === 'channel' ? NO_PERMISSION : undefined} />
     </KeyboardAvoidingView>
   )
 }

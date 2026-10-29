@@ -63,3 +63,4 @@ O que fica mais fácil, o que fica mais difícil, o que precisa ser feito depois
 - [0023. Voz no app mobile com o SDK do LiveKit, atrás de uma porta `CallMedia`](0023-voz-no-app-mobile.md)
 - [0024. Desenhar efeitos e recortar imagens do perfil no app mobile com o Skia](0024-skia-e-midia-no-perfil-mobile.md)
 - [0025. Sons da chamada e reprodução de áudio no app mobile com o `expo-audio`](0025-sons-e-midia-no-app-mobile.md)
+- [0026. Enviar anexos no app mobile com `expo-image-picker` e `expo-document-picker`](0026-anexos-no-app-mobile.md)

@@ -1,4 +1,5 @@
 import type { Attachment } from '../api/messages'
+import { acceptFiles, canSubmit, classifyFile, draftStatus, uploadErrorMessage, type PickedFile } from './attachments'
 import { fitGif, fitMedia, formatBytes, mediaFileUrl, splitAttachments, stickerFileUrl } from './attachments'
 
 const att = (kind: Attachment['kind']): Attachment => ({ id: kind, kind, content_type: 'x/y', filename: 'f', size_bytes: 1 })
@@ -32,5 +33,48 @@ describe('anexos', () => {
     const { visual, audios } = splitAttachments([att('image'), att('audio'), att('video')])
     expect(visual.map((a) => a.kind)).toEqual(['image', 'video'])
     expect(audios.map((a) => a.kind)).toEqual(['audio'])
+  })
+})
+
+const file = (over: Partial<PickedFile> = {}): PickedFile => ({ uri: 'file:///a.png', name: 'a.png', mimeType: 'image/png', size: 1000, ...over })
+
+describe('anexos a enviar', () => {
+  it('classifica por MIME (com parâmetros) e, sem MIME, pela extensão', () => {
+    expect(classifyFile(file({ mimeType: 'IMAGE/PNG; x=1' }))).toEqual({ ok: true, kind: 'image' })
+    expect(classifyFile(file({ name: 'voz.m4a', mimeType: '' }))).toEqual({ ok: true, kind: 'audio' })
+    expect(classifyFile(file({ name: 'v.mp4', mimeType: 'video/mp4' }))).toEqual({ ok: true, kind: 'video' })
+  })
+  it('recusa tipo desconhecido, vazio e maior que 25 MB', () => {
+    expect(classifyFile(file({ name: 'x.exe', mimeType: 'application/x-msdownload' }))).toMatchObject({ ok: false })
+    expect(classifyFile(file({ name: 'semextensao', mimeType: '' }))).toMatchObject({ ok: false })
+    expect(classifyFile(file({ size: 0 }))).toMatchObject({ ok: false, error: '"a.png" está vazio.' })
+    expect(classifyFile(file({ size: 26 * 1024 * 1024 }))).toMatchObject({ ok: false, error: '"a.png" tem mais de 25 MB.' })
+  })
+  it('acceptFiles respeita o máximo de 10 por mensagem', () => {
+    const many = Array.from({ length: 4 }, (_, i) => file({ name: `f${i}.png` }))
+    const { accepted, errors } = acceptFiles(8, many)
+    expect(accepted).toHaveLength(2)
+    expect(errors).toEqual(['Máximo de 10 arquivos por mensagem.'])
+    expect(acceptFiles(0, [file({ size: 0 })]).accepted).toHaveLength(0)
+  })
+  it('mensagens de erro de upload', () => {
+    expect([413, 415, 507, 403, 500].map(uploadErrorMessage)).toEqual([
+      'Arquivo maior que 25 MB.',
+      'Tipo de arquivo não aceito.',
+      'Servidor sem espaço para novos arquivos.',
+      'Você não pode enviar arquivos aqui.',
+      'Falha ao enviar o arquivo.'
+    ])
+  })
+  it('draftStatus e canSubmit: só envia com nada subindo/falho e texto ou anexo pronto', () => {
+    const done = { status: 'done' as const, attachment: { id: 'a1' } as never }
+    const up = { status: 'uploading' as const }
+    const bad = { status: 'error' as const }
+    expect(draftStatus([done, up, bad])).toEqual({ readyIds: ['a1'], uploading: true, failed: true })
+    expect(canSubmit('', [])).toBe(false)
+    expect(canSubmit('oi', [])).toBe(true)
+    expect(canSubmit('', [done])).toBe(true)
+    expect(canSubmit('oi', [done, up])).toBe(false)
+    expect(canSubmit('oi', [bad])).toBe(false)
   })
 })
