@@ -1,9 +1,12 @@
 import { fireEvent, render, screen } from '@testing-library/react-native'
 import { useAuthStore } from '../../auth/store/authStore'
+import { useMusicStore } from '../../music/store/musicStore'
 import { useCallSessionStore } from '../store/callSessionStore'
 import { useParticipantsStore } from '../store/participantsStore'
 import { useSpeakingStore } from '../store/speakingStore'
 import { CallScreen } from './CallScreen'
+
+jest.mock('react-native-safe-area-context', () => ({ ...jest.requireActual('react-native-safe-area-context'), useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }) }))
 
 const ana = { id: 'u1', username: 'ana', display_name: 'Ana' }
 
@@ -13,6 +16,25 @@ beforeEach(() => {
   useSpeakingStore.getState().reset()
   useAuthStore.setState({ status: 'signedIn', user: { id: 'me', username: 'eu', display_name: 'Eu', email: 'e@e.co' } })
   useCallSessionStore.getState().begin({ callId: 'c1', kind: 'channel', phase: 'active', channelId: 'ch1', name: 'Geral' })
+})
+
+describe('CallScreen: Maestro', () => {
+  const playing = { call_id: 'c1', channel_id: 'ch1', server_id: 's1', server_time: Date.now(), now: null, queue: [], skip: { votes: 0, needed: 1, voters: [] } }
+
+  it('com música tocando no canal do servidor, o botão abre o painel "Tocando agora"', async () => {
+    useCallSessionStore.getState().reset()
+    useCallSessionStore.getState().begin({ callId: 'c1', kind: 'channel', phase: 'active', channelId: 'ch1', serverId: 's1', name: 'Geral' })
+    useMusicStore.setState({ state: playing, panelOpen: false })
+    await render(<CallScreen onBack={jest.fn()} onLeave={jest.fn()} />)
+    await fireEvent.press(screen.getByRole('button', { name: 'Tocando agora' }))
+    expect(useMusicStore.getState().panelOpen).toBe(true)
+  })
+
+  it('sem música, não há o botão', async () => {
+    useMusicStore.setState({ state: null })
+    await render(<CallScreen onBack={jest.fn()} onLeave={jest.fn()} />)
+    expect(screen.queryByRole('button', { name: 'Tocando agora' })).toBeNull()
+  })
 })
 
 describe('CallScreen', () => {

@@ -4,6 +4,7 @@ import { useNetworkStore } from '../../../shared/store/networkStore'
 import { colors, fontSize, MIN_TOUCH, radius, spacing } from '../../../shared/theme/tokens'
 import type { ExtraMessageData } from '../api/messages'
 import type { SendOutcome } from '../hooks/useRoomMessages'
+import { SlashSuggestions } from '../../music/components/SlashSuggestions'
 import { MediaPickerSheet } from './MediaPickerSheet'
 import { IconButton } from '../../../shared/ui/IconButton'
 
@@ -55,6 +56,7 @@ export function Composer({ label, onSend, serverId, forbiddenNotice }: ComposerP
           {notice}
         </Text>
       ) : null}
+      {serverId ? <SlashSuggestions input={text} onPick={setText} /> : null}
       <View style={styles.row}>
         <IconButton icon="happy-outline" label="Emojis, GIFs e figurinhas" onPress={() => setPickerOpen(true)} />
         <TextInput

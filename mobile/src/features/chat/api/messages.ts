@@ -41,6 +41,8 @@ export interface Message {
   channel_id?: string | null
   conversation_id?: string | null
   content: string
+  /** Mensagem do próprio servidor (o Maestro escreve como "music" e "music_commands"). */
+  system_kind?: string | null
   attachments?: Attachment[] | null
   sticker_id?: string | null
   sticker?: MessageSticker | null

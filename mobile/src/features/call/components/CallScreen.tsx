@@ -10,6 +10,8 @@ import { useCallSessionStore } from '../store/callSessionStore'
 import { useParticipantsStore, voiceOf } from '../store/participantsStore'
 import { useSpeakingStore } from '../store/speakingStore'
 import { CallNotice } from './CallNotice'
+import { MusicPanel } from '../../music/components/MusicPanel'
+import { useMusicStore } from '../../music/store/musicStore'
 import { ParticipantTile } from './ParticipantTile'
 
 interface CallScreenProps {
@@ -27,6 +29,9 @@ export function CallScreen({ onBack, onLeave, onOpenSettings }: CallScreenProps)
   const voice = useParticipantsStore((s) => s.voice)
   const speaking = useSpeakingStore((s) => s.speaking)
   const me = useAuthStore((s) => s.user)
+  const serverId = useCallSessionStore((s) => s.serverId)
+  const hasMusic = useMusicStore((s) => s.state !== null)
+  const openMusic = useMusicStore((s) => s.openPanel)
 
   const people: CallUser[] = me ? [{ id: me.id, username: me.username, display_name: me.display_name, avatar_url: me.avatar_url }, ...others] : others
   const columns = gridColumns(width, people.length)
@@ -42,6 +47,7 @@ export function CallScreen({ onBack, onLeave, onOpenSettings }: CallScreenProps)
           </Text>
           {status ? <Text style={styles.status}>{status}</Text> : null}
         </View>
+        {hasMusic && serverId ? <IconButton icon="musical-notes" label="Tocando agora" onPress={openMusic} /> : null}
       </View>
       <CallNotice onOpenSettings={onOpenSettings} />
       <FlatList
@@ -59,6 +65,7 @@ export function CallScreen({ onBack, onLeave, onOpenSettings }: CallScreenProps)
         <VoiceControls />
         <IconButton icon="call" label="Sair da chamada" onPress={onLeave} danger />
       </View>
+      {serverId ? <MusicPanel serverId={serverId} /> : null}
     </SafeAreaView>
   )
 }

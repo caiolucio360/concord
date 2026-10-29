@@ -5,6 +5,7 @@ import { Button } from '../../../shared/ui/Button'
 import type { Message } from '../api/messages'
 import type { LoadStatus } from '../hooks/useRoomMessages'
 import { groupMessages } from '../lib/messageGroups'
+import { MusicEphemeralList } from '../../music/components/MusicEphemeralList'
 import { MessageItem } from './MessageItem'
 
 interface MessageListProps {
@@ -15,10 +16,12 @@ interface MessageListProps {
   onLoadMore: () => void
   onRetry: () => void
   onOpenProfile?: (userId: string) => void
+  /** Canal de servidor: mostra as respostas do Maestro que só eu vejo no fim da lista. */
+  maestro?: { room: string; serverId: string | null }
 }
 
 /** Histórico do canal: lista invertida (a mais nova embaixo), pagina ao rolar para cima. */
-export function MessageList({ messages, status, hasMore, onLoadMore, onRetry, onOpenProfile }: MessageListProps) {
+export function MessageList({ messages, status, hasMore, onLoadMore, onRetry, onOpenProfile, maestro }: MessageListProps) {
   // Os estados vazios ficam fora da FlatList: dentro de uma lista invertida eles saem de cabeça para baixo.
   if (status === 'loading' && messages.length === 0) return <Centered text="Carregando mensagens…" />
   if (status === 'error' && messages.length === 0) {
@@ -29,7 +32,15 @@ export function MessageList({ messages, status, hasMore, onLoadMore, onRetry, on
       </View>
     )
   }
-  if (messages.length === 0) return <Centered text="Ainda não há mensagens aqui." />
+  const ephemeral = maestro ? <MusicEphemeralList room={maestro.room} serverId={maestro.serverId} /> : null
+  if (messages.length === 0) {
+    return (
+      <View style={styles.list}>
+        <Centered text="Ainda não há mensagens aqui." />
+        {ephemeral}
+      </View>
+    )
+  }
 
   return (
     <FlatList
@@ -39,6 +50,7 @@ export function MessageList({ messages, status, hasMore, onLoadMore, onRetry, on
       renderItem={({ item }) => <MessageItem item={item} onOpenProfile={onOpenProfile} />}
       onEndReached={hasMore ? onLoadMore : undefined}
       onEndReachedThreshold={0.5}
+      ListHeaderComponent={ephemeral ?? undefined}
       keyboardShouldPersistTaps="handled"
       style={styles.list}
     />

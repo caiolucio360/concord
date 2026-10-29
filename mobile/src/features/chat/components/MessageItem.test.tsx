@@ -60,6 +60,12 @@ describe('MessageItem', () => {
     expect(screen.getByRole('button', { name: 'Ouvir voz.mp3' })).toBeOnTheScreen()
   })
 
+  it('mensagem do Maestro (system_kind music): cartão do bot com o selo BOT', async () => {
+    await render(<MessageItem item={item({}, message({ system_kind: 'music', content: '🎵 tocando **Boa noite**' }))} timeZone="UTC" />)
+    expect(screen.getByText('BOT')).toBeOnTheScreen()
+    expect(screen.getByText('Boa noite')).toBeOnTheScreen()
+  })
+
   it('autor ausente: não quebra', async () => {
     await render(<MessageItem item={item({}, message({ author: undefined }))} timeZone="UTC" />)
     expect(screen.getByText('olá, pessoal')).toBeOnTheScreen()
