@@ -12,7 +12,7 @@ import { MessageList } from './MessageList'
 
 export type ChatVariant = 'channel' | 'dm' | 'group'
 
-interface ChatScreenProps {
+export interface ChatScreenProps {
   variant: ChatVariant
   /** Id do canal ou da conversa. */
   id: string
