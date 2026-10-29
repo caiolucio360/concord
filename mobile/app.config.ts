@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs'
 import type { ExpoConfig } from 'expo/config'
+import { withProguardRules } from './plugins/withProguardRules'
 
 // google-services.json (Firebase) é segredo do dono: vem de GOOGLE_SERVICES_JSON no build e fica fora do git.
 // Sem ele o APK compila igual, só que sem push (docs/PUSH.md).
@@ -45,4 +46,5 @@ const config: ExpoConfig = {
   experiments: { typedRoutes: true }
 }
 
-export default config
+// O R8 do build de release precisa de uma regra para o LiveKit (plugins/withProguardRules.ts).
+export default withProguardRules(config)
