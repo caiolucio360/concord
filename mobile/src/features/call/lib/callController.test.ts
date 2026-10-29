@@ -7,6 +7,10 @@ import { useSpeakingStore } from '../store/speakingStore'
 import type { CallMedia, MediaConnection } from './callMedia'
 import { createCallController, type ControllerDeps } from './callController'
 
+import { playSound } from './sounds/soundPlayer'
+
+jest.mock('./sounds/soundPlayer', () => ({ playSound: jest.fn() }))
+
 const ana = { id: 'u1', username: 'ana', display_name: 'Ana' }
 const session = () => useCallSessionStore.getState()
 
@@ -152,6 +156,23 @@ describe('callDm / accept / decline', () => {
 })
 
 describe('leave e mídia', () => {
+  it('toca o som de entrar ao conectar e o de sair ao sair da chamada ativa', async () => {
+    const { controller } = rig()
+    jest.mocked(playSound).mockClear()
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    expect(playSound).toHaveBeenCalledWith('join')
+    await controller.leave()
+    expect(playSound).toHaveBeenLastCalledWith('leave')
+  })
+
+  it('sair de uma chamada que nem conectou não toca o som de sair', async () => {
+    const { controller } = rig()
+    await controller.callDm({ id: 'cv1', name: 'Ana' })
+    jest.mocked(playSound).mockClear()
+    await controller.leave()
+    expect(playSound).not.toHaveBeenCalled()
+  })
+
   it('sair avisa, desassina, desconecta e zera tudo', async () => {
     const { controller, deps, media } = rig()
     await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
