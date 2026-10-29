@@ -90,6 +90,17 @@ describe('ChatScreen', () => {
     expect(onOpenProfile).toHaveBeenCalledWith('u2')
   })
 
+  it('DM 1 a 1 mostra o botão de ligar; canal e grupo não (chamada privada é só 1 a 1)', async () => {
+    const onCall = jest.fn()
+    const { rerender } = await render(<ChatScreen variant="dm" id="d1" title="Paulo" onCall={onCall} onBack={() => {}} />)
+    await fireEvent.press(screen.getByRole('button', { name: 'Iniciar chamada de voz' }))
+    expect(onCall).toHaveBeenCalledTimes(1)
+    await rerender(<ChatScreen variant="group" id="g1" title="DEVS" onCall={onCall} onBack={() => {}} />)
+    expect(screen.queryByRole('button', { name: 'Iniciar chamada de voz' })).toBeNull()
+    await rerender(<ChatScreen variant="channel" id="c1" title="geral" onCall={onCall} onBack={() => {}} />)
+    expect(screen.queryByRole('button', { name: 'Iniciar chamada de voz' })).toBeNull()
+  })
+
   it('canal e grupo: o nome do cabeçalho não abre perfil (não é uma pessoa só)', async () => {
     await render(<ChatScreen variant="group" id="g1" title="DEVS" onOpenProfile={jest.fn()} onBack={() => {}} />)
     expect(screen.queryByRole('button', { name: 'DEVS' })).toBeNull()

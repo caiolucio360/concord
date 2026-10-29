@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native'
+import { useAuthStore } from '../../auth/store/authStore'
 import { useCallSessionStore } from '../../call/store/callSessionStore'
 import { listChannels, type Channel } from '../api/channels'
 import { listServers, type Server } from '../api/servers'
@@ -55,6 +56,25 @@ describe('HomeScreen', () => {
     useSelectedServerStore.setState(useSelectedServerStore.getInitialState(), true)
     servers.mockResolvedValue([srv('s1', 'BH RX'), srv('s2', 'Stations')])
     channels.mockImplementation(async (id) => (id === 's1' ? [ch('c1', 'geral', 's1')] : [ch('c2', 'avisos', 's2')]))
+  })
+
+  it('a foto do painel de baixo abre o perfil de quem está logado', async () => {
+    useAuthStore.setState({ user: { id: 'u1', username: 'ana', display_name: 'Ana', email: 'a@b.co' } })
+    const onOpenProfile = jest.fn()
+    await render(
+      <HomeScreen
+        onOpenChannel={onOpenChannel}
+        onOpenConversation={onOpenConversation}
+        onOpenFriends={onOpenFriends}
+        onJoinVoice={onJoinVoice}
+        onOpenCall={onOpenCall}
+        onLeaveCall={onLeaveCall}
+        onOpenSettings={onOpenSettings}
+        onOpenProfile={onOpenProfile}
+      />
+    )
+    await fireEvent.press(screen.getByRole('button', { name: 'Ana' }))
+    expect(onOpenProfile).toHaveBeenCalledWith('u1')
   })
 
   it('abre no primeiro servidor, com os canais dele', async () => {
