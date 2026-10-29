@@ -13,6 +13,7 @@ import (
 	"gin-quickstart/backend/internal/message"
 	"gin-quickstart/backend/internal/music"
 	"gin-quickstart/backend/internal/permission"
+	"gin-quickstart/backend/internal/push"
 	"gin-quickstart/backend/internal/platform/livekit"
 	"gin-quickstart/backend/internal/platform/media"
 	"gin-quickstart/backend/internal/platform/websocket"
@@ -54,6 +55,12 @@ type app struct {
 	friendshipService *friendship.Service
 	// friendAccepted: amizade aceita reavalia o badge Amigos (wireEngagement).
 	friendAccepted         *friendship.AcceptHook
+	// pushTap liga os publicadores ao notificador de push (wirePush) depois que ele existe.
+	pushTap                *push.Tap
+	// pushNotifier/pushRepo/pushEnabled: o que wirePushCalls usa para ligar a chamada de DM ao push.
+	pushNotifier *push.Notifier
+	pushRepo     *push.Repository
+	pushEnabled  bool
 	channelRepository      *channel.Repository
 	channelService         *channel.Service
 	conversationRepository *conversation.Repository
@@ -108,10 +115,12 @@ func mustStore(dir, what string) *media.Store {
 
 // wire monta todas as áreas na ordem em que uma depende da outra.
 func wire(ctx context.Context, db *pgxpool.Pool) *app {
-	a := &app{ctx: ctx, db: db}
+	a := &app{ctx: ctx, db: db, pushTap: push.NewTap()}
 	a.wireCore()
 	a.wireChat()
+	a.wirePush()
 	a.wireCalls()
+	a.wirePushCalls()
 	a.wireGuests()
 	a.wireMusic()
 	a.wireEngagement()

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('livekit-client', () => ({
   AudioPresets: { musicHighQualityStereo: {} },
+  BackupCodecPolicy: { SIMULCAST: 1 },
   Track: { Source: { ScreenShare: 'screen_share', ScreenShareAudio: 'screen_share_audio' } },
   VideoPreset: class {
     constructor(
@@ -35,7 +36,7 @@ const limited = new Map([
 ])
 
 /** Codecs que a placa de vídeo codifica (o resto, só o processador). */
-type Card = { av1?: boolean; h265?: boolean }
+type Card = { av1?: boolean; h265?: boolean; h264?: boolean }
 
 function setup(options: Card & { storage?: Record<string, string> } = {}) {
   const data = new Map(Object.entries(options.storage ?? {}))
@@ -51,6 +52,7 @@ function setup(options: Card & { storage?: Record<string, string> } = {}) {
     })
   })
   const hardware: Record<string, boolean> = {
+    'video/H264': !!options.h264,
     'video/AV1': !!options.av1,
     'video/H265': !!options.h265
   }
@@ -82,7 +84,9 @@ function setup(options: Card & { storage?: Record<string, string> } = {}) {
     sender,
     publishOptions: {},
     getRTCStatsReport: vi.fn(async () => limited),
-    setDegradationPreference: vi.fn(async () => {})
+    setDegradationPreference: vi.fn(async () => {}),
+    simulcastCodecs: new Map(),
+    setSimulcastTrackSender: vi.fn(async () => {})
   }
   const publication = { videoTrack: track, options: {} }
   const participant = {
@@ -100,7 +104,7 @@ function setup(options: Card & { storage?: Record<string, string> } = {}) {
     () => true,
     (view) => views.push(view)
   )
-  return { screen, participant, stream, sender, views, video }
+  return { screen, participant, stream, sender, views, video, track }
 }
 
 beforeEach(() => {
@@ -123,6 +127,7 @@ describe('ScreenSender', () => {
       screenShareEncoding: { maxBitrate: 7_000_000, maxFramerate: 60 },
       videoCodec: 'av1',
       backupCodec: { codec: 'h264' },
+      backupCodecPolicy: 1,
       degradationPreference: 'maintain-resolution'
     })
     screen.stop()
@@ -164,6 +169,46 @@ describe('ScreenSender', () => {
     screen.stop()
   })
 
+  it('Automático: H.264 na placa de vídeo e 1080p → liga a camada de 720p', async () => {
+    const { screen, participant, stream } = setup({ h264: true })
+    await screen.publish(stream)
+    expect(participant.publishTrack).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ simulcast: true, videoCodec: 'h264' })
+    )
+    screen.stop()
+  })
+
+  it('Automático: H.264 no processador → uma camada só', async () => {
+    const { screen, participant, stream } = setup()
+    await screen.publish(stream)
+    expect(participant.publishTrack).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ simulcast: false })
+    )
+    screen.stop()
+  })
+
+  it('Automático com AV1 na placa: fica o AV1, sem a camada extra', async () => {
+    const { screen, participant, stream } = setup({ av1: true, h264: true })
+    await screen.publish(stream)
+    expect(participant.publishTrack).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ simulcast: false, videoCodec: 'av1' })
+    )
+    screen.stop()
+  })
+
+  it('Desligada respeitada mesmo com H.264 na placa de vídeo', async () => {
+    const { screen, participant, stream } = setup({ h264: true, storage: { [SIMULCAST_KEY]: '0' } })
+    await screen.publish(stream)
+    expect(participant.publishTrack).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ simulcast: false })
+    )
+    screen.stop()
+  })
+
   it('envio limitado: o controlador desce 1080p60 → 720p60 ao vivo e conta para a UI', async () => {
     const { screen, stream, sender, views, video } = setup()
     await screen.publish(stream)
@@ -183,6 +228,60 @@ describe('ScreenSender', () => {
       step: 1
     })
     expect(screen.current()).toEqual(views.at(-1))
+    screen.stop()
+  })
+
+  it('reserva sofrendo não derruba o principal: o controlador só lê o envio principal', async () => {
+    const { screen, stream, views, track, video } = setup()
+    const healthy = new Map([
+      ['o1', { id: 'o1', type: 'outbound-rtp', kind: 'video', bytesSent: 1 }]
+    ])
+    const backupLimited = new Map([
+      [
+        'o2',
+        {
+          id: 'o2',
+          type: 'outbound-rtp',
+          kind: 'video',
+          bytesSent: 10,
+          qualityLimitationReason: 'cpu'
+        }
+      ]
+    ])
+    track.getRTCStatsReport.mockResolvedValue(healthy as never)
+    track.simulcastCodecs.set('h264', { sender: { getStats: async () => backupLimited } })
+    await screen.publish(stream)
+    await vi.advanceTimersByTimeAsync(ADAPT.tickMs * (ADAPT.startHold + ADAPT.downAfter))
+    expect(video.applyConstraints).not.toHaveBeenCalled()
+    expect(views.at(-1)).toMatchObject({ effective: '1080p 60', reduced: false })
+    screen.stop()
+  })
+
+  it('conta a quem assiste o codificador real: H.265 na placa e o degrau saindo', async () => {
+    const { screen, stream, track } = setup({ h265: true })
+    expect(await screen.encoderInfo()).toEqual({ quality: null, encoders: [] })
+    await screen.publish(stream)
+    track.getRTCStatsReport.mockResolvedValue(
+      new Map<string, Record<string, unknown>>([
+        ['c1', { id: 'c1', type: 'codec', mimeType: 'video/H265' }],
+        [
+          'o1',
+          {
+            id: 'o1',
+            type: 'outbound-rtp',
+            kind: 'video',
+            codecId: 'c1',
+            frameHeight: 1080,
+            framesPerSecond: 60,
+            powerEfficientEncoder: true
+          }
+        ]
+      ]) as never
+    )
+    expect(await screen.encoderInfo()).toEqual({
+      quality: '1080p 60',
+      encoders: [{ codec: 'H265', hardware: true, height: 1080, fps: 60, backup: false }]
+    })
     screen.stop()
   })
 
