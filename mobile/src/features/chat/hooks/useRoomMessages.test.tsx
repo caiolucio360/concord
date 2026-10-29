@@ -107,6 +107,18 @@ describe('useRoomMessages', () => {
     expect(result.current.messages).toHaveLength(51)
   })
 
+  // Bug do APK de prod: "/play ..." volta 202 {"command": true} (o Maestro trata o comando), não uma mensagem.
+  it('enviar um comando do bot (202 {command:true}) não entra na lista nem derruba o chat', async () => {
+    send.mockResolvedValue({ command: true })
+    const { result } = await renderHook(() => useRoomMessages({ kind: 'channel', id: 'c1' }))
+    await waitFor(() => expect(result.current.status).toBe('ready'))
+    const before = result.current.messages.length
+    let outcome = ''
+    await act(async () => void (outcome = await result.current.send('/play boa noite')))
+    expect(outcome).toBe('ok')
+    expect(result.current.messages).toHaveLength(before)
+  })
+
   it('enviar GIF/figurinha sem texto vai com os extras; sem texto e sem extras é vazio', async () => {
     send.mockResolvedValue(msg('g', 6))
     const { result } = await renderHook(() => useRoomMessages({ kind: 'channel', id: 'c1' }))
