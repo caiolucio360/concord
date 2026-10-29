@@ -12,10 +12,10 @@ describe('app.config (voz)', () => {
     )
   })
 
-  it('não pede câmera nem captura de tela nesta fatia (só áudio)', () => {
+  it('declara o serviço de captura de tela (transmitir a tela, ADR 0027), mas ainda não pede a câmera da chamada', () => {
     const permissions = config.android?.permissions ?? []
+    expect(permissions).toContain('android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION')
     expect(permissions).not.toContain('android.permission.CAMERA')
-    expect(permissions).not.toContain('android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION')
   })
 
   it('registra os plugins nativos do LiveKit e do WebRTC', () => {

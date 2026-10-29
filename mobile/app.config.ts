@@ -30,7 +30,8 @@ const config: ExpoConfig = {
       'android.permission.RECORD_AUDIO',
       'android.permission.MODIFY_AUDIO_SETTINGS',
       'android.permission.FOREGROUND_SERVICE',
-      'android.permission.FOREGROUND_SERVICE_MICROPHONE'
+      'android.permission.FOREGROUND_SERVICE_MICROPHONE',
+      'android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION'
     ],
     ...(googleServices && existsSync(googleServices) ? { googleServicesFile: googleServices } : {})
   },

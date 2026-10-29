@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { Linking } from 'react-native'
 import { CallScreen } from '../../src/features/call/components/CallScreen'
 import { callController } from '../../src/features/call/lib/callRuntime'
+import { LiveScreen } from '../../src/features/call/lib/livekitScreen'
 import { useCallSessionStore } from '../../src/features/call/store/callSessionStore'
 
 export default function CallRoute() {
@@ -19,6 +20,9 @@ export default function CallRoute() {
       onBack={() => router.back()}
       onLeave={() => void callController.leave()}
       onOpenSettings={() => void Linking.openSettings()}
+      onToggleShare={() => void callController.toggleScreenShare()}
+      onWatch={(userId) => callController.watchScreen(userId)}
+      renderScreen={(userId) => <LiveScreen userId={userId} />}
     />
   )
 }

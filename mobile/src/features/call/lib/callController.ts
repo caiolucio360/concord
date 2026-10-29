@@ -3,6 +3,7 @@ import { useCallNoticeStore } from '../store/callNoticeStore'
 import { isInCall, useCallSessionStore } from '../store/callSessionStore'
 import { useIncomingCallStore } from '../store/incomingCallStore'
 import { useParticipantsStore, voiceOf } from '../store/participantsStore'
+import { useScreenShareStore } from '../store/screenShareStore'
 import { useSpeakingStore } from '../store/speakingStore'
 import { callErrorMessage } from './callErrors'
 import { playSound } from './sounds/soundPlayer'
@@ -48,6 +49,17 @@ export function createCallController(deps: ControllerDeps) {
 
   deps.media.onSpeakers((ids) => useSpeakingStore.getState().set(ids))
   deps.media.onConnection((state) => onMediaConnection(state))
+  deps.media.onScreens((ids) => onScreens(ids))
+
+  /** Muda a lista de quem transmite: toca o som de quando alguém abre ou encerra uma transmissão. */
+  function onScreens(ids: string[]): void {
+    const before = useScreenShareStore.getState().sharers
+    const me = deps.meId?.() ?? null
+    const others = (list: string[]): string[] => list.filter((id) => id !== me)
+    useScreenShareStore.getState().setSharers(ids)
+    if (others(ids).length > others(before).length) playSound('liveStart')
+    else if (others(ids).length < others(before).length) playSound('liveEnd')
+  }
 
   function onMediaConnection(state: MediaConnection): void {
     const { phase } = session()
@@ -99,6 +111,7 @@ export function createCallController(deps: ControllerDeps) {
     s.reset()
     useParticipantsStore.getState().reset()
     useSpeakingStore.getState().reset()
+    useScreenShareStore.getState().reset()
     if (callId) {
       if (notify) deps.ws.send('call:leave', { call_id: callId })
       deps.ws.unsubscribe(`call:${callId}`)
@@ -177,7 +190,29 @@ export function createCallController(deps: ControllerDeps) {
     await joinChannel({ id: movedTo.channelId, name: movedTo.name, serverId })
   }
 
-  return { joinChannel, callDm, connectIfNeeded, acceptIncoming, declineIncoming, leave, applyAudio, followMove }
+  /** Liga ou desliga a transmissão da minha tela; sem permissão de captura, avisa e fica desligada. */
+  async function toggleScreenShare(): Promise<void> {
+    const store = useScreenShareStore.getState()
+    const next = !store.sharing
+    try {
+      await deps.media.setScreenShareEnabled(next)
+      store.setSharing(next)
+      if (next) playSound('liveStart')
+    } catch {
+      store.setSharing(false)
+      notice('Não foi possível transmitir a tela. Permita a captura de tela quando o Android pedir.')
+    }
+  }
+
+  /** Assiste à transmissão de alguém (null para de assistir). Uma de cada vez. */
+  function watchScreen(userId: string | null): void {
+    const store = useScreenShareStore.getState()
+    if (store.watching && store.watching !== userId) deps.media.watchScreen(store.watching, false)
+    if (userId) deps.media.watchScreen(userId, true)
+    store.setWatching(userId)
+  }
+
+  return { joinChannel, callDm, connectIfNeeded, acceptIncoming, declineIncoming, leave, applyAudio, followMove, toggleScreenShare, watchScreen }
 }
 
 export type CallController = ReturnType<typeof createCallController>
