@@ -5,6 +5,8 @@ import { useConversationsStore } from '../../chat/store/conversationsStore'
 import { useUnreadStore } from '../../chat/store/unreadStore'
 import { useFriendsStore } from '../../friends/store/friendsStore'
 import { usePresenceStore } from '../../friends/store/presenceStore'
+import { useBadgeStore } from '../../levels/store/badgeStore'
+import { useLevelStore } from '../../levels/store/levelStore'
 import { useProfileCardStore } from '../../profile/store/profileCardStore'
 import { useSelectedServerStore } from '../store/selectedServerStore'
 import { useServersStore } from '../store/serversStore'
@@ -20,6 +22,8 @@ export function useResetOnSignOut(): void {
     useFriendsStore.getState().reset()
     useUnreadStore.getState().reset()
     useProfileCardStore.getState().reset()
+    useLevelStore.getState().reset()
+    useBadgeStore.getState().reset()
     useActiveRoomStore.getState().setActive(null)
     useSelectedServerStore.getState().select(null)
   }, [signedOut])

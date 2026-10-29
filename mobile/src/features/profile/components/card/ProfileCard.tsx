@@ -12,6 +12,8 @@ import { CardBio } from './CardBio'
 import { CardLinks, openExternal } from './CardLinks'
 import { CardNames } from './CardNames'
 import { CardSection } from './CardSection'
+import { BadgeRow } from '../../../levels/components/BadgeRow'
+import { LevelBadge } from '../../../levels/components/LevelBadge'
 
 /** Largura máxima do cartão: em tela larga fica centrado em vez de esticar. */
 const MAX_CARD_WIDTH = 480
@@ -56,6 +58,9 @@ export function ProfileCard({ profile, status, onOpenLink = openExternal }: Prof
       <CardBanner url={profile.banner_url} color={profile.banner_color} />
       <View style={styles.avatar}>
         <CardAvatar name={profile.display_name} uri={profile.avatar_url} status={status} cutout={look.backgroundColor} />
+        <View style={styles.level}>
+          <LevelBadge userId={profile.id} size="md" />
+        </View>
       </View>
       <View style={styles.body}>
         <CardNames
@@ -66,6 +71,7 @@ export function ProfileCard({ profile, status, onOpenLink = openExternal }: Prof
           statusText={profile.status_text}
           look={look}
         />
+        <BadgeRow userId={profile.id} name={profile.display_name} />
         {bio ? (
           <CardSection title="Sobre mim" look={look}>
             <CardBio text={bio} look={look} onOpen={onOpenLink} />
@@ -85,6 +91,7 @@ export function ProfileCard({ profile, status, onOpenLink = openExternal }: Prof
 
 const styles = StyleSheet.create({
   card: { width: '100%', maxWidth: MAX_CARD_WIDTH, alignSelf: 'center', borderRadius: radius.lg, overflow: 'hidden' },
-  avatar: { marginTop: -44, paddingHorizontal: spacing.lg },
+  avatar: { marginTop: -44, paddingHorizontal: spacing.lg, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },
+  level: { paddingBottom: spacing.xs },
   body: { gap: spacing.lg, padding: spacing.lg }
 })
