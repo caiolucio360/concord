@@ -11,7 +11,7 @@ func (r *Repository) AddingUserServer(
 	userID string,
 	role string,
 ) error {
-	return r.db.QueryRow(
+	err := r.db.QueryRow(
 		ctx,
 		`
 		INSERT INTO server_members (
@@ -37,6 +37,8 @@ func (r *Repository) AddingUserServer(
 		&serverMember.JoinedAt,
 		&serverMember.UpdatedAt,
 	)
+	r.invalidatePerms(server.ID)
+	return err
 }
 
 // AddMemberIfMissing põe alguém no servidor sem falhar se já estiver lá.
@@ -55,5 +57,6 @@ func (r *Repository) AddMemberIfMissing(ctx context.Context, serverID string, us
 		 WHERE r.server_id = $1 AND r.is_system = TRUE AND u.is_bot = TRUE
 		 ON CONFLICT DO NOTHING`,
 		serverID, userID)
+	r.invalidatePerms(serverID)
 	return err
 }

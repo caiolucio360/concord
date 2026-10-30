@@ -12,13 +12,14 @@ import (
 )
 
 type Repository struct {
-	db *pgxpool.Pool
+	db       *pgxpool.Pool
+	verified *verifiedCache
 }
 
 func UserRepository(db *pgxpool.Pool) *Repository {
-	return &Repository{
-		db: db,
-	}
+	r := &Repository{db: db}
+	r.verified = newVerifiedCache(r.lookupVerified)
+	return r
 }
 
 // userColumns e scanUser andam juntos: a ordem das colunas é a do Scan.

@@ -1,6 +1,9 @@
 package permission
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 // store é o que o Service usa do Repository (nos testes, um fake em memória).
 type store interface {
@@ -10,7 +13,12 @@ type store interface {
 
 type Service struct {
 	store store
+	cache *snapshotCache
 }
+
+// loadTimeout limita a leitura compartilhada: ela não segue o contexto de
+// quem a começou (cancelar um pedido não derruba os outros que esperam).
+const loadTimeout = 10 * time.Second
 
 func PermissionService(repository *Repository) *Service {
 	return NewService(repository)
@@ -19,20 +27,51 @@ func PermissionService(repository *Repository) *Service {
 // NewService aceita qualquer store (o fake dos testes de outros pacotes usa
 // StaticStore).
 func NewService(s store) *Service {
-	return &Service{store: s}
+	return &Service{store: s, cache: newSnapshotCache()}
 }
 
+// Snapshot: as permissões do servidor, do cache (só leitura: é compartilhado).
 func (s *Service) Snapshot(ctx context.Context, serverID string) (*Snapshot, error) {
-	return s.store.LoadSnapshot(ctx, serverID)
+	snap, load, leader := s.cache.begin(serverID)
+	if snap != nil {
+		return snap, nil
+	}
+	if leader {
+		loadCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), loadTimeout)
+		snap, err := s.store.LoadSnapshot(loadCtx, serverID)
+		cancel()
+		s.cache.finish(serverID, load, snap, err)
+		return snap, err
+	}
+	select {
+	case <-load.done:
+		return load.snap, load.err
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
 }
 
 // ChannelSnapshot: o snapshot do servidor do canal.
 func (s *Service) ChannelSnapshot(ctx context.Context, channelID string) (*Snapshot, error) {
-	serverID, err := s.store.ChannelServerID(ctx, channelID)
-	if err != nil {
-		return nil, err
+	serverID, ok := s.cache.serverOf(channelID)
+	if !ok {
+		var err error
+		if serverID, err = s.store.ChannelServerID(ctx, channelID); err != nil {
+			return nil, err
+		}
 	}
-	return s.store.LoadSnapshot(ctx, serverID)
+	return s.Snapshot(ctx, serverID)
+}
+
+// InvalidateServer: cargos, membros, canais ou sobrescritas do servidor
+// mudaram (chamar depois do commit). A próxima checagem lê do banco.
+func (s *Service) InvalidateServer(serverID string) {
+	s.cache.invalidate(serverID)
+}
+
+// InvalidateChannel: as sobrescritas do canal mudaram ou ele foi apagado.
+func (s *Service) InvalidateChannel(channelID string) {
+	s.cache.invalidateChannel(channelID)
 }
 
 func (s *Service) ServerPerms(ctx context.Context, serverID, userID string) (int64, error) {

@@ -9,8 +9,8 @@ import (
 	"gin-quickstart/backend/internal/conversation"
 	"gin-quickstart/backend/internal/friendship"
 	"gin-quickstart/backend/internal/permission"
-	"gin-quickstart/backend/internal/push"
 	"gin-quickstart/backend/internal/platform/websocket"
+	"gin-quickstart/backend/internal/push"
 	"gin-quickstart/backend/internal/role"
 	"gin-quickstart/backend/internal/server"
 	"gin-quickstart/backend/internal/user"
@@ -29,13 +29,8 @@ func (a *app) wireCore() {
 	a.userRepository = user.UserRepository(a.db)
 	a.userService = user.UserService(a.userRepository)
 	checkLoginIndexes(a.userService)
-	a.requireVerified = auth.RequireVerified(func(ctx context.Context, id string) (bool, error) {
-		u, err := a.userService.FindByID(ctx, id)
-		if err != nil {
-			return false, err
-		}
-		return u.EmailVerifiedAt != nil, nil
-	})
+	// Toda rota autenticada passa aqui: o "sim" fica em cache (trocar o e-mail esquece).
+	a.requireVerified = auth.RequireVerified(a.userRepository.IsVerified)
 
 	// WebSocket hub (criado antes dos serviços que publicam eventos)
 	a.hub = websocket.NewHub()
@@ -51,6 +46,8 @@ func (a *app) wireCore() {
 	roleHandler := role.RoleHandler(a.roleService)
 
 	serverRepository := server.ServerRepository(a.db)
+	// Cache de permissões sem TTL: entrar no servidor, sair e apagá-lo invalidam.
+	serverRepository.SetPermissionCache(a.permissionService)
 	a.serverService = server.ServerService(serverRepository, a.hub, a.roleRepository)
 	// Online na prévia do link de convite (invisível conta como offline).
 	a.serverService.SetPresence(a.hub.PresenceMap)
@@ -63,6 +60,7 @@ func (a *app) wireCore() {
 
 	a.channelRepository = channel.ChannelRepository(a.db)
 	a.channelService = channel.ChannelService(a.channelRepository, a.hub)
+	a.channelService.SetPermissionCache(a.permissionService)
 	channelHandler := channel.ChannelHandler(a.channelService, a.permissionService)
 
 	a.conversationRepository = conversation.ConversationRepository(a.db)

@@ -11,7 +11,8 @@ import (
 )
 
 type Repository struct {
-	db *pgxpool.Pool
+	db    *pgxpool.Pool
+	perms PermissionCache
 }
 
 func ServerRepository(db *pgxpool.Pool) *Repository {
@@ -171,6 +172,7 @@ func (r *Repository) SetIcon(ctx context.Context, id string, url *string) (*stri
 
 func (r *Repository) Delete(ctx context.Context, id string) error {
 	_, err := r.db.Exec(ctx, `DELETE FROM servers WHERE id = $1`, id)
+	r.invalidatePerms(id)
 	return err
 }
 

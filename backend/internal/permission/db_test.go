@@ -79,7 +79,9 @@ func newEnv(t *testing.T) *env {
 	e.serverSvc = server.ServerService(e.servers, nil, e.roleRepo)
 	e.permissions = permission.PermissionService(permission.PermissionRepository(db))
 	e.roleSvc = role.RoleService(e.roleRepo, e.permissions, nil)
+	e.servers.SetPermissionCache(e.permissions)
 	e.channelSvc = channel.ChannelService(channel.ChannelRepository(db), nil)
+	e.channelSvc.SetPermissionCache(e.permissions)
 	e.moderation = server.ModerationService(e.servers, e.permissions, nil)
 	return e
 }
@@ -516,6 +518,8 @@ func TestDBOverwriteUpsertAndDelete(t *testing.T) {
 	if err := repo.DeleteOverwrite(e.ctx, ch.ID, permission.TargetRole, everyone.ID); err != nil {
 		t.Fatal(err)
 	}
+	// O repositório cru não invalida o cache (em produção o channel.Service invalida).
+	e.permissions.InvalidateChannel(ch.ID)
 	snap, _ = e.permissions.Snapshot(e.ctx, srv.ID)
 	if len(snap.Channels[ch.ID].Overwrites) != 0 {
 		t.Fatal("sobrescrita não foi apagada")
