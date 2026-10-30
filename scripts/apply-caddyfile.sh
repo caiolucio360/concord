@@ -11,8 +11,9 @@
 # Na VPS, na ordem: valida o arquivo com o caddy; confere que o backend está no
 # ar (/healthz); confere que ninguém está em chamada (o primeiro reload com o
 # Caddyfile novo fecha todos os WebSockets); guarda backup do atual; instala e
-# recarrega; testa /rtc/validate (401 = LiveKit), /healthz e /updates pelo
-# endereço público. Se o reload ou um teste falhar, volta o backup.
+# recarrega; testa /rtc/validate (401 = LiveKit), /healthz e /updates (o
+# manifesto e o instalador que ele cita, seguindo o redirect para o GitHub)
+# pelo endereço público. Se o reload ou um teste falhar, volta o backup.
 set -euo pipefail
 
 FORCE=0
@@ -112,6 +113,13 @@ for url in $ALSO; do
 done
 if [[ -f "$CONCORD_DIR/updates/latest.yml" ]]; then
   curl -fs -o /dev/null "$public/updates/latest.yml" || rollback "$public/updates/latest.yml não abriu"
+  # O instalador da versão atual vai para a GitHub Release (302): sem a
+  # release dessa versão lá, os apps não conseguiriam baixar.
+  installer=$(awk '/^path:/ {print $2}' "$CONCORD_DIR/updates/latest.yml" | tr -d "\"'\r")
+  if [[ -n "$installer" ]]; then
+    curl -fsIL -o /dev/null "$public/updates/$installer" ||
+      rollback "$public/updates/$installer não abriu (a release dessa versão está no GitHub?)"
+  fi
 fi
 echo "Caddyfile aplicado (backup em $backup)."
 REMOTE

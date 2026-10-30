@@ -222,9 +222,11 @@ terminar com sucesso antes de executar o deploy. No CI isso é obrigatório.
 **Depois disso, não precisa mandar mais nada.** Para cada versão nova, rode
 `scripts/release-win.sh` e depois `scripts/release-linux.sh` de novo:
 
-- O app checa atualizações ao abrir e a cada 5 minutos.
-- Ele baixa a versão nova em segundo plano, mas só fora de chamada, porque o
-  upload do servidor é o mesmo das chamadas.
+- O app checa atualizações ao abrir, a cada minuto e quando o servidor avisa
+  de versão nova.
+- Ele baixa a versão nova em segundo plano, também durante chamada. Na VPS
+  com o CI, os arquivos vêm da GitHub Release e não do upload do servidor
+  (veja [Atualizações pelo GitHub Releases](#atualizações-do-app-pelo-github-releases)).
 - Instaladores sem assinatura válida são recusados.
 - Se já estava baixada, a atualização instala ao abrir o app. Com o app aberto,
   aparece **"Nova atualização disponível"** no canto inferior direito, com o
@@ -341,8 +343,10 @@ funcionam assim, inclusive os WebSockets e o `/rtc` do app web.
   pede `/rtc` no mesmo endereço da API, então funciona **sem atualizar o app**.
   Está no bloco do `PUBLIC_URL`, no `:8080` e no app web (`import salinha_rtc`);
   um bloco novo que sirva o app precisa do mesmo `import`.
-- **`/updates/*` vem direto do disco** (`/opt/concord/updates`): um download
-  de instalador (~120 MB) não segura o reinício do backend nem cai no deploy.
+- **`/updates/*`:** os manifestos (`latest*.yml`) vêm do disco
+  (`/opt/concord/updates`); os instaladores, `.blockmap` e `.sig`
+  (`Salinha-<versão>-…`) respondem `302` para a GitHub Release da versão
+  (veja [Atualizações pelo GitHub Releases](#atualizações-do-app-pelo-github-releases)).
 - **Sem health check ativo:** com o socket do systemd, a porta do backend não
   fecha no reinício; o Caddy conecta na hora e a requisição espera na fila até
   o processo novo atender. `lb_try_duration 15s` só entra com o backend parado
@@ -379,13 +383,61 @@ ainda fecha os WebSockets; os seguintes, não.
 **Aplicar o Caddyfile:** use o script, que roda na VPS, nesta ordem: valida o
 arquivo; confere que o backend responde `/healthz`; confere no banco que
 ninguém está em chamada (senão para, a não ser com `--force`); guarda backup
-do atual; recarrega; testa `/rtc/validate` = 401 (o LiveKit), `/healthz` e
-`/updates/latest.yml` pelo `PUBLIC_URL` e `/rtc/validate` nos endereços de
-`--also`; se algo falhar, volta o backup.
+do atual; recarrega; testa `/rtc/validate` = 401 (o LiveKit), `/healthz`,
+`/updates/latest.yml` e o instalador que ele cita (seguindo o redirect para o
+GitHub) pelo `PUBLIC_URL` e `/rtc/validate` nos endereços de `--also`; se algo
+falhar, volta o backup.
 
 ```bash
 scripts/apply-caddyfile.sh --also https://app-salinha.bhrx.com.br root@IP deploy/Caddyfile
 ```
+
+### Atualizações do app pelo GitHub Releases
+
+Decisão e alternativas: [ADR 0028](adr/0028-atualizacoes-pelo-github-releases.md).
+A cada deploy da `main`, o CI:
+
+1. gera e assina os instaladores (`release-win.sh`, `release-linux.sh`) em
+   `backend/updates/`;
+2. publica a **GitHub Release `v<versão>`** (`scripts/github-release.mjs`, com o
+   `GITHUB_TOKEN` do Actions): cria rascunho com instaladores, `.blockmap`,
+   `.sig` e `latest*.yml`, e só então a torna pública e "Latest". As notas são
+   as entradas do `changelog/next.md` que a release anterior não trouxe.
+   Re-run na mesma versão apaga a release e a tag e cria de novo;
+3. envia tudo para a VPS (`deploy-vps.sh`), com os `latest*.yml` por último,
+   depois do backend novo no ar, como antes. A cópia dos instaladores na VPS
+   fica só como reserva: o Caddy não a serve;
+4. confere (`Conferir`) que os arquivos abrem seguindo o redirect e que a
+   release tem cada arquivo dos manifestos.
+
+Os apps (todas as versões), o `install.sh` e a página de download continuam
+lendo `<servidor>/updates/latest*.yml`; os arquivos pesados chegam pelo `302`
+do Caddy para `github.com/hugoemannuel/concord/releases/download/v<versão>/`.
+A assinatura Ed25519 (`.sig`) é conferida como sempre. Downloads de assets de
+repo público não contam no limite da API do GitHub.
+
+**Transição (uma vez):** depois do primeiro deploy com este fluxo (a versão no
+ar já tem release no GitHub), aplique o Caddyfile com ninguém em chamada:
+
+```bash
+gh release view v$(curl -fsS https://74-0-5-252.sslip.io/updates/latest.yml | awk '/^version:/ {print $2}') -R hugoemannuel/concord
+scripts/apply-caddyfile.sh --also https://app-salinha.bhrx.com.br root@IP deploy/Caddyfile
+```
+
+Antes disso tudo segue saindo do disco. O script volta o backup se o
+instalador da versão atual não abrir pelo redirect.
+
+**Rollback (GitHub fora do ar, repo privado ou release com problema):** tire do
+`deploy/Caddyfile` as duas linhas do `@release` (o `path_regexp` e o `redir`)
+e aplique com o `apply-caddyfile.sh`. A VPS volta a servir os arquivos do
+disco na hora, sem build novo nem mudança nos apps. Para publicar versões
+nesse meio-tempo sem o GitHub, comente o passo `GitHub Release` do workflow.
+Uma versão ruim já publicada se corrige como antes: com uma versão mais nova
+(o app não volta de versão). Release no GitHub com problema e versão ainda não
+anunciada na VPS: `gh release delete v<versão> --cleanup-tag`.
+
+**Repo mudou de dono ou de nome:** troque o endereço no `redir` do Caddyfile;
+o GitHub redireciona nomes antigos por um tempo.
 
 ### Porta do backend com o systemd
 
