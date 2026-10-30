@@ -2,7 +2,6 @@ import { act, renderHook } from '@testing-library/react-native'
 import { realtime } from '../../../shared/api/realtime'
 import { AppState } from 'react-native'
 import { useCallSessionStore } from '../../call/store/callSessionStore'
-import { BACKGROUND_GRACE_MS } from '../../../shared/api/realtimeLifecycle'
 import { useAuthStore } from '../store/authStore'
 import { useRealtimeSession } from './useRealtimeSession'
 
@@ -64,21 +63,17 @@ describe('useRealtimeSession', () => {
 
   // Regressão das notificações: o socket ficava aberto em segundo plano, o servidor via o app online e não mandava push.
   it('em segundo plano fora de chamada fecha a conexão; em chamada mantém; ao voltar retoma', async () => {
-    jest.useFakeTimers()
     useAuthStore.setState({ status: 'signedIn' })
     useCallSessionStore.getState().reset()
     await renderHook(() => useRealtimeSession())
     const emit = (AppState as unknown as { emit: (s: string) => void }).emit
     emit('background')
-    jest.advanceTimersByTime(BACKGROUND_GRACE_MS)
     expect(realtime.suspend).toHaveBeenCalledTimes(1)
     emit('active')
     expect(realtime.resume).toHaveBeenCalledTimes(1)
 
     await act(async () => useCallSessionStore.getState().begin({ callId: 'c1', kind: 'channel', phase: 'active', channelId: 'ch', serverId: 's', name: 'Geral' }))
     emit('background')
-    jest.advanceTimersByTime(BACKGROUND_GRACE_MS * 2)
     expect(realtime.suspend).toHaveBeenCalledTimes(1)
-    jest.useRealTimers()
   })
 })
