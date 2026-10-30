@@ -69,3 +69,43 @@ func TestDedupMigrationKeepsEachNoteInItsFirstRelease(t *testing.T) {
 		}
 	}
 }
+
+// A origem da nota precisa sobreviver ao banco: é por ela que o servidor decide
+// o que já saiu numa release (Postgres de verdade, TEST_DATABASE_URL).
+func TestUpsertAndListKeepEntrySource(t *testing.T) {
+	url := os.Getenv("TEST_DATABASE_URL")
+	if url == "" {
+		t.Skip("TEST_DATABASE_URL não definido")
+	}
+	ctx := context.Background()
+	db, err := database.Connect(url)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+	if err := database.Migrate(db, "../../migrations"); err != nil {
+		t.Fatal(err)
+	}
+	repo := NewRepository(db)
+	version := fmt.Sprintf("9.%d.0", time.Now().UnixNano())
+	want := []Entry{
+		{Kind: KindFeature, Text: "Nova", Source: "2026-10-30-nova.md"},
+		{Kind: KindFix, Text: "Antiga, sem origem"},
+	}
+	if err := repo.Upsert(ctx, version, Publication{Entries: want}); err != nil {
+		t.Fatal(err)
+	}
+	releases, err := repo.List(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, r := range releases {
+		if r.Version == version {
+			if !reflect.DeepEqual(r.Entries, want) {
+				t.Fatalf("entradas = %+v, quer %+v", r.Entries, want)
+			}
+			return
+		}
+	}
+	t.Fatalf("release %s não encontrada", version)
+}
