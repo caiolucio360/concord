@@ -36,6 +36,13 @@ test('design-allow com motivo libera a linha (e a seguinte)', () => {
   assert.deepEqual(rules(`const e = ['🎺'] // design-allow:`), ['icone-texto'])
 })
 
+test('tipografia: escala do Tailwind e pesos fora de normal/medium/semibold/bold', () => {
+  assert.deepEqual(rules(`<p className="text-xs sm:text-lg md:hover:text-base" />`), ['texto-escala', 'texto-escala', 'texto-escala'])
+  assert.deepEqual(rules(`<p className="text-ds-sm text-text-muted text-6xl" />`), [])
+  assert.deepEqual(rules(`<p className="font-black font-extrabold font-light" />`), ['peso', 'peso', 'peso'])
+  assert.deepEqual(rules(`<p className="font-normal font-medium font-semibold font-bold" />`), [])
+})
+
 test('classes: px, hex, cor crua e raio fora da escala', () => {
   assert.deepEqual(rules(`<p className="text-[11px] sm:text-[9px]" />`), ['texto-px', 'texto-px'])
   assert.deepEqual(rules(`<p className="bg-[#14161a]" />`), ['hex-classe'])

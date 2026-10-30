@@ -28,8 +28,10 @@ roda no `affected-tests.mjs pr` e barra o diff que piora alguma regra.
    decorativa: `bg-gradient-hero`; manchas do fundo animado: `bg-hero-1…4`
    (todos em `assets/theme.css`). Marca: `text-brand`, `bg-brand`,
    `hover:bg-brand-hover`; erro: `danger`; aviso: `warning`; sucesso: `success`.
-6. **Texto pela escala `text-ds-*`** (xxs 10, xs 12, sm 14, md 16, lg 20, xl 24);
-   nada de `text-[Npx]`. Abaixo de 10 px não se lê no celular.
+6. **Texto pela escala `text-ds-*`** (xxs 10, xs 12, sm 14, md 16, lg 20, xl 24,
+   xxl 32); nada de `text-[Npx]` nem de `text-xs/sm/base/lg/xl/2xl/3xl` do
+   Tailwind. Abaixo de 10 px não se lê no celular. Pesos: `font-normal`,
+   `-medium`, `-semibold` ou `-bold` (sem `black`, `extrabold`, `light`).
 7. **Raio:** `rounded` (4 px: botão, campo, chip de cargo), `rounded-md` (6 px:
    botão de ícone, chip), `rounded-lg` (8 px: cartão, menu, popover),
    `rounded-xl` (12 px: modal) e `rounded-full` (avatar, switch, selo).

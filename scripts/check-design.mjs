@@ -23,6 +23,8 @@ const RENDERER = 'frontend/src/renderer/src/'
 export const RULES = {
   'icone-texto': 'emoji ou caractere Unicode como ícone: use um ícone de shared/ui/icons',
   'texto-px': 'text-[Npx]: use a escala text-ds-*',
+  'texto-escala': 'text-xs/sm/base/lg/xl/2xl/3xl do Tailwind: use a escala text-ds-*',
+  peso: 'font-black/extrabold/light/thin: use font-normal, -medium, -semibold ou -bold',
   'hex-classe': '[#hex] em classe: use os tokens de assets/theme.css',
   'cor-crua': 'cor crua do Tailwind: use brand, danger, warning ou success',
   raio: 'rounded-2xl/3xl/sm: use rounded, rounded-md, -lg, -xl ou -full',
@@ -63,6 +65,8 @@ const SVG_ALLOW = [
 const GLYPH = /[←-⇿⌀-⏿▀-◿☀-➿⬀-⯿〰×•\u{1F000}-\u{1FAFF}]/u
 const CLASS_RULES = [
   ['texto-px', /(?<![\w-])text-\[\d+(?:\.\d+)?px\]/g],
+  ['texto-escala', /(?<![\w-])text-(?:xs|sm|base|lg|xl|2xl|3xl)(?![\w-])/g],
+  ['peso', /(?<![\w-])font-(?:black|extrabold|light|thin|extralight)(?![\w-])/g],
   ['hex-classe', /-\[#[0-9a-fA-F]{3,8}\]/g],
   [
     'cor-crua',
