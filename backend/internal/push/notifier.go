@@ -22,6 +22,8 @@ type Presence interface {
 
 type SettingsSource interface {
 	All(ctx context.Context, userID string) (notifysettings.All, error)
+	// AllFor: as preferências de várias pessoas numa consulta (menção em canal).
+	AllFor(ctx context.Context, userIDs []string) (map[string]notifysettings.All, error)
 }
 
 type Directory interface {
@@ -37,6 +39,7 @@ type ChannelAccess interface {
 
 type TokenStore interface {
 	TokensForUser(ctx context.Context, userID string) ([]string, error)
+	TokensForUsers(ctx context.Context, userIDs []string) (map[string][]string, error)
 	Delete(ctx context.Context, token string) error
 }
 
@@ -203,25 +206,37 @@ func (n *Notifier) channelMention(ctx context.Context, ev message.CreateEvent) {
 		},
 	}
 	targets := mergeTargets(direct, everyone, ev.Message.AuthorID)
+	ids := n.reachable(ctx, channelID, targets)
+	if len(ids) == 0 {
+		return
+	}
+	// Num @all, uma consulta de preferências e uma de tokens para todos.
+	settings, err := n.Settings.AllFor(ctx, ids)
+	if err != nil {
+		log.Printf("[push] preferências da menção %s: %v", ev.Message.ID, err)
+		return
+	}
+	var send []string
+	for _, id := range ids {
+		if allowed(settings[id], ev.ServerID, channelID, targets[id], n.Now()) {
+			send = append(send, id)
+		}
+	}
+	n.deliverAll(ctx, send, msg)
+}
+
+// reachable: dos alvos, quem vê o canal e pode receber push agora (offline
+// e fora do "não perturbe"), em ordem estável. Só memória e o cache de
+// permissões: o banco fica para quem sobra.
+func (n *Notifier) reachable(ctx context.Context, channelID string, targets map[string]bool) []string {
 	ids := make([]string, 0, len(targets))
 	for id := range targets {
-		ids = append(ids, id)
+		if n.pushable(id) && n.Access.CanView(ctx, channelID, id) {
+			ids = append(ids, id)
+		}
 	}
 	sort.Strings(ids) // ordem estável: o envio não depende da ordem do mapa
-	for _, id := range ids {
-		isDirect := targets[id]
-		if !n.Access.CanView(ctx, channelID, id) {
-			continue
-		}
-		all, err := n.Settings.All(ctx, id)
-		if err != nil {
-			log.Printf("[push] preferências de %s: %v", id, err)
-			continue
-		}
-		if allowed(all, ev.ServerID, channelID, isDirect, n.Now()) {
-			n.deliver(ctx, id, msg)
-		}
-	}
+	return ids
 }
 
 // mentionTargets separa quem foi citado pelo nome (direct) de quem só é alcançado pelo @all (everyone).
@@ -276,9 +291,15 @@ func allowed(all notifysettings.All, serverID, channelID string, direct bool, no
 	return direct || !server.SuppressEveryone
 }
 
+// pushable: quem está com o app do celular aberto recebe por ele (o desktop
+// não conta); "não perturbe" não recebe.
+func (n *Notifier) pushable(userID string) bool {
+	return !n.Presence.IsAppOpen(userID) && n.Presence.EffectiveStatus(userID) != "dnd"
+}
+
 // deliver manda para todos os aparelhos da pessoa, se ela não está com o app do celular aberto nem em Não perturbar.
 func (n *Notifier) deliver(ctx context.Context, userID string, m fcm.Message) {
-	if n.Presence.IsAppOpen(userID) || n.Presence.EffectiveStatus(userID) == "dnd" {
+	if !n.pushable(userID) {
 		return
 	}
 	tokens, err := n.Tokens.TokensForUser(ctx, userID)
@@ -286,6 +307,26 @@ func (n *Notifier) deliver(ctx context.Context, userID string, m fcm.Message) {
 		log.Printf("[push] tokens de %s: %v", userID, err)
 		return
 	}
+	n.sendTo(ctx, userID, tokens, m)
+}
+
+// deliverAll: os tokens de todos numa consulta, e um envio por aparelho.
+func (n *Notifier) deliverAll(ctx context.Context, userIDs []string, m fcm.Message) {
+	if len(userIDs) == 0 {
+		return
+	}
+	tokens, err := n.Tokens.TokensForUsers(ctx, userIDs)
+	if err != nil {
+		log.Printf("[push] tokens de %d pessoas: %v", len(userIDs), err)
+		return
+	}
+	for _, id := range userIDs {
+		n.sendTo(ctx, id, tokens[id], m)
+	}
+}
+
+// sendTo manda m a cada aparelho; token que o FCM não reconhece mais é apagado.
+func (n *Notifier) sendTo(ctx context.Context, userID string, tokens []string, m fcm.Message) {
 	for _, token := range tokens {
 		m.Token = token
 		err := n.Sender.Send(ctx, m)

@@ -44,8 +44,8 @@ export default function BirthdayEditModal({
         }}
       >
         <BirthdayFields value={value} onChange={(next) => setValue({ ...value, ...next })} />
-        {invalid && <p className="text-xs text-amber-300">{invalid}</p>}
-        <p className="text-ds-xs text-gray-500">
+        {invalid && <p className="text-ds-xs text-warning">{invalid}</p>}
+        <p className="text-ds-xs text-faint">
           Sua idade aparece só para você, no recado de feliz aniversário.
         </p>
         <Toggle
@@ -55,7 +55,7 @@ export default function BirthdayEditModal({
           onChange={() => setValue({ ...value, announce: !value.announce })}
         />
         {failure && (
-          <p role="alert" className="text-xs text-danger">
+          <p role="alert" className="text-ds-xs text-danger">
             {failure}
           </p>
         )}

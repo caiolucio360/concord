@@ -16,7 +16,8 @@ import MessageSticker from './MessageSticker'
 import MessageGif from './MessageGif'
 import TTSBadge from '../../tts/components/TTSBadge'
 import { useChatStore } from '../store/chatStore'
-import { messagePreview } from '../lib/polls'
+import { messagePreviewParts } from '../lib/polls'
+import { textPreview, type Preview } from '../lib/preview'
 
 // Pedaços da linha de mensagem do chat (ver MessageItem).
 
@@ -41,13 +42,13 @@ export function MessageBadges({ message }: { message: Message }): React.JSX.Elem
     <>
       <TTSBadge show={message.tts} />
       {message.edited_at && (
-        <span className="text-ds-xs text-gray-500" title={formatEditedAt(message.edited_at)}>
+        <span className="text-ds-xs text-faint" title={formatEditedAt(message.edited_at)}>
           (editada)
         </span>
       )}
       {message.pinned_at && (
         <span
-          className="flex items-center gap-0.5 text-ds-xs text-amber-400 font-medium"
+          className="flex items-center gap-0.5 text-ds-xs text-warning font-medium"
           title="Mensagem fixada"
         >
           <PinIcon className="h-3 w-3" />
@@ -67,7 +68,7 @@ export function BlockedMessageNotice({
   onReveal: () => void
 }): React.JSX.Element {
   return (
-    <div id={`msg-${messageId}`} className="px-4 py-1 text-ds-sm text-gray-500">
+    <div id={`msg-${messageId}`} className="px-4 py-1 text-ds-sm text-faint">
       1 mensagem bloqueada —{' '}
       <button type="button" onClick={onReveal} className="cursor-pointer text-link hover:underline">
         Mostrar
@@ -76,14 +77,13 @@ export function BlockedMessageNotice({
   )
 }
 
-/** Prévia do texto citado na resposta (anexo, enquete, figurinha, GIF ou texto comum). */
-export function replyPreviewText(
+/** Prévia do que foi citado na resposta (anexo, enquete, figurinha, GIF ou texto comum). */
+export function replyPreview(
   original: Message | undefined,
   replyTo: ReplyPreview | null | undefined
-): string {
-  if (original) return messagePreview(original)
-  if (!replyTo) return ''
-  return replyTo.content || ''
+): Preview {
+  if (original) return messagePreviewParts(original)
+  return textPreview(replyTo?.content || '')
 }
 
 /** "Respondendo a…" acima da mensagem, com o avatar, o apelido, a cor e a prévia do que foi respondido. */
@@ -111,7 +111,7 @@ export function MessageReplyReference({
   const replyNickname = useServerNickname(serverId, replyAuthorId)
   const replyAuthorColor = useServerMemberColor(serverId, replyAuthorId)
   const replyAuthorName = serverDisplayName({ nickname: replyNickname }, replyAuthor)
-  const previewText = replyPreviewText(originalMessage, message.reply_to)
+  const preview = replyPreview(originalMessage, message.reply_to)
 
   return (
     <ReplyReference
@@ -119,8 +119,7 @@ export function MessageReplyReference({
       authorAvatarUrl={replyAuthor?.avatar_url}
       authorId={replyAuthorId}
       authorColor={replyAuthorColor}
-      content={previewText}
-      emptyLabel="🖼️ Imagem"
+      preview={preview}
       onJump={() => message.reply_to && onJumpToMessage(message.reply_to.id)}
     />
   )
@@ -145,7 +144,7 @@ export function MessageGutter({
     return (
       <span
         aria-hidden="true"
-        className="w-10 shrink-0 select-none self-start pt-[3px] text-center text-[10px] font-medium leading-[1.375rem] text-gray-500 opacity-0 group-hover:opacity-100"
+        className="w-10 shrink-0 select-none self-start pt-[3px] text-center text-ds-xxs font-medium leading-[1.375rem] text-faint opacity-0 group-hover:opacity-100"
       >
         {formatTime(message.created_at)}
       </span>
@@ -203,7 +202,7 @@ export function MessageHeader({
           <StyledName name={name} userId={message.author_id} style={message.author?.name_style} />
         )}
       </button>
-      <span className="shrink-0 text-ds-xs font-medium text-gray-500">
+      <span className="shrink-0 text-ds-xs font-medium text-faint">
         {formatTime(message.created_at)}
       </span>
       <MessageBadges message={message} />
@@ -216,7 +215,7 @@ function MessageStickerSlot({ message }: { message: Message }): React.JSX.Elemen
   if (message.sticker) return <MessageSticker sticker={message.sticker} />
   if (!stickerUnavailable(message)) return null
   return (
-    <div className="my-1 flex h-28 w-28 items-center justify-center rounded-lg border border-dashed border-white/10 bg-white/5 p-2 text-center text-xs text-gray-500">
+    <div className="my-1 flex h-28 w-28 items-center justify-center rounded-lg border border-dashed border-white/10 bg-white/5 p-2 text-center text-ds-xs text-faint">
       Figurinha indisponível
     </div>
   )

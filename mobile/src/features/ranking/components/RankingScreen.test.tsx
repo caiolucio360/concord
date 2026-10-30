@@ -105,8 +105,8 @@ describe('ImprovementsHub', () => {
   it('textos dos cards iguais aos da web', async () => {
     seed({ ranking: null })
     await render(<ImprovementsHub onBack={jest.fn()} onOpenRanking={jest.fn()} onOpenChangelog={jest.fn()} />)
-    expect(screen.getByText('O que mudou em cada versão do Salinha.')).toBeOnTheScreen()
-    expect(screen.getByText('Os 100 maiores níveis do Salinha.')).toBeOnTheScreen()
+    expect(screen.getByText('O que mudou em cada versão da Salinha.')).toBeOnTheScreen()
+    expect(screen.getByText('Os 100 maiores níveis da Salinha.')).toBeOnTheScreen()
     expect(screen.getByText('Ajude a decidir o que vem por aí, veja o que mudou e confira quem manda nas calls.')).toBeOnTheScreen()
   })
 })

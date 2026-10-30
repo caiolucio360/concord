@@ -1,5 +1,7 @@
 import type { CreatePollInput, Message, Poll } from '../api/messages'
-import { attachmentLabel } from './attachments'
+import { attachmentPreview } from './attachments'
+import { textPreview, type Preview } from './preview'
+import { previewToText } from './previewEmoji'
 
 // Limites iguais aos do backend (e do Discord).
 export const POLL_QUESTION_MAX = 300
@@ -18,40 +20,8 @@ export const POLL_DURATIONS: { hours: number; label: string }[] = [
 ]
 
 /** Emojis oferecidos no seletor de cada resposta. */
-export const POLL_EMOJIS = [
-  '👍',
-  '👎',
-  '❤️',
-  '😂',
-  '😮',
-  '😢',
-  '🔥',
-  '🎉',
-  '✅',
-  '❌',
-  '⭐',
-  '💡',
-  '🍕',
-  '🍔',
-  '🍣',
-  '☕',
-  '🎮',
-  '🎬',
-  '🎵',
-  '⚽',
-  '🏀',
-  '📚',
-  '💻',
-  '🐶',
-  '🐱',
-  '🌙',
-  '☀️',
-  '🌧️',
-  '🚀',
-  '💰',
-  '🤔',
-  '👀'
-]
+// design-allow: emojis que a pessoa escolhe para a resposta (conteúdo, não ícone)
+export const POLL_EMOJIS = '👍 👎 ❤️ 😂 😮 😢 🔥 🎉 ✅ ❌ ⭐ 💡 🍕 🍔 🍣 ☕ 🎮 🎬 🎵 ⚽ 🏀 📚 💻 🐶 🐱 🌙 ☀️ 🌧️ 🚀 💰 🤔 👀'.split(' ')
 
 /** Enquete sem votos novos: encerrada pelo autor ou com o prazo vencido. */
 export function isPollClosed(poll: Poll, now: number = Date.now()): boolean {
@@ -78,6 +48,17 @@ export function pollTimeLeft(poll: Poll, now: number = Date.now()): string {
   if (hours < 24) return `Faltam ${hours} h`
   const days = Math.floor(hours / 24)
   return `Faltam ${days} ${days === 1 ? 'dia' : 'dias'}`
+}
+
+/** "1 voto", "3 votos". */
+export function votesLabel(count: number): string {
+  return `${count} ${count === 1 ? 'voto' : 'votos'}`
+}
+
+/** Linha de ajuda abaixo da pergunta. */
+export function pollHint(closed: boolean, multiselect: boolean): string {
+  if (closed) return 'Enquete encerrada'
+  return multiselect ? 'Selecione uma ou mais respostas' : 'Selecione uma resposta'
 }
 
 export interface PollUpdate {
@@ -108,16 +89,24 @@ export function applyPollUpdate(
   }
 }
 
-/** Texto da mensagem para prévias (lista de DMs, notificações, barra de resposta). */
-export function messagePreview(
-  message: Pick<Message, 'content' | 'poll' | 'attachments' | 'sticker' | 'sticker_id' | 'gif_url'>
-): string {
-  if (message.poll) return `📊 ${message.poll.question}`
-  if (message.content) return message.content
-  if (message.sticker) return `💟 Figurinha :${message.sticker.name}:`
-  if (message.sticker_id) return '💟 Figurinha'
-  if (message.gif_url) return '👾 GIF'
-  return attachmentLabel(message.attachments) ?? ''
+type PreviewSource = Pick<
+  Message,
+  'content' | 'poll' | 'attachments' | 'sticker' | 'sticker_id' | 'gif_url'
+>
+
+/** Prévia da mensagem dentro do app (barra de resposta, busca): texto e tipo. */
+export function messagePreviewParts(message: PreviewSource): Preview {
+  if (message.poll) return { icon: 'poll', text: message.poll.question }
+  if (message.content) return textPreview(message.content)
+  if (message.sticker) return { icon: 'sticker', text: `Figurinha :${message.sticker.name}:` }
+  if (message.sticker_id) return { icon: 'sticker', text: 'Figurinha' }
+  if (message.gif_url) return { icon: 'gif', text: 'GIF' }
+  return attachmentPreview(message.attachments) ?? textPreview('')
+}
+
+/** A mesma prévia em texto puro (notificação do SO, última mensagem da conversa). */
+export function messagePreview(message: PreviewSource): string {
+  return previewToText(messagePreviewParts(message))
 }
 
 export interface PollDraftAnswer {

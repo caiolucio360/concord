@@ -6,6 +6,7 @@ import {
   submitFriendRequest,
   type AddFriendOutcome
 } from '../lib/addFriend'
+import Button from '../../../shared/ui/Button'
 
 function FeedbackText({ outcome }: { outcome: AddFriendOutcome }): React.JSX.Element {
   if (!outcome.ok) return <>{outcome.error}</>
@@ -41,8 +42,8 @@ export default function AddFriend(): React.JSX.Element {
   return (
     <section className="border-b border-subtle pb-5">
       <h2 className="text-ds-lg font-semibold text-strong">Adicionar amigo</h2>
-      <p className="mt-1 text-ds-sm text-gray-400">
-        Você pode adicionar amigos com o nome de usuário deles no Salinha.
+      <p className="mt-1 text-ds-sm text-muted">
+        Você pode adicionar amigos com o nome de usuário deles na Salinha.
       </p>
       <form
         onSubmit={submit}
@@ -57,15 +58,11 @@ export default function AddFriend(): React.JSX.Element {
           }}
           maxLength={32}
           placeholder="Você pode adicionar amigos com o nome de usuário deles."
-          className="min-w-0 flex-1 basis-40 bg-transparent text-ds-md text-strong outline-none placeholder:text-gray-500"
+          className="min-w-0 flex-1 basis-40 bg-transparent text-ds-md text-strong outline-none placeholder:text-faint"
         />
-        <button
-          type="submit"
-          disabled={!canSubmitFriend(username, sending)}
-          className="shrink-0 cursor-pointer rounded-md bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
-        >
+        <Button type="submit" disabled={!canSubmitFriend(username, sending)} className="shrink-0">
           Enviar pedido de amizade
-        </button>
+        </Button>
       </form>
       {feedback && (
         <p className={`mt-2 text-ds-sm ${tone.text}`}>

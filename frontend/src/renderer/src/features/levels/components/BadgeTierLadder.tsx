@@ -23,12 +23,12 @@ function BadgeTierLadder({ badge }: { badge: Badge }): React.JSX.Element {
               locked={!done}
             />
             <span
-              className={`mt-1 text-xs font-semibold ${done ? 'text-gray-100' : 'text-gray-500'}`}
+              className={`mt-1 text-ds-xs font-semibold ${done ? 'text-strong' : 'text-faint'}`}
             >
               {t.name}
             </span>
             <span
-              className={`flex items-center gap-0.5 text-[11px] ${done ? 'text-gray-400' : 'text-gray-500'}`}
+              className={`flex items-center gap-0.5 text-ds-xs ${done ? 'text-muted' : 'text-faint'}`}
             >
               {!done && <LockIcon className="h-2.5 w-2.5" />}
               {formatThreshold(badge.unit, t.threshold, badge.category)}

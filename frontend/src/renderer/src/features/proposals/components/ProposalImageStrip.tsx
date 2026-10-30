@@ -1,4 +1,5 @@
 import type { ImageDraft } from '../hooks/useProposalImages'
+import CloseButton from '../../../shared/ui/CloseButton'
 
 /** Miniaturas das imagens do formulário, com progresso, erro e botão de remover. */
 function ProposalImageStrip({
@@ -25,24 +26,23 @@ function ProposalImageStrip({
           {d.id == null && !d.error && (
             <div className="absolute inset-x-0 bottom-0 h-1 bg-black/50 on-media">
               <div
-                className="h-full bg-violet-400 transition-all"
+                className="h-full bg-brand transition-all"
                 style={{ width: `${Math.round(d.progress * 100)}%` }}
               />
             </div>
           )}
           {d.error && (
-            <span className="absolute inset-0 flex items-center justify-center p-1 text-center text-[10px] leading-tight text-red-300">
+            <span className="absolute inset-0 flex items-center justify-center p-1 text-center text-ds-xxs leading-tight text-danger">
               {d.error}
             </span>
           )}
-          <button
-            type="button"
+          <CloseButton
+            label="Remover imagem"
+            size="xs"
+            variant="media"
+            className="absolute right-1 top-1"
             onClick={() => onRemove(d.key)}
-            aria-label="Remover imagem"
-            className="absolute right-1 top-1 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-black/70 text-[10px] text-white transition-colors hover:bg-red-500 on-media"
-          >
-            ✕
-          </button>
+          />
         </li>
       ))}
     </ul>

@@ -23,12 +23,12 @@ function FriendPickList({
   let body: React.JSX.Element
   if (!loaded) {
     body = (
-      <p role="status" className="p-3 text-sm text-gray-400">
+      <p role="status" className="p-3 text-ds-sm text-muted">
         {INVITE_COPY.loadingFriends}
       </p>
     )
   } else if (visible.length === 0) {
-    body = <p className="p-3 text-sm text-gray-400">{emptyListText(total, available)}</p>
+    body = <p className="p-3 text-ds-sm text-muted">{emptyListText(total, available)}</p>
   } else {
     body = (
       <ul className="flex flex-col gap-0.5" aria-label={INVITE_COPY.modalTitle}>

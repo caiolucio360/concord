@@ -7,7 +7,7 @@ export function GifsTab({ gifs, loading, onSelect }: { gifs: GiphyItem[]; loadin
   if (loading || gifs.length === 0) {
     return (
       <View style={styles.empty}>
-        <Text style={styles.emptyText}>{loading ? 'Carregando GIFs...' : 'Nenhum GIF encontrado.'}</Text>
+        <Text style={styles.emptyText}>{loading ? 'Carregando GIFs…' : 'Nenhum GIF encontrado.'}</Text>
       </View>
     )
   }

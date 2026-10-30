@@ -31,6 +31,7 @@ func (r *Repository) IsBanned(ctx context.Context, serverID, userID string) (boo
 // RemoveMember tira o membro (os cargos dele vão junto pelo cascade).
 func (r *Repository) RemoveMember(ctx context.Context, serverID, userID string) error {
 	_, err := r.db.Exec(ctx, `DELETE FROM server_members WHERE server_id = $1 AND user_id = $2`, serverID, userID)
+	r.invalidatePerms(serverID)
 	return err
 }
 

@@ -1,9 +1,10 @@
 import { NAME_EFFECTS, NAME_FONTS, type NameStyle } from '../../profile/lib/nameStyle'
 import { withEffect } from '../../profile/lib/nameStylePicker'
 import StyledName from '../../profile/components/StyledName'
+import SectionHeader from '../../../shared/ui/SectionHeader'
 
 const optionClass = (active: boolean): string =>
-  `min-h-10 min-w-0 cursor-pointer truncate rounded-lg border px-2.5 py-1.5 text-left text-ds-sm text-strong transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+  `min-h-10 min-w-0 cursor-pointer truncate rounded-lg border px-2.5 py-1.5 text-left text-ds-sm text-strong transition-colors focus-ring ${
     active ? 'border-brand bg-brand/15' : 'border-subtle bg-fg/5 hover:bg-fg/10'
   }`
 
@@ -19,9 +20,9 @@ export default function NameStyleEditor({
   return (
     <div className="space-y-3">
       <div>
-        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+        <SectionHeader as="p" className="mb-1.5">
           Fonte
-        </p>
+        </SectionHeader>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(6.5rem,1fr))] gap-1.5">
           {NAME_FONTS.map((f) => (
             <button
@@ -38,9 +39,9 @@ export default function NameStyleEditor({
       </div>
 
       <div>
-        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+        <SectionHeader as="p" className="mb-1.5">
           Efeito
-        </p>
+        </SectionHeader>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(6.5rem,1fr))] gap-1.5">
           {NAME_EFFECTS.map((e) => (
             <button
@@ -59,7 +60,7 @@ export default function NameStyleEditor({
 
       {effect.maxColors > 0 && (
         <div className="flex items-center gap-3">
-          <p className="text-xs text-gray-400">{effect.maxColors > 1 ? 'Cores' : 'Cor'}</p>
+          <p className="text-ds-xs text-muted">{effect.maxColors > 1 ? 'Cores' : 'Cor'}</p>
           {Array.from({ length: effect.maxColors }, (_, i) => (
             <input
               key={i}

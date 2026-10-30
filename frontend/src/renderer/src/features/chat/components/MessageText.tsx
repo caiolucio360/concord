@@ -42,7 +42,7 @@ function MessageText({
   // Só emojis personalizados: grandes, como no Discord.
   const emojiSize = useMemo(() => (isEmojiOnly(parts) ? 'jumbo' : 'inline'), [parts])
   return (
-    <p className="cursor-text select-text whitespace-pre-wrap break-words text-ds-chat text-gray-200">
+    <p className="cursor-text select-text whitespace-pre-wrap break-words text-ds-chat text-normal">
       {parts.map((part, i) =>
         part.href ? (
           <a

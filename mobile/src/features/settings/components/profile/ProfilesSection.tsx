@@ -100,7 +100,7 @@ export function ProfilesSection() {
       <Tile title="Nome de exibição" value={`${draft.display_name || user.username} · ${nameStyleSummary(draft.name_style)}`} onPress={open('name')} label="Editar nome de exibição e estilo" />
       <Tile title="Pronomes" value={textSummary(draft.pronouns)} empty={SPOT_PLACEHOLDER.pronouns} onPress={open('pronouns')} label="Editar pronomes" />
       <Tile title="Nota" value={textSummary(draft.status_text)} empty={SPOT_PLACEHOLDER.note} onPress={open('note')} label="Editar nota" />
-      <Tile title="Sobre mim" value={textSummary(draft.bio)} empty={SPOT_PLACEHOLDER.bio} onPress={open('bio')} label="Editar Sobre mim" />
+      <Tile title="Sobre mim" value={textSummary(draft.bio)} empty={SPOT_PLACEHOLDER.bio} onPress={open('bio')} label="Editar sobre mim" />
       <Tile title="Links" value={linksSummary(draft.links)} empty={SPOT_PLACEHOLDER.links} onPress={open('links')} label="Editar links" />
 
       {modal ? <ProfileEditModal key={modal} id={modal} user={user} busy={profile.saving} onApply={profile.apply} onClose={() => setModal(null)} /> : null}

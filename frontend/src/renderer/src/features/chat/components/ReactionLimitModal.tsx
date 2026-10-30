@@ -23,7 +23,7 @@ function ReactionLimitModal(): React.JSX.Element | null {
   return (
     <Modal open={open} title="Calma lá, empolgação!" onClose={close}>
       <div className="flex flex-col gap-4">
-        <p className="text-ds-sm text-gray-300">
+        <p className="text-ds-sm text-secondary">
           Sua reação não foi adicionada porque esta mensagem já tem reações demais.
         </p>
         <div className="flex justify-end">

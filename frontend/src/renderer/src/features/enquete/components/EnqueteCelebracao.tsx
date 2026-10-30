@@ -39,10 +39,10 @@ function EnqueteCelebracao({
           className="enquete-badge relative max-w-full"
         />
       </div>
-      <h2 id={titleId} className="mt-4 text-balance text-xl font-bold text-strong">
+      <h2 id={titleId} className="mt-4 text-balance text-ds-lg font-bold text-strong">
         Badge conquistado!
       </h2>
-      <p className="mt-1 text-sm font-bold" style={{ color: cor }}>
+      <p className="mt-1 text-ds-sm font-bold" style={{ color: cor }}>
         {rotulo}
       </p>
     </EnqueteCamada>

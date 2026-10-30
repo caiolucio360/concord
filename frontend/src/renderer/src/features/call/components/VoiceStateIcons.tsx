@@ -29,7 +29,7 @@ function VoiceStateIcons({
       ? 'Áudio e microfone desativados'
       : 'Microfone desativado'
   return (
-    <span className="flex shrink-0 items-center gap-0.5 text-red-400" title={title}>
+    <span className="flex shrink-0 items-center gap-0.5 text-danger" title={title}>
       <MicOffIcon className={className} />
       {showHeadset && <HeadsetOffIcon className={className} />}
     </span>

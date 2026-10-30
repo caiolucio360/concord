@@ -95,6 +95,7 @@ function LevelUpScreen(): React.JSX.Element | null {
                 } as React.CSSProperties
               }
             >
+              {/* design-allow: partícula do efeito lendário (efeito visual, não ícone) */}
               ✦
             </span>
           ))}
@@ -104,7 +105,7 @@ function LevelUpScreen(): React.JSX.Element | null {
           >
             <Crown />
             <p
-              className="bg-clip-text text-6xl font-black tracking-[0.2em] text-transparent"
+              className="bg-clip-text text-6xl font-bold tracking-[0.2em] text-transparent"
               style={{
                 backgroundImage: `linear-gradient(90deg, ${RAINBOW.join(', ')})`,
                 filter: 'drop-shadow(0 2px 12px rgba(244,114,182,.55))'
@@ -112,7 +113,7 @@ function LevelUpScreen(): React.JSX.Element | null {
             >
               LENDÁRIO
             </p>
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-white/90">
+            <p className="text-ds-sm font-bold uppercase tracking-[0.3em] text-white/90">
               Nível {celebration.level}
             </p>
           </div>

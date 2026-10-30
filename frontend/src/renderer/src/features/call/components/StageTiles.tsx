@@ -104,7 +104,7 @@ export function ScreenTile({
           <Button
             variant="success"
             onClick={() => watchScreen(entry.userId)}
-            className={size === 'md' ? 'px-2.5 py-1 text-xs' : ''}
+            className={size === 'md' ? 'px-2.5 py-1 text-ds-xs' : ''}
           >
             Assistir transmissão
           </Button>

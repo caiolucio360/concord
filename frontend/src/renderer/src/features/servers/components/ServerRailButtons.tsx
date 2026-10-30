@@ -6,7 +6,7 @@ import { badgeText } from '../lib/serverRailBadge'
 export function RailCountBadge({ count }: { count: number }): React.JSX.Element | null {
   if (count <= 0) return null
   return (
-    <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-md">
+    <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-ds-xxs font-bold text-white shadow-md">
       {badgeText(count)}
     </span>
   )
@@ -33,11 +33,11 @@ export function RailHomeButton({
         to="/friends"
         onClick={onClick}
         aria-label="Início"
-        title="Mensagens Diretas e Amigos"
-        className={`group/home relative flex h-12 w-12 items-center justify-center font-bold text-xl shadow-lg transition-all duration-200 ${
+        title="Mensagens diretas e amigos"
+        className={`group/home relative flex h-12 w-12 items-center justify-center font-bold text-ds-lg shadow-lg transition-all duration-200 ${
           isHome
-            ? 'rounded-2xl bg-linear-to-br from-violet-600 to-indigo-600 text-white shadow-violet-500/30'
-            : 'rounded-3xl bg-surface border border-subtle text-strong hover:text-white hover:rounded-2xl hover:bg-linear-to-br hover:from-violet-600 hover:to-indigo-600 hover:shadow-violet-500/30'
+            ? 'rounded-xl bg-gradient-brand text-white shadow-brand/30'
+            : 'rounded-[50%] bg-surface border border-subtle text-strong hover:text-white hover:rounded-xl hover:bg-gradient-brand hover:shadow-brand/30'
         }`}
       >
         <SalinhaMarkIcon className="h-8 w-8" />
@@ -69,11 +69,11 @@ export function RailNavButton({
         aria-label={label}
         className={`relative flex h-12 w-12 cursor-pointer items-center justify-center transition-all duration-200 ${
           active
-            ? 'rounded-2xl bg-violet-600 shadow-md shadow-violet-500/30'
-            : 'rounded-3xl border border-subtle bg-surface hover:rounded-2xl hover:bg-violet-600 hover:shadow-md hover:shadow-violet-500/30'
+            ? 'rounded-xl bg-brand shadow-md shadow-brand/30'
+            : 'rounded-[50%] border border-subtle bg-surface hover:rounded-xl hover:bg-brand hover:shadow-md hover:shadow-brand/30'
         }`}
       >
-        {icon(`h-6 w-6 ${active ? 'text-white' : 'text-violet-400'}`)}
+        {icon(`h-6 w-6 ${active ? 'text-white' : 'text-brand'}`)}
       </button>
       <RailCountBadge count={badge} />
     </div>

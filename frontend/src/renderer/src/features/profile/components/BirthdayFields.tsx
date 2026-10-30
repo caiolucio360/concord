@@ -1,6 +1,6 @@
 import { birthYears, daysInMonth, MONTHS, type BirthdayValue } from '../lib/birthday'
 
-const selectClass = 'glass-input !py-2 text-sm'
+const selectClass = 'glass-input !py-2 text-ds-sm'
 
 /** Dia, mês e ano do aniversário (opcional; a idade só a própria pessoa vê). */
 function BirthdayFields({
@@ -24,7 +24,7 @@ function BirthdayFields({
 
   return (
     <div className="flex w-full flex-col gap-1.5">
-      <span className="text-ds-sm font-medium text-gray-300">{label}</span>
+      <span className="text-ds-sm font-medium text-secondary">{label}</span>
       <div className="flex gap-2">
         <select
           aria-label="Dia do aniversário"

@@ -11,6 +11,7 @@ import (
 
 type store interface {
 	All(ctx context.Context, userID string) (All, error)
+	AllFor(ctx context.Context, userIDs []string) (map[string]All, error)
 	SetServer(ctx context.Context, userID, serverID string, s Settings) error
 	DeleteServer(ctx context.Context, userID, serverID string) error
 	SetChannel(ctx context.Context, userID, channelID string, s Settings) error
@@ -44,6 +45,11 @@ func newService(st store, perms permissions, publisher EventPublisher) *Service 
 
 func (s *Service) All(ctx context.Context, userID string) (All, error) {
 	return s.store.All(ctx, userID)
+}
+
+// AllFor: as preferências de várias pessoas numa consulta (push de @all).
+func (s *Service) AllFor(ctx context.Context, userIDs []string) (map[string]All, error) {
+	return s.store.AllFor(ctx, userIDs)
 }
 
 // SetServer grava a preferência da pessoa para um servidor de que ela é membro.

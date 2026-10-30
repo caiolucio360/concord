@@ -4,7 +4,7 @@ import { useEnqueteStore } from '../store/enqueteStore'
 import EnqueteCamada from './EnqueteCamada'
 
 const BOTAO =
-  'flex min-h-11 w-full cursor-pointer touch-manipulation items-center justify-center rounded-xl px-4 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400 disabled:cursor-not-allowed disabled:opacity-60'
+  'flex min-h-11 w-full cursor-pointer touch-manipulation items-center justify-center rounded-xl px-4 text-ds-sm font-bold transition-colors focus-ring disabled:cursor-not-allowed disabled:opacity-60'
 
 /** A pergunta: opções iguais (rádios) e "Continuar" só com uma marcada. */
 function EnquetePergunta({ enquete }: { enquete: Enquete }): React.JSX.Element {
@@ -15,16 +15,16 @@ function EnquetePergunta({ enquete }: { enquete: Enquete }): React.JSX.Element {
 
   return (
     <EnqueteCamada titleId={titleId}>
-      <h2 id={titleId} className="text-balance text-lg font-bold text-strong">
+      <h2 id={titleId} className="text-balance text-ds-lg font-bold text-strong">
         {enquete.titulo}
       </h2>
-      <p className="mt-2 text-sm text-gray-400">{enquete.descricao}</p>
+      <p className="mt-2 text-ds-sm text-muted">{enquete.descricao}</p>
       <fieldset className="mt-5 flex flex-col gap-2 text-left">
         <legend className="sr-only">{enquete.titulo}</legend>
         {enquete.opcoes.map((o) => (
           <label
             key={o.id}
-            className="flex min-h-11 cursor-pointer touch-manipulation items-center gap-3 rounded-xl border border-subtle bg-surface px-4 text-sm font-bold text-gray-200 transition-colors hover:bg-white/10 has-[:checked]:border-violet-400 has-[:checked]:bg-violet-600/20 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-violet-400"
+            className="flex min-h-11 cursor-pointer touch-manipulation items-center gap-3 rounded-xl border border-subtle bg-surface px-4 text-ds-sm font-bold text-normal transition-colors hover:bg-white/10 has-[:checked]:border-brand has-[:checked]:bg-brand/20 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand"
           >
             <input
               type="radio"
@@ -32,7 +32,7 @@ function EnquetePergunta({ enquete }: { enquete: Enquete }): React.JSX.Element {
               value={o.id}
               checked={selecao === o.id}
               onChange={() => selecionar(o.id)}
-              className="h-4 w-4 accent-violet-500"
+              className="h-4 w-4 accent-brand"
             />
             {o.rotulo}
           </label>
@@ -42,7 +42,7 @@ function EnquetePergunta({ enquete }: { enquete: Enquete }): React.JSX.Element {
         type="button"
         disabled={!selecao}
         onClick={continuar}
-        className={`${BOTAO} mt-5 bg-violet-600 text-white hover:bg-violet-500`}
+        className={`${BOTAO} mt-5 bg-brand text-white hover:bg-brand-hover`}
       >
         Continuar
       </button>

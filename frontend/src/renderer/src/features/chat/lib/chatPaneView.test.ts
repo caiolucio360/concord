@@ -100,30 +100,32 @@ describe('pinnedPreview', () => {
     ({ id: 'p', author_id: 'u1', content: '', pinned_at: '', ...extra }) as PinnedMessage
 
   it('figurinha e GIF', () => {
-    expect(pinnedPreview(pin({ sticker: { name: 'gato' } as PinnedMessage['sticker'] }))).toBe(
-      '💟 Figurinha :gato:'
-    )
-    expect(pinnedPreview(pin({ gif_url: 'https://g' }))).toBe('👾 GIF')
+    expect(pinnedPreview(pin({ sticker: { name: 'gato' } as PinnedMessage['sticker'] }))).toEqual({
+      icon: 'sticker',
+      text: 'Figurinha :gato:'
+    })
+    expect(pinnedPreview(pin({ gif_url: 'https://g' }))).toEqual({ icon: 'gif', text: 'GIF' })
   })
 
   it('texto (sem espaços nas pontas)', () => {
-    expect(pinnedPreview(pin({ content: '  oi  ' }))).toBe('oi')
+    expect(pinnedPreview(pin({ content: '  oi  ' }))).toEqual({ icon: null, text: 'oi' })
   })
 
   it('anexo pelo tipo do primeiro', () => {
     const attachment = (kind: string): PinnedMessage =>
       pin({ attachments: [{ kind }] as PinnedMessage['attachments'] })
-    expect(pinnedPreview(attachment('image'))).toBe('📷 Imagem')
-    expect(pinnedPreview(attachment('video'))).toBe('🎥 Vídeo')
-    expect(pinnedPreview(attachment('audio'))).toBe('🎵 Áudio')
-    expect(pinnedPreview(attachment('file'))).toBe('📎 Anexo')
+    expect(pinnedPreview(attachment('image'))).toEqual({ icon: 'image', text: 'Imagem' })
+    expect(pinnedPreview(attachment('video'))).toEqual({ icon: 'video', text: 'Vídeo' })
+    expect(pinnedPreview(attachment('audio'))).toEqual({ icon: 'audio', text: 'Áudio' })
+    expect(pinnedPreview(attachment('file'))).toEqual({ icon: 'attachment', text: 'Anexo' })
   })
 
   it('enquete e o resto', () => {
-    expect(pinnedPreview(pin({ poll: { question: 'Pizza?' } as PinnedMessage['poll'] }))).toBe(
-      '📊 Enquete: Pizza?'
-    )
-    expect(pinnedPreview(pin({}))).toBe('Mensagem fixada')
+    expect(pinnedPreview(pin({ poll: { question: 'Pizza?' } as PinnedMessage['poll'] }))).toEqual({
+      icon: 'poll',
+      text: 'Enquete: Pizza?'
+    })
+    expect(pinnedPreview(pin({}))).toEqual({ icon: null, text: 'Mensagem fixada' })
   })
 })
 
@@ -141,7 +143,7 @@ describe('morePinsLabel', () => {
 
 describe('composerPlaceholder', () => {
   it('respondendo: chama a pessoa', () => {
-    expect(composerPlaceholder(true, 'ana', 'Mensagem para #geral')).toBe('Responder a @ana...')
+    expect(composerPlaceholder(true, 'ana', 'Mensagem para #geral')).toBe('Responder a @ana…')
   })
 
   it('sem resposta: o texto da tela', () => {
@@ -153,8 +155,8 @@ describe('composerPlaceholder', () => {
 
 describe('submitLabel', () => {
   it('subindo arquivo, enviando ou pronto', () => {
-    expect(submitLabel(true, true)).toBe('Enviando arquivos...')
-    expect(submitLabel(false, true)).toBe('Enviando...')
+    expect(submitLabel(true, true)).toBe('Enviando arquivos…')
+    expect(submitLabel(false, true)).toBe('Enviando…')
     expect(submitLabel(false, false)).toBe('Enviar')
   })
 })

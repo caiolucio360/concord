@@ -65,11 +65,11 @@ describe('CardInfo', () => {
     expect(html).toContain('Nível 12')
   })
 
-  it('membro desde: no Salinha e neste servidor', () => {
-    expect(render({ salinhaSince: '1 de mai. de 2025' })).toContain('· no Salinha')
+  it('membro desde: na Salinha e neste servidor', () => {
+    expect(render({ salinhaSince: '1 de mai. de 2025' })).toContain('· na Salinha')
     const both = render({ salinhaSince: 'a', serverSince: 'b' })
     expect(both).toContain('· neste servidor')
-    expect(render({ serverSince: 'b' })).not.toContain('· no Salinha')
+    expect(render({ serverSince: 'b' })).not.toContain('· na Salinha')
   })
 
   it('servidores em comum: singular e plural', () => {

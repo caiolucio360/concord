@@ -19,7 +19,7 @@ function GuestInviteModal({
   return (
     <Modal open={open} title={GUEST_COPY.modalTitle} onClose={onClose}>
       <div className="flex flex-col gap-5">
-        <p className="text-ds-sm text-gray-300">{GUEST_COPY.modalIntro}</p>
+        <p className="text-ds-sm text-secondary">{GUEST_COPY.modalIntro}</p>
         {state.link ? (
           <GuestLinkReady link={state.link} onNew={state.clearLink} />
         ) : (

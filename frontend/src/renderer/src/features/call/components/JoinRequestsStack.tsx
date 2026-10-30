@@ -15,7 +15,7 @@ export function JoinRequestsStack(): React.JSX.Element | null {
         return (
           <div
             key={user.id}
-            className="pointer-events-auto flex items-center justify-between gap-3 rounded-xl border border-amber-500/30 bg-floating p-3 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-bottom-2 duration-200"
+            className="pointer-events-auto flex items-center justify-between gap-3 rounded-xl border border-warning/30 bg-floating p-3 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-bottom-2 duration-200"
           >
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="relative shrink-0">
@@ -26,17 +26,17 @@ export function JoinRequestsStack(): React.JSX.Element | null {
                     className="h-10 w-10 rounded-full object-cover border border-subtle"
                   />
                 ) : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-sm font-semibold text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-ds-sm font-semibold text-white">
                     {name.slice(0, 1).toUpperCase()}
                   </div>
                 )}
-                <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-black">
+                <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-warning text-black">
                   <LockIcon className="h-2.5 w-2.5" />
                 </div>
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-strong">{name}</p>
-                <p className="text-xs text-amber-400/90 font-medium">Pediu para entrar na sala</p>
+                <p className="truncate text-ds-sm font-semibold text-strong">{name}</p>
+                <p className="text-ds-xs text-warning/90 font-medium">Pediu para entrar na sala</p>
               </div>
             </div>
 
@@ -53,7 +53,7 @@ export function JoinRequestsStack(): React.JSX.Element | null {
                 onClick={() => respond(user.id, false)}
                 title="Recusar"
                 aria-label="Recusar"
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-fg/10 text-gray-300 transition-all hover:bg-danger-strong hover:text-white active:scale-95"
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-fg/10 text-secondary transition-all hover:bg-danger-strong hover:text-white active:scale-95"
               >
                 <XIcon className="h-4 w-4" />
               </button>

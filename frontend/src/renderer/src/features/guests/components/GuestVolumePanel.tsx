@@ -33,7 +33,7 @@ function GuestVolumePanel({
   return (
     <Modal open={open} title={GUEST_COPY.volumes} onClose={onClose}>
       {people.length === 0 ? (
-        <p className="text-ds-sm text-gray-400">{GUEST_COPY.nobodyElse}</p>
+        <p className="text-ds-sm text-muted">{GUEST_COPY.nobodyElse}</p>
       ) : (
         <ul className="flex flex-col gap-4">
           {people.map((p) => (

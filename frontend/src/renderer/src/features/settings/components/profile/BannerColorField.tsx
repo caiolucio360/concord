@@ -26,7 +26,7 @@ export default function BannerColorField({
 }): React.JSX.Element {
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xs text-gray-400">A cor aparece quando não há imagem de banner.</p>
+      <p className="text-ds-xs text-muted">A cor aparece quando não há imagem de banner.</p>
       <div role="group" aria-label="Cores prontas" className="grid grid-cols-5 gap-2 sm:grid-cols-10">
         {QUICK_COLORS.map(({ hex: c, name }) => (
           <button
@@ -36,7 +36,7 @@ export default function BannerColorField({
             aria-pressed={value === c}
             title={name}
             onClick={() => onChange(c)}
-            className={`aspect-square min-h-10 cursor-pointer rounded-lg border transition-transform hover:scale-105 motion-reduce:transition-none motion-reduce:hover:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+            className={`aspect-square min-h-10 cursor-pointer rounded-lg border transition-transform hover:scale-105 motion-reduce:transition-none motion-reduce:hover:scale-100 focus-ring ${
               value === c ? 'border-white ring-2 ring-brand' : 'border-subtle'
             }`}
             style={{ background: c }}
@@ -49,13 +49,13 @@ export default function BannerColorField({
           <button
             type="button"
             onClick={() => onChange(null)}
-            className="min-h-10 cursor-pointer rounded-md px-2 text-xs text-link hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+            className="min-h-10 cursor-pointer rounded-md px-2 text-ds-xs text-link hover:underline focus-ring"
           >
             Usar a cor padrão
           </button>
         )}
       </div>
-      {error && <p className="text-xs text-danger">{error}</p>}
+      {error && <p className="text-ds-xs text-danger">{error}</p>}
     </div>
   )
 }

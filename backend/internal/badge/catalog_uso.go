@@ -56,7 +56,7 @@ var usoCategories = []Category{
 		// a sequência não tira o que foi conquistado.
 		Key:         "sequencia",
 		Name:        "Sequência",
-		Description: "Abra o Salinha todo dia, sem pular nenhum (horário de Brasília). Vale a sua maior sequência.",
+		Description: "Abra a Salinha todo dia, sem pular nenhum (horário de Brasília). Vale a sua maior sequência.",
 		Unit:        UnitDays,
 		Tiers: []Tier{
 			{"Faísca", 3, RarityCommon},

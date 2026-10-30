@@ -16,7 +16,7 @@ export function Toggle({
     <div className="flex items-center justify-between gap-4">
       <span className="min-w-0">
         <span className="block text-ds-md font-medium text-strong">{title}</span>
-        <span className="block text-ds-sm text-gray-400">{description}</span>
+        <span className="block text-ds-sm text-muted">{description}</span>
       </span>
       <Switch checked={checked} onChange={onChange} label={title} />
     </div>

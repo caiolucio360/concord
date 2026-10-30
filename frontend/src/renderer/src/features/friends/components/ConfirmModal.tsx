@@ -37,7 +37,7 @@ function ConfirmModal({
 
   return (
     <Modal open={open} title={title} onClose={busy ? undefined : onClose}>
-      <div className="text-sm leading-relaxed text-gray-300">{children}</div>
+      <div className="text-ds-sm leading-relaxed text-secondary">{children}</div>
       <div className="mt-6 flex justify-end gap-2">
         <Button variant="ghost" onClick={onClose} disabled={busy}>
           Cancelar

@@ -67,7 +67,7 @@ describe('ProfileCardBody', () => {
         links: ['https://github.com/ana']
       }
     })
-    expect(html).toContain(' • ')
+    expect(html).toContain(' · ')
     expect(html).toContain('ela/dela')
     expect(html).toContain('jogando')
     expect(html).toContain('href="https://ana.dev"')
@@ -112,7 +112,7 @@ describe('ProfileCardBody', () => {
       'Editar nome de exibição',
       'Editar pronomes',
       'Editar nota',
-      'Editar Sobre mim',
+      'Editar sobre mim',
       'Editar links'
     ]) {
       expect(html).toContain(`aria-label="${label}"`)

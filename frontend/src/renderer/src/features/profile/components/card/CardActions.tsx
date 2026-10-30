@@ -6,6 +6,8 @@ import { befriend, friendButtonOf } from '../../lib/cardFriendship'
 import { isStranger, type ProfileRelationship } from '../../lib/profileRelationship'
 import { showToast } from '../../../../shared/store/toastStore'
 import { DotsIcon } from '../../../../shared/ui/icons'
+import Button from '../../../../shared/ui/Button'
+import IconButton from '../../../../shared/ui/IconButton'
 
 interface CardActionsProps {
   userId: string
@@ -70,36 +72,20 @@ function CardActions({
 
   return (
     <div className="mt-3 flex gap-2">
-      <button
-        type="button"
-        onClick={sendMessage}
-        className="flex-1 cursor-pointer rounded-lg bg-brand px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-hover"
-      >
+      <Button size="sm" onClick={sendMessage} className="flex-1">
         Enviar mensagem
-      </button>
+      </Button>
       {friend && (
-        <button
-          type="button"
+        <Button
+          size="sm"
+          variant={friend.incoming ? 'success' : 'secondary'}
           disabled={sending || friend.pending}
           onClick={() => void addFriend()}
-          className={`cursor-pointer rounded-lg px-3 py-2 text-xs font-semibold transition-colors disabled:cursor-default disabled:opacity-60 ${
-            friend.incoming
-              ? 'bg-success-strong text-white hover:bg-success-strong-hover'
-              : 'bg-fg/10 text-strong hover:bg-fg/15'
-          }`}
         >
           {friend.label}
-        </button>
+        </Button>
       )}
-      <button
-        type="button"
-        aria-label="Mais"
-        title="Mais"
-        onClick={openMore}
-        className="flex cursor-pointer items-center justify-center rounded-lg bg-fg/10 px-2.5 text-gray-200 transition-colors hover:bg-fg/15"
-      >
-        <DotsIcon className="h-4 w-4" />
-      </button>
+      <IconButton icon={DotsIcon} label="Mais" size="sm" variant="filled" onClick={openMore} />
     </div>
   )
 }

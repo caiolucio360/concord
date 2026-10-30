@@ -61,9 +61,9 @@ export function broadcastView(i: BroadcastViewInput): BroadcastView {
 
 /** Classes do botão por estado (desabilitado, ativo, ocioso). */
 export function broadcastTone(view: BroadcastView): string {
-  if (view.disabled) return 'cursor-not-allowed bg-fg/5 text-gray-600'
+  if (view.disabled) return 'cursor-not-allowed bg-fg/5 text-interactive-muted'
   if (view.active) return 'cursor-pointer bg-success-strong text-white hover:bg-success-strong-hover'
-  return 'cursor-pointer bg-fg/6 text-gray-200 hover:bg-fg/12 hover:text-strong'
+  return 'cursor-pointer bg-fg/6 text-normal hover:bg-fg/12 hover:text-strong'
 }
 
 /** O desktop sabe achar a janela do jogo (Electron no Windows). */

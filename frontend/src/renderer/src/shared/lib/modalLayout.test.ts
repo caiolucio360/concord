@@ -25,10 +25,20 @@ describe('modalLayout', () => {
     }
   })
 
+  it('sem moldura (bare): sem padding, o conteúdo ocupa a janela; no celular, tela inteira', () => {
+    const { dialog, body } = modalLayout({ wide: true, bare: true })
+    expect(dialog).not.toMatch(/(^|\s)p-6(\s|$)/)
+    expect(dialog).not.toContain('max-md:px-4')
+    expect(dialog).toContain('max-md:h-full')
+    expect(dialog).toContain('max-w-3xl')
+    expect(body).toContain('flex-1')
+    expect(modalLayout({}).body).toContain('overflow-y-auto')
+  })
+
   it('no desktop continua centralizado, com margem e cantos redondos', () => {
     const { backdrop, dialog } = modalLayout({})
     expect(backdrop).toMatch(/(^|\s)items-center(\s|$)/)
     expect(backdrop).toMatch(/(^|\s)p-4(\s|$)/)
-    expect(dialog).toMatch(/(^|\s)rounded-2xl(\s|$)/)
+    expect(dialog).toMatch(/(^|\s)rounded-xl(\s|$)/)
   })
 })

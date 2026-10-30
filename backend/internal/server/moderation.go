@@ -61,7 +61,7 @@ type Moderation struct {
 }
 
 func ModerationService(repository *Repository, perms *permission.Service, publisher ModerationPublisher) *Moderation {
-	return newModeration(repository, perms, publisher)
+	return newModeration(withPermissionCache(repository, perms), perms, publisher)
 }
 
 func newModeration(store moderationStore, perms snapshots, publisher ModerationPublisher) *Moderation {

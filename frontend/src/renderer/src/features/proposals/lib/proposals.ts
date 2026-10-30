@@ -4,7 +4,8 @@ import type {
   ProposalComment,
   ProposalStatus
 } from '../api/proposals'
-import { attachmentLabel } from '../../chat/lib/attachments'
+import { attachmentPreview } from '../../chat/lib/attachments'
+import { textPreview, type Preview } from '../../chat/lib/preview'
 import { API_BASE_URL } from '../../../shared/lib/config'
 import { mentionsUser } from '../../chat/lib/mentions'
 import { profileMediaSrc } from '../../profile/lib/profileMedia'
@@ -234,10 +235,10 @@ export function hasReacted(
 export function commentPreview(
   comment: Pick<ProposalComment, 'body'> & Partial<Pick<ProposalComment, 'attachments'>>,
   max = 100
-): string {
+): Preview {
   const text = comment.body.replace(/\s+/g, ' ').trim()
-  const base = text || attachmentLabel(comment.attachments) || ''
-  return base.length > max ? `${base.slice(0, max)}…` : base
+  if (!text) return attachmentPreview(comment.attachments) ?? textPreview('')
+  return textPreview(text.length > max ? `${text.slice(0, max)}…` : text)
 }
 
 /** O autor do comentário edita; ele ou o time tech apagam. */

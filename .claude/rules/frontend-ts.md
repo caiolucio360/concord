@@ -20,6 +20,11 @@ paths:
 - Imports relativos, como o resto do código (o alias `@renderer` existe, mas
   não é usado).
 - Cores e espaçamentos pelos tokens de `assets/main.css` (`@theme`).
+- **Design**: ícones só de `shared/ui/icons` (nada de emoji/✕/✓ de texto),
+  botões com `Button`/`IconButton`/`CloseButton`, texto `text-ds-*`, raio da
+  escala, foco com `focus-ring`. Ver
+  [docs/ai/exemplos/design.md](../../docs/ai/exemplos/design.md); o
+  `scripts/check-design.mjs` (no `affected-tests pr`) barra o diff que piora.
 - Não rode `prettier --write` em arquivos existentes (o checkout é CRLF e ele
   reescreve todas as linhas). No lint, só os erros (`severity 2`) importam.
 - Skills: [composition-patterns](../skills/composition-patterns/SKILL.md)

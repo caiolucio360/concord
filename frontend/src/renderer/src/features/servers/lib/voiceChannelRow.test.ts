@@ -66,7 +66,7 @@ describe('voiceRowClass', () => {
 
   it('canal comum', () => {
     const cls = voiceRowClass(base)
-    expect(cls).toContain('text-gray-400')
+    expect(cls).toContain('text-muted')
     expect(cls).not.toContain('opacity-60')
   })
 

@@ -74,7 +74,7 @@ describe('RoleSubmenuItems', () => {
     expect(html).toContain('role="menuitemcheckbox"')
     expect(html.match(/aria-checked="true"/g)).toHaveLength(1)
     expect(html.match(/aria-checked="false"/g)).toHaveLength(1)
-    expect(html).toContain('✓')
+    expect(html.match(/<svg/g)).toHaveLength(1)
   })
 
   it('marca aria-disabled enquanto salva, sem desabilitar o botão (o foco fica)', () => {
@@ -90,5 +90,15 @@ describe('VoiceMoveSubmenuItems', () => {
     expect(html).toContain('Canal 2')
     expect(html).toContain('<svg')
     expect(html).toContain('role="menuitem"')
+  })
+})
+
+describe('RoleSubmenuItems: marca do cargo', () => {
+  it('cargo que o membro tem leva o ícone de check, não o caractere ✓', () => {
+    const html = renderToStaticMarkup(
+      <RoleSubmenuItems {...base} />
+    )
+    expect(html).not.toContain('✓')
+    expect(html).toContain('<svg')
   })
 })

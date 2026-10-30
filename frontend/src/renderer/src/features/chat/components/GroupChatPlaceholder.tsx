@@ -25,7 +25,7 @@ function GroupChatPlaceholder({ loaded }: { loaded: boolean }): React.JSX.Elemen
   }
   return (
     <div
-      className="flex h-full flex-1 items-center justify-center text-ds-md text-gray-400"
+      className="flex h-full flex-1 items-center justify-center text-ds-md text-muted"
       style={{ background: MAIN_BG }}
     >
       Conversa não encontrada.

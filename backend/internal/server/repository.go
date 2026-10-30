@@ -11,7 +11,8 @@ import (
 )
 
 type Repository struct {
-	db *pgxpool.Pool
+	db    *pgxpool.Pool
+	perms PermissionCache
 }
 
 func ServerRepository(db *pgxpool.Pool) *Repository {
@@ -53,41 +54,6 @@ func (r *Repository) Create(
 		&server.OwnerID,
 		&server.CreatedAt,
 		&server.UpdatedAt,
-	)
-}
-
-func (r *Repository) AddingUserServer(
-	ctx context.Context,
-	server *Server,
-	serverMember *ServerMember,
-	userID string,
-	role string,
-) error {
-	return r.db.QueryRow(
-		ctx,
-		`
-		INSERT INTO server_members (
-			server_id,
-			user_id,
-			role
-		)
-		VALUES ($1, $2, $3)
-		RETURNING
-			server_id,
-			user_id,
-			role,
-			joined_at,
-			updated_at
-		`,
-		server.ID,
-		userID,
-		role,
-	).Scan(
-		&serverMember.ServerID,
-		&serverMember.UserID,
-		&serverMember.Role,
-		&serverMember.JoinedAt,
-		&serverMember.UpdatedAt,
 	)
 }
 
@@ -206,6 +172,7 @@ func (r *Repository) SetIcon(ctx context.Context, id string, url *string) (*stri
 
 func (r *Repository) Delete(ctx context.Context, id string) error {
 	_, err := r.db.Exec(ctx, `DELETE FROM servers WHERE id = $1`, id)
+	r.invalidatePerms(id)
 	return err
 }
 
@@ -709,23 +676,4 @@ func (r *Repository) MutualServers(ctx context.Context, userA string, userB stri
 		servers = append(servers, s)
 	}
 	return servers, rows.Err()
-}
-
-// AddMemberIfMissing põe alguém no servidor sem falhar se já estiver lá.
-// Se o usuário for um bot (is_bot = TRUE), vincula também o cargo de sistema (Bots).
-func (r *Repository) AddMemberIfMissing(ctx context.Context, serverID string, userID string, role string) error {
-	if _, err := r.db.Exec(ctx,
-		`INSERT INTO server_members (server_id, user_id, role) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
-		serverID, userID, role); err != nil {
-		return err
-	}
-	_, err := r.db.Exec(ctx,
-		`INSERT INTO member_roles (server_id, user_id, role_id)
-		 SELECT $1, $2, r.id
-		 FROM roles r
-		 JOIN users u ON u.id = $2
-		 WHERE r.server_id = $1 AND r.is_system = TRUE AND u.is_bot = TRUE
-		 ON CONFLICT DO NOTHING`,
-		serverID, userID)
-	return err
 }

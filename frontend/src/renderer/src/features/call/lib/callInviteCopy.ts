@@ -9,7 +9,7 @@ export const INVITE_COPY = {
   modalTitle: 'Convidar amigos para a call',
   searchLabel: 'Buscar amigos',
   searchPlaceholder: 'Buscar amigo',
-  loadingFriends: 'Carregando seus amigos...',
+  loadingFriends: 'Carregando seus amigos…',
   noFriends: 'Você ainda não tem amigos para convidar.',
   noMatches: 'Nenhum amigo encontrado.',
   allInCall: 'Todos os seus amigos já estão na call.',
@@ -18,7 +18,7 @@ export const INVITE_COPY = {
   selectedCount: (n: number): string =>
     n === 1 ? '1 amigo selecionado' : `${n} amigos selecionados`,
   send: 'Enviar convites',
-  sending: 'Enviando...',
+  sending: 'Enviando…',
   sentAll: (n: number): string => (n === 1 ? 'Convite enviado.' : `${n} convites enviados.`),
   sentSome: (ok: number, total: number): string =>
     `${ok} de ${total} convites enviados. Veja abaixo quem não pôde ser convidado.`,

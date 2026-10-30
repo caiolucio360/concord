@@ -325,7 +325,7 @@ describe('hasReacted', () => {
 
 describe('commentPreview', () => {
   it('usa o texto, sem quebras de linha', () => {
-    expect(commentPreview(comment({ body: 'olha\n  isso' }))).toBe('olha isso')
+    expect(commentPreview(comment({ body: 'olha\n  isso' }))).toEqual({ icon: null, text: 'olha isso' })
   })
   it('só anexo: mostra o rótulo do arquivo', () => {
     const att = {
@@ -336,11 +336,17 @@ describe('commentPreview', () => {
       size_bytes: 1,
       url: '/x'
     }
-    expect(commentPreview(comment({ body: '', attachments: [att] }))).toBe('🖼️ Imagem')
-    expect(commentPreview(comment({ body: '', attachments: [att, att] }))).toBe('📎 2 anexos')
+    expect(commentPreview(comment({ body: '', attachments: [att] }))).toEqual({
+      icon: 'image',
+      text: 'Imagem'
+    })
+    expect(commentPreview(comment({ body: '', attachments: [att, att] }))).toEqual({
+      icon: 'attachment',
+      text: '2 anexos'
+    })
   })
   it('sem nada devolve vazio e corta o texto longo', () => {
-    expect(commentPreview(comment({ body: '' }))).toBe('')
-    expect(commentPreview(comment({ body: 'a'.repeat(300) }), 10)).toBe('aaaaaaaaaa…')
+    expect(commentPreview(comment({ body: '' }))).toEqual({ icon: null, text: '' })
+    expect(commentPreview(comment({ body: 'a'.repeat(300) }), 10).text).toBe('aaaaaaaaaa…')
   })
 })

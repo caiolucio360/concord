@@ -9,7 +9,7 @@ function LevelChip({ level }: { level: number }): React.JSX.Element {
     <span
       title={`Nível ${level} · ${levelTier(level).name}`}
       data-badge={look.variant}
-      className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-bold ${look.className}`}
+      className={`shrink-0 rounded-full px-2 py-0.5 text-ds-xs font-bold ${look.className}`}
       style={look.style}
     >
       Nv {level}

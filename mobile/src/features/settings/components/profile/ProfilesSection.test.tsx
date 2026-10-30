@@ -42,7 +42,7 @@ describe('ProfilesSection', () => {
 
   it('sobre mim acima do limite bloqueia o Aplicar e mostra o erro', async () => {
     await render(<ProfilesSection />)
-    await tile('Editar Sobre mim')
+    await tile('Editar sobre mim')
     await fireEvent.changeText(screen.getByLabelText('Sobre mim'), 'a'.repeat(200))
     expect(screen.getByRole('button', { name: 'Aplicar' })).toBeDisabled()
   })

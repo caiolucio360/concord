@@ -76,7 +76,7 @@ function BannerActions({ kind }: { kind: Banner['kind'] }): React.JSX.Element {
         <button
           type="button"
           onClick={() => useChatStore.getState().retryWsNow()}
-          className={`shrink-0 cursor-pointer rounded font-semibold underline-offset-2 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-brand ${ACCENT[kind]}`}
+          className={`shrink-0 cursor-pointer rounded font-semibold underline-offset-2 outline-none hover:underline focus-ring ${ACCENT[kind]}`}
         >
           Tentar agora
         </button>
@@ -93,7 +93,7 @@ export function BannerView({ banner }: { banner: Banner }): React.JSX.Element {
       aria-live="polite"
       data-testid="connection-banner"
       data-kind={banner.kind}
-      className={`flex flex-wrap items-center gap-x-3 gap-y-2 border-b px-4 py-2 text-sm text-normal ${TONE[banner.kind]}`}
+      className={`flex flex-wrap items-center gap-x-3 gap-y-2 border-b px-4 py-2 text-ds-sm text-normal ${TONE[banner.kind]}`}
     >
       {banner.kind !== 'reconnected' && (
         <span

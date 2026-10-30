@@ -18,7 +18,7 @@ function ServerLevelCard({
       className="mb-1 block w-full cursor-pointer rounded-lg border border-subtle bg-fg/5 px-2.5 py-2 text-left hover:bg-fg/10"
     >
       <ServerLevelBar progress={progress} />
-      <span className="mt-1.5 block text-ds-xs text-gray-400">Ver de onde vem o XP</span>
+      <span className="mt-1.5 block text-ds-xs text-muted">Ver de onde vem o XP</span>
     </button>
   )
 }

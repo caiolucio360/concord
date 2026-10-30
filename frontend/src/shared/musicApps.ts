@@ -39,7 +39,7 @@ export const MUSIC_APPS: readonly MusicAppDefinition[] = [
   },
   { name: 'TIDAL', ids: ['tidal'], sites: ['tidal.com'], accent: '#33ffee' },
   { name: 'SoundCloud', ids: ['soundcloud'], sites: ['soundcloud.com'], accent: '#ff5500' },
-  { name: 'Reprodutor Multimídia', ids: ['zunemusic'], sites: [], accent: '#0078d4' },
+  { name: 'Reprodutor multimídia', ids: ['zunemusic'], sites: [], accent: '#0078d4' },
   { name: 'VLC', ids: ['vlc'], sites: [], accent: '#ff8800' },
   { name: 'foobar2000', ids: ['foobar2000'], sites: [], accent: '#9aa0a6' },
   { name: 'MusicBee', ids: ['musicbee'], sites: [], accent: '#f5c518' },

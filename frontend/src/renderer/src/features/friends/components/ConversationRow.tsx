@@ -92,7 +92,7 @@ function ConversationText({
         className={`truncate text-ds-md ${
           active || unread > 0
             ? 'font-semibold text-strong'
-            : 'font-medium text-gray-400 group-hover:text-gray-200'
+            : 'font-medium text-muted group-hover:text-normal'
         }`}
       >
         {!isGroup && other ? (
@@ -106,15 +106,15 @@ function ConversationText({
         )}
       </p>
       {typing ? (
-        <p className="truncate text-ds-xs italic text-violet-300">digitando…</p>
+        <p className="truncate text-ds-xs italic text-brand">digitando…</p>
       ) : (
         (isGroup && (
-          <p className="truncate text-ds-xs font-medium text-gray-500">
+          <p className="truncate text-ds-xs font-medium text-faint">
             {(conv.members ?? []).length} membros
           </p>
         )) ||
         (other && (
-          <CompactActivityLine userId={other.id} className="text-ds-xs font-medium text-gray-500" />
+          <CompactActivityLine userId={other.id} className="text-ds-xs font-medium text-faint" />
         ))
       )}
     </div>
@@ -134,7 +134,7 @@ function ConversationTail({
   return (
     <>
       {unread > 0 && (
-        <span className="shrink-0 rounded-full bg-danger-strong px-1.5 text-[11px] font-bold text-white [@media(hover:hover)]:group-hover:hidden">
+        <span className="shrink-0 rounded-full bg-danger-strong px-1.5 text-ds-xs font-bold text-white [@media(hover:hover)]:group-hover:hidden">
           {unread > 99 ? '99+' : unread}
         </span>
       )}
@@ -146,7 +146,7 @@ function ConversationTail({
           e.stopPropagation()
           onClose()
         }}
-        className="shrink-0 cursor-pointer text-gray-400 hover:text-strong [@media(pointer:coarse)]:-my-2 [@media(pointer:coarse)]:-mr-2 [@media(pointer:coarse)]:p-3 [@media(hover:hover)]:sr-only [@media(hover:hover)]:group-hover:not-sr-only focus-visible:not-sr-only"
+        className="shrink-0 cursor-pointer text-muted hover:text-strong [@media(pointer:coarse)]:-my-2 [@media(pointer:coarse)]:-mr-2 [@media(pointer:coarse)]:p-3 [@media(hover:hover)]:sr-only [@media(hover:hover)]:group-hover:not-sr-only focus-visible:not-sr-only"
       >
         <XIcon className="h-4 w-4" />
       </button>

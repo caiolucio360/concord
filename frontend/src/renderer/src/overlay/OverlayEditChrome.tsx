@@ -26,11 +26,11 @@ function OverlayEditChrome({
     <>
       <div
         aria-label="Redimensionar"
-        className="absolute -bottom-2 -right-2 h-4 w-4 cursor-nwse-resize rounded-sm border-2 border-brand bg-floating"
+        className="absolute -bottom-2 -right-2 h-4 w-4 cursor-nwse-resize rounded border-2 border-brand bg-floating"
         onPointerDown={onResizeStart}
       />
       <div
-        className={`pointer-events-none absolute whitespace-nowrap rounded-md bg-floating px-2 py-1 text-xs font-medium text-normal ${hintPositionClass(pos, box, area)}`}
+        className={`pointer-events-none absolute whitespace-nowrap rounded-md bg-floating px-2 py-1 text-ds-xs font-medium text-normal ${hintPositionClass(pos, box, area)}`}
       >
         {editHint(normalizeOverlayShortcut(shortcut))}
       </div>

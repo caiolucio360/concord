@@ -9,7 +9,7 @@ export const SPOT_LABEL: Record<CardSpot, string> = {
   name: 'Editar nome de exibição',
   pronouns: 'Editar pronomes',
   note: 'Editar nota',
-  bio: 'Editar Sobre mim',
+  bio: 'Editar sobre mim',
   links: 'Editar links'
 }
 

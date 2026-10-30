@@ -31,9 +31,9 @@ export function StreamContextMenu({
       aria-label={`Transmissão de ${target.name}`}
       style={{ left, top, width: MENU_WIDTH }}
       data-user-context-menu="true"
-      className="fixed z-[80] flex max-h-[calc(100vh-16px)] flex-col gap-1 overflow-y-auto rounded-lg border border-subtle bg-floating p-2 text-sm text-gray-200 shadow-2xl"
+      className="fixed z-[80] flex max-h-[calc(100vh-16px)] flex-col gap-1 overflow-y-auto rounded-lg border border-subtle bg-floating p-2 text-ds-sm text-normal shadow-2xl"
     >
-      <p className="truncate px-2 pb-1 pt-0.5 text-xs font-bold text-gray-400">
+      <p className="truncate px-2 pb-1 pt-0.5 text-ds-xs font-bold text-muted">
         Transmissão de {target.name}
       </p>
       {renderVolumeControls('Volume da transmissão', 'Silenciar transmissão')}
@@ -90,9 +90,9 @@ export function MaestroContextMenu({
       aria-label={`Opções de ${target.name}`}
       style={{ left, top, width: MENU_WIDTH }}
       data-user-context-menu="true"
-      className="fixed z-[80] flex max-h-[calc(100vh-16px)] flex-col gap-1 overflow-y-auto rounded-lg border border-subtle bg-floating p-2 text-sm text-gray-200 shadow-2xl"
+      className="fixed z-[80] flex max-h-[calc(100vh-16px)] flex-col gap-1 overflow-y-auto rounded-lg border border-subtle bg-floating p-2 text-ds-sm text-normal shadow-2xl"
     >
-      <p className="truncate px-2 pb-1 pt-0.5 text-xs font-bold text-gray-400">{target.name}</p>
+      <p className="truncate px-2 pb-1 pt-0.5 text-ds-xs font-bold text-muted">{target.name}</p>
       {onStage ? (
         renderVolumeControls('Volume', 'Silenciar')
       ) : (
@@ -209,9 +209,9 @@ export function SelfContextMenu({
       aria-label={`Opções de ${targetName}`}
       style={{ left, top, width: MENU_WIDTH }}
       data-user-context-menu="true"
-      className="fixed z-[80] flex max-h-[calc(100vh-16px)] flex-col gap-1 overflow-y-auto rounded-lg border border-subtle bg-floating p-2 text-ds-sm text-gray-200 shadow-2xl"
+      className="fixed z-[80] flex max-h-[calc(100vh-16px)] flex-col gap-1 overflow-y-auto rounded-lg border border-subtle bg-floating p-2 text-ds-sm text-normal shadow-2xl"
     >
-      <p className="truncate px-2 pb-1 pt-0.5 text-ds-xs font-bold text-gray-400">
+      <p className="truncate px-2 pb-1 pt-0.5 text-ds-xs font-bold text-muted">
         {targetName}
       </p>
       <button role="menuitem" onClick={openProfile} className={itemClass}>
@@ -241,7 +241,7 @@ export function UserVolumeSection({
   return (
     <>
       <label className="flex flex-col gap-1.5 rounded px-2 py-1.5">
-        <span className="text-xs font-semibold text-gray-300">
+        <span className="text-ds-xs font-semibold text-secondary">
           {label} · {Math.round(volume * 100)}%
         </span>
         <input

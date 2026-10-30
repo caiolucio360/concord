@@ -1,6 +1,7 @@
 import { draftFromProfile } from '../../../profile/lib/profileValidation'
 import type { CardSpot } from '../../../profile/lib/cardSpots'
 import ProfilePreview, { type PreviewBase } from './ProfilePreview'
+import SectionHeader from '../../../../shared/ui/SectionHeader'
 
 /**
  * O palco de Configurações → Perfis: o cartão inteiro, grande, do jeito que
@@ -21,16 +22,11 @@ export default function ProfileStage({
   return (
     <section
       aria-labelledby="profile-stage-title"
-      className="min-w-0 sm:rounded-2xl sm:border sm:border-subtle sm:bg-fg/[0.03] sm:px-6 sm:pb-5 sm:pt-4 lg:sticky lg:top-4 lg:order-2 xl:px-10 xl:pb-8 xl:pt-6"
+      className="min-w-0 sm:rounded-xl sm:border sm:border-subtle sm:bg-fg/[0.03] sm:px-6 sm:pb-5 sm:pt-4 lg:sticky lg:top-4 lg:order-2 xl:px-10 xl:pb-8 xl:pt-6"
     >
       <div className="mb-4 flex min-h-5 flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-        <h3
-          id="profile-stage-title"
-          className="text-xs font-semibold uppercase tracking-wide text-gray-400"
-        >
-          Como os outros veem
-        </h3>
-        <p aria-live="polite" className="text-xs font-medium text-link">
+        <SectionHeader id="profile-stage-title">Como os outros veem</SectionHeader>
+        <p aria-live="polite" className="text-ds-xs font-medium text-link">
           {status}
         </p>
       </div>
@@ -45,7 +41,7 @@ export default function ProfileStage({
           onEdit={onEdit}
         />
       </div>
-      <p className="mt-4 text-center text-xs text-gray-400">
+      <p className="mt-4 text-center text-ds-xs text-muted">
         Clique ou toque em qualquer parte do cartão para editar.
       </p>
     </section>

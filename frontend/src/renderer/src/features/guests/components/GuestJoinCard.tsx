@@ -17,11 +17,11 @@ function JoinForm({ token, preview }: { token: string; preview: GuestPreview }):
       <h1 className="text-ds-lg font-bold text-strong">
         {GUEST_COPY.landingTitle(preview.inviter_name)}
       </h1>
-      <p className="mt-1 break-words text-ds-md font-semibold text-gray-200">
+      <p className="mt-1 break-words text-ds-md font-semibold text-normal">
         {GUEST_COPY.landingPlace(preview.channel_name, preview.server_name)}
       </p>
-      <p className="mt-3 text-ds-sm text-gray-300">{GUEST_COPY.landingRules}</p>
-      <p className="mt-1 text-ds-sm text-gray-300">
+      <p className="mt-3 text-ds-sm text-secondary">{GUEST_COPY.landingRules}</p>
+      <p className="mt-1 text-ds-sm text-secondary">
         {GUEST_COPY.landingPerms(preview.can_speak, preview.can_stream)}
       </p>
       <form
@@ -44,7 +44,7 @@ function JoinForm({ token, preview }: { token: string; preview: GuestPreview }):
         <Button type="submit" className="min-h-10 w-full" disabled={join.joining}>
           {joinButtonLabel(join.joining)}
         </Button>
-        <p className="text-ds-xs text-gray-400">{GUEST_COPY.nameHint}</p>
+        <p className="text-ds-xs text-muted">{GUEST_COPY.nameHint}</p>
       </form>
     </>
   )
@@ -63,7 +63,7 @@ function GuestJoinCard({ token }: { token: string }): React.JSX.Element {
       {state.status === 'error' && (
         <>
           <h1 className="text-ds-lg font-bold text-strong">{GUEST_COPY.unavailableTitle}</h1>
-          <p className="mt-2 text-ds-sm text-gray-300">{state.message}</p>
+          <p className="mt-2 text-ds-sm text-secondary">{state.message}</p>
           <Link
             to="/"
             className="mt-6 flex min-h-10 w-full items-center justify-center rounded-lg bg-fg/10 px-4 text-ds-sm font-semibold text-strong transition-colors hover:bg-fg/15"

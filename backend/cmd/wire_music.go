@@ -69,7 +69,7 @@ func (a *app) callListeners(callID string) []string {
 }
 
 func (a *app) isServerMember(ctx context.Context, serverID, userID string) bool {
-	ok, err := a.serverService.IsMember(ctx, serverID, userID)
+	ok, err := a.permissionService.IsMember(ctx, serverID, userID)
 	return err == nil && ok
 }
 

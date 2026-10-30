@@ -42,7 +42,7 @@ type Service struct {
 }
 
 func RoleService(repository *Repository, perms *permission.Service, publisher EventPublisher) *Service {
-	return newService(repository, perms, publisher)
+	return newService(withPermissionCache(repository, perms), perms, publisher)
 }
 
 func newService(repository store, perms snapshots, publisher EventPublisher) *Service {

@@ -32,7 +32,7 @@ function VideoPreview({
         />
       )}
       {!stream && (
-        <p className="absolute inset-0 flex items-center justify-center px-6 text-center text-ds-sm text-gray-400">
+        <p className="absolute inset-0 flex items-center justify-center px-6 text-center text-ds-sm text-muted">
           {error ?? (loading ? 'Abrindo a câmera…' : idle)}
         </p>
       )}

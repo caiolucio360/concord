@@ -37,10 +37,10 @@ function CommentEditForm({
         }}
       />
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="ghost" className="px-3 py-1 text-xs" onClick={onCancel}>
+        <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
           Cancelar
         </Button>
-        <Button type="button" className="px-3 py-1 text-xs" disabled={saveDisabled} onClick={onSave}>
+        <Button type="button" size="sm" disabled={saveDisabled} onClick={onSave}>
           Salvar
         </Button>
       </div>

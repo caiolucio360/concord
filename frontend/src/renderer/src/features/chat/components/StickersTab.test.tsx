@@ -30,14 +30,14 @@ describe('StickersTab', () => {
   it('com "Adicionar figurinhas" mostra o envio', () => {
     state.perms = Perm.ADD_STICKERS
     const html = render()
-    expect(html).toContain('Nova Figurinha')
+    expect(html).toContain('Nova figurinha')
     expect(html).toContain('Adicionar a primeira')
   })
 
   it('sem "Adicionar figurinhas" esconde o envio', () => {
     state.perms = 0
     const html = render()
-    expect(html).not.toContain('Nova Figurinha')
+    expect(html).not.toContain('Nova figurinha')
     expect(html).not.toContain('Adicionar a primeira')
     expect(html).toContain('Nenhuma figurinha no servidor ainda.')
   })
@@ -45,7 +45,7 @@ describe('StickersTab', () => {
   it('em outro servidor (sem os cargos dele) deixa o servidor decidir', () => {
     state.perms = 0
     state.viewing = 'outro'
-    expect(render()).toContain('Nova Figurinha')
+    expect(render()).toContain('Nova figurinha')
     state.viewing = 's1'
   })
 })

@@ -9,6 +9,7 @@ import { useActivityStore } from '../../activity/store/activityStore'
 import { useCallStore } from '../store/callStore'
 import { IS_WEB } from '../../../shared/lib/config'
 import { CrosshairIcon } from '../../../shared/ui/icons'
+import Button from '../../../shared/ui/Button'
 
 const POPOVER_WIDTH = 360
 const GAP = 10
@@ -52,12 +53,12 @@ function ActivityCard({
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
-          <span className="truncate text-sm font-bold text-strong">{activity.name}</span>
-          <span className="rounded bg-fg/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-gray-300">
+          <span className="truncate text-ds-sm font-bold text-strong">{activity.name}</span>
+          <span className="rounded bg-fg/10 px-1.5 py-0.5 text-ds-xxs font-bold uppercase tracking-wider text-secondary">
             {activity.category}
           </span>
         </span>
-        <span className="mt-0.5 block text-[11px] leading-snug text-gray-400">
+        <span className="mt-0.5 block text-ds-xs leading-snug text-muted">
           {activity.description}
         </span>
       </span>
@@ -131,11 +132,11 @@ function ActivityPickerPopover({
       role="dialog"
       aria-label="Atividades"
       style={{ width, left, bottom }}
-      className="fixed z-50 flex max-h-[460px] flex-col rounded-2xl border border-subtle bg-floating p-4 shadow-2xl"
+      className="fixed z-50 flex max-h-[460px] flex-col rounded-xl border border-subtle bg-floating p-4 shadow-2xl"
     >
       <div className="mb-3">
-        <p className="text-sm font-bold text-strong">Atividades</p>
-        <p className="text-[11px] text-gray-400">
+        <p className="text-ds-sm font-bold text-strong">Atividades</p>
+        <p className="text-ds-xs text-muted">
           Jogue com quem está na chamada — a voz continua aqui.
         </p>
       </div>
@@ -163,7 +164,7 @@ function ActivityPickerPopover({
           }}
         >
           <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold text-gray-300">
+            <span className="mb-1 block text-ds-xs font-semibold text-secondary">
               Cole o link da sala (opcional)
             </span>
             <input
@@ -178,17 +179,17 @@ function ActivityPickerPopover({
               }}
               placeholder={selected.linkExample}
               aria-invalid={error !== null}
-              className={`w-full rounded-xl border bg-input px-3 py-1.5 text-xs text-strong placeholder-gray-500 focus:outline-none ${
+              className={`w-full rounded-xl border bg-input px-3 py-1.5 text-ds-xs text-strong placeholder:text-faint focus:outline-none ${
                 error ? 'border-danger' : 'border-subtle focus:border-brand'
               }`}
             />
           </label>
           {error ? (
-            <p role="alert" className="text-[11px] text-danger">
+            <p role="alert" className="text-ds-xs text-danger">
               {error}
             </p>
           ) : (
-            <p className="text-[11px] text-gray-500">
+            <p className="text-ds-xs text-faint">
               {/* No desktop a janela do jogo é observada e a sala vai sozinha; no
                   navegador o iframe de outro site não deixa ler a URL. */}
               {IS_WEB
@@ -196,13 +197,9 @@ function ActivityPickerPopover({
                 : `${selected.roomHint} Sem link, quem entrar abre a página inicial.`}
             </p>
           )}
-          <button
-            type="submit"
-            disabled={!callId || busy}
-            className="w-full cursor-pointer rounded-xl bg-brand py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          <Button type="submit" size="sm" disabled={!callId || busy} className="w-full">
             {busy ? 'Abrindo…' : `Abrir ${selected.name}`}
-          </button>
+          </Button>
         </form>
       )}
     </div>,

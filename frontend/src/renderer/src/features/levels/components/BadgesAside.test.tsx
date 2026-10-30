@@ -61,7 +61,7 @@ describe('BadgesAside', () => {
   it('sem badges ganhos diz isso, em cada perfil à sua maneira', () => {
     expect(render({ earned: [], badges: [] })).toContain('Nenhum badge ainda.')
     expect(render({ earned: [], badges: [], isMe: true })).toContain(
-      'Nenhum badge ainda. Eles aparecem conforme você usa o Salinha.'
+      'Nenhum badge ainda. Eles aparecem conforme você usa a Salinha.'
     )
   })
 

@@ -13,7 +13,7 @@ const ITEM_SELECTOR = '[role="menuitem"]'
 const POPOVER_CLASS =
   'fixed z-50 max-h-[calc(100dvh-16px)] max-w-[calc(100vw-16px)] overflow-y-auto rounded-lg border border-subtle bg-floating p-1.5 shadow-2xl'
 const SHEET_CLASS =
-  'animate-sheet-in fixed inset-x-0 bottom-0 z-50 max-h-[70dvh] overflow-y-auto overscroll-contain rounded-t-2xl border-t border-subtle bg-floating px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-2xl'
+  'animate-sheet-in fixed inset-x-0 bottom-0 z-50 max-h-[70dvh] overflow-y-auto overscroll-contain rounded-t-xl border-t border-subtle bg-floating px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-2xl'
 
 const menuItems = (menu: HTMLElement | null): HTMLElement[] => [
   ...(menu?.querySelectorAll<HTMLElement>(ITEM_SELECTOR) ?? [])
@@ -127,7 +127,7 @@ function MenuItem({
 }): React.JSX.Element {
   const tone = item.danger
     ? 'text-danger hover:bg-danger-strong hover:text-white focus-visible:bg-danger-strong focus-visible:text-white'
-    : 'text-gray-300 hover:bg-brand hover:text-white focus-visible:bg-brand focus-visible:text-white'
+    : 'text-secondary hover:bg-brand hover:text-white focus-visible:bg-brand focus-visible:text-white'
   return (
     <button
       type="button"

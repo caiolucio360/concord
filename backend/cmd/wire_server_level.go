@@ -28,7 +28,7 @@ func (a *app) wireServerLevel() {
 	}()
 	a.badgeDone = done
 
-	handler := serverlevel.NewHandler(service, a.serverService)
+	handler := serverlevel.NewHandler(service, a.permissionService)
 	a.route(func(_ *gin.Engine, api *gin.RouterGroup) {
 		serverlevel.Routes(api, handler, a.authMiddleware)
 	})

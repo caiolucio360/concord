@@ -39,7 +39,7 @@ describe('ReactionChips', () => {
   it('pílulas no tamanho do Discord: 28px de altura, emoji de 20px e contagem de 14px', () => {
     const html = render()
     expect(html).toContain('h-7')
-    expect(html).toContain('text-[20px]')
+    expect(html).toContain('text-ds-lg')
     expect(html).toContain('text-ds-sm')
   })
 

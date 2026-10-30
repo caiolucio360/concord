@@ -24,7 +24,7 @@ function DmMessages({
 }: DmMessagesProps): React.JSX.Element {
   if (error) {
     return (
-      <div className="flex flex-1 items-center justify-center text-ds-md text-gray-400">
+      <div className="flex flex-1 items-center justify-center text-ds-md text-muted">
         <p>{error}</p>
       </div>
     )

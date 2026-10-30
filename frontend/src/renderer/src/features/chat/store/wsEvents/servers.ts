@@ -8,6 +8,9 @@ import { useServerStore } from '../../../servers/store/serverStore'
 import { handleServerRoleEvent, removedMessage } from '../../../servers/store/serverEvents'
 import { showToast } from '../../../../shared/store/toastStore'
 import { router } from '../../../../app/router'
+import { createSpreadRefresh } from '../../../servers/lib/spreadRefresh'
+import { useAuthStore } from '../../../auth/store/authStore'
+import { serverViewCache } from '../../../servers/lib/serverViewCache'
 
 /** O canal aberto que sumiu da lista do servidor (a pessoa perdeu o acesso), ou null. */
 export function lostChannelRoom(
@@ -54,11 +57,27 @@ export function removeServer(serverId: string, reason: string, ctx: ChatWsContex
   if (message) showToast.error(message)
 }
 
+/**
+ * Releitura depois de server:permissions:invalidate, espalhada em até 1,5 s
+ * entre os clientes (quem perdeu acesso já saiu das salas no servidor).
+ */
+const spreadPermissionRefresh = createSpreadRefresh({ maxDelayMs: 1500 })
+
+const currentUserId = (): string | undefined => useAuthStore.getState().user?.id
+
 /** Cargos, permissões e saída do servidor (sair, expulsão, banimento). true = tratado. */
 export const handleRoleEvent = (event: WsEvent, ctx: ChatWsContext): boolean =>
   handleServerRoleEvent(event, {
     onServerRemoved: (serverId, reason) => removeServer(serverId, reason, ctx),
-    onPermissionsChanged: (serverId) => void reconcileAfterPermissionChange(serverId, ctx)
+    onPermissionsChanged: (serverId) => {
+      // A tela guardada pode mostrar um canal que a pessoa deixou de ver.
+      serverViewCache.invalidate(serverId)
+      // Saiu da conta (ou entrou outra) antes da releitura: ela não sai.
+      const userId = currentUserId()
+      spreadPermissionRefresh(serverId, () => {
+        if (currentUserId() === userId) void reconcileAfterPermissionChange(serverId, ctx)
+      })
+    }
   })
 
 const handleUpdate: WsHandler = (payload) => {

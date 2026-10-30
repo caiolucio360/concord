@@ -15,7 +15,7 @@ describe('HubBackFrame', () => {
   it('mostra a tela e um voltar que leva ao hub', () => {
     expect(html).toContain('Rank global')
     expect(html).toContain('href="/melhorias"')
-    expect(html).toContain('aria-label="Voltar para Melhorias"')
+    expect(html).toContain('aria-label="Voltar para melhorias"')
   })
 
   it('o botão tem alvo de toque de 40 px e o cabeçalho abre espaço para ele', () => {
