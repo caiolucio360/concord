@@ -38,7 +38,7 @@ describe('app.config (voz)', () => {
     expect(mods?.android?.dangerous).toBeDefined()
   })
 
-  it('aplica o serviço em primeiro plano da chamada (ADR 0028): sem ele a chamada cai ao ir para outra tela', () => {
+  it('aplica o serviço em primeiro plano da chamada (ADR 0029): sem ele a chamada cai ao ir para outra tela', () => {
     const mods = (config as { mods?: { android?: { manifest?: unknown } } }).mods
     expect(mods?.android?.manifest).toBeDefined()
   })

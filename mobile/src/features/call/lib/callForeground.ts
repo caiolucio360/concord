@@ -1,6 +1,6 @@
 import type { CallPhase } from './callTypes'
 
-/** O serviço em primeiro plano do Android (ADR 0028). Porta: só `notifeeForeground.ts` fala com o notifee. */
+/** O serviço em primeiro plano do Android (ADR 0029). Porta: só `notifeeForeground.ts` fala com o notifee. */
 export interface ForegroundPort {
   start(info: { title: string }): Promise<void>
   stop(): Promise<void>

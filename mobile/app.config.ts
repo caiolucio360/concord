@@ -52,5 +52,5 @@ const config: ExpoConfig = {
 }
 
 // O R8 do build de release precisa de uma regra para o LiveKit (plugins/withProguardRules.ts) e a chamada, do
-// serviço em primeiro plano com os tipos microfone e câmera (plugins/withCallForegroundService.js, ADR 0028).
+// serviço em primeiro plano com os tipos microfone e câmera (plugins/withCallForegroundService.js, ADR 0029).
 export default withCallForegroundService(withProguardRules(config))

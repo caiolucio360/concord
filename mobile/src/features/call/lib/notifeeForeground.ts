@@ -1,7 +1,7 @@
 import notifee, { AndroidForegroundServiceType, AndroidImportance } from '@notifee/react-native'
 import type { ForegroundPort } from './callForeground'
 
-// O único arquivo que fala com o notifee (ADR 0028), fora da cobertura do Jest como o livekitMedia.ts: a lógica
+// O único arquivo que fala com o notifee (ADR 0029), fora da cobertura do Jest como o livekitMedia.ts: a lógica
 // de quando ligar e desligar fica em callForeground.ts, testada com uma porta falsa.
 
 const CHANNEL = 'chamada-ativa'
