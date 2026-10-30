@@ -2,12 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { notePickedSource } from '../lib/windowAudio'
 import type { ScreenSourceInfo } from '../../../../../preload/index.d'
 import Button from '../../../shared/ui/Button'
-import { MonitorIcon } from '../../../shared/ui/icons'
 import { notePickerCancelled } from '../lib/screenPickerCancel'
 import { loadScreenQuality, saveScreenQuality } from '../lib/screenShareQuality'
 import ScreenQualityControls from './ScreenQualityControls'
 import { trapTab } from '../../../shared/lib/focusTrap'
-import { ScreenSourceGridSkeleton } from '../../../shared/ui/skeleton/layouts'
+import { ScreenPickerTabs, ScreenSourceGrid, type ScreenPickerTab } from './ScreenSourceGrid'
 
 /**
  * Picker de fonte para compartilhamento de tela (estilo Discord).
@@ -26,7 +25,7 @@ function ScreenSharePickerModal(): React.JSX.Element | null {
   // Listar as fontes demora (miniaturas): antes disso não dá para dizer "nenhuma opção".
   const [sourcesLoaded, setSourcesLoaded] = useState(false)
   const [selected, setSelected] = useState<string | null>(null)
-  const [tab, setTab] = useState<'screen' | 'window'>('screen')
+  const [tab, setTab] = useState<ScreenPickerTab>('screen')
 
   useEffect(() => {
     if (!screenPicker) return
@@ -96,6 +95,10 @@ function ScreenSharePickerModal(): React.JSX.Element | null {
   const screens = sources.filter((s) => s.displayId !== '')
   const windows = sources.filter((s) => s.displayId === '')
   const visible = tab === 'screen' ? screens : windows
+  const selectTab = (next: ScreenPickerTab): void => {
+    setTab(next)
+    setSelected((next === 'screen' ? screens : windows)[0]?.id ?? null)
+  }
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 backdrop-blur-sm">
@@ -108,78 +111,13 @@ function ScreenSharePickerModal(): React.JSX.Element | null {
         className="rounded-2xl border border-subtle bg-modal shadow-2xl shadow-black/70 max-h-[95vh] w-full max-w-2xl overflow-y-auto p-6"
       >
         <h2 className="text-xl font-bold text-strong">Compartilhe sua tela</h2>
-        <div className="mt-4 flex gap-4 border-b border-subtle">
-          <button
-            onClick={() => {
-              setTab('screen')
-              setSelected(screens[0]?.id ?? null)
-            }}
-            className={`cursor-pointer border-b-2 px-3 pb-2 text-sm font-semibold transition-colors ${
-              tab === 'screen'
-                ? 'border-[var(--text-strong)] text-strong'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            Telas
-          </button>
-          <button
-            onClick={() => {
-              setTab('window')
-              setSelected(windows[0]?.id ?? null)
-            }}
-            className={`cursor-pointer border-b-2 px-3 pb-2 text-sm font-semibold transition-colors ${
-              tab === 'window'
-                ? 'border-[var(--text-strong)] text-strong'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            Aplicativos
-          </button>
-        </div>
-
-        <div className="mt-5 grid max-h-[46vh] grid-cols-2 gap-3 overflow-y-auto pr-1">
-          {!sourcesLoaded && <ScreenSourceGridSkeleton />}
-          {sourcesLoaded && visible.length === 0 && (
-            <p className="col-span-2 py-8 text-center text-sm text-gray-500">
-              Nenhuma opção disponível.
-            </p>
-          )}
-          {visible.map((source) => (
-            <button
-              key={source.id}
-              onClick={() => setSelected(source.id)}
-              className={`group cursor-pointer rounded-lg p-2 text-left transition-colors ${
-                selected === source.id ? 'bg-brand/20' : 'bg-fg/[0.03] hover:bg-fg/[0.07]'
-              }`}
-            >
-              <div
-                className={`relative mb-2 aspect-video overflow-hidden rounded-md bg-black ${
-                  selected === source.id
-                    ? 'ring-2 ring-brand'
-                    : 'ring-1 ring-fg/10 group-hover:ring-fg/25'
-                }`}
-              >
-                {source.thumbnail ? (
-                  <img
-                    src={source.thumbnail}
-                    alt={source.name}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <MonitorIcon className="h-8 w-8 text-gray-600" />
-                  </div>
-                )}
-                {selected === source.id && (
-                  <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-brand text-xs font-bold text-white">
-                    ✓
-                  </span>
-                )}
-              </div>
-              <p className="truncate text-xs font-semibold text-gray-200">{source.name}</p>
-            </button>
-          ))}
-        </div>
+        <ScreenPickerTabs tab={tab} onChange={selectTab} />
+        <ScreenSourceGrid
+          loaded={sourcesLoaded}
+          sources={visible}
+          selected={selected}
+          onSelect={setSelected}
+        />
 
         <ScreenQualityControls value={quality} onChange={setQuality} />
 

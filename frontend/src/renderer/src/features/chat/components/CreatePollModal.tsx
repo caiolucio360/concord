@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Modal from '../../../shared/ui/Modal'
 import Button from '../../../shared/ui/Button'
 import { PlusIcon } from '../../../shared/ui/icons'
-import { PollAnswerMedia } from './PollCard'
+import { PollAnswerMedia } from './PollAnswerMedia'
 import { showToast } from '../../../shared/store/toastStore'
 import type { CreatePollInput } from '../api/messages'
 import {

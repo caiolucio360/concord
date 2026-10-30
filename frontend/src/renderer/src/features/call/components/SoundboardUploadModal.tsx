@@ -8,12 +8,9 @@ import {
 } from '../api/soundboard'
 import { useSoundboardStore } from '../store/soundboardStore'
 import { showToast } from '../../../shared/store/toastStore'
-import Button from '../../../shared/ui/Button'
 import { readMediaMeta } from '../../chat/lib/readMediaMeta'
-import { PauseIcon, PlayIcon } from '../../../shared/ui/icons'
 import Input from '../../../shared/ui/Input'
-
-const PRESET_EMOJIS = ['🎺', '😂', '🔥', '💀', '🎉', '👏', '🚨', '💥', '🥁', '🐸', '🎸', '🔔']
+import { SoundEmojiField, SoundFileField, SoundUploadActions } from './SoundboardUploadFields'
 
 interface SoundboardUploadModalProps {
   open: boolean
@@ -155,56 +152,17 @@ function SoundboardUploadModal({
         </div>
 
         <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
-          <div>
-            <label className="mb-1.5 block text-ds-sm font-medium text-gray-400">
-              Arquivo de áudio (máx. 15s e 5 MB)
-            </label>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/mp4,audio/x-m4a,audio/webm,.mp3,.wav,.ogg,.m4a,.webm"
-              className="hidden"
-              onChange={(e) => void handleSelectFile(e)}
-            />
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="flex flex-1 cursor-pointer items-center justify-between rounded-xl border border-dashed border-normal bg-fg/5 px-3 py-2.5 text-left text-xs text-gray-200 transition-colors hover:border-strong hover:bg-fg/10"
-              >
-                <span className="truncate">
-                  {file ? file.name : 'Escolher arquivo (.mp3, .wav, .ogg, .m4a)'}
-                </span>
-                {durationMs !== null && (
-                  <span className="ml-2 shrink-0 rounded bg-fg/10 px-1.5 py-0.5 text-[11px] font-semibold text-gray-300">
-                    {(durationMs / 1000).toFixed(1)}s • {(file!.size / 1024).toFixed(0)} KB
-                  </span>
-                )}
-              </button>
-              {previewUrl && (
-                <button
-                  type="button"
-                  onClick={togglePreview}
-                  title={previewPlaying ? 'Parar prévia' : 'Ouvir prévia'}
-                  className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl bg-brand text-white transition-colors hover:bg-brand-hover"
-                >
-                  {previewPlaying ? (
-                    <PauseIcon className="h-4 w-4" />
-                  ) : (
-                    <PlayIcon className="h-4 w-4" />
-                  )}
-                </button>
-              )}
-            </div>
-            {previewUrl && (
-              <audio
-                ref={previewAudioRef}
-                src={previewUrl}
-                onEnded={() => setPreviewPlaying(false)}
-                className="hidden"
-              />
-            )}
-          </div>
+          <SoundFileField
+            fileInputRef={fileInputRef}
+            previewAudioRef={previewAudioRef}
+            file={file}
+            durationMs={durationMs}
+            previewUrl={previewUrl}
+            previewPlaying={previewPlaying}
+            onPick={(e) => void handleSelectFile(e)}
+            onTogglePreview={togglePreview}
+            onPreviewEnded={() => setPreviewPlaying(false)}
+          />
 
           <div>
             <label className="mb-1.5 block text-ds-sm font-medium text-gray-400">
@@ -219,46 +177,16 @@ function SoundboardUploadModal({
             />
           </div>
 
-          <div>
-            <label className="mb-1.5 block text-ds-sm font-medium text-gray-400">
-              Ícone / Emoji
-            </label>
-            <div className="flex flex-wrap items-center gap-1.5">
-              {PRESET_EMOJIS.map((em) => (
-                <button
-                  key={em}
-                  type="button"
-                  onClick={() => setEmoji(em)}
-                  className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-base transition-colors ${
-                    emoji === em
-                      ? 'bg-brand text-white ring-2 ring-fg/40'
-                      : 'bg-fg/5 hover:bg-fg/15'
-                  }`}
-                >
-                  {em}
-                </button>
-              ))}
-              <input
-                type="text"
-                value={emoji}
-                onChange={(e) => setEmoji(e.target.value.slice(0, 4))}
-                placeholder="🎵"
-                aria-label="Emoji personalizado"
-                className="h-8 w-12 rounded-lg border border-subtle bg-fg/5 text-center text-sm text-strong focus:border-brand focus:outline-none"
-              />
-            </div>
-          </div>
+          <SoundEmojiField emoji={emoji} onChange={setEmoji} />
 
           {error && <p className="text-xs font-medium text-danger">{error}</p>}
 
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="ghost" onClick={onClose}>
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={!file || !name.trim() || submitting}>
-              {submitting ? 'Enviando…' : 'Salvar na Mesa'}
-            </Button>
-          </div>
+          <SoundUploadActions
+            file={file}
+            name={name}
+            submitting={submitting}
+            onCancel={onClose}
+          />
         </form>
       </div>
     </div>,

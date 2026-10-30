@@ -11,7 +11,8 @@ import {
   uploadErrorMessage
 } from '../../chat/lib/attachments'
 import { applyMention, mentionQuery, mentionSuggestions } from '../../chat/lib/mentions'
-import { commentPreview, MAX_COMMENT, mentionIdsIn } from '../lib/proposals'
+import { MAX_COMMENT, mentionIdsIn } from '../lib/proposals'
+import { commentButtonLabel, commentPlaceholder } from '../lib/commentComposer'
 import type { PublicUser } from '../../auth/store/authStore'
 import { useAuthStore } from '../../auth/store/authStore'
 import { useProposalStore } from '../store/proposalStore'
@@ -21,6 +22,8 @@ import ComposerAttachments from '../../chat/components/ComposerAttachments'
 import { useAttachmentDraft, type DraftUploader } from '../../chat/hooks/useAttachmentDraft'
 import VoiceRecordButton from '../../chat/components/VoiceRecordButton'
 import { PaperclipIcon } from '../../../shared/ui/icons'
+import CommentReplyBar from './CommentReplyBar'
+import MentionSuggestionList from './MentionSuggestionList'
 
 const SEARCH_DELAY_MS = 200
 
@@ -225,65 +228,21 @@ function CommentComposer({
         addFiles(Array.from(e.dataTransfer.files))
       }}
     >
-      {suggestions.length > 0 && (
-        <ul
-          role="listbox"
-          aria-label="Marcar alguém"
-          className="absolute bottom-full left-0 right-0 z-10 mb-1 overflow-hidden rounded-lg border border-subtle bg-floating py-1 shadow-2xl"
-        >
-          {suggestions.map((m, i) => (
-            <li
-              key={m.username}
-              role="option"
-              aria-selected={i === highlight}
-              onMouseDown={(e) => {
-                e.preventDefault()
-                pick(m.username)
-              }}
-              onMouseEnter={() => setHighlight(i)}
-              className={`flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm ${
-                i === highlight ? 'bg-brand/30 text-strong' : 'text-gray-300'
-              }`}
-            >
-              <span className="font-semibold">{m.display_name}</span>
-              <span className="text-xs text-gray-400">@{m.username}</span>
-            </li>
-          ))}
-        </ul>
-      )}
+      <MentionSuggestionList
+        suggestions={suggestions}
+        highlight={highlight}
+        onPick={pick}
+        onHighlight={setHighlight}
+      />
       <ComposerAttachments drafts={drafts} onRemove={remove} />
-      {replyingTo && (
-        <div
-          data-reply-bar
-          className="flex items-center justify-between gap-2 rounded-lg border border-subtle bg-floating px-3 py-1.5 text-ds-sm text-gray-300"
-        >
-          <div className="min-w-0 truncate">
-            Respondendo a{' '}
-            <span className="font-semibold text-strong">@{replyingTo.author_name}</span>
-            <span className="ml-2 text-gray-400">{commentPreview(replyingTo)}</span>
-          </div>
-          <button
-            type="button"
-            onClick={onCancelReply}
-            title="Cancelar resposta (Esc)"
-            aria-label="Cancelar resposta"
-            className="shrink-0 cursor-pointer rounded px-1.5 py-0.5 text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong"
-          >
-            ✕
-          </button>
-        </div>
-      )}
+      <CommentReplyBar replyingTo={replyingTo} onCancel={onCancelReply} />
       <textarea
         ref={input}
         value={text}
         maxLength={MAX_COMMENT}
         rows={2}
         aria-label="Escrever comentário"
-        placeholder={
-          replyingTo
-            ? `Responder a @${replyingTo.author_name}...`
-            : 'Comente, ou use @ para marcar alguém'
-        }
+        placeholder={commentPlaceholder(replyingTo)}
         className="glass-input w-full resize-none rounded-lg px-3 py-2 text-ds-sm text-strong"
         onChange={(e) => {
           setText(e.target.value)
@@ -328,11 +287,7 @@ function CommentComposer({
           disabled={sending || !submittable}
           onClick={() => void send()}
         >
-          {attachmentState.uploading
-            ? 'Enviando arquivos...'
-            : sending
-              ? 'Enviando...'
-              : 'Comentar'}
+          {commentButtonLabel(attachmentState.uploading, sending)}
         </Button>
       </div>
     </div>

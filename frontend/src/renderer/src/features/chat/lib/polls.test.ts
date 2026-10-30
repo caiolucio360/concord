@@ -8,7 +8,9 @@ import {
   pollDraftToInput,
   pollPercent,
   pollTimeLeft,
+  pollHint,
   pollWinners,
+  votesLabel,
   type PollDraft
 } from './polls'
 
@@ -154,5 +156,19 @@ describe('rascunho da enquete', () => {
       duration_hours: 24,
       allow_multiselect: false
     })
+  })
+})
+
+describe('votesLabel / pollHint', () => {
+  it('singular e plural', () => {
+    expect(votesLabel(1)).toBe('1 voto')
+    expect(votesLabel(0)).toBe('0 votos')
+    expect(votesLabel(3)).toBe('3 votos')
+  })
+
+  it('ajuda conforme o estado', () => {
+    expect(pollHint(true, true)).toBe('Enquete encerrada')
+    expect(pollHint(false, true)).toBe('Selecione uma ou mais respostas')
+    expect(pollHint(false, false)).toBe('Selecione uma resposta')
   })
 })

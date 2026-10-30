@@ -80,6 +80,17 @@ export function pollTimeLeft(poll: Poll, now: number = Date.now()): string {
   return `Faltam ${days} ${days === 1 ? 'dia' : 'dias'}`
 }
 
+/** "1 voto", "3 votos". */
+export function votesLabel(count: number): string {
+  return `${count} ${count === 1 ? 'voto' : 'votos'}`
+}
+
+/** Linha de ajuda abaixo da pergunta. */
+export function pollHint(closed: boolean, multiselect: boolean): string {
+  if (closed) return 'Enquete encerrada'
+  return multiselect ? 'Selecione uma ou mais respostas' : 'Selecione uma resposta'
+}
+
 export interface PollUpdate {
   poll: Poll
   voter_id?: string
