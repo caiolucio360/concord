@@ -5,6 +5,7 @@ import type { ChosenStatus, PresenceStatus } from '../../friends/lib/presenceSta
 import type { ProfileFields } from '../lib/profileValidation'
 import type { NameStyle } from '../lib/nameStyle'
 import type { ProfileTheme } from '../lib/profileTheme'
+import type { ProfileRelationship } from '../lib/profileRelationship'
 
 export function getMe(): Promise<User> {
   return request<User>('/users/me')
@@ -31,6 +32,8 @@ export interface PublicProfile {
   name_style?: NameStyle
   /** Borda, fundo e efeito do cartão (ausente = padrão). */
   profile_theme?: ProfileTheme
+  /** Vínculo comigo; sem vínculo (none), username vem vazio. Não vem no user:update. */
+  relationship?: ProfileRelationship
   created_at: string
 }
 

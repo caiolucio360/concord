@@ -47,6 +47,8 @@ type Stats struct {
 	// Dias seguidos usando o app: a sequência atual e a maior já feita.
 	StreakDays        int64
 	LongestStreakDays int64
+	// Último dia (AAAA-MM-DD, Brasília) gravado na sequência; vazio se nunca.
+	ActiveLastDay string
 	// Tempo em call com a câmera ligada e alguém ouvindo (Câmera ligada).
 	CameraSeconds int64
 	// Votos nos cards do quadro de propostas (Votante).

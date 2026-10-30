@@ -8,6 +8,7 @@ const entry = (position: number): RankingEntry => ({
   position,
   user_id: `u${position}`,
   username: `user${position}`,
+  relationship: 'friend',
   display_name: `Pessoa ${position}`,
   avatar_url: null,
   name_style: { font: 'default', effect: 'solid', colors: [] },
