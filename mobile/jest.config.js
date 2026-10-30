@@ -2,6 +2,6 @@
 module.exports = {
   preset: 'jest-expo',
   testTimeout: 15000,
-  setupFiles: ['<rootDir>/jest.setup.js'],
+  setupFiles: ['react-native-gesture-handler/jestSetup', '<rootDir>/jest.setup.js'],
   testPathIgnorePatterns: ['/node_modules/', '/android/', '/ios/']
 }

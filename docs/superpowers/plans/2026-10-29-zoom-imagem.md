@@ -17,7 +17,8 @@ reanimated, rodando no thread de UI.
 ## Global Constraints
 
 - Sem dependência nova (as do mobile já existem). Sem ADR: segue o padrão `lib/` + `hooks/` do repo.
-- Só gestos, sem botões nem texto novo visível; os únicos textos são `aria-label`/`accessibilityLabel` que já existem.
+- Gestos **e** barra de zoom (pedido do usuário no meio da execução): −, nível ("100%", toque volta ao tamanho inteiro) e +; rótulos "Diminuir zoom", "Voltar ao tamanho original", "Aumentar zoom" (texto novo: precisa de aprovação humana).
+- Sempre a opção mais performática (pedido do usuário): no desktop o transform e o nível vão direto no DOM a cada frame (`requestAnimationFrame`), sem re-render; o state do React só muda nas pontas (1x/5x) e no começo/fim do arraste. No mobile os gestos rodam no thread de UI (worklets) e o nível só chega ao React no fim do gesto.
 - Escala de 1x a 5x; duplo clique/toque alterna 1x ↔ 2x no ponto tocado.
 - CRAP ≤ 15 em toda função tocada; o `MessageAttachments.tsx` do desktop **não** é tocado (tem funções com CRAP 42).
 - Testes de componente do desktop sem jsdom: `renderToStaticMarkup` + `vi.stubGlobal('document', ...)` para o portal.
@@ -27,11 +28,15 @@ reanimated, rodando no thread de UI.
 
 | Arquivo | Responsabilidade |
 |---|---|
-| `frontend/src/renderer/src/features/chat/lib/imageZoom.ts` (+ `.test.ts`) | conta do zoom (pura) + roda, teclas e ponteiros do desktop |
+| `frontend/src/renderer/src/features/chat/lib/imageZoom.ts` (+ `.test.ts`) | conta do zoom (pura), igual à do mobile |
+| `frontend/src/renderer/src/features/chat/lib/zoomInput.ts` (+ `.test.ts`) | roda, teclas, ponteiros, nível e classes do desktop |
+| `frontend/src/renderer/src/features/chat/components/ZoomControls.tsx` (+ `.test.tsx`) | barra − nível + |
+| `frontend/src/renderer/src/shared/ui/icons/actions.tsx` | `MinusIcon` |
 | `frontend/src/renderer/src/features/chat/hooks/useImageZoom.ts` | liga eventos do DOM à conta |
 | `frontend/src/renderer/src/features/chat/components/MediaLightbox.tsx` (+ `.test.tsx`) | aplica o transform; Esc e clique fora continuam fechando |
 | `mobile/src/features/chat/lib/imageZoom.ts` (+ `.test.ts`) | mesma conta, com `'worklet'`, + `containSize` |
 | `mobile/src/features/chat/hooks/useZoomGestures.ts` | gestos do gesture-handler v3 + shared values |
+| `mobile/src/features/chat/components/ZoomBar.tsx` | barra − nível + |
 | `mobile/src/features/chat/components/MediaLightbox.tsx` (+ `.test.tsx`) | usa os gestos; X e toque simples fecham |
 | `mobile/src/features/chat/components/MessageAttachments.tsx` | passa largura/altura do anexo ao lightbox |
 | `mobile/jest.setup.js`, `mobile/jest.config.js` | mock do gesture-handler e do reanimated que o lightbox usa |
