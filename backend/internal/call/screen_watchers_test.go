@@ -165,3 +165,29 @@ func TestScreenWatchers_SharerStopsSharing(t *testing.T) {
 		t.Fatal("expected empty watchers event when screen share stopped")
 	}
 }
+
+// Regressão: o app do celular transmitia pelo LiveKit sem avisar o servidor (call:screen); quem clicava em
+// "Assistir transmissão" mandava call:screen_watch, recebia call:error ("stream_not_active") e o cliente encerrava a
+// chamada de quem clicou. Assistir a uma transmissão que o servidor não conhece não pode derrubar ninguém.
+func TestScreenWatch_StreamDesconhecidaNaoDerrubaQuemAssiste(t *testing.T) {
+	pub := newCapPublisher()
+	svc := CallService(nil, pub, nil, nil, nil, nil, nil)
+	svc.calls["c1"] = &activeCall{
+		info: &Call{ID: "c1", Type: TypeChannel, Status: StatusActive},
+		participants: map[string]*participantState{
+			"celular": {userID: "celular", role: RoleMember, joinedAt: time.Now()},
+			"web":     {userID: "web", role: RoleMember, joinedAt: time.Now()},
+		},
+	}
+	payload, _ := json.Marshal(ScreenWatchPayload{CallID: "c1", SharerID: "celular", Watching: true})
+	svc.HandleCallMessage("web", "call:screen_watch", payload)
+	for _, ev := range pub.userEvents["web"] {
+		var e struct {
+			Type string `json:"type"`
+		}
+		_ = json.Unmarshal(ev, &e)
+		if e.Type == "call:error" {
+			t.Fatalf("quem assiste recebeu call:error (encerra a chamada no cliente): %s", ev)
+		}
+	}
+}

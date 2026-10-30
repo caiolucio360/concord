@@ -25,14 +25,11 @@ func (s *Service) SetScreenWatching(ctx context.Context, callID, sharerID, watch
 	}
 
 	if watching {
-		sharers, ok := s.screenSharers[callID]
-		if !ok {
+		// Transmissão que o servidor não conhece (o app antigo do celular transmitia sem avisar call:screen):
+		// não registra, mas também não devolve erro, porque o call:error encerra a chamada de quem só quis assistir.
+		if _, active := s.screenSharers[callID][sharerID]; !active {
 			s.mu.Unlock()
-			return ErrStreamNotActive
-		}
-		if _, active := sharers[sharerID]; !active {
-			s.mu.Unlock()
-			return ErrStreamNotActive
+			return nil
 		}
 
 		if ac.screenWatchers == nil {
