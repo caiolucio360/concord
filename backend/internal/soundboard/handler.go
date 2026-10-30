@@ -51,6 +51,7 @@ type Handler struct {
 	permissions   permissionChecker
 	tokens        mediaTokens
 	publisher     eventPublisher
+	visitors      visitorChecker
 	maxSoundBytes int64
 	maxPerServer  int
 }
@@ -75,33 +76,6 @@ func NewHandler(
 		maxSoundBytes: MaxSoundBytes,
 		maxPerServer:  MaxSoundsPerServer,
 	}
-}
-
-func (h *Handler) List(c *gin.Context) {
-	userID, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-	serverID := c.Param("id")
-	ctx := c.Request.Context()
-
-	isMember, err := h.servers.IsMember(ctx, serverID, userID.(string))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to check membership"})
-		return
-	}
-	if !isMember {
-		c.JSON(http.StatusForbidden, gin.H{"error": ErrNotServerMember.Error()})
-		return
-	}
-
-	sounds, err := h.repo.ListByServer(ctx, serverID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to list sounds"})
-		return
-	}
-	c.JSON(http.StatusOK, sounds)
 }
 
 func (h *Handler) Delete(c *gin.Context) {

@@ -1,17 +1,24 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useWindowActivityStore } from '../../../shared/store/windowActivityStore'
 import { useScreenVisibilityStore } from '../store/screenVisibilityStore'
+import { useLivePipStore } from '../store/livePipStore'
 import {
   OFFSCREEN_PAUSE_MS,
   offscreenLives,
+  samePause,
   videoEnabled,
   watchVideoPause,
   type VideoPauseState
 } from './screenVideoPause'
 
-const state = (windowHidden: boolean, offscreen: string[] = []): VideoPauseState => ({
+const state = (
+  windowHidden: boolean,
+  offscreen: string[] = [],
+  pip: string | null = null
+): VideoPauseState => ({
   windowHidden,
-  offscreen: new Set(offscreen)
+  offscreen: new Set(offscreen),
+  pip
 })
 
 describe('videoEnabled', () => {
@@ -29,6 +36,23 @@ describe('videoEnabled', () => {
 
   it('visível: toca', () => {
     expect(videoEnabled('screen_share', 'bia', state(false))).toBe(true)
+  })
+
+  it('live na janela flutuante: toca mesmo minimizado ou fora de vista; as outras não', () => {
+    const s = state(true, ['bia', 'caio'], 'bia')
+    expect(videoEnabled('screen_share', 'bia', s)).toBe(true)
+    expect(videoEnabled('screen_share', 'caio', s)).toBe(false)
+    expect(videoEnabled('camera', 'bia', s)).toBe(false)
+  })
+})
+
+describe('samePause', () => {
+  it('compara janela, lives fora de vista (sem ordem) e a da janela flutuante', () => {
+    expect(samePause(state(false, ['a', 'b']), state(false, ['b', 'a']))).toBe(true)
+    expect(samePause(state(false), state(true))).toBe(false)
+    expect(samePause(state(false, ['a']), state(false, ['b']))).toBe(false)
+    expect(samePause(state(false, ['a']), state(false, ['a', 'b']))).toBe(false)
+    expect(samePause(state(false, [], 'a'), state(false, [], null))).toBe(false)
   })
 })
 
@@ -51,6 +75,7 @@ describe('watchVideoPause', () => {
     vi.useFakeTimers()
     useWindowActivityStore.getState().setActivity({ focused: true, visible: true })
     useScreenVisibilityStore.setState({ elements: {} })
+    useLivePipStore.getState().setUserId(null)
   })
   afterEach(() => vi.useRealTimers())
 
@@ -108,5 +133,22 @@ describe('watchVideoPause', () => {
     stop()
     vi.advanceTimersByTime(OFFSCREEN_PAUSE_MS)
     expect(offscreenOf(onChange)).toEqual([])
+  })
+
+  it('abrir e fechar a janela flutuante avisa na hora', () => {
+    const onChange = vi.fn()
+    const stop = watchVideoPause(onChange)
+    const pipOf = (): string | null => (onChange.mock.lastCall?.[0] as VideoPauseState).pip
+    expect(pipOf()).toBe(null)
+    useLivePipStore.getState().setUserId('bia')
+    expect(pipOf()).toBe('bia')
+    useLivePipStore.getState().setUserId(null)
+    expect(pipOf()).toBe(null)
+    const calls = onChange.mock.calls.length
+    useLivePipStore.getState().setUserId(null)
+    expect(onChange).toHaveBeenCalledTimes(calls)
+    stop()
+    useLivePipStore.getState().setUserId('bia')
+    expect(onChange).toHaveBeenCalledTimes(calls)
   })
 })

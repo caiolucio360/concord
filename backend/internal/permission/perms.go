@@ -98,7 +98,7 @@ const All = ViewChannel | ManageChannels | ManageRoles | ManageServer | CreateIn
 // DefaultEveryone: o que qualquer membro faz num servidor novo. Nos servidores
 // que já existiam, a migration 000039 ligou o CHANGE_NICKNAME no @everyone, a
 // 000127 o SEND_TTS_MESSAGES (ver docs/adr/0012-tts-no-cliente.md) e a 000125
-// o ADD_SOUNDS e o ADD_STICKERS; a 000172 o ADD_EMOJIS.
+// o ADD_SOUNDS e o ADD_STICKERS; a 000174 o ADD_EMOJIS.
 const DefaultEveryone = ViewChannel | SendMessages | AttachFiles | AddReactions | ReadHistory |
 	CreateInvite | Connect | Speak | Stream | UseSoundboard | ChangeNickname |
 	AddSounds | AddStickers | SendTTSMessages | AddEmojis

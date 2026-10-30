@@ -54,7 +54,7 @@
 ## Mapa de arquivos
 
 Backend
-- Create `backend/migrations/000172_create_server_emojis.{up,down}.sql` — tabela + `ADD_EMOJIS` nos cargos.
+- Create `backend/migrations/000174_create_server_emojis.{up,down}.sql` — tabela + `ADD_EMOJIS` nos cargos.
 - Modify `backend/internal/permission/perms.go`, `testdata/vectors.json` — bit novo.
 - Create `backend/internal/message/reaction_emoji.go` (+ `_test.go`) — `ValidateEmoji` sai de `service.go` e aceita `<:uuid>`.
 - Create `backend/internal/emoji/{model,repository,handler,upload,base,routes}.go` + `emoji_test.go`, `base_test.go`.
@@ -109,7 +109,7 @@ func customReactionID(emoji string) (string, bool) {
 ### Task 3: permissão `ADD_EMOJIS` + migration
 
 - [ ] `perms.go`: `AddEmojis int64 = 1 << 15` (comentário ADR 0028), em `Names`, `All`, `DefaultEveryone`. `vectors.json`: `bits.ADD_EMOJIS = 32768`, `defaults.everyone += "ADD_EMOJIS"`. Testes de vetores falham antes de mexer no `permissions.ts` do app — mexer junto: `Perm.ADD_EMOJIS: 1 << 15`, `DEFAULT_EVERYONE |= ADD_EMOJIS`, entrada no `permissionCatalog.ts` logo depois de `ADD_STICKERS`.
-- [ ] Migration `000172_create_server_emojis.up.sql`:
+- [ ] Migration `000174_create_server_emojis.up.sql`:
 
 ```sql
 -- Emojis personalizados por servidor (docs/adr/0028-emojis-personalizados.md).

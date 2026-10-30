@@ -39,7 +39,7 @@ func TestMigrationDefaultsMatchConstants(t *testing.T) {
 	added := nicknameMigrationBits(t)
 	disconnectBits := disconnectMigrationBits(t)
 	ttsBits := roleUpdateBits(t, "000127_tts_messages.up.sql")
-	emojiBits := roleUpdateBits(t, "000172_create_server_emojis.up.sql")
+	emojiBits := roleUpdateBits(t, "000174_create_server_emojis.up.sql")
 	for name, want := range map[string]int64{"@everyone": DefaultEveryone, "Moderador": legacyModerator} {
 		needle := "'" + name + "', "
 		i := strings.Index(sql, "SELECT id, "+needle)
