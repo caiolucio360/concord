@@ -23,7 +23,7 @@ function setup() {
   for (const d of [bin, caddy, join(concord, 'updates')]) mkdirSync(d, { recursive: true })
   writeFileSync(join(caddy, 'Caddyfile'), 'antigo\n')
   writeFileSync(join(concord, '.env'), 'PORT=8090\nPUBLIC_URL=https://app.example\n')
-  writeFileSync(join(concord, 'updates', 'latest.yml'), 'version: 1\n')
+  writeFileSync(join(concord, 'updates', 'latest.yml'), "version: 1.0.0\npath: 'Salinha-1.0.0-setup.exe'\n")
   const log = join(base, 'log')
   writeFileSync(log, '')
   stub(bin, 'ssh', 'shift; exec bash -c "$*"')
@@ -36,6 +36,7 @@ case "$url" in
   */rtc/validate) code=401; [[ "$url" == *quebrado* ]] && code=502
     for a in "$@"; do [ "$a" = '%{http_code}' ] && { printf %s "$code"; exit 0; }; done ;;
   */healthz) echo '{"status":"ok"}' ;;
+  */updates/Salinha-*) [ -n "$SEM_RELEASE" ] && exit 22 ;;
 esac
 exit 0`)
   const file = join(base, 'Caddyfile.novo')
@@ -89,5 +90,20 @@ test('Caddyfile inválido não muda nada', () => {
   const r = apply(ctx, [])
   assert.equal(r.status, 1)
   assert.match(r.stderr, /inválido/)
+  assert.equal(r.current, 'antigo\n')
+})
+
+test('confere que o instalador da versão atual abre (seguindo o redirect para o GitHub)', () => {
+  const ctx = setup()
+  const r = apply(ctx, [])
+  assert.equal(r.status, 0, r.stderr)
+  assert.match(r.log, /curl https:\/\/app\.example\/updates\/Salinha-1\.0\.0-setup\.exe\n/)
+})
+
+test('instalador que não abre (release ainda não está no GitHub) volta o Caddyfile anterior', () => {
+  const ctx = setup()
+  const r = apply(ctx, [], { SEM_RELEASE: '1' })
+  assert.equal(r.status, 1)
+  assert.match(r.stderr, /Salinha-1\.0\.0-setup\.exe/)
   assert.equal(r.current, 'antigo\n')
 })

@@ -65,3 +65,4 @@ O que fica mais fácil, o que fica mais difícil, o que precisa ser feito depois
 - [0025. Sons da chamada e reprodução de áudio no app mobile com o `expo-audio`](0025-sons-e-midia-no-app-mobile.md)
 - [0026. Enviar anexos no app mobile com `expo-image-picker` e `expo-document-picker`](0026-anexos-no-app-mobile.md)
 - [0027. Transmitir e assistir tela no app mobile (MediaProjection e assinatura sob demanda)](0027-transmissao-de-tela-no-app-mobile.md)
+- [0028. Servir os instaladores do app pela GitHub Release, com os manifestos na VPS](0028-atualizacoes-pelo-github-releases.md)
