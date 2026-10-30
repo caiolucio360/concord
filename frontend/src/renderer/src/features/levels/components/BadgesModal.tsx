@@ -14,6 +14,7 @@ import {
   visibleBadges
 } from '../lib/badges'
 import { trapTab } from '../../../shared/lib/focusTrap'
+import CloseButton from '../../../shared/ui/CloseButton'
 import BadgeIcon from './BadgeIcon'
 import BadgesAside from './BadgesAside'
 import BadgeProgress from './BadgeProgress'
@@ -212,15 +213,7 @@ function BadgesModal(): React.JSX.Element | null {
         />
 
         <section className="relative min-h-0 min-w-0 flex-1 overflow-y-auto bg-primary p-6">
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={close}
-            aria-label="Fechar"
-            className="absolute right-4 top-4 flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-strong/60 transition-colors hover:bg-fg/10 hover:text-strong"
-          >
-            ✕
-          </button>
+          <CloseButton ref={closeRef} size="sm" className="absolute right-4 top-4" onClick={close} />
           {selected ? (
             <Detail badge={selected} isMe={isMe} ownerName={target.name} />
           ) : !badges ? (

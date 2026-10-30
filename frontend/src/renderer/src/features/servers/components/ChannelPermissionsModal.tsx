@@ -167,7 +167,7 @@ function ChannelPermissionsModal({
         />
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row">
         <OverwriteTargetList
           adding={adding}
           onAddingChange={setAdding}

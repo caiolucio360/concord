@@ -1,9 +1,16 @@
+import type { ComponentType } from 'react'
 import type { TriState } from '../lib/channelPermissions'
+import { CheckIcon, SlashIcon, XIcon, type IconProps } from '../../../shared/ui/icons'
 
-export const TRI_STATES: { id: TriState; label: string; symbol: string; active: string }[] = [
-  { id: 'deny', label: 'Negar', symbol: '✗', active: 'bg-danger-strong text-white' },
-  { id: 'inherit', label: 'Herdar do servidor', symbol: '/', active: 'bg-fg/25 text-strong' },
-  { id: 'allow', label: 'Permitir', symbol: '✓', active: 'bg-success-strong text-white' }
+export const TRI_STATES: {
+  id: TriState
+  label: string
+  icon: ComponentType<IconProps>
+  active: string
+}[] = [
+  { id: 'deny', label: 'Negar', icon: XIcon, active: 'bg-danger-strong text-white' },
+  { id: 'inherit', label: 'Herdar do servidor', icon: SlashIcon, active: 'bg-fg/25 text-strong' },
+  { id: 'allow', label: 'Permitir', icon: CheckIcon, active: 'bg-success-strong text-white' }
 ]
 
 /** Negar / herdar / permitir uma permissão, lado a lado (o padrão do Discord). */
@@ -33,11 +40,11 @@ function PermissionTriState({
           aria-pressed={state === s.id}
           title={s.label}
           onClick={() => onChange(s.id)}
-          className={`h-7 w-8 cursor-pointer text-sm font-bold transition-colors disabled:cursor-not-allowed ${
-            state === s.id ? s.active : 'text-gray-400 hover:bg-fg/10'
+          className={`focus-ring-inset flex h-8 w-9 cursor-pointer items-center justify-center transition-colors disabled:cursor-not-allowed ${
+            state === s.id ? s.active : 'text-interactive-normal hover:bg-fg/10 hover:text-interactive-hover'
           }`}
         >
-          {s.symbol}
+          <s.icon size={16} />
         </button>
       ))}
     </div>

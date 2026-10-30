@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Toggle } from '../Toggle'
 import Button from '../../../../shared/ui/Button'
+import IconButton from '../../../../shared/ui/IconButton'
+import { UndoIcon, XIcon } from '../../../../shared/ui/icons'
 import { bindingFromKeyEvent, bindingFromMouseButton, bindingLabels } from '../../lib/keybinds'
 import { effectiveBindings } from '../../lib/keybindPrefs'
 import {
@@ -149,32 +151,28 @@ function Row({
         <span className="min-w-0 text-ds-md text-gray-200">{def.label}</span>
         <div className="flex shrink-0 items-center gap-1.5">
           <BindingField def={def} onError={onError} />
-          <button
-            type="button"
+          <IconButton
+            icon={XIcon}
+            size="sm"
             title="Tirar o atalho"
-            aria-label={`Tirar o atalho de "${def.label}"`}
+            label={`Tirar o atalho de "${def.label}"`}
             disabled={!bindings[def.id]}
             onClick={() => {
               onError(null)
               setBinding(def.id, null)
             }}
-            className="h-8 w-8 cursor-pointer rounded-md text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent"
-          >
-            ✕
-          </button>
-          <button
-            type="button"
+          />
+          <IconButton
+            icon={UndoIcon}
+            size="sm"
             title="Voltar ao padrão"
-            aria-label={`Voltar ao padrão: "${def.label}"`}
+            label={`Voltar ao padrão: "${def.label}"`}
             disabled={!changed}
             onClick={() => {
               onError(null)
               resetBinding(def.id)
             }}
-            className="h-8 w-8 cursor-pointer rounded-md text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent"
-          >
-            ↺
-          </button>
+          />
         </div>
       </div>
       {canGlobal && (

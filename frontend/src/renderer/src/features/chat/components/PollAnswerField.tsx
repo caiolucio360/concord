@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { POLL_ANSWER_MAX, POLL_EMOJIS, type PollDraftAnswer } from '../lib/polls'
 import { PollAnswerMedia } from './PollAnswerMedia'
+import CloseButton from '../../../shared/ui/CloseButton'
 
 // Uma resposta no formulário de criar enquete (CreatePollModal).
 
@@ -124,14 +125,12 @@ export function PollAnswerField({
         className="glass-input min-w-0 flex-1"
       />
       {removable && (
-        <button
-          type="button"
+        <CloseButton
+          label={`Remover resposta ${index + 1}`}
+          size="sm"
+          variant="danger"
           onClick={onRemove}
-          aria-label={`Remover resposta ${index + 1}`}
-          className="shrink-0 cursor-pointer px-1 text-strong/50 transition-colors hover:text-red-400"
-        >
-          ✕
-        </button>
+        />
       )}
     </div>
   )

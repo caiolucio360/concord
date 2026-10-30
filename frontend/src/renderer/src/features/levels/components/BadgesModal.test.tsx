@@ -38,6 +38,7 @@ describe('BadgesModal', () => {
     expect(html).toContain('role="dialog"')
     expect(html).toContain('Badges de Ana')
     expect(html).toContain('aria-label="Fechar"')
+    expect(html).not.toContain('✕')
   })
 
   it('sem modal aberto não renderiza nada', () => {

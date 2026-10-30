@@ -1,4 +1,5 @@
 import type { ImageDraft } from '../hooks/useProposalImages'
+import CloseButton from '../../../shared/ui/CloseButton'
 
 /** Miniaturas das imagens do formulário, com progresso, erro e botão de remover. */
 function ProposalImageStrip({
@@ -35,14 +36,13 @@ function ProposalImageStrip({
               {d.error}
             </span>
           )}
-          <button
-            type="button"
+          <CloseButton
+            label="Remover imagem"
+            size="xs"
+            variant="media"
+            className="absolute right-1 top-1"
             onClick={() => onRemove(d.key)}
-            aria-label="Remover imagem"
-            className="absolute right-1 top-1 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-black/70 text-[10px] text-white transition-colors hover:bg-red-500 on-media"
-          >
-            ✕
-          </button>
+          />
         </li>
       ))}
     </ul>

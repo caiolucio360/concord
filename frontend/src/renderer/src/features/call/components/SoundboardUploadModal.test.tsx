@@ -27,6 +27,7 @@ describe('SoundboardUploadModal', () => {
     const html = renderToStaticMarkup(<SoundboardUploadModal open serverId="s" onClose={noop} />)
     expect(html).toContain('Adicionar Som à Mesa de Áudio')
     expect(html).toContain('aria-label="Fechar"')
+    expect(html).not.toContain('✕')
     expect(html).toContain('Escolher arquivo')
     expect(html).toContain('aria-label="Emoji personalizado"')
     expect(html).toMatch(/disabled=""[^>]*>Salvar na Mesa</)

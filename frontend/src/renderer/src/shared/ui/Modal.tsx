@@ -1,5 +1,6 @@
 import { useId, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import CloseButton from './CloseButton'
 import { useModalBehavior } from '../hooks/useModalBehavior'
 import { trapTab } from '../lib/focusTrap'
 import { modalLayout } from '../lib/modalLayout'
@@ -54,14 +55,7 @@ function Modal({
             </h2>
           )}
           {onClose && (
-            <button
-              type="button"
-              className="app-no-drag ml-auto flex size-10 shrink-0 cursor-pointer sm:size-8 items-center justify-center rounded-md text-strong/60 transition-colors hover:bg-fg/10 hover:text-strong focus-ring"
-              onClick={onClose}
-              aria-label="Fechar"
-            >
-              ✕
-            </button>
+            <CloseButton className="app-no-drag ml-auto" onClick={onClose} />
           )}
         </div>
         <div className="min-h-0 overflow-y-auto overscroll-contain">{children}</div>

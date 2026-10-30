@@ -19,7 +19,8 @@ describe('ScreenSourceCard', () => {
   it('escolhida: anel e marca; sem miniatura: ícone de monitor', () => {
     const html = renderToStaticMarkup(<ScreenSourceCard source={janela} selected onSelect={noop} />)
     expect(html).toContain('ring-2 ring-brand')
-    expect(html).toContain('<svg')
+    expect(html).not.toContain('✓')
+    expect(html.match(/<svg/g)).toHaveLength(2)
     expect(html).toContain('Bloco de notas')
   })
 

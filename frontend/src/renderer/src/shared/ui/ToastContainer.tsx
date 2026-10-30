@@ -1,4 +1,4 @@
-import { XIcon } from './icons'
+import CloseButton from './CloseButton'
 import { useToastStore, type ToastMessage, type ToastType } from '../store/toastStore'
 
 const ESTILO: Record<ToastType, { borda: string; fundo: string; icone: string; rotulo: string }> = {
@@ -62,15 +62,7 @@ export function Toast({ toast }: { toast: ToastMessage }): React.JSX.Element {
           {toast.action.label}
         </button>
       )}
-      <button
-        type="button"
-        onClick={() => removeToast(toast.id)}
-        className="flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-fg/10 hover:text-strong"
-        title="Fechar"
-        aria-label="Fechar"
-      >
-        <XIcon size={16} className="size-3.5" />
-      </button>
+      <CloseButton size="sm" onClick={() => removeToast(toast.id)} />
     </div>
   )
 }

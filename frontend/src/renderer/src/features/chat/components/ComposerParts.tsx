@@ -8,6 +8,7 @@ import { composerCommands } from '../lib/chatPaneView'
 import UnifiedMediaPickerPopover from './UnifiedMediaPickerPopover'
 import VoiceRecordButton from './VoiceRecordButton'
 import MobileSheet from '../../../shared/ui/MobileSheet'
+import CloseButton from '../../../shared/ui/CloseButton'
 import { messagePreview } from '../lib/polls'
 import { submitLabel } from '../lib/chatPaneView'
 
@@ -47,14 +48,12 @@ export function ReplyBar({
         Respondendo a <span className="font-semibold text-strong">@{authorName}</span>
         <span className="ml-2 text-gray-400">{messagePreview(replyingTo)}</span>
       </div>
-      <button
-        type="button"
-        onClick={onCancel}
+      <CloseButton
+        label="Cancelar resposta"
         title="Cancelar resposta (Esc)"
-        className="shrink-0 cursor-pointer rounded px-1.5 py-0.5 text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong"
-      >
-        ✕
-      </button>
+        size="sm"
+        onClick={onCancel}
+      />
     </div>
   )
 }

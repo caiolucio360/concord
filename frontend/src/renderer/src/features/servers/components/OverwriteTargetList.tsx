@@ -25,7 +25,7 @@ function OverwriteTargetList({
   onAdd: (ref: OverwriteTargetRef) => void
 }): React.JSX.Element {
   return (
-    <div className="w-52 shrink-0">
+    <div className="w-full shrink-0 sm:w-52">
       <Input
         placeholder="Adicionar membro"
         aria-label="Adicionar membro"
@@ -52,7 +52,7 @@ function OverwriteTargetList({
           ))}
         </ul>
       )}
-      <ul className="flex max-h-80 flex-col gap-0.5 overflow-y-auto">
+      <ul className="flex max-h-40 flex-col gap-0.5 overflow-y-auto sm:max-h-80">
         {rows.map((row) => (
           <li key={`${row.type}:${row.id}`}>
             <TargetButton row={row} active={sameRef(current, row)} onSelect={onSelect} />

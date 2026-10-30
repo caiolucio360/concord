@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { roleColorCss, type Role } from '../lib/permissions'
 import { canRemoveRole } from '../lib/memberSettings'
+import CloseButton from '../../../shared/ui/CloseButton'
+import { CheckIcon } from '../../../shared/ui/icons'
 
 const DEFAULT_ROLE_COLOR = '#99aab5'
 
@@ -44,14 +46,11 @@ function OwnRoleChip({
       <RoleDot color={role.color} />
       {role.name}
       {removable ? (
-        <button
-          type="button"
-          aria-label={`Tirar o cargo ${role.name} de ${name}`}
+        <CloseButton
+          label={`Tirar o cargo ${role.name} de ${name}`}
+          size="xs"
           onClick={onRemove}
-          className="flex h-4 w-4 cursor-pointer items-center justify-center rounded-full text-gray-400 hover:bg-fg/15 hover:text-strong"
-        >
-          ×
-        </button>
+        />
       ) : (
         <span className="w-1" />
       )}
@@ -77,7 +76,7 @@ export function RoleOption({
     >
       <RoleDot color={role.color} />
       <span className="min-w-0 flex-1 truncate">{role.name}</span>
-      {has && <span className="text-success">✓</span>}
+      {has && <CheckIcon size={16} className="text-success" />}
     </button>
   )
 }

@@ -37,6 +37,8 @@ describe('PollAnswerField', () => {
     )
     expect(html).toContain('placeholder="Resposta 3"')
     expect(html).toContain('aria-label="Remover resposta 3"')
+    expect(html).not.toContain('✕')
+    expect(html).toMatch(/aria-label="Remover resposta 3"[^>]*><svg/)
   })
 
   it('com emoji e seletor aberto: mostra o emoji e a opção de tirar', () => {

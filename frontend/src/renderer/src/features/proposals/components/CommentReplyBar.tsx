@@ -1,5 +1,6 @@
 import type { ProposalComment } from '../api/proposals'
 import { commentPreview } from '../lib/proposals'
+import CloseButton from '../../../shared/ui/CloseButton'
 
 /** "Respondendo a @fulano" acima do campo, com o botão de cancelar. */
 function CommentReplyBar({
@@ -20,15 +21,12 @@ function CommentReplyBar({
         <span className="font-semibold text-strong">@{replyingTo.author_name}</span>
         <span className="ml-2 text-gray-400">{commentPreview(replyingTo)}</span>
       </div>
-      <button
-        type="button"
-        onClick={onCancel}
+      <CloseButton
+        label="Cancelar resposta"
         title="Cancelar resposta (Esc)"
-        aria-label="Cancelar resposta"
-        className="shrink-0 cursor-pointer rounded px-1.5 py-0.5 text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong"
-      >
-        ✕
-      </button>
+        size="sm"
+        onClick={onCancel}
+      />
     </div>
   )
 }

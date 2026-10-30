@@ -30,6 +30,13 @@ describe('Modal', () => {
     expect(html).toContain('conteúdo')
   })
 
+  it('o fechar é o X desenhado (CloseButton), não o caractere ✕', () => {
+    const html = renderToStaticMarkup(<Modal open onClose={() => {}} />)
+    expect(html).not.toContain('✕')
+    expect(html).toMatch(/aria-label="Fechar"[^>]*>(?:(?!<\/button>).)*<svg/)
+    expect(html).toContain('focus-ring')
+  })
+
   it('só tem o botão ✕ quando dá para fechar', () => {
     expect(renderToStaticMarkup(<Modal open onClose={() => {}} />)).toContain('aria-label="Fechar"')
     expect(renderToStaticMarkup(<Modal open />)).not.toContain('aria-label="Fechar"')

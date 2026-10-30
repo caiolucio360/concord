@@ -34,6 +34,9 @@ describe('CommentReplyBar', () => {
     const html = renderToStaticMarkup(<CommentReplyBar replyingTo={reply} onCancel={noop} />)
     expect(html).toContain('boa ideia')
     expect(html).toContain('aria-label="Cancelar resposta"')
+    expect(html).toContain('title="Cancelar resposta (Esc)"')
+    expect(html).not.toContain('✕')
+    expect(html).toContain('<svg')
   })
 })
 

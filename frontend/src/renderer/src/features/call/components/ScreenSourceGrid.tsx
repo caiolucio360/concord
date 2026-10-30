@@ -1,5 +1,5 @@
 import type { ScreenSourceInfo } from '../../../../../preload/index.d'
-import { MonitorIcon } from '../../../shared/ui/icons'
+import { CheckIcon, MonitorIcon } from '../../../shared/ui/icons'
 import { ScreenSourceGridSkeleton } from '../../../shared/ui/skeleton/layouts'
 
 export type ScreenPickerTab = 'screen' | 'window'
@@ -66,8 +66,8 @@ export function ScreenSourceCard({
           </div>
         )}
         {selected && (
-          <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-brand text-xs font-bold text-white">
-            ✓
+          <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-brand text-white">
+            <CheckIcon size={12} />
           </span>
         )}
       </div>

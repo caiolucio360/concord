@@ -64,6 +64,14 @@ describe('ChannelPermissionsModal', () => {
     expect(html).toContain('aria-label="Ver canais: Negar"')
   })
 
+  it('negar, herdar e permitir são ícones (X, barra e check), não ✗ / ✓', () => {
+    const html = render()
+    expect(html).not.toMatch(/[✗✓]/)
+    expect(html).toMatch(/aria-label="Ver canais: Negar"[^>]*><svg/)
+    expect(html).toMatch(/aria-label="Ver canais: Herdar do servidor"[^>]*><svg/)
+    expect(html).toMatch(/aria-label="Ver canais: Permitir"[^>]*><svg/)
+  })
+
   it('cada permissão tem negar, herdar e permitir; o estado salvo vem marcado', () => {
     const html = render()
     expect(html).toMatch(/aria-label="Ver canais: Negar" aria-pressed="true"/)
@@ -81,5 +89,11 @@ describe('ChannelPermissionsModal', () => {
   it('sem a permissão no canal, os botões vêm travados', () => {
     access.perms = 0
     expect(render()).toMatch(/disabled="" aria-label="Ver canais: Negar"/)
+  })
+
+  it('em tela estreita a lista de cargos fica em cima, sem a coluna fixa espremendo as permissões', () => {
+    const html = render()
+    expect(html).toContain('flex flex-col gap-4 sm:flex-row')
+    expect(html).toContain('w-full shrink-0 sm:w-52')
   })
 })

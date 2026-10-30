@@ -58,6 +58,15 @@ export function XIcon(props: IconProps): React.JSX.Element {
   )
 }
 
+/** Barra: herdar (o estado do meio de negar / herdar / permitir). */
+export function SlashIcon(props: IconProps): React.JSX.Element {
+  return (
+    <LineIcon {...props}>
+      <path d="M16 4 8 20" />
+    </LineIcon>
+  )
+}
+
 /** Três pontos: mais ações. */
 export function DotsIcon(props: IconProps): React.JSX.Element {
   return (

@@ -1,5 +1,6 @@
 import type { PollAnswer } from '../api/messages'
 import { votesLabel } from '../lib/polls'
+import { CheckIcon } from '../../../shared/ui/icons'
 import { PollAnswerMedia } from './PollAnswerMedia'
 
 interface PollAnswerRowProps {
@@ -64,7 +65,7 @@ function PollAnswerRow({
         <span className="relative flex shrink-0 items-center gap-2 text-xs font-semibold text-gray-300">
           {answer.me_voted && (
             <span className="text-brand" title="Seu voto">
-              ✓
+              <CheckIcon size={16} />
             </span>
           )}
           <span title={votesLabel(answer.count)}>{percent}%</span>
@@ -72,11 +73,11 @@ function PollAnswerRow({
       ) : (
         <span
           aria-hidden="true"
-          className={`relative flex h-5 w-5 shrink-0 items-center justify-center border-2 text-[11px] text-white ${
+          className={`relative flex h-5 w-5 shrink-0 items-center justify-center border-2 text-white ${
             multiselect ? 'rounded-md' : 'rounded-full'
           } ${isSelected ? 'border-brand bg-brand' : 'border-gray-500'}`}
         >
-          {isSelected && '✓'}
+          {isSelected && <CheckIcon size={12} />}
         </span>
       )}
     </button>

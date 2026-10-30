@@ -1,6 +1,7 @@
 import type { DraftAttachment } from '../lib/attachments'
 import { formatBytes } from '../lib/attachments'
 import { MicIcon, PlayIcon } from '../../../shared/ui/icons'
+import CloseButton from '../../../shared/ui/CloseButton'
 
 /** Fileira de anexos acima do campo de texto, com progresso e erro. */
 function ComposerAttachments({
@@ -51,15 +52,13 @@ function ComposerAttachments({
             </div>
           )}
           {d.status === 'error' && <p className="text-[10px] text-red-400">{d.error}</p>}
-          <button
-            type="button"
+          <CloseButton
+            label="Remover anexo"
+            size="xs"
+            variant="media"
+            className="absolute right-1 top-1"
             onClick={() => onRemove(d.localId)}
-            title="Remover"
-            aria-label="Remover anexo"
-            className="absolute right-1 top-1 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-black/70 text-xs text-gray-300 hover:bg-red-500 hover:text-white on-media"
-          >
-            ×
-          </button>
+          />
         </div>
       ))}
     </div>

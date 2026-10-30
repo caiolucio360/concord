@@ -47,7 +47,8 @@ describe('PollCard', () => {
     p.answers[1].me_voted = true
     const html = render(p, true)
     expect(html).toContain('role="list"')
-    expect(html).toContain('title="Seu voto"')
+    expect(html).toMatch(/title="Seu voto"[^>]*><svg/)
+    expect(html).not.toContain('✓')
     expect(html).toContain('Remover voto')
     expect(html).toContain('Encerrar enquete')
     expect(html).not.toContain('>Votar<')
@@ -70,6 +71,8 @@ describe('PollAnswerRow', () => {
     const html = renderToStaticMarkup(<PollAnswerRow {...base} isSelected showResults={false} />)
     expect(html).toContain('aria-checked="true"')
     expect(html).toContain('border-brand bg-brand/15')
+    expect(html).not.toContain('✓')
+    expect(html).toContain('<svg')
   })
 
   it('resultado: barra com a porcentagem e o total no title', () => {

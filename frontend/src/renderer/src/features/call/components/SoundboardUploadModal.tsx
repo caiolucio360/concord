@@ -10,6 +10,7 @@ import { useSoundboardStore } from '../store/soundboardStore'
 import { showToast } from '../../../shared/store/toastStore'
 import { readMediaMeta } from '../../chat/lib/readMediaMeta'
 import Input from '../../../shared/ui/Input'
+import CloseButton from '../../../shared/ui/CloseButton'
 import { SoundEmojiField, SoundFileField, SoundUploadActions } from './SoundboardUploadFields'
 
 interface SoundboardUploadModalProps {
@@ -141,14 +142,7 @@ function SoundboardUploadModal({
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-bold text-strong">Adicionar Som à Mesa de Áudio</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="cursor-pointer text-gray-400 transition-colors hover:text-strong"
-            aria-label="Fechar"
-          >
-            ✕
-          </button>
+          <CloseButton size="sm" onClick={onClose} />
         </div>
 
         <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">

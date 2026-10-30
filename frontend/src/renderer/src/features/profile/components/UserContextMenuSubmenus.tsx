@@ -1,5 +1,5 @@
 import ContextSubmenu from '../../../shared/ui/ContextSubmenu'
-import { VolumeIcon } from '../../../shared/ui/icons'
+import { CheckIcon, VolumeIcon } from '../../../shared/ui/icons'
 import { roleColorCss, type Role } from '../../servers/lib/permissions'
 
 /** Itens dos submenus: mais altos no toque, para o dedo acertar (40 px). */
@@ -44,11 +44,11 @@ export function RoleSubmenuItems({
             <span className="min-w-0 flex-1 truncate">{role.name}</span>
             <span
               aria-hidden
-              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[11px] font-black leading-none ${
+              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
                 has ? 'border-brand bg-brand text-white' : 'border-gray-500'
               }`}
             >
-              {has && '✓'}
+              {has && <CheckIcon size={12} />}
             </span>
           </button>
         )
