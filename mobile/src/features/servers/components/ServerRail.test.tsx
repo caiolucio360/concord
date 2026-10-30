@@ -44,4 +44,10 @@ describe('ServerRail', () => {
     expect(screen.getByRole('button', { name: 'Stations' })).toBeSelected()
     expect(screen.getByRole('button', { name: 'BH RX' })).not.toBeSelected()
   })
+
+  it('o diamante de Melhorias fica logo abaixo das DMs, antes dos servidores (como na web)', async () => {
+    const { toJSON } = await render(<ServerRail servers={servers} selectedId={null} onSelect={() => {}} onOpenHub={() => {}} />)
+    const labels = JSON.stringify(toJSON()).match(/"accessibilityLabel":"(Mensagens diretas|Melhorias|BH RX|Stations)"/g)
+    expect(labels?.map((l) => l.split('"')[3])).toEqual(['Mensagens diretas', 'Melhorias', 'BH RX', 'Stations'])
+  })
 })
