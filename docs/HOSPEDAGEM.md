@@ -808,6 +808,33 @@ não mexe nos arquivos. Restaure o banco antes de 7 dias para não perder mídia
    É seguro: o que for órfão de verdade volta para a lixeira na próxima limpeza.
 4. Suba o backend: `systemctl start concord-server`.
 
+### Métricas do LiveKit (observabilidade das lives)
+
+O LIVEKIT_CONFIG liga o Prometheus do LiveKit (`prometheus.port`, padrão
+`6789`, `LIVEKIT_PROMETHEUS_PORT` no `.env`). Ele escuta só nos
+`bind_addresses` (127.0.0.1): nada abre para fora e o firewall não muda. O
+backend lê esse `/metrics` e o `/proc` da VPS a cada minuto e grava uma linha
+em `livekit_metrics` (banda, perda, NACK/PLI, RTT, jitter, nota de
+qualidade, salas, participantes, tracks, CPU e memória do LiveKit e da
+máquina), com 14 dias de retenção. Painel e consultas:
+[OBSERVABILIDADE.md](OBSERVABILIDADE.md) ([ADR 0028](adr/0028-observabilidade-das-lives.md)).
+
+**Aplicar na VPS (uma vez):** a linha nova do `LIVEKIT_CONFIG` muda o hash do
+container, então o deploy normal **avisa e não recria** o LiveKit. Quando
+ninguém estiver em chamada (recriar derruba todas as calls e lives):
+
+```bash
+scripts/deploy-vps.sh --infra root@IP
+# conferir:
+ssh root@IP 'curl -s 127.0.0.1:6789/metrics | grep -c ^livekit_'   # > 0
+ssh root@IP 'ss -ltn | grep 6789'                                  # só 127.0.0.1
+```
+
+Até o `--infra`, o backend grava as linhas só com a CPU/memória da VPS
+(`up = false`). Se a 6789 já estiver em uso na VPS, ponha outra em
+`LIVEKIT_PROMETHEUS_PORT` no `/opt/concord/.env` (o backend e o compose leem
+a mesma variável).
+
 ## Nomes de usuário sem diferenciar caixa
 
 O login aceita e-mail ou nome de usuário sem diferenciar maiúsculas de
