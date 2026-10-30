@@ -1,4 +1,4 @@
-import type { CallInfo, StartCallInput } from '../api/calls'
+import type { CallInfo, CallStateResponse, StartCallInput } from '../api/calls'
 import { useCallNoticeStore } from '../store/callNoticeStore'
 import { isInCall, useCallSessionStore } from '../store/callSessionStore'
 import { useIncomingCallStore } from '../store/incomingCallStore'
@@ -6,6 +6,7 @@ import { useParticipantsStore, voiceOf } from '../store/participantsStore'
 import { useScreenShareStore } from '../store/screenShareStore'
 import { useSpeakingStore } from '../store/speakingStore'
 import { callErrorMessage } from './callErrors'
+import { resyncCall } from './callResync'
 import { playSound } from './sounds/soundPlayer'
 import type { CallMedia, MediaConnection } from './callMedia'
 import { effectiveAudio, type LocalControls } from './voiceState'
@@ -15,6 +16,7 @@ export interface ControllerDeps {
     startCall: (input: StartCallInput) => Promise<CallInfo>
     getCallToken: (callId: string) => Promise<{ token: string }>
     endCallRequest: (callId: string) => Promise<unknown>
+    getCallState: (callId: string) => Promise<CallStateResponse>
   }
   media: CallMedia
   ws: { send: (type: string, payload: unknown) => void; subscribe: (room: string) => void; unsubscribe: (room: string) => void }
@@ -122,6 +124,11 @@ export function createCallController(deps: ControllerDeps) {
     await deps.media.disconnect().catch(() => {})
   }
 
+  /** Monta a lista de quem já está na chamada (e quem está mudo); erro de rede não impede de entrar. */
+  function loadRoster(): Promise<void> {
+    return resyncCall({ getState: deps.api.getCallState, meId: deps.meId?.() ?? null, onEnded: () => void leave(false) }).catch(() => {})
+  }
+
   async function joinChannel(channel: ChannelTarget): Promise<void> {
     const s = session()
     if (isInCall(s) && s.channelId === channel.id) return
@@ -131,7 +138,8 @@ export function createCallController(deps: ControllerDeps) {
       const call = await deps.api.startCall({ type: 'channel', channel_id: channel.id })
       session().setCallId(call.id)
       deps.ws.subscribe(`call:${call.id}`)
-      await connectMedia(call.id)
+      // Quem já está na chamada só chega por esta busca (os eventos call:joined são de quem entra depois de mim).
+      await Promise.all([loadRoster(), connectMedia(call.id)])
     } catch (err) {
       await fail(err)
     }

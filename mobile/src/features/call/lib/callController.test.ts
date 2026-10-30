@@ -2,7 +2,7 @@ import { ApiError } from '../../../shared/api/client'
 import { useCallNoticeStore } from '../store/callNoticeStore'
 import { useCallSessionStore } from '../store/callSessionStore'
 import { useIncomingCallStore } from '../store/incomingCallStore'
-import { useParticipantsStore } from '../store/participantsStore'
+import { useParticipantsStore, voiceOf } from '../store/participantsStore'
 import { useScreenShareStore } from '../store/screenShareStore'
 import { useSpeakingStore } from '../store/speakingStore'
 import type { CallMedia, MediaConnection } from './callMedia'
@@ -43,7 +43,8 @@ function rig(over: Partial<ControllerDeps> = {}) {
     api: {
       startCall: jest.fn().mockResolvedValue({ id: 'c1', type: 'channel', status: 'active' }),
       getCallToken: jest.fn().mockResolvedValue({ token: 'tok' }),
-      endCallRequest: jest.fn().mockResolvedValue({ message: 'ok' })
+      endCallRequest: jest.fn().mockResolvedValue({ message: 'ok' }),
+      getCallState: jest.fn().mockResolvedValue({ call: { id: 'c1', status: 'active' }, participants: [] })
     },
     media,
     ws: { send: jest.fn(), subscribe: jest.fn(), unsubscribe: jest.fn() },
@@ -72,6 +73,28 @@ describe('joinChannel', () => {
     expect(deps.ws.subscribe).toHaveBeenCalledWith('call:c1')
     expect(media.connect).toHaveBeenCalledWith('wss://sala.exemplo', 'tok')
     expect(session()).toMatchObject({ phase: 'active', callId: 'c1', kind: 'channel', channelId: 'ch1', serverId: 's1', name: 'Geral' })
+  })
+
+  it('entrar numa chamada que já tem gente mostra quem está nela, com o estado de mudo (bug: a lista só vinha por evento)', async () => {
+    const { controller, deps } = rig({ meId: () => 'me' })
+    ;(deps.api.getCallState as jest.Mock).mockResolvedValue({
+      call: { id: 'c1', status: 'active' },
+      participants: [
+        { user_id: 'me', display_name: 'Eu' },
+        { user_id: 'u1', username: 'ana', display_name: 'Ana', avatar_url: null, muted: true }
+      ]
+    })
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    expect(deps.api.getCallState).toHaveBeenCalledWith('c1')
+    expect(useParticipantsStore.getState().people).toEqual([{ id: 'u1', username: 'ana', display_name: 'Ana', avatar_url: null }])
+    expect(voiceOf(useParticipantsStore.getState().voice, 'u1').muted).toBe(true)
+  })
+
+  it('falha ao buscar quem está na chamada não impede de entrar', async () => {
+    const { controller, deps } = rig()
+    ;(deps.api.getCallState as jest.Mock).mockRejectedValue(new Error('sem rede'))
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    expect(session().phase).toBe('active')
   })
 
   it('liga o microfone conforme o mudo local e avisa o servidor', async () => {
