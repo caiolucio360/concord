@@ -80,7 +80,7 @@ export function livePauseReason(enabled: boolean, streamState: string): LivePaus
  * mais trafegou). Nenhum ativo: o pausado (o dynacast pausa o envio quando
  * ninguém está vendo a live), para o painel dizer isso em vez de "sem dados".
  */
-function videoRtp(report: RTCStatsReport, type: string, bytesKey: string): Stat | null {
+export function videoRtp(report: RTCStatsReport, type: string, bytesKey: string): Stat | null {
   let best: Stat | null = null
   let idle: Stat | null = null
   report.forEach((stat: Stat) => {

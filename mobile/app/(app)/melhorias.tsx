@@ -3,5 +3,5 @@ import { ImprovementsHub } from '../../src/features/ranking/components/Improveme
 
 export default function ImprovementsRoute() {
   const router = useRouter()
-  return <ImprovementsHub onBack={() => router.back()} onOpenRanking={() => router.push('/ranking')} />
+  return <ImprovementsHub onBack={() => router.back()} onOpenRanking={() => router.push('/ranking')} onOpenChangelog={() => router.push('/novidades')} />
 }

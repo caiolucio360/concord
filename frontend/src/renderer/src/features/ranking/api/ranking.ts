@@ -1,11 +1,14 @@
 import { request } from '../../../shared/api/client'
 import type { NameStyle } from '../../profile/lib/nameStyle'
+import type { ProfileRelationship } from '../../profile/lib/profileRelationship'
 
 /** Uma linha do ranking global (backend: internal/level/ranking.go). */
 export interface RankingEntry {
   position: number
   user_id: string
+  /** Vazio para quem não tem vínculo comigo (relationship = none). */
   username: string
+  relationship: ProfileRelationship
   display_name: string
   avatar_url: string | null
   name_style: NameStyle

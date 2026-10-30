@@ -4,8 +4,10 @@ import {
   removeVisit,
   upsertVisit,
   visitOf,
+  visitPageTarget,
   visitPath,
-  visitServerOf
+  visitServerOf,
+  visitsOutsideServers
 } from './guestVisits'
 
 const NOW = Date.parse('2026-10-28T12:00:00Z')
@@ -49,5 +51,41 @@ describe('visitas de quem tem conta (trilho)', () => {
     expect(visitOf(list, 'a', NOW)?.server_id).toBe('a')
     expect(visitOf(list, 'b', NOW)).toBeNull()
     expect(visitOf(list, undefined, NOW)).toBeNull()
+  })
+})
+
+describe('quem virou membro (sem visita duplicada)', () => {
+  it('o trilho não mostra a visita de servidor de que já sou membro', () => {
+    const list = [pass('a'), pass('b')]
+    expect(visitsOutsideServers(list, ['b', 'z']).map((v) => v.server_id)).toEqual(['a'])
+  })
+
+  it('/visitas/<servidor> de quem é membro vai para o canal no servidor', () => {
+    expect(
+      visitPageTarget({ serverId: 'a', member: true, visit: pass('a'), loaded: true })
+    ).toEqual({ kind: 'go', path: '/servers/a/channels/voz-a' })
+    expect(visitPageTarget({ serverId: 'a', member: true, visit: null, loaded: true })).toEqual({
+      kind: 'go',
+      path: '/servers/a'
+    })
+  })
+
+  it('virou membro agora: vai para o canal da call, mesmo antes da lista de servidores', () => {
+    expect(
+      visitPageTarget({ serverId: 'a', member: false, visit: null, loaded: true, joinedChannel: 'voz-a' })
+    ).toEqual({ kind: 'go', path: '/servers/a/channels/voz-a' })
+  })
+
+  it('visitante: abre a visita; sem visita, espera a lista ou volta ao Início', () => {
+    expect(visitPageTarget({ serverId: 'a', member: false, visit: pass('a'), loaded: true })).toEqual({
+      kind: 'visit'
+    })
+    expect(visitPageTarget({ serverId: 'a', member: false, visit: null, loaded: false })).toEqual({
+      kind: 'wait'
+    })
+    expect(visitPageTarget({ serverId: 'a', member: false, visit: null, loaded: true })).toEqual({
+      kind: 'go',
+      path: '/friends'
+    })
   })
 })

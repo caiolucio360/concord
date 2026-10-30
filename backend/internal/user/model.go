@@ -5,6 +5,7 @@ import (
 
 	"gin-quickstart/backend/internal/namestyle"
 	"gin-quickstart/backend/internal/profiletheme"
+	"gin-quickstart/backend/internal/relationship"
 )
 
 type User struct {
@@ -113,8 +114,11 @@ type PublicProfile struct {
 	Links       []ProfileLink `json:"links"`
 	Status      string        `json:"status"`
 	// IsBot: o Maestro. Aparece com o selo BOT e sempre online.
-	IsBot        bool               `json:"is_bot"`
-	NameStyle    namestyle.Style    `json:"name_style"`
+	IsBot     bool            `json:"is_bot"`
+	NameStyle namestyle.Style `json:"name_style"`
+	// Relationship: vínculo de quem pediu o cartão com a pessoa (sem vínculo,
+	// Username vem vazio). Fica de fora no evento user:update.
+	Relationship relationship.Kind  `json:"relationship,omitempty"`
 	ProfileTheme profiletheme.Theme `json:"profile_theme"`
 	CreatedAt    time.Time          `json:"created_at"`
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { MyRank, RankingEntry } from '../api/ranking'
 import {
+  cardContact,
   formatXp,
   isOutsideList,
   myPositionText,
@@ -13,6 +14,7 @@ const entry = (position: number): RankingEntry => ({
   position,
   user_id: `u${position}`,
   username: `user${position}`,
+  relationship: 'friend',
   display_name: `User ${position}`,
   avatar_url: null,
   name_style: { font: 'default', effect: 'solid', colors: [] },
@@ -66,5 +68,24 @@ describe('textos', () => {
     expect(isOutsideList(me, list(100))).toBe(true)
     expect(isOutsideList({ ...me, position: 7 }, list(100))).toBe(false)
     expect(isOutsideList(null, list(100))).toBe(false)
+  })
+})
+
+describe('cardContact', () => {
+  it('sem vínculo, o cartão abre sem o @ e marcado como none', () => {
+    const stranger = { ...entry(1), username: '', relationship: 'none' as const }
+    expect(cardContact(stranger)).toEqual({ username: undefined, relationship: 'none' })
+  })
+
+  it('mesmo se o @ vier, sem vínculo ele não vai para o cartão', () => {
+    const stranger = { ...entry(1), relationship: 'none' as const }
+    expect(cardContact(stranger).username).toBeUndefined()
+  })
+
+  it('com vínculo, leva o @ para o cartão', () => {
+    expect(cardContact({ ...entry(1), relationship: 'shared_server' })).toEqual({
+      username: 'user1',
+      relationship: 'shared_server'
+    })
   })
 })

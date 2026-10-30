@@ -1,0 +1,215 @@
+package liveobs
+
+import (
+	"slices"
+	"testing"
+	"time"
+)
+
+var t0 = time.Date(2026, 10, 29, 20, 0, 0, 0, time.UTC)
+
+func fp(v float64) *float64 { return &v }
+
+func session(id, kind, user string, start, minutes int) SessionStats {
+	return SessionStats{
+		ID: id, Kind: kind, UserID: user, Username: user, CallID: "c1",
+		StartedAt: t0.Add(time.Duration(start) * time.Minute),
+		EndedAt:   t0.Add(time.Duration(start+minutes) * time.Minute),
+		Seconds:   float64(minutes * 60),
+	}
+}
+
+func TestBucketFor(t *testing.T) {
+	tests := []struct {
+		span time.Duration
+		want time.Duration
+	}{
+		{time.Hour, time.Minute},
+		{24 * time.Hour, 5 * time.Minute},
+		{7 * 24 * time.Hour, 60 * time.Minute},
+		{14 * 24 * time.Hour, 120 * time.Minute},
+		{60 * 24 * time.Hour, 240 * time.Minute},
+	}
+	for _, tt := range tests {
+		if got := bucketFor(tt.span); got != tt.want {
+			t.Errorf("bucketFor(%v) = %v, quer %v", tt.span, got, tt.want)
+		}
+	}
+}
+
+func TestBucketSeriesSomaBandaETiraMedias(t *testing.T) {
+	minutes := []ServerMinute{
+		{Minute: t0, Seconds: 60, Up: true, BytesIn: 75_000_000, BytesOut: 150_000_000, PacketsIn: 98, PacketsLostIn: 2,
+			PacketsOut: 100, Participants: 3, VideoTracksOut: 2, RTTMs: fp(40), LiveKitCPUPercent: fp(10), HostCPUPercent: fp(30)},
+		{Minute: t0.Add(time.Minute), Seconds: 60, Up: true, BytesIn: 0, BytesOut: 0, PacketsIn: 0,
+			Participants: 5, VideoTracksOut: 1, RTTMs: fp(60), LiveKitCPUPercent: fp(20), HostCPUPercent: fp(50)},
+		{Minute: t0.Add(5 * time.Minute), Seconds: 0, Up: false, HostCPUPercent: fp(5)},
+	}
+	got := bucketSeries(minutes, 5*time.Minute)
+	if len(got) != 2 {
+		t.Fatalf("pontos = %d, quer 2", len(got))
+	}
+	p := got[0]
+	checks := []struct {
+		name string
+		ok   bool
+	}{
+		{"início do intervalo", p.At.Equal(t0)},
+		{"Mbps de entrada no intervalo (75 MB em 120 s)", near(p.MbpsIn, 5)},
+		{"Mbps de saída", near(p.MbpsOut, 10)},
+		{"perda na subida", p.LossInPct != nil && near(*p.LossInPct, 2)},
+		{"perda na descida sem perda = 0", p.LossOutPct != nil && *p.LossOutPct == 0},
+		{"RTT médio", near(*p.RTTMs, 50)},
+		{"CPU média", near(*p.LiveKitCPU, 15) && near(*p.HostCPU, 40)},
+		{"pico de participantes", p.Participants == 5 && p.VideoTracksOut == 2},
+		{"no ar", p.Up},
+	}
+	for _, c := range checks {
+		if !c.ok {
+			t.Errorf("%s: %+v", c.name, p)
+		}
+	}
+	down := got[1]
+	if down.Up || down.LossInPct != nil || down.MbpsIn != 0 || *down.HostCPU != 5 {
+		t.Errorf("intervalo sem LiveKit = %+v", down)
+	}
+}
+
+func TestLiveRowsJuntaQuemAssistiu(t *testing.T) {
+	share := session("s1", KindShare, "ana", 0, 30)
+	share.HardwareRatio = fp(1)
+	hw := session("w1", KindWatch, "bia", 5, 10)
+	hw.StreamerID, hw.Freezes, hw.HardwareRatio = "ana", 10, fp(1)
+	sw := session("w2", KindWatch, "caio", 10, 10)
+	sw.StreamerID, sw.Freezes, sw.HardwareRatio = "ana", 0, fp(0)
+	otherCall := session("w3", KindWatch, "duda", 5, 10)
+	otherCall.StreamerID, otherCall.CallID = "ana", "c2"
+	later := session("w4", KindWatch, "edu", 40, 10)
+	later.StreamerID = "ana"
+	older := session("s0", KindShare, "bia", -60, 10)
+
+	rows := liveRows([]SessionStats{older, share, hw, sw, otherCall, later}, 10)
+	if len(rows) != 2 || rows[0].ID != "s1" {
+		t.Fatalf("lives = %+v, quer s1 primeiro (mais recente)", rows)
+	}
+	r := rows[0]
+	if r.Viewers != 2 || r.DurationSeconds != 1800 {
+		t.Errorf("espectadores = %d, duração = %v; quer 2 e 1800", r.Viewers, r.DurationSeconds)
+	}
+	if r.ViewerFreezesPerMin == nil || !near(*r.ViewerFreezesPerMin, 0.5) {
+		t.Errorf("congelamentos/min = %v, quer 0,5 (10 em 20 min)", r.ViewerFreezesPerMin)
+	}
+	if r.ViewerSoftwareRatio == nil || !near(*r.ViewerSoftwareRatio, 0.5) {
+		t.Errorf("no processador = %v, quer 0,5", r.ViewerSoftwareRatio)
+	}
+	if rows[1].Viewers != 0 || rows[1].ViewerFreezesPerMin != nil {
+		t.Errorf("live sem ninguém = %+v", rows[1])
+	}
+	if got := liveRows([]SessionStats{share, older}, 1); len(got) != 1 {
+		t.Errorf("limite ignorado: %d", len(got))
+	}
+}
+
+func TestReasonsDizPorQue(t *testing.T) {
+	s := session("x", KindShare, "ana", 0, 10)
+	s.CPURatio, s.BandwidthRatio, s.BackupRatio, s.HardwareRatio = 0.5, 0.4, 0.5, fp(0)
+	s.Transport, s.RTTMs, s.LossPct = "tcp", fp(200), fp(3)
+	want := []string{
+		"PC de quem transmite no limite (CPU)",
+		"Conexão de quem transmite no limite (banda)",
+		"Codificando no processador",
+		"Reserva ligada (alguém sem o codec)",
+		"Perda de pacotes",
+		"Latência alta",
+		"Conexão por TCP",
+	}
+	if got := reasons(s); !slices.Equal(got, want) {
+		t.Errorf("motivos = %q\nquer %q", got, want)
+	}
+
+	w := session("y", KindWatch, "bia", 0, 10)
+	w.HardwareRatio, w.PausedRatio, w.Freezes, w.Transport = fp(0.2), 0.3, 20, "relay"
+	want = []string{"Decodificando no processador", "Pausada pelo servidor (conexão de quem assiste)", "Congelamentos", "Conexão por TURN"}
+	if got := reasons(w); !slices.Equal(got, want) {
+		t.Errorf("motivos = %q\nquer %q", got, want)
+	}
+
+	ok := session("z", KindWatch, "caio", 0, 10)
+	ok.HardwareRatio, ok.Transport = fp(1), "udp"
+	if got := reasons(ok); len(got) != 0 {
+		t.Errorf("sessão boa com motivos: %q", got)
+	}
+}
+
+func TestWorstRowsOrdenaPelasPiores(t *testing.T) {
+	good := session("bom", KindWatch, "a", 0, 10)
+	good.HardwareRatio, good.Transport = fp(1), "udp"
+	frozen := session("congela", KindWatch, "b", 0, 10)
+	frozen.Freezes, frozen.FreezeMs = 30, 20_000
+	slow := session("lenta", KindShare, "c", 0, 10)
+	slow.BelowRatio, slow.CPURatio = fp(0.9), 0.9
+	short := session("curta", KindWatch, "d", 0, 0)
+	short.Seconds, short.Freezes = 20, 50
+	call := session("voz", KindCall, "e", 0, 10)
+	call.LossPct = fp(50)
+
+	rows := worstRows([]SessionStats{good, frozen, slow, short, call}, 2)
+	ids := []string{}
+	for _, r := range rows {
+		ids = append(ids, r.ID)
+	}
+	if !slices.Equal(ids, []string{"lenta", "congela"}) {
+		t.Errorf("piores = %v, quer [lenta congela] (sem a boa, a curta e a call)", ids)
+	}
+	if rows[1].FreezesPerMin != 3 || len(rows[1].Reasons) == 0 {
+		t.Errorf("congela = %+v", rows[1])
+	}
+}
+
+func TestBreakdownsAgrupam(t *testing.T) {
+	a := session("a", KindShare, "ana", 0, 10)
+	a.OS, a.GPU, a.Codec, a.Transport, a.BelowRatio, a.HardwareRatio = "Windows", "NVIDIA", "H265", "udp", fp(0.2), fp(1)
+	b := session("b", KindWatch, "bia", 0, 10)
+	b.OS, b.GPU, b.Codec, b.Transport, b.Freezes, b.HardwareRatio = "Linux", "", "H264", "tcp", 20, fp(0)
+	c := session("c", KindWatch, "caio", 0, 10)
+	c.OS, c.Codec, c.HardwareRatio = "Windows", "H265", fp(0.5)
+	call := session("v", KindCall, "duda", 0, 10)
+	call.OS, call.Transport = "Android", "relay"
+
+	got := breakdowns([]SessionStats{a, b, c, call})
+	win := got["os"][0]
+	if win.Key != "Windows" || win.Sessions != 2 || !near(*win.SoftwareRatio, 0.25) || !near(*win.BelowRatio, 0.2) {
+		t.Errorf("Windows = %+v", win)
+	}
+	if got["gpu"][0].Key != "(desconhecida)" || got["gpu"][0].Sessions != 2 {
+		t.Errorf("GPU vazia = %+v", got["gpu"])
+	}
+	linux := got["os"][1]
+	if linux.FreezesPerMin == nil || *linux.FreezesPerMin != 2 || linux.BelowRatio != nil {
+		t.Errorf("Linux = %+v", linux)
+	}
+	transports := map[string]int{}
+	for _, r := range got["transport"] {
+		transports[r.Key] = r.Sessions
+	}
+	if transports["relay"] != 1 || transports["tcp"] != 1 {
+		t.Errorf("transporte conta as calls também: %v", transports)
+	}
+	for _, r := range got["codec"] {
+		if r.Key == "" {
+			t.Error("call sem vídeo entrou no codec")
+		}
+	}
+}
+
+func TestBuildReportJuntaTudo(t *testing.T) {
+	from, to := t0.Add(-time.Hour), t0.Add(time.Hour)
+	r := buildReport(from, to, []SessionStats{session("s", KindShare, "ana", 0, 10)},
+		[]ServerMinute{{Minute: t0, Seconds: 60, Up: true}}, []EventRow{{Type: EventStart}})
+	if r.BucketMin != 1 || len(r.Server) != 1 || len(r.Lives) != 1 || len(r.Events) != 1 || r.Breakdown["os"] == nil {
+		t.Errorf("relatório = %+v", r)
+	}
+	if r.Worst == nil {
+		t.Error("piores nil (o JSON precisa de [])")
+	}
+}

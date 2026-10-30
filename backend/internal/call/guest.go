@@ -78,3 +78,57 @@ func (s *Service) admitMovedGuest(ctx context.Context, snap *permission.Snapshot
 	}
 	return nil
 }
+
+// guestUsesSoundboard: o visitante usa a mesa de áudio na call do convite se o
+// @everyone pode usá-la naquele canal. É a regra mais simples: ele herda o que
+// vale para um membro sem cargo (ver e entrar o convite já dá).
+func (s *Service) guestUsesSoundboard(ctx context.Context, serverID, channelID, userID string) bool {
+	if _, ok := s.guestPerms(ctx, channelID, userID); !ok {
+		return false
+	}
+	snap, err := s.perms.Snapshot(ctx, serverID)
+	if err != nil {
+		return false
+	}
+	return permission.Has(everyoneIn(snap, channelID), permission.UseSoundboard)
+}
+
+// everyoneIn: as permissões do @everyone no canal (as do servidor com a
+// sobrescrita do @everyone naquele canal).
+func everyoneIn(snap *permission.Snapshot, channelID string) int64 {
+	perms := snap.Everyone.Permissions
+	if perms&permission.Administrator != 0 {
+		return permission.All
+	}
+	for _, o := range snap.Channels[channelID].Overwrites {
+		if o.TargetType == permission.TargetRole && o.TargetID == snap.Everyone.ID {
+			perms = perms&^o.Deny | o.Allow
+		}
+	}
+	return perms
+}
+
+// GuestMemberEvent: quem estava na call como visitante virou membro do
+// servidor (guest:member; o app tira o selo "Visitante").
+type GuestMemberEvent struct {
+	CallID   string `json:"call_id"`
+	ServerID string `json:"server_id"`
+	UserID   string `json:"user_id"`
+}
+
+// GuestBecameMember: o visitante entrou no servidor de fato (o internal/guest
+// já encerrou o acesso). Ele segue na mesma call e na mesma conexão de mídia:
+// as permissões de membro passam a valer (RevalidateServer atualiza o grant ou,
+// se como membro ele não pode estar no canal, tira da call) e a call fica
+// sabendo para tirar o selo.
+func (s *Service) GuestBecameMember(ctx context.Context, serverID, userID string) {
+	s.RevalidateServer(ctx, serverID)
+	for callID, vc := range s.voiceCallsOf(serverID) {
+		if _, in := vc.participants[userID]; !in {
+			continue
+		}
+		event := marshalEvent("guest:member", GuestMemberEvent{CallID: callID, ServerID: serverID, UserID: userID})
+		s.publisher.BroadcastToCall(callID, event)
+		s.broadcastServer(serverID, &vc.channelID, event)
+	}
+}

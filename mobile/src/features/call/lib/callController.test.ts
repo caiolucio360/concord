@@ -265,6 +265,24 @@ describe('transmissão de tela', () => {
     expect(useCallNoticeStore.getState().message).toMatch(/Não foi possível transmitir a tela/)
   })
 
+  it('captura que falhou no meio (a chamada caiu ao pedir a tela): manda desligar a captura para não deixar o serviço de tela preso', async () => {
+    const { controller, media } = rig()
+    media.setScreenShareEnabled.mockRejectedValueOnce(new Error('publish aborted'))
+    await controller.toggleScreenShare()
+    expect(media.setScreenShareEnabled).toHaveBeenNthCalledWith(1, true)
+    expect(media.setScreenShareEnabled).toHaveBeenNthCalledWith(2, false)
+  })
+
+  it('sair da chamada transmitindo desliga a captura antes de desconectar', async () => {
+    const { controller, media } = rig()
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    await controller.toggleScreenShare()
+    media.setScreenShareEnabled.mockClear()
+    await controller.leave()
+    expect(media.setScreenShareEnabled).toHaveBeenCalledWith(false)
+    expect(media.setScreenShareEnabled.mock.invocationCallOrder[0]).toBeLessThan(media.disconnect.mock.invocationCallOrder.at(-1) as number)
+  })
+
   it('a lista de quem transmite vai para a store; som quando outra pessoa começa ou para (eu não conto)', async () => {
     const { emitScreens } = rig({ meId: () => 'me' })
     jest.mocked(playSound).mockClear()

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createPreviewSender, waitUntil } from './screenPreviewFlow'
-import { PREVIEW_CAPTURE_EVERY_MS } from './screenPreview'
+import { ApiError } from '../../../shared/api/client'
+import { createPreviewSender, pollScreenPreview, waitUntil } from './screenPreviewFlow'
+import { PREVIEW_CAPTURE_EVERY_MS, PREVIEW_POLL_MS, PREVIEW_RETRY_MS } from './screenPreview'
 
 describe('createPreviewSender', () => {
   it('tira e manda a foto da chamada certa', async () => {
@@ -106,5 +107,71 @@ describe('waitUntil', () => {
     vi.advanceTimersByTime(1000)
     expect(await p).toBe(false)
     expect(store.listeners()).toBe(0)
+  })
+})
+
+describe('pollScreenPreview', () => {
+  afterEach(() => vi.useRealTimers())
+
+  const flush = async (): Promise<void> => {
+    for (let i = 0; i < 5; i++) await Promise.resolve()
+  }
+
+  it('busca já, rápido até a primeira foto e depois no ritmo normal', async () => {
+    vi.useFakeTimers()
+    const replies: (string | null)[] = [null, 'a', 'b']
+    const fetch = vi.fn(async () => ({ image: replies.shift() ?? null }))
+    const onImage = vi.fn()
+    const stop = pollScreenPreview({ fetch, onImage, onEnded: vi.fn() })
+    await flush()
+    expect(fetch).toHaveBeenCalledTimes(1)
+    await vi.advanceTimersByTimeAsync(PREVIEW_RETRY_MS)
+    expect(onImage).toHaveBeenLastCalledWith('a')
+    await vi.advanceTimersByTimeAsync(PREVIEW_POLL_MS - 1)
+    expect(fetch).toHaveBeenCalledTimes(2)
+    await vi.advanceTimersByTimeAsync(1)
+    expect(onImage).toHaveBeenLastCalledWith('b')
+    stop()
+  })
+
+  it('parou de transmitir (404) ou perdi a permissão (403): avisa e não insiste', async () => {
+    vi.useFakeTimers()
+    for (const status of [404, 403]) {
+      const fetch = vi.fn(async () => {
+        throw new ApiError(status, 'x')
+      })
+      const onEnded = vi.fn()
+      pollScreenPreview({ fetch, onImage: vi.fn(), onEnded })
+      await flush()
+      await vi.advanceTimersByTimeAsync(PREVIEW_POLL_MS * 2)
+      expect(onEnded).toHaveBeenCalledTimes(1)
+      expect(fetch).toHaveBeenCalledTimes(1)
+    }
+  })
+
+  it('erro de rede: tenta de novo', async () => {
+    vi.useFakeTimers()
+    const fetch = vi.fn(async () => {
+      throw new Error('offline')
+    })
+    const stop = pollScreenPreview({ fetch, onImage: vi.fn(), onEnded: vi.fn() })
+    await flush()
+    await vi.advanceTimersByTimeAsync(PREVIEW_RETRY_MS)
+    expect(fetch).toHaveBeenCalledTimes(2)
+    stop()
+  })
+
+  it('parar (cartão fechou) não busca mais nem avisa resposta atrasada', async () => {
+    vi.useFakeTimers()
+    let reply: (v: { image: string | null }) => void = () => {}
+    const fetch = vi.fn(() => new Promise<{ image: string | null }>((r) => (reply = r)))
+    const onImage = vi.fn()
+    const stop = pollScreenPreview({ fetch, onImage, onEnded: vi.fn() })
+    stop()
+    reply({ image: 'tarde' })
+    await flush()
+    await vi.advanceTimersByTimeAsync(PREVIEW_POLL_MS * 2)
+    expect(onImage).not.toHaveBeenCalled()
+    expect(fetch).toHaveBeenCalledTimes(1)
   })
 })

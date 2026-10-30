@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { getProfile, type PublicProfile } from '../api/users'
+import { mergeProfile } from '../lib/profileRelationship'
 
 // Perfis públicos já vistos (cartão de perfil) e a versão mais nova de cada
 // pessoa que chegou por "user:update". Avatar e nome em mensagens, listas e
@@ -47,7 +48,10 @@ export const useProfileStore = create<ProfileState>()((set, get) => ({
 
   apply: (profile) =>
     set((state) => ({
-      profiles: { ...state.profiles, [profile.id]: profile },
+      profiles: {
+        ...state.profiles,
+        [profile.id]: mergeProfile(state.profiles[profile.id], profile)
+      },
       fetchedAt: { ...state.fetchedAt, [profile.id]: Date.now() }
     })),
 
