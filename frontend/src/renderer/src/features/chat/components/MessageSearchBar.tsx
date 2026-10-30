@@ -250,7 +250,7 @@ export default function MessageSearchBar({
             }
           }}
           onKeyDown={handleKeyDown}
-          className="min-w-0 flex-1 bg-transparent text-ds-sm text-strong outline-none placeholder:truncate placeholder:text-gray-500"
+          className="min-w-0 flex-1 bg-transparent text-ds-sm text-strong outline-none placeholder:truncate placeholder:text-faint"
         />
         {text ? (
           <button
@@ -258,12 +258,12 @@ export default function MessageSearchBar({
             onClick={clear}
             aria-label="Limpar busca"
             title="Limpar busca"
-            className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded text-gray-400 hover:text-strong"
+            className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded text-muted hover:text-strong"
           >
             <XIcon className="h-3.5 w-3.5" />
           </button>
         ) : (
-          <SearchIcon className="h-4 w-4 shrink-0 text-gray-500" />
+          <SearchIcon className="h-4 w-4 shrink-0 text-faint" />
         )}
       </div>
 
@@ -272,7 +272,7 @@ export default function MessageSearchBar({
           className="absolute right-0 top-10 z-50 w-80 overflow-hidden rounded-xl border border-subtle bg-floating py-2 shadow-2xl backdrop-blur-md"
           onMouseDown={(e) => e.preventDefault()}
         >
-          <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+          <p className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
             {sectionTitle()}
           </p>
           <ul
@@ -298,7 +298,7 @@ export default function MessageSearchBar({
             ))}
           </ul>
           {!token.text && text.trim() && (
-            <p className="border-t border-subtle px-3 pt-2 mt-1 text-[11px] text-gray-500">
+            <p className="border-t border-subtle px-3 pt-2 mt-1 text-[11px] text-faint">
               Enter para buscar
             </p>
           )}
@@ -313,10 +313,10 @@ function MenuItemView({ item }: { item: MenuItem }): React.JSX.Element {
     case 'more':
       return (
         <>
-          <SlidersIcon className="h-4 w-4 shrink-0 text-gray-400" />
+          <SlidersIcon className="h-4 w-4 shrink-0 text-muted" />
           <span className="min-w-0">
             <span className="block text-ds-sm font-medium text-strong">Mais filtros</span>
-            <span className="block truncate text-ds-xs text-gray-400">
+            <span className="block truncate text-ds-xs text-muted">
               datas, tipo de autor e mais
             </span>
           </span>
@@ -327,11 +327,11 @@ function MenuItemView({ item }: { item: MenuItem }): React.JSX.Element {
       const [k, ...rest] = item.option.hint.split(':')
       return (
         <>
-          <Icon className="h-4 w-4 shrink-0 text-gray-400" />
+          <Icon className="h-4 w-4 shrink-0 text-muted" />
           <span className="min-w-0">
             <span className="block text-ds-sm font-medium text-strong">{item.option.title}</span>
-            <span className="block truncate text-ds-xs text-gray-400">
-              <strong className="font-semibold text-gray-300">{k}:</strong>
+            <span className="block truncate text-ds-xs text-muted">
+              <strong className="font-semibold text-secondary">{k}:</strong>
               {rest.join(':')}
             </span>
           </span>
@@ -350,13 +350,13 @@ function MenuItemView({ item }: { item: MenuItem }): React.JSX.Element {
           <span className="min-w-0 truncate text-ds-sm text-strong">
             {item.user.nickname || item.user.displayName}
           </span>
-          <span className="ml-auto truncate text-ds-xs text-gray-400">@{item.user.username}</span>
+          <span className="ml-auto truncate text-ds-xs text-muted">@{item.user.username}</span>
         </>
       )
     case 'channel':
       return (
         <>
-          <HashIcon className="h-4 w-4 shrink-0 text-gray-400" />
+          <HashIcon className="h-4 w-4 shrink-0 text-muted" />
           <span className="min-w-0 truncate text-ds-sm text-strong">{item.channel.name}</span>
         </>
       )
@@ -364,7 +364,7 @@ function MenuItemView({ item }: { item: MenuItem }): React.JSX.Element {
       return (
         <>
           <span className="text-ds-sm text-strong">{item.label}</span>
-          <span className="ml-auto text-ds-xs text-gray-400">
+          <span className="ml-auto text-ds-xs text-muted">
             {item.key}:{item.value}
           </span>
         </>

@@ -38,7 +38,7 @@ function DeleteChannelDialog({
   }
   return (
     <Modal open title="Deletar canal" onClose={cancelDelete}>
-      <p className="text-ds-md text-gray-300">
+      <p className="text-ds-md text-secondary">
         Tem certeza que deseja deletar o canal <b className="text-strong">#{channel.name}</b>? Esta
         ação não pode ser desfeita e apagará todas as mensagens do canal.
       </p>
@@ -75,7 +75,7 @@ function DeleteServerDialog({ server }: { server: Server }): React.JSX.Element {
   }
   return (
     <Modal open title="Deletar servidor" onClose={closeConfirm}>
-      <p className="text-ds-md text-gray-300">
+      <p className="text-ds-md text-secondary">
         Tem certeza que deseja deletar o servidor <b className="text-strong">{server.name}</b>?
         Todos os canais e mensagens serão apagados e todos os membros serão removidos. Esta ação não
         pode ser desfeita.

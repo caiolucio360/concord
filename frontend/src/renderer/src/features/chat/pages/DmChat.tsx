@@ -35,7 +35,7 @@ function DmChat(): React.JSX.Element {
   }
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden bg-primary backdrop-blur-2xl text-gray-100">
+    <div className="flex h-full w-full flex-col overflow-hidden bg-primary backdrop-blur-2xl text-strong">
       <header
         onContextMenu={openMenu}
         className="relative flex h-14 shrink-0 items-center gap-2 border-b border-subtle px-4 sm:gap-3"

@@ -112,10 +112,10 @@ export function MemberRow({
           <ActivityLine
             userId={userId}
             statusLabel={`@${handle}`}
-            className="-mt-0.5 text-ds-xs font-medium text-gray-400"
+            className="-mt-0.5 text-ds-xs font-medium text-muted"
           />
         ) : (
-          <p title={`@${handle}`} className="-mt-0.5 truncate text-ds-xs font-medium text-gray-400">
+          <p title={`@${handle}`} className="-mt-0.5 truncate text-ds-xs font-medium text-muted">
             @{handle}
           </p>
         )}
@@ -163,7 +163,7 @@ export function ServerMemberGroups({ server }: { server: Server }): React.JSX.El
         const offline = group.key === 'offline'
         return (
           <div key={group.key}>
-            <p className="mb-1 text-ds-sm font-medium text-gray-400">
+            <p className="mb-1 text-ds-sm font-medium text-muted">
               {group.title} — {group.members.length}
             </p>
             <div className={`flex flex-col gap-1 ${offline ? 'opacity-70' : ''}`}>

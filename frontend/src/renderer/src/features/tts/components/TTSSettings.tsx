@@ -21,7 +21,7 @@ function TTSSettings(): React.JSX.Element {
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="text-ds-sm font-medium text-strong">Ouvir mensagens de TTS</p>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-muted">
             Lê em voz as mensagens /tts do servidor (ou da DM) da call em que você está.
           </p>
         </div>

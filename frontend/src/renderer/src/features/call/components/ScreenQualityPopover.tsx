@@ -109,7 +109,7 @@ function QualityCard(): React.JSX.Element {
       <p className="text-sm font-bold text-strong">Qualidade da transmissão</p>
       <ScreenQualityControls compact value={pending ?? applied} onChange={update} />
       <AdaptStatus />
-      <p className="mt-2 text-xs text-gray-500">
+      <p className="mt-2 text-xs text-faint">
         {pending ? 'Aplicando…' : 'Não interrompe quem está assistindo.'}
       </p>
     </div>

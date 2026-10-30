@@ -13,7 +13,7 @@ interface PollActionsProps {
 }
 
 const LINK =
-  'cursor-pointer rounded-md px-2 py-1 text-xs font-semibold text-gray-300 transition-colors hover:text-strong disabled:opacity-50'
+  'cursor-pointer rounded-md px-2 py-1 text-xs font-semibold text-secondary transition-colors hover:text-strong disabled:opacity-50'
 
 /** Botões ao pé da enquete: espiar, remover voto, encerrar e votar. */
 function PollActions(p: PollActionsProps): React.JSX.Element {
@@ -35,7 +35,7 @@ function PollActions(p: PollActionsProps): React.JSX.Element {
           type="button"
           disabled={p.busy}
           onClick={p.onEnd}
-          className="cursor-pointer rounded-md px-2 py-1 text-xs font-semibold text-gray-300 transition-colors hover:text-danger disabled:opacity-50"
+          className="cursor-pointer rounded-md px-2 py-1 text-xs font-semibold text-secondary transition-colors hover:text-danger disabled:opacity-50"
         >
           Encerrar enquete
         </button>

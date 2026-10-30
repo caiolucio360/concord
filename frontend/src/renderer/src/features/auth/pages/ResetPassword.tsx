@@ -42,8 +42,8 @@ function ResetPassword(): React.JSX.Element {
   if (!token) {
     return (
       <AuthLayout>
-        <h1 className="text-2xl font-semibold text-gray-50">Link inválido</h1>
-        <p className="mt-3 text-sm text-gray-300">Peça um novo link para redefinir a senha.</p>
+        <h1 className="text-2xl font-semibold text-strong">Link inválido</h1>
+        <p className="mt-3 text-sm text-secondary">Peça um novo link para redefinir a senha.</p>
         <Link
           to="/forgot-password"
           className="mt-6 inline-block text-sm font-medium text-brand hover:underline"
@@ -56,8 +56,8 @@ function ResetPassword(): React.JSX.Element {
 
   return (
     <AuthLayout>
-      <h1 className="text-2xl font-semibold text-gray-50">Criar nova senha</h1>
-      <p className="mb-6 mt-1 text-sm text-gray-400">
+      <h1 className="text-2xl font-semibold text-strong">Criar nova senha</h1>
+      <p className="mb-6 mt-1 text-sm text-muted">
         Você será desconectado dos outros dispositivos ao trocar a senha.
       </p>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>

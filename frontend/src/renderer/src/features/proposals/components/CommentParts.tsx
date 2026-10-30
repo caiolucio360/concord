@@ -36,8 +36,8 @@ export function CommentMeta({ comment }: { comment: ProposalComment }): React.JS
   return (
     <div className="flex flex-wrap items-baseline gap-x-2 text-xs">
       <span className="font-semibold text-strong">{comment.author_name}</span>
-      <span className="text-gray-500">{formatTime(comment.created_at)}</span>
-      {comment.edited_at && <span className="text-gray-500">(editado)</span>}
+      <span className="text-faint">{formatTime(comment.created_at)}</span>
+      {comment.edited_at && <span className="text-faint">(editado)</span>}
     </div>
   )
 }

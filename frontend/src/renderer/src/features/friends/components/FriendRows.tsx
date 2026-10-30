@@ -90,7 +90,7 @@ export function BlockedRow({ user }: { user: PublicUser }): React.JSX.Element {
             showToast.error(errorMessage(err, 'Falha ao desbloquear.'))
           )
         }
-        className="cursor-pointer rounded-md bg-floating px-3 py-1.5 text-ds-sm font-medium text-gray-300 transition-colors hover:bg-fg/10 hover:text-strong"
+        className="cursor-pointer rounded-md bg-floating px-3 py-1.5 text-ds-sm font-medium text-secondary transition-colors hover:bg-fg/10 hover:text-strong"
       >
         Desbloquear
       </button>

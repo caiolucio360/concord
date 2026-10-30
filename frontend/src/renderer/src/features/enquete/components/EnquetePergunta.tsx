@@ -18,13 +18,13 @@ function EnquetePergunta({ enquete }: { enquete: Enquete }): React.JSX.Element {
       <h2 id={titleId} className="text-balance text-lg font-bold text-strong">
         {enquete.titulo}
       </h2>
-      <p className="mt-2 text-sm text-gray-400">{enquete.descricao}</p>
+      <p className="mt-2 text-sm text-muted">{enquete.descricao}</p>
       <fieldset className="mt-5 flex flex-col gap-2 text-left">
         <legend className="sr-only">{enquete.titulo}</legend>
         {enquete.opcoes.map((o) => (
           <label
             key={o.id}
-            className="flex min-h-11 cursor-pointer touch-manipulation items-center gap-3 rounded-xl border border-subtle bg-surface px-4 text-sm font-bold text-gray-200 transition-colors hover:bg-white/10 has-[:checked]:border-brand has-[:checked]:bg-brand/20 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand"
+            className="flex min-h-11 cursor-pointer touch-manipulation items-center gap-3 rounded-xl border border-subtle bg-surface px-4 text-sm font-bold text-normal transition-colors hover:bg-white/10 has-[:checked]:border-brand has-[:checked]:bg-brand/20 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand"
           >
             <input
               type="radio"

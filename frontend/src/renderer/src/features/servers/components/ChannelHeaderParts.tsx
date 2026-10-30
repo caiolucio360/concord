@@ -16,11 +16,11 @@ export function ChannelTitle({
 }): React.JSX.Element {
   const name = channel?.name ?? fallback
   return (
-    <div className="flex min-w-0 items-center gap-2 text-gray-300">
+    <div className="flex min-w-0 items-center gap-2 text-secondary">
       {channel?.type === 'voice' ? (
-        <VolumeIcon className="h-5 w-5 text-gray-400" />
+        <VolumeIcon className="h-5 w-5 text-muted" />
       ) : (
-        <span className="text-gray-400 text-xl font-bold">#</span>
+        <span className="text-muted text-xl font-bold">#</span>
       )}
       <span title={name} className="truncate text-ds-md font-semibold text-strong">
         {name}
@@ -66,7 +66,7 @@ export function ChannelActions({
             className={`flex size-10 items-center justify-center rounded-lg border transition md:size-8 ${
               pinsOpen
                 ? 'border-warning/50 bg-warning/10 text-warning'
-                : 'border-subtle bg-fg/5 text-gray-400 hover:border-normal hover:text-strong'
+                : 'border-subtle bg-fg/5 text-muted hover:border-normal hover:text-strong'
             }`}
           >
             <PinIcon className="h-4 w-4" />

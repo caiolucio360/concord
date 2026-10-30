@@ -19,7 +19,7 @@ function OverlaySettings({ show }: { show: boolean }): React.JSX.Element | null 
   if (!show) return null
   return (
     <div className="rounded-xl border border-subtle bg-fg/5 p-4">
-      <h3 className="mb-3 text-ds-sm font-medium text-gray-400">Overlay</h3>
+      <h3 className="mb-3 text-ds-sm font-medium text-muted">Overlay</h3>
       <Toggle
         title="Overlay nos jogos"
         description="Mostra quem está na chamada e quem está falando por cima de jogos em tela cheia (modo janela)."
@@ -38,7 +38,7 @@ function OverlaySettings({ show }: { show: boolean }): React.JSX.Element | null 
       <div className="mt-4 flex items-center justify-between gap-3">
         <span>
           <span className="block text-ds-md font-medium text-strong">Posição e tamanho</span>
-          <span className="block text-ds-sm text-gray-400">
+          <span className="block text-ds-sm text-muted">
             Volta para a esquerda, no meio da tela, no tamanho normal.
           </span>
         </span>
@@ -54,7 +54,7 @@ function OverlaySettings({ show }: { show: boolean }): React.JSX.Element | null 
       <label className="mt-4 flex flex-col gap-2">
         <span className="flex items-center justify-between text-ds-md font-medium text-strong">
           Opacidade do overlay (quem fala fica mais visível)
-          <span className="text-xs font-medium text-gray-400">{overlayOpacity}%</span>
+          <span className="text-xs font-medium text-muted">{overlayOpacity}%</span>
         </span>
         <input
           type="range"
@@ -67,7 +67,7 @@ function OverlaySettings({ show }: { show: boolean }): React.JSX.Element | null 
           aria-label="Opacidade do overlay"
           className="accent-brand disabled:opacity-40"
         />
-        <span className="text-xs text-gray-400">
+        <span className="text-xs text-muted">
           Bem fraquinho em repouso para não atrapalhar o jogo; quem está falando aparece mais forte.
         </span>
       </label>

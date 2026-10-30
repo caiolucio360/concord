@@ -43,11 +43,11 @@ function BoardColumn({
       <div className="shrink-0 px-3 pb-2 pt-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-strong">{title}</h2>
-          <span className="rounded-full bg-fg/10 px-2 py-0.5 text-[11px] text-gray-300">
+          <span className="rounded-full bg-fg/10 px-2 py-0.5 text-[11px] text-secondary">
             {count}
           </span>
         </div>
-        <p className="text-[11px] text-gray-500">
+        <p className="text-[11px] text-faint">
           {dragging && !accepts && !isOrigin && status === 'voting' ? 'A votação não reabre' : hint}
         </p>
       </div>

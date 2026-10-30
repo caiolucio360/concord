@@ -10,7 +10,7 @@ function TTSVoiceStatus({ voice }: { voice: LocalTTSVoice }): React.JSX.Element 
     <div className="flex flex-wrap items-center justify-between gap-2">
       <p
         role="status"
-        className={`min-w-0 flex-1 text-xs ${view.warning ? 'text-warning' : 'text-gray-400'}`}
+        className={`min-w-0 flex-1 text-xs ${view.warning ? 'text-warning' : 'text-muted'}`}
       >
         {view.text}
       </p>

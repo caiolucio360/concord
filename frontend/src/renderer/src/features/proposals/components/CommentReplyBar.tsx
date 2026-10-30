@@ -15,12 +15,12 @@ function CommentReplyBar({
   return (
     <div
       data-reply-bar
-      className="flex items-center justify-between gap-2 rounded-lg border border-subtle bg-floating px-3 py-1.5 text-ds-sm text-gray-300"
+      className="flex items-center justify-between gap-2 rounded-lg border border-subtle bg-floating px-3 py-1.5 text-ds-sm text-secondary"
     >
       <div className="min-w-0 truncate">
         Respondendo a{' '}
         <span className="font-semibold text-strong">@{replyingTo.author_name}</span>
-        <PreviewText preview={commentPreview(replyingTo)} className="ml-2 text-gray-400" />
+        <PreviewText preview={commentPreview(replyingTo)} className="ml-2 text-muted" />
       </div>
       <CloseButton
         label="Cancelar resposta"

@@ -49,7 +49,7 @@ function InviteFriendsForm({ callId }: { callId: string }): React.JSX.Element {
         placeholder={INVITE_COPY.searchPlaceholder}
         autoComplete="off"
         spellCheck={false}
-        className="min-h-10 w-full rounded-lg border border-subtle bg-fg/5 px-3 text-sm text-strong placeholder:text-gray-500 focus-ring"
+        className="min-h-10 w-full rounded-lg border border-subtle bg-fg/5 px-3 text-sm text-strong placeholder:text-faint focus-ring"
       />
       <FriendPickList
         loaded={loaded}
@@ -66,7 +66,7 @@ function InviteFriendsForm({ callId }: { callId: string }): React.JSX.Element {
         </p>
       )}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <span className="text-xs text-gray-400" aria-live="polite">
+        <span className="text-xs text-muted" aria-live="polite">
           {INVITE_COPY.selectedCount(selected.length)}
         </span>
         <Button

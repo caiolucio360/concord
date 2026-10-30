@@ -48,20 +48,20 @@ function SettingsNav({
         />
         <span className="min-w-0">
           <span className="block truncate text-ds-md font-medium text-strong">{name}</span>
-          <span className="flex items-center gap-1 text-xs text-gray-400">
+          <span className="flex items-center gap-1 text-xs text-muted">
             Editar perfis <PencilIcon className="h-3 w-3" />
           </span>
         </span>
       </button>
 
       <label className="mx-3 mb-3 flex items-center gap-2 rounded-lg border border-subtle bg-input px-3 py-2 focus-within:border-brand">
-        <SearchIcon className="h-4 w-4 shrink-0 text-gray-400" />
+        <SearchIcon className="h-4 w-4 shrink-0 text-muted" />
         <input
           value={query}
           onChange={(e) => onQuery(e.target.value)}
           placeholder="Buscar"
           aria-label="Buscar nas configurações"
-          className="min-w-0 flex-1 bg-transparent text-ds-md text-strong placeholder:text-gray-500 focus:outline-none"
+          className="min-w-0 flex-1 bg-transparent text-ds-md text-strong placeholder:text-faint focus:outline-none"
         />
       </label>
 
@@ -71,7 +71,7 @@ function SettingsNav({
           if (items.length === 0) return null
           return (
             <div key={group.id} className="mb-4">
-              <p className="mb-1 px-2 text-ds-sm font-medium text-gray-500">{group.label}</p>
+              <p className="mb-1 px-2 text-ds-sm font-medium text-faint">{group.label}</p>
               {items.map((item) => (
                 <button
                   key={item.id}
@@ -81,7 +81,7 @@ function SettingsNav({
                   className={`mb-0.5 block w-full cursor-pointer rounded-md px-2 py-1.5 text-left text-ds-md font-medium transition-colors ${
                     item.id === currentId
                       ? 'bg-fg/10 text-strong'
-                      : 'text-gray-400 hover:bg-fg/5 hover:text-gray-200'
+                      : 'text-muted hover:bg-fg/5 hover:text-normal'
                   }`}
                 >
                   {item.label}
@@ -91,7 +91,7 @@ function SettingsNav({
           )
         })}
         {visible.length === 0 && (
-          <p className="px-2 text-ds-md text-gray-500">Nada encontrado para “{query}”.</p>
+          <p className="px-2 text-ds-md text-faint">Nada encontrado para “{query}”.</p>
         )}
 
         <div className="mt-2 border-t border-subtle pt-2">

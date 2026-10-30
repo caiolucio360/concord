@@ -93,7 +93,7 @@ export default function StickersTab({
 
   if (!serverId) {
     return (
-      <div className="flex h-48 flex-col items-center justify-center text-center p-4 text-xs text-gray-500">
+      <div className="flex h-48 flex-col items-center justify-center text-center p-4 text-xs text-faint">
         <span>Figurinhas ficam disponíveis em canais de servidores.</span>
       </div>
     )
@@ -108,7 +108,7 @@ export default function StickersTab({
   return (
     <div>
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-[11px] text-gray-400">{stickers.length} / 60 figurinhas</span>
+        <span className="text-[11px] text-muted">{stickers.length} / 60 figurinhas</span>
         {canAdd && (
           <button
             type="button"
@@ -122,7 +122,7 @@ export default function StickersTab({
       </div>
 
       {stickers.length === 0 ? (
-        <div className="flex h-40 flex-col items-center justify-center text-center p-4 text-xs text-gray-500">
+        <div className="flex h-40 flex-col items-center justify-center text-center p-4 text-xs text-faint">
           <span className="mb-2">Nenhuma figurinha no servidor ainda.</span>
           {canAdd && (
             <button

@@ -25,7 +25,7 @@ function SlashSuggestions({
           className="flex w-full cursor-pointer items-baseline gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-fg/10"
         >
           <span className="shrink-0 whitespace-nowrap font-semibold text-strong">{s.usage}</span>
-          <span className="min-w-0 truncate text-xs text-gray-500">
+          <span className="min-w-0 truncate text-xs text-faint">
             {s.description ?? s.aliases.join(' · ')}
           </span>
         </button>

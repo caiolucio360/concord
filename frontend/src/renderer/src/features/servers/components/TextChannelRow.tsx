@@ -53,12 +53,12 @@ function TextChannelRow({
           dim: muted && !active && mentions === 0
         })}
       >
-        <span className="flex h-6 shrink-0 items-center text-xl leading-none text-gray-500">#</span>
+        <span className="flex h-6 shrink-0 items-center text-xl leading-none text-faint">#</span>
         {/* Nome inteiro, quebrando linha; a estrela segue o texto. */}
         <span className={`min-w-0 flex-1 leading-6 ${WRAP_NAME}`}>
           {channel.name}
           {isPrivate && (
-            <span title="Canal privado" className="ml-1.5 inline-flex align-[-1px] text-gray-500">
+            <span title="Canal privado" className="ml-1.5 inline-flex align-[-1px] text-faint">
               <LockIcon className="h-3 w-3" />
               <span className="sr-only">(canal privado)</span>
             </span>

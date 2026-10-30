@@ -26,7 +26,7 @@ function VoiceXPBar({ paused }: { paused: boolean }): React.JSX.Element | null {
         <span className="font-bold" style={{ color: paused ? 'var(--text-faint)' : tier.color }}>
           Nível {me.level}
         </span>
-        <span className="text-gray-500">
+        <span className="text-faint">
           {paused ? 'XP pausado (mutado)' : `${me.xp_into_level}/${me.xp_for_next} XP`}
         </span>
       </div>

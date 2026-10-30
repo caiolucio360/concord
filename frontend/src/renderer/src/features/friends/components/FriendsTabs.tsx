@@ -52,7 +52,7 @@ export function FriendsHeader({
     <header className="flex h-12 shrink-0 items-center gap-2 border-b border-subtle px-4 sm:gap-4">
       <MobileNavButton />
       <div className="flex shrink-0 items-center gap-2 font-semibold text-strong max-sm:sr-only">
-        <FriendsIcon className="h-5 w-5 text-gray-400" />
+        <FriendsIcon className="h-5 w-5 text-muted" />
         Amigos
       </div>
       <span className="h-6 w-px shrink-0 bg-fg/10 max-sm:hidden" />
@@ -91,9 +91,9 @@ export function SearchBox({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Buscar"
-        className="min-w-0 flex-1 bg-transparent text-ds-md text-strong outline-none placeholder:text-gray-500"
+        className="min-w-0 flex-1 bg-transparent text-ds-md text-strong outline-none placeholder:text-faint"
       />
-      <SearchIcon className="h-4 w-4 text-gray-500" />
+      <SearchIcon className="h-4 w-4 text-faint" />
     </label>
   )
 }

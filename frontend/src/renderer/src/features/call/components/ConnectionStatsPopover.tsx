@@ -100,13 +100,13 @@ function PingGraph({
           )}
         </svg>
         {!segments.length && (
-          <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-ds-xs text-gray-400">
+          <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-ds-xs text-muted">
             {pending ? 'Medindo…' : 'Sem dados de latência'}
           </span>
         )}
       </div>
       <div
-        className="mt-1 flex justify-between text-[10px] tabular-nums text-gray-400"
+        className="mt-1 flex justify-between text-[10px] tabular-nums text-muted"
         aria-hidden="true"
       >
         {end ? (
@@ -178,36 +178,36 @@ function ConnectionStatsPopover({
     >
       <h2
         id={titleId}
-        className="border-b border-subtle px-4 py-3 text-center text-ds-xs font-bold uppercase tracking-wide text-gray-200"
+        className="border-b border-subtle px-4 py-3 text-center text-ds-xs font-bold uppercase tracking-wide text-normal"
       >
         Conexão de voz
       </h2>
       <div className="space-y-3 p-4">
         <PingGraph history={stats.history} ceiling={stats.ceiling} pending={stats.pending} />
-        <dl className="space-y-1 text-ds-sm text-gray-400">
+        <dl className="space-y-1 text-ds-sm text-muted">
           <div className="flex items-center justify-between gap-2">
             <dt>Ping médio</dt>
-            <dd className="font-semibold tabular-nums text-gray-200">
+            <dd className="font-semibold tabular-nums text-normal">
               {stats.pending ? 'Medindo…' : formatPing(averagePing(stats.history))}
             </dd>
           </div>
           <div className="flex items-center justify-between gap-2">
             <dt>Último ping</dt>
-            <dd className="font-semibold tabular-nums text-gray-200">
+            <dd className="font-semibold tabular-nums text-normal">
               {stats.pending ? 'Medindo…' : formatPing(latest)}
             </dd>
           </div>
         </dl>
-        <p className="text-ds-xs text-gray-500">Latência até o servidor de voz.</p>
+        <p className="text-ds-xs text-faint">Latência até o servidor de voz.</p>
         <div className="border-t border-subtle pt-3">
-          <h3 className="mb-2 text-ds-xs font-bold text-gray-400">Uso do aplicativo</h3>
+          <h3 className="mb-2 text-ds-xs font-bold text-muted">Uso do aplicativo</h3>
           {metricsAvailable ? (
             <dl className="grid grid-cols-2 gap-3 text-ds-sm">
               <div title="Estimativa da memória residente dos processos do aplicativo; pode incluir memória compartilhada.">
-                <dt className="text-ds-xs text-gray-400">
+                <dt className="text-ds-xs text-muted">
                   RAM <span className="font-normal">(estimada)</span>
                 </dt>
-                <dd className="mt-0.5 font-semibold tabular-nums text-gray-200">
+                <dd className="mt-0.5 font-semibold tabular-nums text-normal">
                   {stats.metrics?.memoryMB != null
                     ? `${Math.round(stats.metrics.memoryMB)} MB`
                     : stats.pending
@@ -216,8 +216,8 @@ function ConnectionStatsPopover({
                 </dd>
               </div>
               <div title="Uso dos processos do aplicativo em relação à capacidade total da CPU.">
-                <dt className="text-ds-xs text-gray-400">CPU</dt>
-                <dd className="mt-0.5 font-semibold tabular-nums text-gray-200">
+                <dt className="text-ds-xs text-muted">CPU</dt>
+                <dd className="mt-0.5 font-semibold tabular-nums text-normal">
                   {stats.metrics?.cpuPercent != null
                     ? `${decimalFormat.format(stats.metrics.cpuPercent)}%`
                     : stats.pending || stats.warmingCPU
@@ -227,7 +227,7 @@ function ConnectionStatsPopover({
               </div>
             </dl>
           ) : (
-            <p className="text-ds-xs text-gray-400">
+            <p className="text-ds-xs text-muted">
               Métricas de recursos disponíveis no aplicativo desktop.
             </p>
           )}

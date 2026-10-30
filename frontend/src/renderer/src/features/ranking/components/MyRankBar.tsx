@@ -12,7 +12,7 @@ function MyRankBar({ me }: { me: MyRank | null }): React.JSX.Element {
       <span className="min-w-0 truncate text-sm font-bold text-strong">{myPositionText(me)}</span>
       {me && (
         <span className="flex shrink-0 items-center gap-2">
-          <span className="hidden text-xs text-gray-400 sm:inline">{formatXp(me.xp)}</span>
+          <span className="hidden text-xs text-muted sm:inline">{formatXp(me.xp)}</span>
           <LevelChip level={me.level} />
         </span>
       )}

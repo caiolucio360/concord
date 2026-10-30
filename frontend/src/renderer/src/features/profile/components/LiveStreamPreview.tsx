@@ -80,7 +80,7 @@ function LiveStreamPreview({
             className="h-full w-full object-contain"
           />
         ) : ended ? (
-          <div className="flex h-full items-center justify-center text-xs text-gray-500">
+          <div className="flex h-full items-center justify-center text-xs text-faint">
             Transmissão encerrada
           </div>
         ) : (

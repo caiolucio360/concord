@@ -34,13 +34,13 @@ export default function PinnedMessageBar({
           <span className="shrink-0 font-semibold text-strong">
             {messageAuthorName(latestPin, nicknames)}:
           </span>
-          <PreviewText preview={pinnedPreview(latestPin)} className="text-gray-300" />
+          <PreviewText preview={pinnedPreview(latestPin)} className="text-secondary" />
         </div>
       </div>
 
       <div className="flex shrink-0 items-center gap-2 pl-3">
         {more && (
-          <span className="rounded bg-fg/5 px-2 py-0.5 text-[10px] font-medium text-gray-400">
+          <span className="rounded bg-fg/5 px-2 py-0.5 text-[10px] font-medium text-muted">
             {more}
           </span>
         )}

@@ -317,7 +317,7 @@ function StreamMosaic({ ids, renderTile, nameOf }: StreamMosaicProps): React.JSX
                 className={`flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-2 text-[11px] font-semibold transition-colors ${
                   preset === option.preset
                     ? 'bg-brand text-white'
-                    : 'text-gray-400 hover:bg-fg/10 hover:text-strong'
+                    : 'text-muted hover:bg-fg/10 hover:text-strong'
                 }`}
               >
                 <PresetGlyph preset={option.preset} cells={option.cells} />

@@ -58,11 +58,11 @@ function PollAnswerRow({
         />
       )}
       <PollAnswerMedia answer={answer} />
-      <span className="relative min-w-0 flex-1 break-words text-sm font-medium text-gray-100">
+      <span className="relative min-w-0 flex-1 break-words text-sm font-medium text-strong">
         {answer.text}
       </span>
       {showResults ? (
-        <span className="relative flex shrink-0 items-center gap-2 text-xs font-semibold text-gray-300">
+        <span className="relative flex shrink-0 items-center gap-2 text-xs font-semibold text-secondary">
           {answer.me_voted && (
             <span className="text-brand" title="Seu voto">
               <CheckIcon size={16} />
@@ -75,7 +75,7 @@ function PollAnswerRow({
           aria-hidden="true"
           className={`relative flex h-5 w-5 shrink-0 items-center justify-center border-2 text-white ${
             multiselect ? 'rounded-md' : 'rounded-full'
-          } ${isSelected ? 'border-brand bg-brand' : 'border-gray-500'}`}
+          } ${isSelected ? 'border-brand bg-brand' : 'border-[var(--text-faint)]'}`}
         >
           {isSelected && <CheckIcon size={12} />}
         </span>

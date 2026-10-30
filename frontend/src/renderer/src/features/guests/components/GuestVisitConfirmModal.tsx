@@ -35,7 +35,7 @@ const BODY: Record<GuestPreviewState['status'], Body> = {
   ),
   error: (_token, state, close) => (
     <>
-      <p className="text-ds-sm text-gray-300">{state.status === 'error' && state.message}</p>
+      <p className="text-ds-sm text-secondary">{state.status === 'error' && state.message}</p>
       <Button variant="secondary" className="mt-6 min-h-10 w-full" onClick={close}>
         {GUEST_COPY.close}
       </Button>
@@ -73,9 +73,9 @@ export function ConfirmBody({
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-3">
         <InviteServerIcon name={preview.server_name} size={48} />
-        <p className="min-w-0 text-ds-sm text-gray-300">{GUEST_COPY.confirmBody(preview.inviter_name)}</p>
+        <p className="min-w-0 text-ds-sm text-secondary">{GUEST_COPY.confirmBody(preview.inviter_name)}</p>
       </div>
-      <p className="text-ds-sm text-gray-300">
+      <p className="text-ds-sm text-secondary">
         {GUEST_COPY.landingPerms(preview.can_speak, preview.can_stream)}
       </p>
       {visit.error && (

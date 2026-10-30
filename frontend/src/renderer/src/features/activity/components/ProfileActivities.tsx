@@ -21,7 +21,7 @@ function PlayingNow({ game }: { game: PresenceActivity }): React.JSX.Element {
           className="h-4 w-4 shrink-0"
         />
         <span className="truncate">{game.name}</span>
-        <span className="shrink-0 text-ds-xs font-normal text-gray-400">
+        <span className="shrink-0 text-ds-xs font-normal text-muted">
           <Elapsed startedAt={game.started_at} />
         </span>
       </p>
@@ -49,12 +49,12 @@ export function ListeningNow({ listening }: { listening: ListeningActivity }): R
             {listening.title}
           </p>
           {listening.artist && (
-            <p className="truncate text-ds-sm text-gray-300" title={listening.artist}>
+            <p className="truncate text-ds-sm text-secondary" title={listening.artist}>
               {listening.artist}
             </p>
           )}
           {listening.album && (
-            <p className="truncate text-ds-xs text-gray-400" title={listening.album}>
+            <p className="truncate text-ds-xs text-muted" title={listening.album}>
               {listening.album}
             </p>
           )}

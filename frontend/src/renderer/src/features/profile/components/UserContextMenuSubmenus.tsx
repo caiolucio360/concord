@@ -45,7 +45,7 @@ export function RoleSubmenuItems({
             <span
               aria-hidden
               className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
-                has ? 'border-brand bg-brand text-white' : 'border-gray-500'
+                has ? 'border-brand bg-brand text-white' : 'border-[var(--text-faint)]'
               }`}
             >
               {has && <CheckIcon size={12} />}
@@ -82,7 +82,7 @@ export function VoiceMoveSubmenuItems({
           onClick={() => onMoveTo(ch.id, ch.name)}
           className={submenuItem(itemClass)}
         >
-          <VolumeIcon className="h-4 w-4 shrink-0 text-gray-400" />
+          <VolumeIcon className="h-4 w-4 shrink-0 text-muted" />
           <span className="min-w-0 flex-1 truncate">{ch.name}</span>
         </button>
       ))}

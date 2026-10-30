@@ -45,7 +45,7 @@ function RolesSection(): React.JSX.Element {
     return map
   }, [members])
 
-  if (!serverId) return <p className="text-sm text-gray-400">Abra um servidor primeiro.</p>
+  if (!serverId) return <p className="text-sm text-muted">Abra um servidor primeiro.</p>
 
   const create = async (): Promise<void> => {
     setBusy(true)
@@ -89,7 +89,7 @@ function RolesSection(): React.JSX.Element {
           <PlusIcon className="h-4 w-4" />
           Criar cargo
         </Button>
-        <p className="mb-2 text-xs leading-snug text-gray-500">
+        <p className="mb-2 text-xs leading-snug text-faint">
           Quem está mais acima na lista manda nos de baixo. Você só mexe nos cargos abaixo do seu
           mais alto.
         </p>
@@ -103,7 +103,7 @@ function RolesSection(): React.JSX.Element {
                 className={`flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm font-medium transition-colors ${
                   selected?.id === role.id
                     ? 'bg-fg/10 text-strong'
-                    : 'text-gray-400 hover:bg-fg/5 hover:text-gray-200'
+                    : 'text-muted hover:bg-fg/5 hover:text-normal'
                 }`}
               >
                 <span
@@ -113,7 +113,7 @@ function RolesSection(): React.JSX.Element {
                 />
                 <span className="min-w-0 flex-1 truncate">{role.name}</span>
                 {!role.is_default && (
-                  <span className="shrink-0 text-[11px] text-gray-500">{counts[role.id] ?? 0}</span>
+                  <span className="shrink-0 text-[11px] text-faint">{counts[role.id] ?? 0}</span>
                 )}
               </button>
               {!role.is_default && !role.is_system && (
@@ -123,7 +123,7 @@ function RolesSection(): React.JSX.Element {
                     aria-label={`Subir ${role.name}`}
                     disabled={!canMove(role, -1)}
                     onClick={() => void move(role, -1)}
-                    className="cursor-pointer rounded text-gray-400 hover:text-strong disabled:cursor-not-allowed disabled:opacity-30"
+                    className="cursor-pointer rounded text-muted hover:text-strong disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     <ChevronUpIcon className="h-3.5 w-3.5" />
                   </button>
@@ -132,7 +132,7 @@ function RolesSection(): React.JSX.Element {
                     aria-label={`Descer ${role.name}`}
                     disabled={!canMove(role, 1)}
                     onClick={() => void move(role, 1)}
-                    className="cursor-pointer rounded text-gray-400 hover:text-strong disabled:cursor-not-allowed disabled:opacity-30"
+                    className="cursor-pointer rounded text-muted hover:text-strong disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     <ChevronDownIcon className="h-3.5 w-3.5" />
                   </button>
@@ -147,7 +147,7 @@ function RolesSection(): React.JSX.Element {
         {selected ? (
           <RoleEditor key={selected.id} serverId={serverId} role={selected} />
         ) : (
-          <p className="text-sm text-gray-400">Nenhum cargo ainda.</p>
+          <p className="text-sm text-muted">Nenhum cargo ainda.</p>
         )}
       </div>
     </div>
@@ -233,7 +233,7 @@ function RoleEditor({ serverId, role }: { serverId: string; role: Role }): React
       )}
 
       {role.is_system && (
-        <p className="mb-4 rounded-lg border border-subtle bg-fg/5 px-3 py-2 text-xs text-gray-300">
+        <p className="mb-4 rounded-lg border border-subtle bg-fg/5 px-3 py-2 text-xs text-secondary">
           O cargo <b className="text-strong">{role.name}</b> é fixo do servidor e exclusivo para
           bots: fica sempre abaixo dos demais cargos e não pode ser apagado nem atribuído a outros
           usuários.
@@ -250,7 +250,7 @@ function RoleEditor({ serverId, role }: { serverId: string; role: Role }): React
             className={`-mb-px cursor-pointer border-b-2 px-3 py-2 text-sm font-semibold transition-colors ${
               activeTab === t.id
                 ? 'border-brand text-strong'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
+                : 'border-transparent text-muted hover:text-normal'
             }`}
           >
             {t.label}
@@ -270,14 +270,14 @@ function RoleEditor({ serverId, role }: { serverId: string; role: Role }): React
             />
 
             <div>
-              <p className="mb-2 text-sm font-medium text-gray-300">Cor do cargo</p>
+              <p className="mb-2 text-sm font-medium text-secondary">Cor do cargo</p>
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setColor(null)}
                   aria-label="Sem cor"
                   title="Sem cor"
-                  className={`h-7 w-7 cursor-pointer rounded-full border text-xs text-gray-400 ${
+                  className={`h-7 w-7 cursor-pointer rounded-full border text-xs text-muted ${
                     color === null ? 'border-[var(--text-strong)]' : 'border-normal'
                   }`}
                 >
@@ -303,7 +303,7 @@ function RoleEditor({ serverId, role }: { serverId: string; role: Role }): React
                   className="h-7 w-9 cursor-pointer rounded border border-normal bg-transparent p-0"
                 />
               </div>
-              <p className="mt-2 text-xs text-gray-500">
+              <p className="mt-2 text-xs text-faint">
                 O nome de quem tem o cargo aparece com essa cor (vale a do cargo mais alto que tem
                 cor).
               </p>
@@ -313,7 +313,7 @@ function RoleEditor({ serverId, role }: { serverId: string; role: Role }): React
               <div className="flex items-center justify-between gap-4 rounded-lg border border-subtle bg-fg/3 px-4 py-3">
                 <div>
                   <p className="text-sm font-semibold text-strong">Exibir membros separadamente</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-muted">
                     Quem está online com este cargo ganha um grupo próprio na lista de membros.
                   </p>
                 </div>
@@ -338,7 +338,7 @@ function RoleEditor({ serverId, role }: { serverId: string; role: Role }): React
 
       {dirty && manageable && (
         <div className="sticky bottom-4 mt-6 flex items-center justify-between gap-3 rounded-xl border border-subtle bg-floating px-4 py-3 shadow-2xl backdrop-blur-xl">
-          <p className="text-sm text-gray-300">Cuidado: você tem alterações não salvas.</p>
+          <p className="text-sm text-secondary">Cuidado: você tem alterações não salvas.</p>
           <div className="flex gap-2">
             <Button variant="ghost" onClick={reset} disabled={saving}>
               Redefinir

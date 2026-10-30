@@ -60,7 +60,7 @@ export default function NameStyleEditor({
 
       {effect.maxColors > 0 && (
         <div className="flex items-center gap-3">
-          <p className="text-xs text-gray-400">{effect.maxColors > 1 ? 'Cores' : 'Cor'}</p>
+          <p className="text-xs text-muted">{effect.maxColors > 1 ? 'Cores' : 'Cor'}</p>
           {Array.from({ length: effect.maxColors }, (_, i) => (
             <input
               key={i}

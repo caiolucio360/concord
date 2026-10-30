@@ -44,7 +44,7 @@ function GroupMemberRow({
       />
       <span
         className={`min-w-0 flex-1 truncate text-ds-md font-medium ${
-          status === 'offline' ? 'text-gray-500' : 'text-gray-200'
+          status === 'offline' ? 'text-faint' : 'text-normal'
         }`}
       >
         <StyledName name={look.name} userId={member.id} style={member.name_style} />
@@ -63,7 +63,7 @@ function GroupMemberRow({
             e.stopPropagation()
             onRemove()
           }}
-          className="cursor-pointer text-gray-400 hover:text-danger [@media(hover:hover)]:sr-only [@media(hover:hover)]:group-hover:not-sr-only focus-visible:not-sr-only"
+          className="cursor-pointer text-muted hover:text-danger [@media(hover:hover)]:sr-only [@media(hover:hover)]:group-hover:not-sr-only focus-visible:not-sr-only"
         >
           <XIcon className="h-4 w-4" />
         </button>

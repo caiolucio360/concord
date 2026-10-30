@@ -45,7 +45,7 @@ function StyleRank({
         <span className={`boost-text ${size === 'md' ? 'text-xs' : 'text-[10px]'}`}>
           {rank.text}
         </span>
-        <span className={`font-bold text-gray-300 ${size === 'md' ? 'text-[11px]' : 'text-[9px]'}`}>
+        <span className={`font-bold text-secondary ${size === 'md' ? 'text-[11px]' : 'text-[9px]'}`}>
           XP {rank.label}
         </span>
       </span>

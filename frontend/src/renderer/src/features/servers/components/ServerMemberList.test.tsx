@@ -92,7 +92,7 @@ describe('ServerMemberList', () => {
   it('o cargo colorido pinta o nome e o offline fica cinza', () => {
     const html = render()
     expect(html).toContain('color:#ff0000')
-    expect(html).toContain('data-cor="bg-gray-600"')
+    expect(html).toContain('data-cor="bg-[var(--interactive-muted)]"')
     expect(html).toContain('opacity-70')
   })
 

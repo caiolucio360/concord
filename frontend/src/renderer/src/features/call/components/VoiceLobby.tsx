@@ -49,7 +49,7 @@ function VoiceLobby({
         </div>
         <div>
           <h2 className="text-xl font-bold text-strong">Ninguém aqui ainda</h2>
-          <p className="mt-1 text-sm text-gray-400">
+          <p className="mt-1 text-sm text-muted">
             Entre na voz para conversar com os membros do servidor.
           </p>
         </div>

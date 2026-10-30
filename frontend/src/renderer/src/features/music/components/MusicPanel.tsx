@@ -94,13 +94,13 @@ function MusicPanel({ serverId }: { serverId: string }): React.JSX.Element | nul
       }`}
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-bold uppercase tracking-wide text-gray-400">{T17.title}</h3>
+        <h3 className="text-xs font-bold uppercase tracking-wide text-muted">{T17.title}</h3>
         <button
           type="button"
           onClick={closePanel}
           aria-label="Fechar"
           title="Fechar"
-          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-fg/10 text-gray-200 transition-colors hover:bg-fg/20 hover:text-strong"
+          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-fg/10 text-normal transition-colors hover:bg-fg/20 hover:text-strong"
         >
           <XIcon className="h-4 w-4" />
         </button>
@@ -132,7 +132,7 @@ function MusicPanel({ serverId }: { serverId: string }): React.JSX.Element | nul
             <p data-testid="music-now-title" className="truncate font-semibold text-strong">
               {now.item.title}
             </p>
-            <p className="truncate text-xs text-gray-400">
+            <p className="truncate text-xs text-muted">
               {now.item.artist} · @{now.item.requested_by.username}
             </p>
           </div>
@@ -144,7 +144,7 @@ function MusicPanel({ serverId }: { serverId: string }): React.JSX.Element | nul
               }}
             />
           </div>
-          <div className="flex justify-between text-[10px] text-gray-500">
+          <div className="flex justify-between text-[10px] text-faint">
             <span>{formatDuration(elapsed * 1000)}</span>
             <span>{formatDuration(now.item.duration_ms)}</span>
           </div>
@@ -159,9 +159,9 @@ function MusicPanel({ serverId }: { serverId: string }): React.JSX.Element | nul
         </div>
       )}
 
-      <h3 className="mt-2 text-xs font-bold uppercase tracking-wide text-gray-400">{T17.next}</h3>
+      <h3 className="mt-2 text-xs font-bold uppercase tracking-wide text-muted">{T17.next}</h3>
       {state.queue.length === 0 ? (
-        <p className="text-sm text-gray-500">{T17.empty}</p>
+        <p className="text-sm text-faint">{T17.empty}</p>
       ) : (
         <ol className="flex flex-col gap-1">
           {(showAll ? state.queue : state.queue.slice(0, QUEUE_PREVIEW)).map((it, i) => {
@@ -178,10 +178,10 @@ function MusicPanel({ serverId }: { serverId: string }): React.JSX.Element | nul
                 onDrop={() => onDrop(it)}
                 className={`flex items-center gap-2 rounded px-2 py-1 text-sm ${mine ? 'cursor-grab bg-fg/5' : 'opacity-80'}`}
               >
-                <span className="w-4 text-xs text-gray-500">{i + 1}</span>
+                <span className="w-4 text-xs text-faint">{i + 1}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-strong">{it.title}</span>
-                  <span className="block truncate text-[11px] text-gray-500">
+                  <span className="block truncate text-[11px] text-faint">
                     {formatDuration(it.duration_ms)} · @{it.requested_by.username}
                   </span>
                 </span>
@@ -194,7 +194,7 @@ function MusicPanel({ serverId }: { serverId: string }): React.JSX.Element | nul
                         showToast.error(errorText(err))
                       )
                     }
-                    className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-gray-300 transition-colors hover:bg-fg/15 hover:text-strong"
+                    className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full text-secondary transition-colors hover:bg-fg/15 hover:text-strong"
                   >
                     <XIcon className="h-3.5 w-3.5" />
                   </button>
@@ -209,17 +209,17 @@ function MusicPanel({ serverId }: { serverId: string }): React.JSX.Element | nul
           type="button"
           onClick={() => setShowAll((v) => !v)}
           aria-expanded={showAll}
-          className="cursor-pointer rounded-md bg-fg/10 px-3 py-1.5 text-xs font-semibold text-gray-200 transition-colors hover:bg-fg/15 hover:text-strong"
+          className="cursor-pointer rounded-md bg-fg/10 px-3 py-1.5 text-xs font-semibold text-normal transition-colors hover:bg-fg/15 hover:text-strong"
         >
           {showAll ? T20.seeLess : T20.seeMore(state.queue.length - QUEUE_PREVIEW)}
         </button>
       )}
 
-      <div className="mt-auto flex items-center justify-between gap-2 text-xs text-gray-300">
+      <div className="mt-auto flex items-center justify-between gap-2 text-xs text-secondary">
         <span>{T20.showInPanel}</span>
         <Switch checked={videoEnabled} onChange={setVideoEnabled} label={T20.showInPanel} />
       </div>
-      <div className="flex items-center justify-between gap-2 text-xs text-gray-300">
+      <div className="flex items-center justify-between gap-2 text-xs text-secondary">
         <span>{T17.ducking}</span>
         <Switch checked={ducking} onChange={setDucking} label={T17.ducking} />
       </div>

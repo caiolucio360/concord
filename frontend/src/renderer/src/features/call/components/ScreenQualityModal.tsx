@@ -52,7 +52,7 @@ function QualityDialog({
         </h2>
         <ScreenQualityControls value={quality} onChange={setQuality} />
         {portal && (
-          <p className="mt-3 text-xs text-gray-400">
+          <p className="mt-3 text-xs text-muted">
             A tela é escolhida no seletor do sistema. No Linux, o som não vai junto — só o vídeo.
           </p>
         )}

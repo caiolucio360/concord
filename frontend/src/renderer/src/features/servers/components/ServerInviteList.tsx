@@ -40,7 +40,7 @@ function InviteRow({
         <InviteIcon invite={invite} />
         <div className="min-w-0 leading-tight">
           <p className="truncate text-sm font-semibold text-strong">{invite.server_name}</p>
-          <p className="truncate text-xs text-gray-400">{inviteSubtitle(invite)}</p>
+          <p className="truncate text-xs text-muted">{inviteSubtitle(invite)}</p>
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-2">
@@ -63,7 +63,7 @@ function InviteListBody(): React.JSX.Element {
   if (loading) return <InviteListSkeleton />
   if (invites.length === 0) {
     return (
-      <div className="py-12 text-center text-sm text-gray-400">
+      <div className="py-12 text-center text-sm text-muted">
         Nenhum convite pendente no momento. Quando alguém te convidar para um servidor, ele
         aparecerá aqui.
       </div>
@@ -96,7 +96,7 @@ export default function ServerInviteList(): React.JSX.Element {
 
   return (
     <section>
-      <h2 className="mb-2 mt-4 text-ds-sm font-medium text-gray-400">
+      <h2 className="mb-2 mt-4 text-ds-sm font-medium text-muted">
         {pendingInvitesLabel(loading, count)}
       </h2>
       <InviteListBody />

@@ -47,7 +47,7 @@ function InviteCodeBox({ serverId }: { serverId: string }): React.JSX.Element {
 
   return (
     <div className="space-y-2 rounded-xl border border-subtle bg-fg/5 p-4">
-      <p className="text-ds-sm font-medium text-gray-400">Link de convite</p>
+      <p className="text-ds-sm font-medium text-muted">Link de convite</p>
       <div className="flex items-center gap-2">
         {link ? (
           <input
@@ -71,9 +71,9 @@ function InviteCodeBox({ serverId }: { serverId: string }): React.JSX.Element {
           Copiar
         </Button>
       </div>
-      <p className="text-ds-xs text-gray-400">
+      <p className="text-ds-xs text-muted">
         Mande para seus amigos: o link abre no navegador ou no app. Também dá para colar o link (ou
-        o código <code className="font-mono text-gray-300">{code ?? '········'}</code>) em{' '}
+        o código <code className="font-mono text-secondary">{code ?? '········'}</code>) em{' '}
         <strong>+</strong> <ChevronRightIcon size={12} className="inline align-[-1px]" />{' '}
         <strong>Entrar com código</strong>.
       </p>

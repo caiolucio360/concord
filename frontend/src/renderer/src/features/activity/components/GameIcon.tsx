@@ -57,7 +57,7 @@ function SteamImage({
   className: string
 }): React.JSX.Element {
   const [failed, setFailed] = useState(false)
-  if (!url || failed) return <GamepadIcon className={`${className} text-gray-400`} />
+  if (!url || failed) return <GamepadIcon className={`${className} text-muted`} />
   return (
     <img
       src={url}

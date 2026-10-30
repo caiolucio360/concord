@@ -58,7 +58,7 @@ function ProposalCard({
           {p.title}
         </h3>
         {p.description && (
-          <p className="mt-1 line-clamp-4 whitespace-pre-wrap wrap-break-word text-xs text-gray-400">
+          <p className="mt-1 line-clamp-4 whitespace-pre-wrap wrap-break-word text-xs text-muted">
             {p.description}
           </p>
         )}

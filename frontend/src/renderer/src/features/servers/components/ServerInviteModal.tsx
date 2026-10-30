@@ -63,7 +63,7 @@ function ServerInviteModal({ server }: { server: Server }): React.JSX.Element {
     >
       <div className="space-y-4">
         <InviteCodeBox serverId={server.id} />
-        <p className="text-ds-sm text-gray-400">
+        <p className="text-ds-sm text-muted">
           Ou selecione um amigo para enviar um convite. Ele poderá aceitar ou recusar.
         </p>
 
@@ -75,11 +75,11 @@ function ServerInviteModal({ server }: { server: Server }): React.JSX.Element {
             className="glass-input pl-9 text-ds-md"
             autoFocus
           />
-          <SearchIcon className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+          <SearchIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted" />
         </div>
 
         {friends.length === 0 ? (
-          <p className="py-6 text-center text-xs text-gray-500 italic">
+          <p className="py-6 text-center text-xs text-faint italic">
             Você ainda não tem amigos para convidar. Adicione amigos primeiro na aba
             &quot;Amigos&quot;.
           </p>
@@ -104,12 +104,12 @@ function ServerInviteModal({ server }: { server: Server }): React.JSX.Element {
                     />
                     <div className="leading-tight">
                       <p className="text-ds-md font-medium text-strong">{f.display_name}</p>
-                      <p className="text-ds-xs text-gray-400">@{f.username}</p>
+                      <p className="text-ds-xs text-muted">@{f.username}</p>
                     </div>
                   </div>
 
                   {alreadyInServer ? (
-                    <span className="text-xs text-gray-500">Já é membro</span>
+                    <span className="text-xs text-faint">Já é membro</span>
                   ) : alreadyInvited ? (
                     <span className="text-xs text-brand">Convite pendente</span>
                   ) : (
@@ -127,7 +127,7 @@ function ServerInviteModal({ server }: { server: Server }): React.JSX.Element {
             })}
 
             {filteredFriends.length === 0 && (
-              <p className="py-6 text-center text-xs text-gray-500 italic">
+              <p className="py-6 text-center text-xs text-faint italic">
                 Nenhum amigo encontrado para &quot;{inviteFilter}&quot;.
               </p>
             )}

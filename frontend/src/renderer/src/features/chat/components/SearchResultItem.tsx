@@ -43,7 +43,7 @@ function ResultExtra({ result }: { result: SearchResult }): React.JSX.Element | 
   const extra = messagePreviewParts({ ...result, content: '' })
   if (!extra.text) return null
   return (
-    <span className="mt-1 flex text-ds-xs text-gray-400">
+    <span className="mt-1 flex text-ds-xs text-muted">
       <PreviewText preview={extra} />
     </span>
   )
@@ -75,7 +75,7 @@ export default function SearchResultItem({
       className="group w-full cursor-pointer rounded-lg border border-subtle bg-floating p-3 text-left transition hover:border-normal hover:bg-surface focus-visible:outline-2 focus-visible:outline-brand"
     >
       {result.channel_name && (
-        <span className="mb-1.5 flex items-center gap-1 text-[11px] font-semibold text-gray-400">
+        <span className="mb-1.5 flex items-center gap-1 text-[11px] font-semibold text-muted">
           <HashIcon className="h-3 w-3" />
           {result.channel_name}
         </span>
@@ -95,11 +95,11 @@ export default function SearchResultItem({
             >
               {name}
             </span>
-            <time dateTime={result.created_at} className="shrink-0 text-[11px] text-gray-500">
+            <time dateTime={result.created_at} className="shrink-0 text-[11px] text-faint">
               {formatDateTime(result.created_at)}
             </time>
           </span>
-          <span className="mt-0.5 line-clamp-6 block whitespace-pre-wrap break-words text-ds-sm text-gray-200">
+          <span className="mt-0.5 line-clamp-6 block whitespace-pre-wrap break-words text-ds-sm text-normal">
             <ResultBody result={result} terms={terms} />
           </span>
           <ResultExtra result={result} />

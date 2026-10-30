@@ -50,7 +50,7 @@ function CreateServerForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-muted">
         Dê um nome e uma personalidade ao seu novo servidor. Você poderá alterar isso a qualquer
         momento.
       </p>
@@ -100,7 +100,7 @@ function JoinServerForm({ onDone }: { onDone: (serverId: string) => void }): Rea
       className="mt-5 flex flex-col gap-3 border-t border-subtle pt-5"
     >
       <p className="text-sm font-semibold text-strong">Entrar com código</p>
-      <p className="-mt-1 text-xs text-gray-400">Cole o link de convite ou digite o código.</p>
+      <p className="-mt-1 text-xs text-muted">Cole o link de convite ou digite o código.</p>
       <div className="flex gap-2">
         <Input
           placeholder="Ex: K7P2QX9M ou https://app-salinha.bhrx.com.br/convite/K7P2QX9M"

@@ -21,7 +21,7 @@ export function RoomLoadingGate({
 export function EmptyRoomNotice({ empty }: { empty: boolean }): React.JSX.Element | null {
   if (!empty) return null
   return (
-    <div className="flex items-center justify-center py-8 text-center text-sm text-gray-500">
+    <div className="flex items-center justify-center py-8 text-center text-sm text-faint">
       Nenhuma mensagem por aqui ainda. Seja o primeiro a escrever!
     </div>
   )

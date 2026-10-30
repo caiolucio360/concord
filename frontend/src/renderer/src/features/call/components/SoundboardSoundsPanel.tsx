@@ -159,13 +159,13 @@ function SoundboardSoundsPanel({
 
         {/* Busca */}
         <div className="relative mb-3">
-          <SearchIcon className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <SearchIcon className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar som na mesa…"
-            className="w-full rounded-xl border border-subtle bg-input py-1.5 pl-8 pr-3 text-xs text-strong placeholder-gray-500 focus:border-brand focus:outline-none"
+            className="w-full rounded-xl border border-subtle bg-input py-1.5 pl-8 pr-3 text-xs text-strong placeholder:text-faint focus:border-brand focus:outline-none"
           />
         </div>
 

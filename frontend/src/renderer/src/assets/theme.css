@@ -62,7 +62,7 @@
      --shadow            cor da sombra
      --decor-opacity     brilho do fundo animado (0 = sem)
    Classe .on-media: texto claro por cima de vídeo/imagem/véu preto, em qualquer tema.
-   Os cinzas do Tailwind (text-gray-50…600) também seguem o tema: ver main.css.
+   Texto: use text-strong/normal/secondary/muted/faint (nunca text-gray-*).
 
    Fonte do Discord Claro: variáveis públicas do cliente web
    (https://discord.com/app, build 649389, arquivo
@@ -547,14 +547,4 @@
   --color-hero-2: #4338ca;
   --color-hero-3: #0e7490;
   --color-hero-4: #9d174d;
-
-  /* Cinzas do Tailwind no tema: text-gray-400 etc. continuam funcionando e
-     trocam de cor junto (no tema claro viram cinzas escuros). */
-  --color-gray-50: var(--text-strong);
-  --color-gray-100: var(--text-strong);
-  --color-gray-200: var(--text-normal);
-  --color-gray-300: var(--text-secondary);
-  --color-gray-400: var(--text-muted);
-  --color-gray-500: var(--text-faint);
-  --color-gray-600: var(--interactive-muted);
 }

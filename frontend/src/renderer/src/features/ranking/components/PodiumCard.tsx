@@ -34,7 +34,7 @@ function PodiumCard({ slot }: { slot: PodiumSlot }): React.JSX.Element {
           <StyledName name={name} userId={entry.user_id} style={entry.name_style} />
         </span>
         <LevelChip level={entry.level} />
-        <span className="text-xs text-gray-400">{formatXp(entry.xp)}</span>
+        <span className="text-xs text-muted">{formatXp(entry.xp)}</span>
       </button>
       <div
         className={`flex w-full items-center justify-center rounded-t-lg bg-fg/5 text-2xl font-black ${look.step} ${look.text}`}

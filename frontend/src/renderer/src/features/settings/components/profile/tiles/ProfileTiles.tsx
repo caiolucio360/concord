@@ -49,7 +49,7 @@ function ThemeTile({ user, onOpen }: { user: User; onOpen: Open }): React.JSX.El
         >
           {/* Um cartão em miniatura: o banner e o avatar por cima da moldura. */}
           <span className="block h-4" style={{ background: banner }} />
-          <span className="absolute left-1.5 top-2 size-4 rounded-full border-2 border-[var(--bg-floating)] bg-gray-400" />
+          <span className="absolute left-1.5 top-2 size-4 rounded-full border-2 border-[var(--bg-floating)] bg-[var(--text-muted)]" />
         </ProfileCardFrame>
         <span className="min-w-0 truncate text-ds-sm font-medium text-strong">{themeName(theme)}</span>
       </Tile>
@@ -70,7 +70,7 @@ function NameTile({ user, onOpen }: { user: User; onOpen: Open }): React.JSX.Ele
         <span className="w-full min-w-0 truncate text-lg font-bold text-strong">
           <StyledName name={display_name || user.username} style={name_style} />
         </span>
-        <span className="text-xs text-gray-400">{nameStyleSummary(name_style)}</span>
+        <span className="text-xs text-muted">{nameStyleSummary(name_style)}</span>
       </Tile>
     </TileSection>
   )

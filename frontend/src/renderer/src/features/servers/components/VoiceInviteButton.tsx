@@ -36,7 +36,7 @@ function VoiceInviteButton({
         aria-label={INVITE_COPY.buttonLabel}
         aria-haspopup="dialog"
         title={INVITE_COPY.buttonLabel}
-        className={`absolute top-1.5 z-20 flex h-5 w-5 cursor-pointer items-center justify-center rounded-md text-gray-400 transition-[color,background-color,opacity] hover:bg-fg/10 hover:text-strong focus-visible:opacity-100 sm:opacity-0 sm:group-hover/voicech:opacity-100 ${TOUCH_AREA} ${
+        className={`absolute top-1.5 z-20 flex h-5 w-5 cursor-pointer items-center justify-center rounded-md text-muted transition-[color,background-color,opacity] hover:bg-fg/10 hover:text-strong focus-visible:opacity-100 sm:opacity-0 sm:group-hover/voicech:opacity-100 ${TOUCH_AREA} ${
           besideMenu ? 'right-14' : 'right-[34px]'
         }`}
       >

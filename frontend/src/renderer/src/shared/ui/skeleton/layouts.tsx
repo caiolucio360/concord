@@ -412,7 +412,7 @@ export function ProposalBoardSkeleton({
         >
           <div className="shrink-0 px-3 pb-2 pt-3">
             <h2 className="text-sm font-semibold text-strong">{col.title}</h2>
-            <p className="text-[11px] text-gray-500">{col.hint}</p>
+            <p className="text-[11px] text-faint">{col.hint}</p>
           </div>
           <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden px-3 pb-3">
             {Array.from({ length: 3 - (c % 2) }, (_, i) => (
@@ -590,7 +590,7 @@ export function AppBootSkeleton({ notice }: { notice?: string }): React.JSX.Elem
         </div>
       </div>
       {notice && (
-        <p className="absolute inset-x-0 bottom-4 text-center text-sm text-gray-400">{notice}</p>
+        <p className="absolute inset-x-0 bottom-4 text-center text-sm text-muted">{notice}</p>
       )}
     </SkeletonRegion>
   )

@@ -44,11 +44,11 @@ function SystemMessage({ message }: { message: Message }): React.JSX.Element {
           <span className="rounded bg-warning/20 px-1 py-px text-[9px] font-bold uppercase tracking-wide text-warning">
             Servidor
           </span>
-          <span className="text-ds-xs font-medium text-gray-500">
+          <span className="text-ds-xs font-medium text-faint">
             {formatTime(message.created_at)}
           </span>
         </div>
-        <p className="whitespace-pre-wrap break-words text-ds-chat text-gray-100">
+        <p className="whitespace-pre-wrap break-words text-ds-chat text-strong">
           {at >= 0 ? (
             <>
               {renderText(message.content.slice(0, at), 0)}

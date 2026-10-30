@@ -158,7 +158,7 @@ function ChannelPermissionsModal({
       <div className="mb-4 flex items-center justify-between gap-4 rounded-lg border border-subtle bg-fg/3 px-4 py-3">
         <div>
           <p className="text-sm font-semibold text-strong">Canal privado</p>
-          <p className="text-xs text-gray-400">{privateHint}</p>
+          <p className="text-xs text-muted">{privateHint}</p>
         </div>
         <Switch
           checked={isPrivate}
@@ -200,7 +200,7 @@ function ChannelPermissionsModal({
               />
             </>
           ) : (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-faint">
               Adicione um cargo ou membro para dar ou negar permissões só neste canal.
             </p>
           )}

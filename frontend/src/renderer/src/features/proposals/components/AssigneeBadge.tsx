@@ -15,7 +15,7 @@ function AssigneeBadge({
       className={`inline-flex max-w-full items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium ${
         mine
           ? 'border-brand/40 bg-brand/15 text-brand'
-          : 'border-subtle bg-fg/5 text-gray-300'
+          : 'border-subtle bg-fg/5 text-secondary'
       }`}
       title={mine ? 'Este card está com você' : `Este card está com ${assignee.name}`}
     >

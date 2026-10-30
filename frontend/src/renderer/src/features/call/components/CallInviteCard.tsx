@@ -21,7 +21,7 @@ function InvalidInvite(): React.JSX.Element {
         <p className="break-words text-sm font-semibold text-danger">
           {INVITE_COPY.cardInvalidTitle}
         </p>
-        <p className="break-words text-xs text-gray-400">{INVITE_COPY.cardInvalidHint}</p>
+        <p className="break-words text-xs text-muted">{INVITE_COPY.cardInvalidHint}</p>
       </div>
     </div>
   )
@@ -65,7 +65,7 @@ function CallInviteCard({ message }: { message: Message }): React.JSX.Element | 
 
   return (
     <div role="group" aria-label={view.title} className={`${CARD} flex flex-col gap-3`}>
-      <p className="flex min-w-0 items-center gap-1.5 text-xs text-gray-400">
+      <p className="flex min-w-0 items-center gap-1.5 text-xs text-muted">
         <VolumeIcon className="h-4 w-4 shrink-0" />
         <span className="truncate" title={view.place}>
           {view.place}

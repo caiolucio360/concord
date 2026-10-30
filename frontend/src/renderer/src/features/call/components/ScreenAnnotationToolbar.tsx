@@ -65,7 +65,7 @@ export default function ScreenAnnotationToolbar({
               className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
                 isActive
                   ? 'bg-fg/20 text-strong shadow-sm ring-1 ring-fg/30'
-                  : 'text-gray-400 hover:bg-fg/10 hover:text-gray-200'
+                  : 'text-muted hover:bg-fg/10 hover:text-normal'
               }`}
             >
               {t.icon}
@@ -110,7 +110,7 @@ export default function ScreenAnnotationToolbar({
                 className={`flex h-7 w-6 items-center justify-center rounded-lg transition-colors ${
                   isSelected
                     ? 'bg-fg/20 text-strong ring-1 ring-fg/30'
-                    : 'text-gray-400 hover:bg-fg/10'
+                    : 'text-muted hover:bg-fg/10'
                 }`}
               >
                 <span
@@ -135,8 +135,8 @@ export default function ScreenAnnotationToolbar({
           onClick={() => undo(callId, sharerId)}
           className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
             myStrokes.length > 0
-              ? 'text-gray-300 hover:bg-fg/10 hover:text-strong cursor-pointer'
-              : 'text-gray-600 cursor-not-allowed'
+              ? 'text-secondary hover:bg-fg/10 hover:text-strong cursor-pointer'
+              : 'text-interactive-muted cursor-not-allowed'
           }`}
         >
           <UndoIcon className="h-4 w-4" />
@@ -146,7 +146,7 @@ export default function ScreenAnnotationToolbar({
           type="button"
           title="Limpar todas as anotações"
           onClick={() => clear(callId, sharerId)}
-          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-gray-300 transition-colors hover:bg-danger/20 hover:text-danger"
+          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-secondary transition-colors hover:bg-danger/20 hover:text-danger"
         >
           <TrashIcon className="h-4 w-4" />
         </button>
@@ -157,7 +157,7 @@ export default function ScreenAnnotationToolbar({
         type="button"
         title="Fechar ferramentas de desenho"
         onClick={onClose}
-        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong"
+        className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-muted transition-colors hover:bg-fg/10 hover:text-strong"
       >
         <XIcon className="h-3.5 w-3.5" />
       </button>

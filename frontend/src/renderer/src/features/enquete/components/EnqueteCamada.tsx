@@ -57,14 +57,14 @@ function EnqueteCamada({ titleId, onFechar, children }: Props): React.JSX.Elemen
         aria-modal="true"
         aria-labelledby={titleId}
         onClick={(e) => e.stopPropagation()}
-        className="enquete-card relative my-auto w-full max-w-sm rounded-xl border border-subtle bg-primary p-6 text-center text-gray-200 shadow-2xl"
+        className="enquete-card relative my-auto w-full max-w-sm rounded-xl border border-subtle bg-primary p-6 text-center text-normal shadow-2xl"
       >
         {onFechar && (
           <button
             type="button"
             onClick={onFechar}
             aria-label="Fechar"
-            className="absolute right-1 top-1 flex h-11 w-11 cursor-pointer touch-manipulation items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-white/10 hover:text-white focus-ring"
+            className="absolute right-1 top-1 flex h-11 w-11 cursor-pointer touch-manipulation items-center justify-center rounded-full text-muted transition-colors hover:bg-white/10 hover:text-white focus-ring"
           >
             <XIcon className="h-5 w-5" />
           </button>

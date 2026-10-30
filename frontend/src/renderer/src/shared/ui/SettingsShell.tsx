@@ -59,7 +59,7 @@ function SettingsShell({
       role="dialog"
       aria-modal="true"
       aria-label={ariaLabel}
-      className="app-no-drag fixed inset-x-0 bottom-0 z-50 flex flex-col pl-safe pr-safe pt-safe text-gray-200 md:flex-row"
+      className="app-no-drag fixed inset-x-0 bottom-0 z-50 flex flex-col pl-safe pr-safe pt-safe text-normal md:flex-row"
       style={{ top: 'var(--titlebar-height, 0px)', background: CONTENT_BG }}
     >
       <aside
@@ -78,7 +78,7 @@ function SettingsShell({
           <button
             type="button"
             onClick={() => dispatch({ type: 'back' })}
-            className="-ml-2 mb-3 flex min-h-10 cursor-pointer items-center gap-2 rounded-lg px-2 text-ds-md font-medium text-gray-300 hover:bg-fg/10 hover:text-strong focus-ring md:hidden"
+            className="-ml-2 mb-3 flex min-h-10 cursor-pointer items-center gap-2 rounded-lg px-2 text-ds-md font-medium text-secondary hover:bg-fg/10 hover:text-strong focus-ring md:hidden"
           >
             <ArrowLeftIcon className="size-5" />
             {ariaLabel}
@@ -94,11 +94,11 @@ function SettingsShell({
           type="button"
           onClick={onClose}
           aria-label={closeLabel}
-          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-gray-500 text-gray-400 transition-colors hover:border-[var(--text-strong)] hover:text-strong max-md:size-10"
+          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-[var(--text-faint)] text-muted transition-colors hover:border-[var(--text-strong)] hover:text-strong max-md:size-10"
         >
           <XIcon className="h-4 w-4" />
         </button>
-        <span className="hidden text-[11px] font-bold text-gray-500 md:block">ESC</span>
+        <span className="hidden text-[11px] font-bold text-faint md:block">ESC</span>
       </div>
 
       {overlay}

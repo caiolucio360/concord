@@ -47,7 +47,7 @@ function ShortcutsModal(): React.JSX.Element | null {
               <ul className="flex flex-col gap-1.5">
                 {defs.map((def) => (
                   <li key={def.id} className="flex items-center justify-between gap-4">
-                    <span className="text-sm text-gray-200">{def.label}</span>
+                    <span className="text-sm text-normal">{def.label}</span>
                     <span className="flex shrink-0 gap-1">
                       {bindingLabels(bindings[def.id] ?? 'Sem atalho', isMac).map((k) => (
                         <kbd

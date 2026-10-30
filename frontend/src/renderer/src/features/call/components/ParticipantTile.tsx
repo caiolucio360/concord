@@ -223,7 +223,7 @@ function ParticipantTile({
             className={`flex h-6 items-center gap-1 rounded-md px-1.5 text-xs font-semibold backdrop-blur-sm transition-colors cursor-pointer ${
               isDrawing
                 ? 'bg-success-strong text-white shadow-md ring-1 ring-fg/30'
-                : 'bg-black/60 text-gray-200 hover:bg-black/80 hover:text-white on-media'
+                : 'bg-black/60 text-normal hover:bg-black/80 hover:text-white on-media'
             }`}
           >
             <PencilIcon className="h-3.5 w-3.5" />
@@ -246,7 +246,7 @@ function ParticipantTile({
             }}
             aria-label="Fechar transmissão"
             title="Fechar transmissão"
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-black/60 text-gray-200 backdrop-blur-sm transition-colors hover:bg-black/80 hover:text-white on-media"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-black/60 text-normal backdrop-blur-sm transition-colors hover:bg-black/80 hover:text-white on-media"
           >
             <XIcon className="h-3.5 w-3.5" />
           </button>
@@ -287,7 +287,7 @@ function ParticipantTile({
         }`}
       >
         {locallyMuted && (
-          <span title="Silenciado por você" className="text-gray-300">
+          <span title="Silenciado por você" className="text-secondary">
             <VolumeOffIcon className="h-3 w-3" />
           </span>
         )}

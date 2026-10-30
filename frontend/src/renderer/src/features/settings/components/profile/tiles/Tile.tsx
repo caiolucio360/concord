@@ -90,7 +90,7 @@ export function TileRow({
   return (
     <Tile label={`${label}: ${value ?? empty}`} onClick={onClick} className="w-full px-3 py-2.5 pr-9">
       <span
-        className={`line-clamp-2 min-w-0 break-words text-ds-sm ${value ? 'text-normal' : 'italic text-gray-500'}`}
+        className={`line-clamp-2 min-w-0 break-words text-ds-sm ${value ? 'text-normal' : 'italic text-faint'}`}
       >
         {value ?? empty}
       </span>

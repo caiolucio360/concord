@@ -22,7 +22,7 @@ function ComposerAttachments({
             d.status === 'error' ? 'border-danger/50' : 'border-subtle'
           }`}
         >
-          <div className="relative flex h-20 items-center justify-center overflow-hidden rounded-md bg-fg/5 text-gray-400">
+          <div className="relative flex h-20 items-center justify-center overflow-hidden rounded-md bg-fg/5 text-muted">
             {d.kind === 'image' && d.previewUrl ? (
               <img src={d.previewUrl} alt="" className="h-full w-full object-cover" />
             ) : d.kind === 'video' && d.previewUrl ? (
@@ -39,10 +39,10 @@ function ComposerAttachments({
               <MicIcon className="h-8 w-8" />
             )}
           </div>
-          <p className="truncate text-xs text-gray-200" title={d.file.name}>
+          <p className="truncate text-xs text-normal" title={d.file.name}>
             {d.file.name}
           </p>
-          <p className="text-[10px] text-gray-500">{formatBytes(d.file.size)}</p>
+          <p className="text-[10px] text-faint">{formatBytes(d.file.size)}</p>
           {d.status === 'uploading' && (
             <div className="h-1 overflow-hidden rounded-full bg-fg/10">
               <div

@@ -32,18 +32,18 @@ export default function MentionSuggestionList({
           }}
           onMouseEnter={() => onHighlight(i)}
           className={`flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm ${
-            i === highlight ? 'bg-brand/30 text-strong' : 'text-gray-300'
+            i === highlight ? 'bg-brand/30 text-strong' : 'text-secondary'
           }`}
         >
           {m.kind === 'everyone' ? (
             <>
               <span className="font-semibold">@{m.username}</span>
-              <span className="text-xs text-gray-400">{m.description}</span>
+              <span className="text-xs text-muted">{m.description}</span>
             </>
           ) : (
             <>
               <span className="font-semibold">{serverDisplayName(m, m)}</span>
-              <span className="text-xs text-gray-400">@{m.username}</span>
+              <span className="text-xs text-muted">@{m.username}</span>
             </>
           )}
         </li>

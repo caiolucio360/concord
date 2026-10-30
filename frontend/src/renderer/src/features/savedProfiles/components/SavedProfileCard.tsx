@@ -6,7 +6,7 @@ import { DEFAULT_BANNER, profileMediaSrc } from '../../profile/lib/profileMedia'
 import type { SavedProfile } from '../lib/savedProfiles'
 
 const ICON_BUTTON =
-  'flex size-10 cursor-pointer items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong focus-ring disabled:cursor-wait disabled:opacity-50'
+  'flex size-10 cursor-pointer items-center justify-center rounded-lg text-muted transition-colors hover:bg-fg/10 hover:text-strong focus-ring disabled:cursor-wait disabled:opacity-50'
 
 /** A faixa do banner (imagem, cor ou o degradê padrão) atrás do avatar. */
 function BannerStrip({ item }: { item: SavedProfile }): React.JSX.Element {
@@ -68,7 +68,7 @@ export default function SavedProfileCard({
             </span>
           )}
         </span>
-        <span className="w-full min-w-0 truncate text-xs text-gray-400">
+        <span className="w-full min-w-0 truncate text-xs text-muted">
           <StyledName name={shown} style={item.fields.name_style} />
         </span>
       </button>

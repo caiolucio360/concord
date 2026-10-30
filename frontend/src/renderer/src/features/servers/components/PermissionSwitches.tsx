@@ -69,7 +69,7 @@ function PermissionSwitches({
     <div className="space-y-6">
       {groups.map((group) => (
         <section key={group.title}>
-          <h3 className="mb-2 text-ds-sm font-medium text-gray-400">{group.title}</h3>
+          <h3 className="mb-2 text-ds-sm font-medium text-muted">{group.title}</h3>
           <ul className="divide-y divide-subtle rounded-lg border border-subtle bg-fg/3">
             {group.permissions.map((p) => {
               const bit = Perm[p.name]
@@ -92,7 +92,7 @@ function PermissionSwitches({
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-strong">{p.label}</p>
-                    <p className="text-xs leading-snug text-gray-400">{p.description}</p>
+                    <p className="text-xs leading-snug text-muted">{p.description}</p>
                   </div>
                   <Switch
                     checked={checked}

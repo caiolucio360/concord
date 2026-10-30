@@ -20,7 +20,7 @@ const GROUP_ORDER: ShortcutGroup[] = ['navigation', 'voice', 'chat']
 const MODIFIER_KEYS = new Set(['Control', 'Shift', 'Alt', 'Meta', 'AltGraph'])
 
 function Keys({ binding }: { binding: string | null }): React.JSX.Element {
-  if (!binding) return <span className="text-xs text-gray-500">Sem atalho</span>
+  if (!binding) return <span className="text-xs text-faint">Sem atalho</span>
   return (
     <span className="flex gap-1">
       {bindingLabels(binding, isMacPlatform()).map((k) => (
@@ -149,7 +149,7 @@ function Row({
   return (
     <li className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-3">
-        <span className="min-w-0 text-ds-md text-gray-200">{def.label}</span>
+        <span className="min-w-0 text-ds-md text-normal">{def.label}</span>
         <div className="flex shrink-0 items-center gap-1.5">
           <BindingField def={def} onError={onError} />
           <IconButton
@@ -207,7 +207,7 @@ export function KeybindsSection(): React.JSX.Element {
     <div className="flex flex-col gap-4">
       <div className="rounded-xl border border-subtle bg-fg/5 p-4">
         <p className="text-ds-md font-medium text-strong">Atalhos</p>
-        <p className="mt-1 text-ds-sm text-gray-400">
+        <p className="mt-1 text-ds-sm text-muted">
           Clique em um atalho e aperte a nova tecla ou um botão do mouse (meio ou laterais). Esc
           cancela.
         </p>

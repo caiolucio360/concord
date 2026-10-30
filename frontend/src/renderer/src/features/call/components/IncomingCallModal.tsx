@@ -81,8 +81,8 @@ function IncomingCallModal(): React.JSX.Element | null {
         <p className="text-lg font-bold text-strong">
           <StyledName name={peer.display_name} userId={peer.id} style={peer.name_style} />
         </p>
-        <p className="mb-6 text-xs text-gray-400">@{peer.username}</p>
-        <p className="mb-6 animate-pulse text-sm font-semibold text-gray-300">Chamada de voz...</p>
+        <p className="mb-6 text-xs text-muted">@{peer.username}</p>
+        <p className="mb-6 animate-pulse text-sm font-semibold text-secondary">Chamada de voz...</p>
         <div className="flex items-center justify-center gap-3">
           <Button variant="danger" onClick={declineCall} aria-label="Recusar chamada">
             <PhoneOffIcon className="h-5 w-5" />

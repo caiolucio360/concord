@@ -61,7 +61,7 @@ function BadgeUnlockToast(): React.JSX.Element | null {
           <span className="block text-sm font-bold text-strong">
             {count > 1 ? `${count} badges novos!` : 'Badge novo!'}
           </span>
-          <span className="block text-[11px] text-gray-400">
+          <span className="block text-[11px] text-muted">
             {isMythic(first.rarity) ? (
               <span className="mythic-text font-bold">{first.tier_name}</span>
             ) : (

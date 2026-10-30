@@ -37,16 +37,16 @@ function OverwriteTargetList({
       {adding.trim() && (
         <ul className="mb-2 max-h-40 overflow-y-auto rounded-lg border border-subtle bg-input p-1">
           {candidates.length === 0 && (
-            <li className="px-2 py-1.5 text-xs text-gray-500">Ninguém encontrado.</li>
+            <li className="px-2 py-1.5 text-xs text-faint">Ninguém encontrado.</li>
           )}
           {candidates.map((c) => (
             <li key={`${c.ref.type}:${c.ref.id}`}>
               <button
                 type="button"
                 onClick={() => onAdd(c.ref)}
-                className="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-left text-xs text-gray-200 hover:bg-fg/10"
+                className="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-left text-xs text-normal hover:bg-fg/10"
               >
-                <span className="text-gray-500">@</span>
+                <span className="text-faint">@</span>
                 <span className="truncate">{c.name}</span>
               </button>
             </li>
@@ -79,7 +79,7 @@ function TargetButton({
       onClick={() => onSelect({ type: row.type, id: row.id })}
       aria-current={active ? 'true' : undefined}
       className={`flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm font-medium ${
-        active ? 'bg-fg/10 text-strong' : 'text-gray-400 hover:bg-fg/5'
+        active ? 'bg-fg/10 text-strong' : 'text-muted hover:bg-fg/5'
       }`}
     >
       {row.type === 'role' ? (

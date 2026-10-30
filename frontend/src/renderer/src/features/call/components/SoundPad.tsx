@@ -53,7 +53,7 @@ export default function SoundPad({
         </span>
         <div className="min-w-0 flex-1">
           <p className="truncate text-xs font-bold text-strong">{sound.name}</p>
-          <p className="truncate text-[10px] text-gray-400">
+          <p className="truncate text-[10px] text-muted">
             {(sound.duration_ms / 1000).toFixed(1)}s{subtitleSuffix(sound, origin)}
           </p>
         </div>
@@ -68,8 +68,8 @@ export default function SoundPad({
             recordingKey
               ? 'animate-pulse bg-brand text-white'
               : keybind
-                ? 'bg-fg/15 text-gray-200 hover:bg-fg/25'
-                : 'bg-fg/5 text-gray-400 hover:bg-fg/10 hover:text-gray-200'
+                ? 'bg-fg/15 text-normal hover:bg-fg/25'
+                : 'bg-fg/5 text-muted hover:bg-fg/10 hover:text-normal'
           }`}
         >
           {recordingKey ? 'Tecla…' : keybind || 'Atalho'}
@@ -84,7 +84,7 @@ export default function SoundPad({
             className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded transition-colors ${
               isFavorite
                 ? 'text-warning hover:bg-fg/10'
-                : 'text-gray-400 hover:bg-fg/10 hover:text-gray-200'
+                : 'text-muted hover:bg-fg/10 hover:text-normal'
             }`}
           >
             <FavoriteStarIcon className="h-3.5 w-3.5" filled={isFavorite} />
@@ -95,7 +95,7 @@ export default function SoundPad({
               onClick={onDelete}
               aria-label={`Excluir som ${sound.name}`}
               title="Excluir som"
-              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-gray-400 transition-colors hover:bg-danger/20 hover:text-danger"
+              className="flex h-6 w-6 cursor-pointer items-center justify-center rounded text-muted transition-colors hover:bg-danger/20 hover:text-danger"
             >
               <TrashIcon className="h-3.5 w-3.5" />
             </button>

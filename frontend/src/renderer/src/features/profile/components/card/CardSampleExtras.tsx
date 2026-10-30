@@ -15,8 +15,8 @@ export function CardMemberSince({ createdAt }: { createdAt?: string }): React.JS
       <SectionHeader as="p" className="mb-1">
         Membro desde
       </SectionHeader>
-      <p className="text-xs text-gray-200">
-        {since} <span className="text-gray-500">· no Salinha</span>
+      <p className="text-xs text-normal">
+        {since} <span className="text-faint">· no Salinha</span>
       </p>
     </div>
   )
@@ -29,7 +29,7 @@ export function CardVisitorButtons(): React.JSX.Element {
       <span className="flex flex-1 items-center justify-center rounded-lg bg-brand px-3 py-2 text-xs font-semibold text-white">
         Enviar mensagem
       </span>
-      <span className="flex items-center justify-center rounded-lg bg-fg/10 px-2.5 text-gray-200">
+      <span className="flex items-center justify-center rounded-lg bg-fg/10 px-2.5 text-normal">
         <DotsIcon className="h-4 w-4" />
       </span>
     </div>

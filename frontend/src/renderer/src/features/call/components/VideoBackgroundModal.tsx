@@ -85,7 +85,7 @@ function Dialog({ mode }: { mode: 'background' | 'preview' }): React.JSX.Element
             type="button"
             onClick={close}
             aria-label="Fechar"
-            className="-mr-2 flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-gray-400 hover:bg-fg/10 hover:text-strong"
+            className="-mr-2 flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted hover:bg-fg/10 hover:text-strong"
           >
             <XIcon className="h-4 w-4" />
           </button>
@@ -100,7 +100,7 @@ function Dialog({ mode }: { mode: 'background' | 'preview' }): React.JSX.Element
           )}
           {isBackground && (
             <div className="space-y-2">
-              <p className="text-ds-xs font-bold uppercase tracking-[0.02em] text-gray-400">
+              <p className="text-ds-xs font-bold uppercase tracking-[0.02em] text-muted">
                 Fundo do vídeo
               </p>
               <BackgroundPicker
@@ -121,7 +121,7 @@ function Dialog({ mode }: { mode: 'background' | 'preview' }): React.JSX.Element
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-b-xl bg-floating px-6 py-4">
-          <label className="flex cursor-pointer items-center gap-2 text-ds-sm text-gray-300">
+          <label className="flex cursor-pointer items-center gap-2 text-ds-sm text-secondary">
             <input
               type="checkbox"
               checked={alwaysPreview}

@@ -23,15 +23,15 @@ function NameLine({
           style={profile.name_style}
         />
       )}
-      {you && <span className="ml-1.5 text-xs font-medium text-gray-400">(você)</span>}
+      {you && <span className="ml-1.5 text-xs font-medium text-muted">(você)</span>}
     </p>
   )
 }
 
 /** Pronomes; no editor, sem pronomes, o convite para adicionar. */
 function Pronouns({ value, placeholder }: { value?: string; placeholder?: string }): React.JSX.Element | null {
-  if (value) return <span className="text-gray-400">{value}</span>
-  return placeholder ? <span className="italic text-gray-500">{placeholder}</span> : null
+  if (value) return <span className="text-muted">{value}</span>
+  return placeholder ? <span className="italic text-faint">{placeholder}</span> : null
 }
 
 /** "usuario • pronomes", o selo BOT e as badges. */
@@ -50,9 +50,9 @@ function SubLine({
   if (!username && !pronouns && !badges) return null
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <p className="min-w-0 truncate text-sm text-gray-300">
+      <p className="min-w-0 truncate text-sm text-secondary">
         {username && <span>{username}</span>}
-        {username && pronouns && <span className="text-gray-500"> · </span>}
+        {username && pronouns && <span className="text-faint"> · </span>}
         <Pronouns value={profile.pronouns} placeholder={placeholder} />
       </p>
       {profile.is_bot && (
@@ -88,7 +88,7 @@ export default function CardNames({
       </EditableSpot>
       {profile.nickname && (
         <p
-          className="truncate text-ds-sm font-semibold text-gray-200"
+          className="truncate text-ds-sm font-semibold text-normal"
           title="Nome de exibição (fora deste servidor)"
         >
           <StyledName name={profile.display_name} userId={profile.id} style={profile.name_style} />

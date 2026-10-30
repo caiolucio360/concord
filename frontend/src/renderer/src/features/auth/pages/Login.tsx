@@ -104,8 +104,8 @@ function Login(): React.JSX.Element {
 
   return (
     <AuthLayout>
-      <h1 className="text-2xl font-semibold text-gray-50">Boas-vindas de volta!</h1>
-      <p className="mb-6 mt-1 text-sm text-gray-400">Que bom te ver de novo na Salinha.</p>
+      <h1 className="text-2xl font-semibold text-strong">Boas-vindas de volta!</h1>
+      <p className="mb-6 mt-1 text-sm text-muted">Que bom te ver de novo na Salinha.</p>
       <LoginNotices inviteCode={inviteCode} notice={notice} />
       <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
         <Input
@@ -142,7 +142,7 @@ function Login(): React.JSX.Element {
           {loading ? 'Entrando...' : 'Entrar'}
         </Button>
       </form>
-      <p className="mt-4 text-sm text-gray-400">
+      <p className="mt-4 text-sm text-muted">
         Precisando de uma conta?{' '}
         <Link
           to={authPathWithInvite('/register', inviteCode)}

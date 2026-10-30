@@ -24,7 +24,7 @@ export function ComposerGate({
   children: ReactNode
 }): React.JSX.Element {
   return disabledReason ? (
-    <div className="rounded-xl border border-subtle bg-input px-4 py-3 text-center text-sm text-gray-400">
+    <div className="rounded-xl border border-subtle bg-input px-4 py-3 text-center text-sm text-muted">
       {disabledReason}
     </div>
   ) : (
@@ -44,10 +44,10 @@ export function ReplyBar({
 }): React.JSX.Element | null {
   if (!replyingTo) return null
   return (
-    <div className="mb-1.5 flex items-center justify-between gap-2 rounded-lg border border-subtle bg-floating px-3 py-1.5 text-ds-sm text-gray-300">
+    <div className="mb-1.5 flex items-center justify-between gap-2 rounded-lg border border-subtle bg-floating px-3 py-1.5 text-ds-sm text-secondary">
       <div className="min-w-0 truncate">
         Respondendo a <span className="font-semibold text-strong">@{authorName}</span>
-        <PreviewText preview={messagePreviewParts(replyingTo)} className="ml-2 text-gray-400" />
+        <PreviewText preview={messagePreviewParts(replyingTo)} className="ml-2 text-muted" />
       </div>
       <CloseButton
         label="Cancelar resposta"
@@ -128,7 +128,7 @@ export function AttachButton({
       onClick={onClick}
       title="Anexar arquivo"
       aria-label="Anexar arquivo"
-      className="shrink-0 cursor-pointer rounded-md p-1 text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong max-md:p-2"
+      className="shrink-0 cursor-pointer rounded-md p-1 text-muted transition-colors hover:bg-fg/10 hover:text-strong max-md:p-2"
     >
       <PaperclipIcon className="h-5 w-5" />
     </button>
@@ -143,7 +143,7 @@ export function PollButton({ onClick }: { onClick: () => void }): React.JSX.Elem
       onClick={onClick}
       title="Criar enquete"
       aria-label="Criar enquete"
-      className="shrink-0 cursor-pointer rounded-md p-1 text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong max-md:p-2"
+      className="shrink-0 cursor-pointer rounded-md p-1 text-muted transition-colors hover:bg-fg/10 hover:text-strong max-md:p-2"
     >
       <PollIcon className="h-5 w-5" />
     </button>
@@ -158,7 +158,7 @@ export function MediaPickerButton({ onClick }: { onClick: () => void }): React.J
       onClick={onClick}
       title="Emojis, GIFs e Figurinhas"
       aria-label="Emojis, GIFs e Figurinhas"
-      className="shrink-0 cursor-pointer rounded-md p-1 text-gray-400 transition-colors hover:bg-white/10 hover:text-white max-md:p-2"
+      className="shrink-0 cursor-pointer rounded-md p-1 text-muted transition-colors hover:bg-white/10 hover:text-white max-md:p-2"
     >
       <SmileyIcon className="h-5 w-5" />
     </button>

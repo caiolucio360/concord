@@ -19,11 +19,11 @@ describe('ReplyReference', () => {
     expect(html).toContain('color:#e91e63')
   })
 
-  it('usa cor padrão (text-gray-300) quando authorColor não é definida', () => {
+  it('usa cor padrão (text-secondary) quando authorColor não é definida', () => {
     const html = renderToStaticMarkup(
       <ReplyReference authorName="Armando" preview={textPreview('Olá mundo')} onJump={() => {}} />
     )
-    expect(html).toContain('<span class="shrink-0 font-semibold text-gray-300">@Armando</span>')
+    expect(html).toContain('<span class="shrink-0 font-semibold text-secondary">@Armando</span>')
   })
 
   it('renderiza o avatar do autor na referência com foto ou inicial', () => {

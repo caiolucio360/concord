@@ -97,13 +97,13 @@ function Register(): React.JSX.Element {
 
   return (
     <AuthLayout wide>
-      <h1 className="text-2xl font-semibold text-gray-50">Criar uma conta</h1>
+      <h1 className="text-2xl font-semibold text-strong">Criar uma conta</h1>
       {inviteCode && (
         <p className="mt-3 rounded-lg border border-brand/30 bg-brand/10 px-3 py-2 text-sm text-brand">
           Crie sua conta para aceitar o convite.
         </p>
       )}
-      <p className="mb-6 mt-1 text-sm text-gray-400">
+      <p className="mb-6 mt-1 text-sm text-muted">
         Enviaremos um e-mail para confirmar o seu endereço.
       </p>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
@@ -156,7 +156,7 @@ function Register(): React.JSX.Element {
                   />
                 ))}
               </div>
-              <span className="w-16 text-right text-xs text-gray-400">
+              <span className="w-16 text-right text-xs text-muted">
                 {STRENGTH_LABEL[strength]}
               </span>
             </div>
@@ -183,7 +183,7 @@ function Register(): React.JSX.Element {
           {loading ? 'Criando conta...' : 'Continuar'}
         </Button>
       </form>
-      <p className="mt-4 text-sm text-gray-400">
+      <p className="mt-4 text-sm text-muted">
         <Link
           to={authPathWithInvite('/login', inviteCode)}
           className="font-medium text-brand hover:underline"

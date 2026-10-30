@@ -20,7 +20,7 @@ const tile = (selected: boolean): string =>
   `${BASE_TILE} ${
     selected
       ? 'border-brand text-strong'
-      : 'border-transparent text-gray-300 hover:border-fg/20 hover:text-strong'
+      : 'border-transparent text-secondary hover:border-fg/20 hover:text-strong'
   }`
 
 /**

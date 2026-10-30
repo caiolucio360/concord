@@ -1,5 +1,5 @@
 const TONES = {
-  normal: 'text-gray-200 hover:bg-fg/10',
+  normal: 'text-normal hover:bg-fg/10',
   brand: 'text-brand hover:bg-brand/20',
   danger: 'text-danger hover:bg-danger/15'
 } as const

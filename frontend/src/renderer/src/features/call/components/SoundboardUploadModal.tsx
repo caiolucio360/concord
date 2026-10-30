@@ -151,7 +151,7 @@ function SoundboardUploadModal({
         />
 
         <div>
-          <label className="mb-1.5 block text-ds-sm font-medium text-gray-400">
+          <label className="mb-1.5 block text-ds-sm font-medium text-muted">
             Nome do botão
           </label>
           <Input

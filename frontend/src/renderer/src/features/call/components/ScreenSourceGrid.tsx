@@ -26,7 +26,7 @@ export function ScreenPickerTabs({
           className={`cursor-pointer border-b-2 px-3 pb-2 text-sm font-semibold transition-colors ${
             tab === t.id
               ? 'border-[var(--text-strong)] text-strong'
-              : 'border-transparent text-gray-400 hover:text-gray-200'
+              : 'border-transparent text-muted hover:text-normal'
           }`}
         >
           {t.label}
@@ -62,7 +62,7 @@ export function ScreenSourceCard({
           <img src={source.thumbnail} alt={source.name} className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <MonitorIcon className="h-8 w-8 text-gray-600" />
+            <MonitorIcon className="h-8 w-8 text-interactive-muted" />
           </div>
         )}
         {selected && (
@@ -71,7 +71,7 @@ export function ScreenSourceCard({
           </span>
         )}
       </div>
-      <p className="truncate text-xs font-semibold text-gray-200">{source.name}</p>
+      <p className="truncate text-xs font-semibold text-normal">{source.name}</p>
     </button>
   )
 }
@@ -92,7 +92,7 @@ export function ScreenSourceGrid({
     <div className="mt-5 grid max-h-[46vh] grid-cols-2 gap-3 overflow-y-auto pr-1">
       {!loaded && <ScreenSourceGridSkeleton />}
       {loaded && sources.length === 0 && (
-        <p className="col-span-2 py-8 text-center text-sm text-gray-500">Nenhuma opção disponível.</p>
+        <p className="col-span-2 py-8 text-center text-sm text-faint">Nenhuma opção disponível.</p>
       )}
       {sources.map((source) => (
         <ScreenSourceCard

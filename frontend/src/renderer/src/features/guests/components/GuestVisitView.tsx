@@ -32,8 +32,8 @@ export function VisitLobby({ visit }: { visit: GuestPass }): React.JSX.Element {
         <h2 className="mt-4 text-ds-lg font-bold text-strong">
           {GUEST_COPY.lobbyTitle(visit.server_name)}
         </h2>
-        <p className="mt-2 text-ds-sm text-gray-300">{GUEST_COPY.lobbyBody(visit.channel_name)}</p>
-        <p className="mt-1 text-ds-xs text-gray-400">
+        <p className="mt-2 text-ds-sm text-secondary">{GUEST_COPY.lobbyBody(visit.channel_name)}</p>
+        <p className="mt-1 text-ds-xs text-muted">
           {GUEST_COPY.timeLeft(timeLeftLabel(visit.expires_at, now))}
         </p>
         <Button className="mt-6 min-h-10 w-full sm:w-auto" onClick={join} disabled={joining}>

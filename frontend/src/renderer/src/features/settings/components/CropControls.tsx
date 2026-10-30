@@ -9,7 +9,7 @@ export function ZoomSlider({
 }): React.JSX.Element {
   return (
     <div className="flex items-center gap-3 px-6 pt-4">
-      <span className="text-xs text-gray-400">−</span>
+      <span className="text-xs text-muted">−</span>
       <input
         type="range"
         min={MIN_ZOOM}
@@ -20,7 +20,7 @@ export function ZoomSlider({
         aria-label="Zoom"
         className="flex-1 accent-brand"
       />
-      <span className="text-sm text-gray-400">+</span>
+      <span className="text-sm text-muted">+</span>
     </div>
   )
 }
@@ -43,7 +43,7 @@ export function CropFooter({
       <button
         type="button"
         onClick={onReset}
-        className="mr-auto cursor-pointer text-sm text-gray-300 hover:underline"
+        className="mr-auto cursor-pointer text-sm text-secondary hover:underline"
       >
         Redefinir
       </button>

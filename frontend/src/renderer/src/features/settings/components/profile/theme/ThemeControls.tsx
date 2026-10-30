@@ -139,7 +139,7 @@ export function BackgroundControls({ value, onChange }: Props): React.JSX.Elemen
         />
       </div>
       {value.background !== 'default' && (
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-muted">
           O texto fica claro ou escuro sozinho, para dar para ler em qualquer cor.
         </p>
       )}

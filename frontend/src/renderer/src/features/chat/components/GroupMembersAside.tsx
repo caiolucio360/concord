@@ -14,7 +14,7 @@ function GroupMembersAside({
   const isOwner = conv.owner_id === meId
   return (
     <aside className="absolute inset-y-0 right-0 z-10 w-60 shrink-0 overflow-y-auto border-l border-subtle bg-secondary px-2 py-4 shadow-2xl lg:static lg:z-auto lg:shadow-none">
-      <p className="px-2 pb-1 text-ds-sm font-medium text-gray-400">
+      <p className="px-2 pb-1 text-ds-sm font-medium text-muted">
         Membros — {conv.members.length}
       </p>
       {conv.members.map((m) => (

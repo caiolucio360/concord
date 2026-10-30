@@ -80,7 +80,7 @@ function Detail({
         />
       </div>
 
-      {title !== badge.name && <p className="mt-2 text-sm text-gray-300">{badge.name}</p>}
+      {title !== badge.name && <p className="mt-2 text-sm text-secondary">{badge.name}</p>}
       <h3
         className={`${title !== badge.name ? 'mt-0.5' : 'mt-2'} text-center text-3xl font-black uppercase tracking-wide ${
           mythic ? 'mythic-text' : 'text-strong'
@@ -88,7 +88,7 @@ function Detail({
       >
         {title}
       </h3>
-      <p className="mt-1.5 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-xs text-gray-400">
+      <p className="mt-1.5 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-xs text-muted">
         {/* Perfil de outra pessoa: só o limite do tier, nunca o número exato. */}
         <span>{isMe ? statText(badge) : publicStatText(badge)}</span>
         {unlocked && (
@@ -106,7 +106,7 @@ function Detail({
       <div className="mt-5 w-full rounded-xl bg-input p-4">
         {isMe && <BadgeProgress badge={badge} mythic={mythic} />}
 
-        <p className="text-sm leading-snug text-gray-200">{badge.description}</p>
+        <p className="text-sm leading-snug text-normal">{badge.description}</p>
 
         <div className="my-4 h-px bg-fg/10" />
         <p className="text-sm font-semibold text-strong">
@@ -157,7 +157,7 @@ function BadgesModal(): React.JSX.Element | null {
   // Foco preso, Esc e o X vêm do Modal (sem moldura: a coluna e o detalhe são o layout).
   return (
     <Modal open bare wide labelledBy={titleId} onClose={close}>
-      <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden text-gray-200 md:h-[600px] md:flex-auto md:flex-row">
+      <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden text-normal md:h-[600px] md:flex-auto md:flex-row">
         <BadgesAside
           target={target}
           isMe={isMe}
@@ -177,7 +177,7 @@ function BadgesModal(): React.JSX.Element | null {
           ) : !badges ? (
             <BadgeDetailSkeleton />
           ) : (
-            <div className="flex h-full items-center justify-center text-sm text-gray-500">
+            <div className="flex h-full items-center justify-center text-sm text-faint">
               Nada por aqui ainda.
             </div>
           )}

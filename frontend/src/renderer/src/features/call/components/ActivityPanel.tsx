@@ -39,7 +39,7 @@ function ActivityPanel(): React.JSX.Element | null {
           href={local.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-full px-2.5 py-1 text-[11px] font-semibold text-gray-300 transition-colors hover:bg-fg/10 hover:text-strong"
+          className="rounded-full px-2.5 py-1 text-[11px] font-semibold text-secondary transition-colors hover:bg-fg/10 hover:text-strong"
         >
           Abrir em nova aba
         </a>
@@ -48,7 +48,7 @@ function ActivityPanel(): React.JSX.Element | null {
           onClick={() => setMinimized(true)}
           aria-label="Minimizar atividade"
           title="Minimizar (o jogo continua)"
-          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-gray-300 transition-colors hover:bg-fg/10 hover:text-strong"
+          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-secondary transition-colors hover:bg-fg/10 hover:text-strong"
         >
           <ChevronDownIcon className="h-4 w-4" />
         </button>
@@ -57,7 +57,7 @@ function ActivityPanel(): React.JSX.Element | null {
           onClick={closeLocal}
           aria-label="Sair da atividade"
           title="Sair do jogo"
-          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-gray-300 transition-colors hover:bg-danger/20 hover:text-danger"
+          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-secondary transition-colors hover:bg-danger/20 hover:text-danger"
         >
           <XIcon className="h-4 w-4" />
         </button>

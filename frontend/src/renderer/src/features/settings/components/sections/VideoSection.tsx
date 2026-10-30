@@ -39,7 +39,7 @@ export function VideoSection(): React.JSX.Element {
   return (
     <div className="space-y-4 rounded-xl border border-subtle bg-fg/5 p-4">
       <label className="flex flex-col gap-1.5">
-        <span className="text-ds-sm font-medium text-gray-400">Câmera</span>
+        <span className="text-ds-sm font-medium text-muted">Câmera</span>
         <select
           value={checkedId}
           onChange={(e) => void setCameraDevice(e.target.value)}
@@ -77,7 +77,7 @@ export function VideoSection(): React.JSX.Element {
       <div className="flex items-center justify-between gap-3 border-t border-subtle pt-4">
         <div>
           <p className="text-ds-sm font-medium text-strong">Sempre ver prévia do vídeo</p>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-muted">
             Mostra a prévia antes de ligar a câmera em uma chamada.
           </p>
         </div>
@@ -100,7 +100,7 @@ export function VideoSection(): React.JSX.Element {
           onUpload={upload}
           onRemoveCustom={removeCustom}
         />
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-muted">
           A separação do fundo roda no seu computador: o vídeo original não sai dele.
         </p>
       </div>

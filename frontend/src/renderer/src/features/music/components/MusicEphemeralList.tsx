@@ -41,7 +41,7 @@ function SearchPicker({ e, serverId }: { e: MusicEphemeral; serverId: string }):
 
   return (
     <div className="mt-1">
-      <p className="flex items-start gap-1.5 text-sm text-gray-100">
+      <p className="flex items-start gap-1.5 text-sm text-strong">
         <SearchIcon size={16} className="mt-0.5 shrink-0 text-muted" />
         {T16_TITLE(search.query)}
       </p>
@@ -59,7 +59,7 @@ function SearchPicker({ e, serverId }: { e: MusicEphemeral; serverId: string }):
             )}
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-medium text-strong">{r.title}</span>
-              <span className="block truncate text-xs text-gray-400">
+              <span className="block truncate text-xs text-muted">
                 {r.artist} · {formatDuration(r.duration_ms)}
               </span>
             </span>
@@ -93,7 +93,7 @@ function MusicEphemeralList({
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline gap-2">
               <span className="text-sm font-semibold text-brand">{MAESTRO_NAME}</span>
-              <span className="inline-flex flex-wrap items-center gap-x-1 text-[10px] text-gray-500">
+              <span className="inline-flex flex-wrap items-center gap-x-1 text-[10px] text-faint">
                 <EyeIcon size={12} />
                 {T14_LABEL} ·
                 <button
@@ -106,7 +106,7 @@ function MusicEphemeralList({
               </span>
             </div>
             {e.kind === 'text' && (
-              <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-gray-100">
+              <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-strong">
                 <MaestroText text={e.text ?? ''} />
               </p>
             )}

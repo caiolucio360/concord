@@ -47,8 +47,8 @@ function VerifyEmail(): React.JSX.Element {
       {state.kind === 'loading' && <AuthResultSkeleton label="Confirmando seu e-mail…" />}
       {state.kind === 'ok' && (
         <>
-          <h1 className="text-2xl font-semibold text-gray-50">E-mail confirmado!</h1>
-          <p className="mt-3 text-sm text-gray-300">
+          <h1 className="text-2xl font-semibold text-strong">E-mail confirmado!</h1>
+          <p className="mt-3 text-sm text-secondary">
             Tudo certo com a sua conta. Já pode voltar ao app.
           </p>
           <Link
@@ -61,8 +61,8 @@ function VerifyEmail(): React.JSX.Element {
       )}
       {state.kind === 'error' && (
         <>
-          <h1 className="text-2xl font-semibold text-gray-50">Não deu para confirmar</h1>
-          <p className="mt-3 text-sm text-gray-300">{state.message}</p>
+          <h1 className="text-2xl font-semibold text-strong">Não deu para confirmar</h1>
+          <p className="mt-3 text-sm text-secondary">{state.message}</p>
           <Link
             to={home}
             className="mt-6 inline-block text-sm font-medium text-brand hover:underline"

@@ -53,7 +53,7 @@ export function JoinRequestsStack(): React.JSX.Element | null {
                 onClick={() => respond(user.id, false)}
                 title="Recusar"
                 aria-label="Recusar"
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-fg/10 text-gray-300 transition-all hover:bg-danger-strong hover:text-white active:scale-95"
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-fg/10 text-secondary transition-all hover:bg-danger-strong hover:text-white active:scale-95"
               >
                 <XIcon className="h-4 w-4" />
               </button>

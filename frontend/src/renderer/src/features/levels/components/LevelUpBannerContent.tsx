@@ -36,7 +36,7 @@ export default function LevelUpBannerContent({
         <p className="max-w-[280px] truncate text-sm font-bold text-strong">
           {levelUpHeadline(celebration, milestone)}
         </p>
-        <p className="text-[11px] text-gray-400">
+        <p className="text-[11px] text-muted">
           Faixa {tier.name}
           {milestone ? ` · ${milestone.title}` : ''}
         </p>

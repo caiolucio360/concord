@@ -44,14 +44,14 @@ function AutoUpdateUnavailableNotice(): React.JSX.Element | null {
       <p className="text-sm font-semibold text-strong">
         Atualização automática indisponível nesta instalação
       </p>
-      <p className="mt-1 text-xs text-gray-400">
+      <p className="mt-1 text-xs text-muted">
         Use o AppImage sem extrair (precisa do pacote fuse2/libfuse2) ou baixe as versões novas pelo
         site.
       </p>
       <button
         type="button"
         onClick={dismiss}
-        className="mt-2 cursor-pointer text-xs font-semibold text-gray-300 hover:text-strong"
+        className="mt-2 cursor-pointer text-xs font-semibold text-secondary hover:text-strong"
       >
         Entendi
       </button>

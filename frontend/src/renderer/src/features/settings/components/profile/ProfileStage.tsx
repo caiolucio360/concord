@@ -41,7 +41,7 @@ export default function ProfileStage({
           onEdit={onEdit}
         />
       </div>
-      <p className="mt-4 text-center text-xs text-gray-400">
+      <p className="mt-4 text-center text-xs text-muted">
         Clique ou toque em qualquer parte do cartão para editar.
       </p>
     </section>

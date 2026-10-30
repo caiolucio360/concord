@@ -36,7 +36,7 @@ function message(p: UpdateBarViewProps): string {
 export function UpdateBarView(p: UpdateBarViewProps): React.JSX.Element {
   return (
     <div role="status" className="shrink-0 border-t border-success/40 bg-success/10 px-3 py-2">
-      <p className="line-clamp-3 break-words text-xs text-gray-200" title={message(p)}>
+      <p className="line-clamp-3 break-words text-xs text-normal" title={message(p)}>
         {message(p)}
       </p>
       {p.requested && (

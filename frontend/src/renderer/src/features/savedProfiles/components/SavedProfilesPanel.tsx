@@ -104,7 +104,7 @@ export default function SavedProfilesPanel(): React.JSX.Element | null {
               ({view.items.length}/{MAX_SAVED_PROFILES})
             </span>
           </SectionHeader>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-faint">
             Guarde o perfil como está agora e troque com um toque.
           </p>
         </div>
@@ -121,7 +121,7 @@ export default function SavedProfilesPanel(): React.JSX.Element | null {
       </div>
 
       {view.loaded && view.items.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-subtle px-3 py-4 text-center text-ds-sm text-gray-400">
+        <p className="rounded-xl border border-dashed border-subtle px-3 py-4 text-center text-ds-sm text-muted">
           Nenhum perfil salvo ainda.
         </p>
       ) : (

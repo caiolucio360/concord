@@ -16,7 +16,7 @@ export function DetailsPanel(): React.JSX.Element {
 
   return (
     <div className="w-full basis-full rounded-lg border border-white/10 bg-black/20 p-3 text-left">
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-muted">
         Copie e mande para quem cuida da Salinha: mostra onde a conexão para.
       </p>
       <pre

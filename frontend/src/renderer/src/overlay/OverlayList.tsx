@@ -28,12 +28,12 @@ function OverlayPill({
       <OverlayAvatar member={member} />
       <span
         className={`truncate text-sm ${
-          member.speaking ? 'font-bold text-strong' : 'font-medium text-gray-200'
+          member.speaking ? 'font-bold text-strong' : 'font-medium text-normal'
         }`}
       >
         {member.name}
       </span>
-      {member.self && <span className="shrink-0 text-[10px] uppercase text-gray-400">você</span>}
+      {member.self && <span className="shrink-0 text-[10px] uppercase text-muted">você</span>}
       <VoiceStateIcons muted={member.muted} deafened={member.deafened} />
       <OverlayWatchingEye watching={member.watchingMe} />
     </div>
@@ -49,7 +49,7 @@ function OverlayList({ snapshot }: { snapshot: OverlaySnapshot }): React.JSX.Ele
       ))}
       {snapshot.more > 0 && (
         <div
-          className="w-fit rounded-full bg-floating/85 px-3 py-1 text-sm font-medium text-gray-200"
+          className="w-fit rounded-full bg-floating/85 px-3 py-1 text-sm font-medium text-normal"
           style={rowStyle(snapshot.opacity, false)}
         >
           +{snapshot.more}

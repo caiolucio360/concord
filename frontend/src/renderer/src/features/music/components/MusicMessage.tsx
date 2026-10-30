@@ -48,9 +48,9 @@ function MusicMessage({ message }: { message: Message }): React.JSX.Element {
           <span className="rounded bg-brand/20 px-1 py-px text-[9px] font-bold uppercase tracking-wide text-brand">
             {T18.tag}
           </span>
-          <span className="text-[10px] text-gray-500">{formatTime(message.created_at)}</span>
+          <span className="text-[10px] text-faint">{formatTime(message.created_at)}</span>
         </div>
-        <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-gray-100">
+        <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-strong">
           <MaestroText text={message.content} />
         </p>
       </div>

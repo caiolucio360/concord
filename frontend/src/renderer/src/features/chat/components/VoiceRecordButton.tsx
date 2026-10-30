@@ -145,7 +145,7 @@ function VoiceRecordButton({
               <span className="shrink-0 font-semibold tabular-nums text-strong">
                 {formatDuration(recordElapsed(state, now))}
               </span>
-              <span className="truncate text-gray-400">
+              <span className="truncate text-muted">
                 Solte para enviar · arraste para fora para cancelar
               </span>
             </>
@@ -168,7 +168,7 @@ function VoiceRecordButton({
         onPointerLeave={() => dispatch({ type: 'leave' })}
         onPointerEnter={() => dispatch({ type: 'enter' })}
         className={`relative z-10 shrink-0 cursor-pointer rounded-md p-1 transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
-          recording ? 'bg-danger text-white' : 'text-gray-400 hover:bg-fg/10 hover:text-strong'
+          recording ? 'bg-danger text-white' : 'text-muted hover:bg-fg/10 hover:text-strong'
         }`}
       >
         <MicIcon className="h-5 w-5" />

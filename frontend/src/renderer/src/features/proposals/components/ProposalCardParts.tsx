@@ -56,12 +56,12 @@ export function ProposalCover({ images }: { images: ProposalImage[] }): React.JS
 /** Autor, comentários e o tempo que falta para a votação acabar. */
 export function ProposalByline({ proposal: p, now }: { proposal: Proposal; now: number }): React.JSX.Element {
   return (
-    <div className="flex items-center gap-2 text-xs text-gray-400">
+    <div className="flex items-center gap-2 text-xs text-muted">
       <Avatar userId={p.author_id} name={p.author_name} avatarUrl={p.author_avatar_url} size={20} />
       <span className="min-w-0 truncate">{p.author_name}</span>
       {p.comment_count > 0 && (
         <span
-          className="flex shrink-0 items-center gap-1 text-gray-400"
+          className="flex shrink-0 items-center gap-1 text-muted"
           title={`${p.comment_count} ${p.comment_count === 1 ? 'comentário' : 'comentários'}`}
         >
           <ChatBubbleIcon size={16} />
@@ -93,7 +93,7 @@ export function ProposalVoteBar({ proposal: p }: { proposal: Proposal }): React.
           style={{ width: total === 0 ? '0%' : `${100 - percent}%` }}
         />
       </div>
-      <div className="flex justify-between text-[11px] text-gray-400">
+      <div className="flex justify-between text-[11px] text-muted">
         <span>{p.yes_votes} sim</span>
         <span>{p.no_votes} não</span>
       </div>

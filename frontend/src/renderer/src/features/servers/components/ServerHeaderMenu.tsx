@@ -121,7 +121,7 @@ export function ServerMenuItems({
 /** Seta do menu do servidor; aberto, vira X (como no Discord). */
 function MenuToggleIcon({ open }: { open: boolean }): React.JSX.Element {
   const Icon = open ? XIcon : ChevronDownIcon
-  return <Icon size={16} className="shrink-0 text-gray-400" />
+  return <Icon size={16} className="shrink-0 text-muted" />
 }
 
 /** Nome do servidor no topo da barra; clicar abre o menu dele. */
@@ -140,7 +140,7 @@ function ServerHeaderMenu({
         onClick={() => setOpen((d) => !d)}
         title={name}
         aria-expanded={open}
-        className="flex w-full min-w-0 items-center justify-between gap-1 text-left text-ds-md font-semibold text-strong hover:text-gray-200 cursor-pointer"
+        className="flex w-full min-w-0 items-center justify-between gap-1 text-left text-ds-md font-semibold text-strong hover:text-normal cursor-pointer"
       >
         {/* Até duas linhas (o cabeçalho tem altura fixa); o resto no title. */}
         {server ? (

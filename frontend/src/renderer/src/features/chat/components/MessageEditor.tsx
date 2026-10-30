@@ -62,7 +62,7 @@ function MessageEditor({
         disabled={saving}
         className="w-full resize-none rounded-lg border border-subtle bg-input px-3 py-2 text-ds-chat text-strong outline-none focus:border-brand/40 disabled:opacity-60"
       />
-      <div className="mt-0.5 text-ds-xs text-gray-500">
+      <div className="mt-0.5 text-ds-xs text-faint">
         Esc para{' '}
         <button
           type="button"

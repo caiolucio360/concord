@@ -50,7 +50,7 @@ function BadgesAside({
             {isMe ? 'Seus badges' : `Badges de ${target.name}`}
           </h2>
         </div>
-        <p className="mt-1.5 text-sm leading-snug text-gray-400">
+        <p className="mt-1.5 text-sm leading-snug text-muted">
           {isMe
             ? 'Os badges aparecem conforme você usa o Salinha.'
             : `Explore os badges de ${target.name} ou veja os seus.`}
@@ -63,7 +63,7 @@ function BadgesAside({
             <BadgeGrid badges={earned} selected={selected?.category} onSelect={onSelect} />
           </div>
         ) : (
-          <p className="mt-5 text-sm text-gray-500">
+          <p className="mt-5 text-sm text-faint">
             {isMe
               ? 'Nenhum badge ainda. Eles aparecem conforme você usa o Salinha.'
               : 'Nenhum badge ainda.'}

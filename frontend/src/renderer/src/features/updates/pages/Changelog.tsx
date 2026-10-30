@@ -25,7 +25,7 @@ function Group({
   return (
     <div className="mt-3">
       <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${tone}`}>{title}</span>
-      <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-gray-300">
+      <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-secondary">
         {items.map((text, i) => (
           <li key={i}>{text}</li>
         ))}
@@ -36,7 +36,7 @@ function Group({
 
 export function ChangelogView({ releases, current, loading, error }: ViewProps): React.JSX.Element {
   return (
-    <div className="flex h-full w-full overflow-hidden bg-primary backdrop-blur-2xl text-gray-100">
+    <div className="flex h-full w-full overflow-hidden bg-primary backdrop-blur-2xl text-strong">
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="flex h-14 shrink-0 items-center gap-3 border-b border-subtle px-4">
           <ChangelogIcon className="h-5 w-5 text-brand" />
@@ -47,7 +47,7 @@ export function ChangelogView({ releases, current, loading, error }: ViewProps):
             {loading && <ChangelogSkeleton />}
             {error && <p className="text-sm text-danger">{error}</p>}
             {!loading && !error && releases.length === 0 && (
-              <p className="text-sm text-gray-400">Nenhuma versão publicada ainda.</p>
+              <p className="text-sm text-muted">Nenhuma versão publicada ainda.</p>
             )}
             {releases.map((rel) => {
               const { features, fixes } = groupEntries(rel)
@@ -58,7 +58,7 @@ export function ChangelogView({ releases, current, loading, error }: ViewProps):
                 >
                   <div className="flex flex-wrap items-baseline gap-2">
                     <h2 className="text-lg font-bold">v{rel.version}</h2>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-muted">
                       {formatReleaseDate(rel.released_at)}
                     </span>
                     {current === rel.version && (
@@ -67,7 +67,7 @@ export function ChangelogView({ releases, current, loading, error }: ViewProps):
                       </span>
                     )}
                   </div>
-                  {rel.summary && <p className="mt-1 text-sm text-gray-400">{rel.summary}</p>}
+                  {rel.summary && <p className="mt-1 text-sm text-muted">{rel.summary}</p>}
                   <Group
                     title="Novidades"
                     items={features}
@@ -75,7 +75,7 @@ export function ChangelogView({ releases, current, loading, error }: ViewProps):
                   />
                   <Group title="Correções" items={fixes} tone="bg-warning/20 text-warning" />
                   {features.length + fixes.length === 0 && (
-                    <p className="mt-3 text-sm text-gray-500">Sem notas para esta versão.</p>
+                    <p className="mt-3 text-sm text-faint">Sem notas para esta versão.</p>
                   )}
                 </section>
               )

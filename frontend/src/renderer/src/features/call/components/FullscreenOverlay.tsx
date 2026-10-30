@@ -67,7 +67,7 @@ function FullscreenOverlay({
           onClick={onExit}
           aria-label="Sair da tela cheia"
           title="Sair da tela cheia"
-          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-black/60 text-gray-100 transition-colors hover:bg-white/15 on-media"
+          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-black/60 text-strong transition-colors hover:bg-white/15 on-media"
         >
           <FullscreenExitIcon className="h-4 w-4" />
         </button>

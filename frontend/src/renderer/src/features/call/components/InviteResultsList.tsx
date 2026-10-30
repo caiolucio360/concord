@@ -8,7 +8,7 @@ import type { InviteResult } from '../api/callInvites'
 
 const TONE_CLASS: Record<ResultTone, string> = {
   good: 'text-success',
-  neutral: 'text-gray-400',
+  neutral: 'text-muted',
   bad: 'text-danger'
 }
 

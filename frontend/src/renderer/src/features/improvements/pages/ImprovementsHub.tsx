@@ -13,7 +13,7 @@ interface ViewProps {
 /** Tela inicial da aba do diamante: três cards, um para cada assunto. */
 export function ImprovementsHubView({ proposalsStat, rankStat }: ViewProps): React.JSX.Element {
   return (
-    <div className="flex h-full w-full overflow-hidden bg-primary backdrop-blur-2xl text-gray-100">
+    <div className="flex h-full w-full overflow-hidden bg-primary backdrop-blur-2xl text-strong">
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="flex h-14 shrink-0 items-center gap-3 border-b border-subtle px-4">
           <DiamondIcon className="h-6 w-6 text-brand" />
@@ -21,7 +21,7 @@ export function ImprovementsHubView({ proposalsStat, rankStat }: ViewProps): Rea
         </header>
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div className="mx-auto flex max-w-5xl flex-col gap-6">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-muted">
               Ajude a decidir o que vem por aí, veja o que mudou e confira quem manda nas calls.
             </p>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">

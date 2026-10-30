@@ -89,7 +89,7 @@ function GroupChat(): React.JSX.Element {
 
   return (
     <div
-      className="flex h-full w-full flex-col overflow-hidden text-gray-100"
+      className="flex h-full w-full flex-col overflow-hidden text-strong"
       style={{ background: MAIN_BG }}
     >
       <header className="relative flex h-14 shrink-0 items-center gap-2 border-b border-subtle px-4 sm:gap-3">
@@ -130,7 +130,7 @@ function GroupChat(): React.JSX.Element {
           aria-label="Nome do grupo"
           className="min-w-0 max-w-xs flex-1 rounded-md border border-transparent bg-transparent px-1.5 py-1 text-ds-md font-semibold text-strong outline-none placeholder:text-strong hover:border-black/40 focus:border-brand focus:bg-floating"
         />
-        <div className="ml-auto flex shrink-0 items-center gap-1 text-gray-400 sm:gap-3">
+        <div className="ml-auto flex shrink-0 items-center gap-1 text-muted sm:gap-3">
           <button
             type="button"
             title="Adicionar amigos ao grupo"

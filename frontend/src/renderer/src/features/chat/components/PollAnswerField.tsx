@@ -70,7 +70,7 @@ function MediaPicker({
             onChange({ emoji: '', image_url: '' })
             onClose()
           }}
-          className="mt-2 cursor-pointer text-xs font-semibold text-gray-400 hover:text-danger"
+          className="mt-2 cursor-pointer text-xs font-semibold text-muted hover:text-danger"
         >
           Remover emoji/imagem
         </button>
@@ -107,7 +107,7 @@ export function PollAnswerField({
         aria-label={`Emoji ou imagem da resposta ${index + 1}`}
         onMouseDown={(e) => e.stopPropagation()}
         onClick={onTogglePicker}
-        className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-subtle bg-fg/5 text-lg text-gray-400 transition-colors hover:bg-fg/10"
+        className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-subtle bg-fg/5 text-lg text-muted transition-colors hover:bg-fg/10"
       >
         {answer.emoji || answer.image_url ? (
           <PollAnswerMedia answer={answer} />

@@ -81,7 +81,7 @@ function OverlayShortcutField({ disabled }: { disabled: boolean }): React.JSX.El
           {recording ? 'Aperte a combinação…' : <kbd className="font-semibold">{shortcut}</kbd>}
         </div>
       </div>
-      <span className="text-xs text-gray-400">
+      <span className="text-xs text-muted">
         {recording
           ? 'Aperte a combinação com Ctrl, Alt ou Shift. Esc cancela.'
           : `Durante o jogo, ${shortcut} liga o modo de mover e redimensionar o overlay (${shortcut} ou Esc para sair).`}
@@ -90,7 +90,7 @@ function OverlayShortcutField({ disabled }: { disabled: boolean }): React.JSX.El
       {inUse && (
         <p className="text-xs text-warning">Atalho em uso por outro programa — escolha outro</p>
       )}
-      <span className="text-xs text-gray-500">
+      <span className="text-xs text-faint">
         Shift+Tab também abre o overlay da Steam e pode atrapalhar jogos que usam Shift (correr) +
         Tab (placar)
       </span>

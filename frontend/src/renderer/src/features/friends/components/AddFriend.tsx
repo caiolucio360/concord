@@ -41,7 +41,7 @@ export default function AddFriend(): React.JSX.Element {
   return (
     <section className="border-b border-subtle pb-5">
       <h2 className="text-ds-lg font-semibold text-strong">Adicionar amigo</h2>
-      <p className="mt-1 text-ds-sm text-gray-400">
+      <p className="mt-1 text-ds-sm text-muted">
         Você pode adicionar amigos com o nome de usuário deles no Salinha.
       </p>
       <form
@@ -57,7 +57,7 @@ export default function AddFriend(): React.JSX.Element {
           }}
           maxLength={32}
           placeholder="Você pode adicionar amigos com o nome de usuário deles."
-          className="min-w-0 flex-1 basis-40 bg-transparent text-ds-md text-strong outline-none placeholder:text-gray-500"
+          className="min-w-0 flex-1 basis-40 bg-transparent text-ds-md text-strong outline-none placeholder:text-faint"
         />
         <button
           type="submit"

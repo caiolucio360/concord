@@ -272,12 +272,12 @@ function CommentComposer({
             onClick={() => fileInput.current?.click()}
             title="Anexar arquivo"
             aria-label="Anexar arquivo"
-            className="shrink-0 cursor-pointer rounded-md p-1 text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong"
+            className="shrink-0 cursor-pointer rounded-md p-1 text-muted transition-colors hover:bg-fg/10 hover:text-strong"
           >
             <PaperclipIcon className="h-5 w-5" />
           </button>
           <VoiceRecordButton key={proposalId} disabled={sendingVoice} onRecorded={handleRecorded} />
-          <span className="ml-1 truncate text-[11px] text-gray-500">
+          <span className="ml-1 truncate text-[11px] text-faint">
             {text.length}/{MAX_COMMENT} · Enter envia, Shift+Enter quebra a linha
           </span>
         </div>

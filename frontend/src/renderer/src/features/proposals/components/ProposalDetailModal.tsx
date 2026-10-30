@@ -62,25 +62,25 @@ function ProposalDetailModal({
       <Modal open title={p.title} onClose={onClose} xl>
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
           <div className="flex min-w-0 flex-col gap-5">
-            <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
               <Avatar
                 userId={p.author_id}
                 name={p.author_name}
                 avatarUrl={p.author_avatar_url}
                 size={24}
               />
-              <span className="font-medium text-gray-200">{p.author_name}</span>
+              <span className="font-medium text-normal">{p.author_name}</span>
               <span className="rounded-full bg-brand/15 px-2.5 py-0.5 text-[11px] font-medium text-brand ring-1 ring-brand/30">
                 {columnTitle(p.status)}
               </span>
               {p.status === 'voting' && (
                 <span className="text-brand">{timeLeftLabel(p.voting_ends_at, now)}</span>
               )}
-              {p.edited_at && <span className="text-gray-500">(editada)</span>}
+              {p.edited_at && <span className="text-faint">(editada)</span>}
             </div>
 
             {p.description && (
-              <p className="whitespace-pre-wrap wrap-break-word text-sm leading-relaxed text-gray-200">
+              <p className="whitespace-pre-wrap wrap-break-word text-sm leading-relaxed text-normal">
                 {p.description}
               </p>
             )}
@@ -110,7 +110,7 @@ function ProposalDetailModal({
               </ul>
             )}
 
-            {closeLabel(p) && <p className="text-xs text-gray-400">{closeLabel(p)}</p>}
+            {closeLabel(p) && <p className="text-xs text-muted">{closeLabel(p)}</p>}
 
             {(p.status === 'voting' || total > 0) && (
               <div className="flex flex-col gap-1.5 rounded-xl border border-subtle bg-fg/3 p-3">
@@ -128,7 +128,7 @@ function ProposalDetailModal({
                     style={{ width: total === 0 ? '0%' : `${100 - percent}%` }}
                   />
                 </div>
-                <div className="flex justify-between text-xs text-gray-400">
+                <div className="flex justify-between text-xs text-muted">
                   <span>{p.yes_votes} sim</span>
                   <span>{p.no_votes} não</span>
                 </div>

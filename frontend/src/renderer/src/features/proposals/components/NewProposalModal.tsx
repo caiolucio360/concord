@@ -108,7 +108,7 @@ function ProposalForm({
         </div>
       )}
       {!editing && (
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-muted">
           Todo mundo vota por 7 dias. Se tiver mais sim do que não, a ideia vai para o time tech e
           vira uma issue no GitHub.
         </p>
@@ -122,7 +122,7 @@ function ProposalForm({
         onChange={(e) => setTitle(e.target.value)}
       />
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="proposal-description" className="text-ds-sm font-medium text-gray-300">
+        <label htmlFor="proposal-description" className="text-ds-sm font-medium text-secondary">
           Descrição (opcional)
         </label>
         <textarea
@@ -140,13 +140,13 @@ function ProposalForm({
             images.add(files)
           }}
         />
-        <span className="self-end text-[11px] text-gray-500">
+        <span className="self-end text-[11px] text-faint">
           {description.length}/{MAX_DESCRIPTION}
         </span>
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="text-ds-sm font-medium text-gray-300">
+          <span className="text-ds-sm font-medium text-secondary">
             Imagens (opcional, até {MAX_IMAGES})
           </span>
           <Button
@@ -172,7 +172,7 @@ function ProposalForm({
         </div>
         <ProposalImageStrip drafts={images.drafts} onRemove={images.remove} />
         {images.drafts.length === 0 && (
-          <p className="text-[11px] text-gray-500">
+          <p className="text-[11px] text-faint">
             Escolha, cole (Ctrl+V) ou arraste PNG, JPG, WebP ou GIF de até 8 MB.
           </p>
         )}

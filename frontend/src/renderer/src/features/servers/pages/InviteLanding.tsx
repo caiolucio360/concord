@@ -120,7 +120,7 @@ function InviteCard({ code }: { code: string }): React.JSX.Element {
         >
           <InviteSpinner />
           <h1 className="mt-4 text-ds-lg font-bold text-strong">Abrindo a Salinha…</h1>
-          <p className="mt-2 text-ds-sm text-gray-300">
+          <p className="mt-2 text-ds-sm text-secondary">
             Confirme no seu navegador, se ele perguntar.
           </p>
           <Button variant="secondary" className="mt-6 w-full py-2.5" onClick={continueInApp}>
@@ -149,7 +149,7 @@ function InviteCard({ code }: { code: string }): React.JSX.Element {
           <div className="flex flex-col items-center text-center">
             <InviteServerIcon name="?" />
             <h1 className="mt-4 text-ds-lg font-bold text-strong">Convite indisponível</h1>
-            <p className="mt-2 text-ds-sm text-gray-300">{state.message}</p>
+            <p className="mt-2 text-ds-sm text-secondary">{state.message}</p>
             <Link
               to="/"
               className="mt-8 w-full rounded-lg bg-fg/10 px-4 py-2.5 text-ds-sm font-semibold text-strong transition-colors hover:bg-fg/15"
@@ -171,7 +171,7 @@ function InviteCard({ code }: { code: string }): React.JSX.Element {
               </Button>
             </div>
             {showDownload && (
-              <p className="mt-4 text-center text-ds-sm text-gray-300">
+              <p className="mt-4 text-center text-ds-sm text-secondary">
                 Não abriu?{' '}
                 <a
                   href={DOWNLOAD_URL}

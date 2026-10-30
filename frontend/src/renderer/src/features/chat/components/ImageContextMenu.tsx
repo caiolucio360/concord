@@ -48,7 +48,7 @@ function ImageContextMenu(): React.JSX.Element | null {
       role="menu"
       aria-label="Opções da imagem"
       style={{ left, top, width: MENU_WIDTH }}
-      className="fixed z-[80] flex flex-col gap-1 rounded-lg border border-subtle bg-floating p-2 text-sm text-gray-200 shadow-2xl"
+      className="fixed z-[80] flex flex-col gap-1 rounded-lg border border-subtle bg-floating p-2 text-sm text-normal shadow-2xl"
     >
       <button role="menuitem" onClick={copy} className={itemClass}>
         Copiar imagem

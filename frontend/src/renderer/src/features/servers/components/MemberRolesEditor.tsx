@@ -42,7 +42,7 @@ function OwnRoleChip({
   onRemove: () => void
 }): React.JSX.Element {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-normal bg-fg/5 py-0.5 pl-2 pr-1 text-xs text-gray-200">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-normal bg-fg/5 py-0.5 pl-2 pr-1 text-xs text-normal">
       <RoleDot color={role.color} />
       {role.name}
       {removable ? (
@@ -72,7 +72,7 @@ export function RoleOption({
     <button
       type="button"
       onClick={onToggle}
-      className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold text-gray-200 hover:bg-fg/10"
+      className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold text-normal hover:bg-fg/10"
     >
       <RoleDot color={role.color} />
       <span className="min-w-0 flex-1 truncate">{role.name}</span>
@@ -95,7 +95,7 @@ function RolePicker({
         type="button"
         aria-label={`Dar um cargo a ${name}`}
         onClick={() => setOpen(!open)}
-        className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-dashed border-strong text-sm text-gray-300 hover:border-strong hover:text-strong"
+        className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-dashed border-strong text-sm text-secondary hover:border-strong hover:text-strong"
       >
         +
       </button>

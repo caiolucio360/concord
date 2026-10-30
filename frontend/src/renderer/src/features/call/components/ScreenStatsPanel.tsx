@@ -40,7 +40,7 @@ export function ScreenStatsCard({
     <div
       role="dialog"
       aria-label="Estatísticas da transmissão"
-      className="on-media absolute right-2 top-11 z-20 max-h-[calc(100%-3.25rem)] w-60 max-w-[calc(100%-1rem)] overflow-y-auto rounded-lg bg-black/80 p-2.5 text-xs text-gray-100 shadow-xl backdrop-blur-sm"
+      className="on-media absolute right-2 top-11 z-20 max-h-[calc(100%-3.25rem)] w-60 max-w-[calc(100%-1rem)] overflow-y-auto rounded-lg bg-black/80 p-2.5 text-xs text-strong shadow-xl backdrop-blur-sm"
       {...keepInside}
     >
       <div className="mb-1.5 flex items-center justify-between gap-2">
@@ -49,18 +49,18 @@ export function ScreenStatsCard({
           type="button"
           onClick={onClose}
           aria-label="Fechar estatísticas"
-          className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md text-gray-300 hover:bg-fg/10 hover:text-white"
+          className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md text-secondary hover:bg-fg/10 hover:text-white"
         >
           <XIcon className="h-3.5 w-3.5" />
         </button>
       </div>
-      {view === null && <p className="text-gray-300">Medindo…</p>}
+      {view === null && <p className="text-secondary">Medindo…</p>}
       {view?.status && <p className="mb-1.5 font-semibold text-warning">{view.status}</p>}
       {view && view.rows.length > 0 && (
         <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-0.5">
           {view.rows.map((row) => (
             <div key={row.label} className="contents">
-              <dt className="text-gray-400">{row.label}</dt>
+              <dt className="text-muted">{row.label}</dt>
               <dd className="truncate text-right font-medium tabular-nums" title={row.value}>
                 {row.value}
               </dd>
@@ -68,7 +68,7 @@ export function ScreenStatsCard({
           ))}
         </dl>
       )}
-      {view?.note && <p className="mt-1.5 text-gray-300">{view.note}</p>}
+      {view?.note && <p className="mt-1.5 text-secondary">{view.note}</p>}
     </div>
   )
 }
@@ -114,7 +114,7 @@ export function StatsCorner({
         className={`on-media absolute right-2 top-10 z-20 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full backdrop-blur-sm transition-colors ${
           open
             ? 'bg-brand text-white'
-            : 'bg-black/60 text-gray-200 hover:bg-black/80 hover:text-white'
+            : 'bg-black/60 text-normal hover:bg-black/80 hover:text-white'
         }`}
       >
         <StatsIcon className="h-3.5 w-3.5" />

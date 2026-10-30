@@ -8,7 +8,7 @@ const LEVELS = [1, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 120, 250]
 const MILESTONES = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
 const chip =
-  'cursor-pointer rounded-md bg-fg/10 px-2 py-1 text-xs font-semibold text-gray-200 hover:bg-fg/20'
+  'cursor-pointer rounded-md bg-fg/10 px-2 py-1 text-xs font-semibold text-normal hover:bg-fg/20'
 
 /**
  * Só em dev (import.meta.env.DEV): toca a animação de subir para qualquer
@@ -25,7 +25,7 @@ function LevelUpPreview(): React.JSX.Element {
       <h3 className="mb-1 text-xs font-bold uppercase tracking-wide text-warning">
         Prévia da subida de nível (dev)
       </h3>
-      <p className="mb-3 text-xs text-gray-400">
+      <p className="mb-3 text-xs text-muted">
         Toca a animação em você sem mudar o seu nível de verdade.
       </p>
 

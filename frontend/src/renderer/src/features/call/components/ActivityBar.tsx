@@ -52,9 +52,9 @@ function ActivityBar(): React.JSX.Element | null {
         >
           <ActivityGlyph activity={activity} className="h-4 w-4" />
         </span>
-        <span className="min-w-0 truncate text-xs font-semibold text-gray-100">{banner.text}</span>
+        <span className="min-w-0 truncate text-xs font-semibold text-strong">{banner.text}</span>
         {banner.hasLink && (
-          <span className="rounded bg-fg/10 px-1.5 py-0.5 text-[10px] font-semibold text-gray-300">
+          <span className="rounded bg-fg/10 px-1.5 py-0.5 text-[10px] font-semibold text-secondary">
             sala compartilhada
           </span>
         )}
@@ -82,7 +82,7 @@ function ActivityBar(): React.JSX.Element | null {
               aria-label="Cole o link da sala (opcional)"
               aria-invalid={error !== null}
               title={error ?? activity.linkExample}
-              className={`w-56 rounded-full border bg-input px-3 py-1 text-[11px] text-strong placeholder-gray-500 focus:outline-none ${
+              className={`w-56 rounded-full border bg-input px-3 py-1 text-[11px] text-strong placeholder:text-faint focus:outline-none ${
                 error ? 'border-danger' : 'border-subtle focus:border-brand'
               }`}
             />
@@ -95,7 +95,7 @@ function ActivityBar(): React.JSX.Element | null {
                 setEditing(false)
                 setError(null)
               }}
-              className={`${pill} bg-fg/5 text-gray-300 hover:bg-fg/10`}
+              className={`${pill} bg-fg/5 text-secondary hover:bg-fg/10`}
             >
               Cancelar
             </button>
@@ -131,7 +131,7 @@ function ActivityBar(): React.JSX.Element | null {
                   setLink(shared.url)
                   setEditing(true)
                 }}
-                className={`${pill} bg-fg/5 text-gray-200 hover:bg-fg/10`}
+                className={`${pill} bg-fg/5 text-normal hover:bg-fg/10`}
               >
                 {banner.hasLink ? 'Trocar link' : 'Compartilhar link'}
               </button>
@@ -149,7 +149,7 @@ function ActivityBar(): React.JSX.Element | null {
                 <button
                   type="button"
                   onClick={closeLocal}
-                  className={`${pill} bg-fg/5 text-gray-300 hover:bg-fg/10`}
+                  className={`${pill} bg-fg/5 text-secondary hover:bg-fg/10`}
                 >
                   Sair do jogo
                 </button>

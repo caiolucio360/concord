@@ -8,7 +8,7 @@ import SectionHeader from '../../../../shared/ui/SectionHeader'
 
 /** No editor, o convite no lugar de uma seção vazia. */
 function Placeholder({ text }: { text: string }): React.JSX.Element {
-  return <p className="mt-3 text-sm italic text-gray-500">{text}</p>
+  return <p className="mt-3 text-sm italic text-faint">{text}</p>
 }
 
 /**
@@ -25,7 +25,7 @@ export function CardBio({
   if (!bio) return placeholder ? <Placeholder text={placeholder} /> : null
   const editing = Boolean(placeholder)
   return (
-    <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-snug text-gray-200">
+    <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-snug text-normal">
       {splitLinks(bio).map((part, i) =>
         part.url && !editing ? (
           <a
@@ -51,7 +51,7 @@ export function MaestroHowto(): React.JSX.Element {
   return (
     <div className="mt-3 rounded-lg bg-fg/5 p-2.5">
       <SectionHeader as="p">{MAESTRO_HOWTO.title}</SectionHeader>
-      <ol className="mt-1 list-decimal space-y-1 pl-4 text-sm leading-snug text-gray-200">
+      <ol className="mt-1 list-decimal space-y-1 pl-4 text-sm leading-snug text-normal">
         {MAESTRO_HOWTO.steps.map((step) => (
           <li key={step}>{step}</li>
         ))}
@@ -61,7 +61,7 @@ export function MaestroHowto(): React.JSX.Element {
 }
 
 const linkClass =
-  'flex h-8 w-8 items-center justify-center rounded-lg border border-subtle bg-fg/5 text-gray-300 transition-colors hover:bg-fg/10 hover:text-strong'
+  'flex h-8 w-8 items-center justify-center rounded-lg border border-subtle bg-fg/5 text-secondary transition-colors hover:bg-fg/10 hover:text-strong'
 
 /**
  * Os links do perfil (Steam, Twitch...), um ícone por serviço. No editor

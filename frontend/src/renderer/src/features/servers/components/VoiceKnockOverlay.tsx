@@ -33,7 +33,7 @@ function VoiceKnockOverlay({
             cancelJoinRequest()
           }}
           title="Cancelar pedido"
-          className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full bg-fg/10 text-gray-300 hover:bg-fg/20 hover:text-strong"
+          className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full bg-fg/10 text-secondary hover:bg-fg/20 hover:text-strong"
         >
           <XIcon className="h-3 w-3" />
         </button>

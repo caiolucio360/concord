@@ -16,7 +16,7 @@ function OverviewSection(): React.JSX.Element {
   // Mesmo fluxo do avatar: escolher, recortar, ver a prévia e só enviar ao salvar.
   const [icon, setIcon] = useState<MediaChange>({ kind: 'keep' })
   const [saving, setSaving] = useState(false)
-  if (!server) return <p className="text-sm text-gray-400">Abra um servidor primeiro.</p>
+  if (!server) return <p className="text-sm text-muted">Abra um servidor primeiro.</p>
 
   const dirty = name.trim() !== server.name || icon.kind !== 'keep'
 

@@ -38,7 +38,7 @@ function MemberIdentity({
             </span>
           )}
         </span>
-        {member.username && <span className="block text-xs text-gray-400">@{member.username}</span>}
+        {member.username && <span className="block text-xs text-muted">@{member.username}</span>}
       </span>
     </span>
   )

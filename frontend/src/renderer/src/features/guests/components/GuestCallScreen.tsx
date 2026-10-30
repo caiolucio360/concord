@@ -22,7 +22,7 @@ function LeftCall({ onRejoin }: { onRejoin: () => void }): React.JSX.Element {
   return (
     <div className="flex w-full max-w-sm flex-col items-center text-center">
       <h2 className="text-ds-lg font-bold text-strong">{GUEST_COPY.leftTitle}</h2>
-      <p className="mt-2 text-ds-sm text-gray-300">{GUEST_COPY.leftBody}</p>
+      <p className="mt-2 text-ds-sm text-secondary">{GUEST_COPY.leftBody}</p>
       <div className="mt-6 flex w-full flex-col gap-2 sm:flex-row sm:justify-center">
         <Button className="min-h-10" onClick={onRejoin}>
           {GUEST_COPY.rejoin}
@@ -45,7 +45,7 @@ export function LeaveConfirm({
 }): React.JSX.Element {
   return (
     <Modal open={open} title={GUEST_COPY.leaveTitle} onClose={onClose}>
-      <p className="text-ds-sm text-gray-300">{GUEST_COPY.leaveBody}</p>
+      <p className="text-ds-sm text-secondary">{GUEST_COPY.leaveBody}</p>
       <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
         <Button variant="ghost" className="min-h-10" onClick={onClose}>
           {GUEST_COPY.stay}

@@ -53,11 +53,11 @@ function ActivityCard({
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
           <span className="truncate text-sm font-bold text-strong">{activity.name}</span>
-          <span className="rounded bg-fg/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-gray-300">
+          <span className="rounded bg-fg/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-secondary">
             {activity.category}
           </span>
         </span>
-        <span className="mt-0.5 block text-[11px] leading-snug text-gray-400">
+        <span className="mt-0.5 block text-[11px] leading-snug text-muted">
           {activity.description}
         </span>
       </span>
@@ -135,7 +135,7 @@ function ActivityPickerPopover({
     >
       <div className="mb-3">
         <p className="text-sm font-bold text-strong">Atividades</p>
-        <p className="text-[11px] text-gray-400">
+        <p className="text-[11px] text-muted">
           Jogue com quem está na chamada — a voz continua aqui.
         </p>
       </div>
@@ -163,7 +163,7 @@ function ActivityPickerPopover({
           }}
         >
           <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold text-gray-300">
+            <span className="mb-1 block text-[11px] font-semibold text-secondary">
               Cole o link da sala (opcional)
             </span>
             <input
@@ -178,7 +178,7 @@ function ActivityPickerPopover({
               }}
               placeholder={selected.linkExample}
               aria-invalid={error !== null}
-              className={`w-full rounded-xl border bg-input px-3 py-1.5 text-xs text-strong placeholder-gray-500 focus:outline-none ${
+              className={`w-full rounded-xl border bg-input px-3 py-1.5 text-xs text-strong placeholder:text-faint focus:outline-none ${
                 error ? 'border-danger' : 'border-subtle focus:border-brand'
               }`}
             />
@@ -188,7 +188,7 @@ function ActivityPickerPopover({
               {error}
             </p>
           ) : (
-            <p className="text-[11px] text-gray-500">
+            <p className="text-[11px] text-faint">
               {/* No desktop a janela do jogo é observada e a sala vai sozinha; no
                   navegador o iframe de outro site não deixa ler a URL. */}
               {IS_WEB

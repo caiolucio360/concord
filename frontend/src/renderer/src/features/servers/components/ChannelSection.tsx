@@ -44,13 +44,13 @@ function ChannelSection({
   return (
     <div>
       <div className="flex items-center justify-between px-2">
-        <p className="text-ds-sm font-medium text-gray-400">{title}</p>
+        <p className="text-ds-sm font-medium text-muted">{title}</p>
         {onAdd && (
           <button
             onClick={onAdd}
             title={addLabel}
             aria-label={addLabel}
-            className="cursor-pointer rounded-md p-0.5 text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong [@media(pointer:coarse)]:-my-2 [@media(pointer:coarse)]:p-2.5"
+            className="cursor-pointer rounded-md p-0.5 text-muted transition-colors hover:bg-fg/10 hover:text-strong [@media(pointer:coarse)]:-my-2 [@media(pointer:coarse)]:p-2.5"
           >
             <PlusIcon className="h-4 w-4" />
           </button>
@@ -59,7 +59,7 @@ function ChannelSection({
       <div className="mt-1 flex flex-col gap-0.5" onDragLeave={onDragLeave}>
         {!ready && <ChannelListSkeleton count={skeleton.count} offset={skeleton.offset} />}
         {ready && count === 0 && (
-          <p className="px-2 text-ds-sm text-gray-500 italic">{emptyText}</p>
+          <p className="px-2 text-ds-sm text-faint italic">{emptyText}</p>
         )}
         {children}
       </div>

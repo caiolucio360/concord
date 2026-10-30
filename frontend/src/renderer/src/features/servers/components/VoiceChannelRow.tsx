@@ -56,7 +56,7 @@ function VoiceChannelMeta({
       )}
       {people > 0 && (
         <span className={`flex h-6 shrink-0 items-center ${FADE_ON_HOVER}`}>
-          <span className="rounded-full bg-fg/10 px-1.5 py-0.2 text-[10px] font-bold text-gray-300">
+          <span className="rounded-full bg-fg/10 px-1.5 py-0.2 text-[10px] font-bold text-secondary">
             {people}
           </span>
         </span>
@@ -115,7 +115,7 @@ function VoiceChannelButton({
       {/* Verde só nos canais com gente (pode ser em vários ao mesmo tempo). */}
       <span className="flex h-6 shrink-0 items-center">
         <VolumeIcon
-          className={`h-5 w-5 transition-colors ${people > 0 ? 'text-success' : 'text-gray-500'}`}
+          className={`h-5 w-5 transition-colors ${people > 0 ? 'text-success' : 'text-faint'}`}
         />
       </span>
       {/* Nome inteiro, quebrando linha; tempo e contagem ficam na altura da
@@ -131,7 +131,7 @@ function VoiceChannelButton({
         {(isPrivate || !canConnect) && (
           <span
             title={isPrivate ? 'Canal privado' : 'Sem permissão para entrar'}
-            className="ml-1.5 inline-flex align-[-1px] text-gray-500"
+            className="ml-1.5 inline-flex align-[-1px] text-faint"
           >
             <LockIcon className="h-3 w-3" />
             <span className="sr-only">(restrito)</span>

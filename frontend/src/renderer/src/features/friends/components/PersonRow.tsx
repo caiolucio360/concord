@@ -34,7 +34,7 @@ export function RowAction({
         e.stopPropagation()
         onClick(e)
       }}
-      className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-floating text-gray-400 transition-colors ${ROW_TONE_HOVER[tone]}`}
+      className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-floating text-muted transition-colors ${ROW_TONE_HOVER[tone]}`}
     >
       {children}
     </button>
@@ -89,11 +89,11 @@ export function PersonRow({
       <div className="min-w-0 flex-1">
         <p className="flex items-baseline gap-1.5 truncate text-ds-md font-semibold text-strong">
           <StyledName name={look.name} userId={user.id} style={user.name_style} />
-          <span className="hidden truncate text-ds-sm font-normal text-gray-400 group-hover:inline">
+          <span className="hidden truncate text-ds-sm font-normal text-muted group-hover:inline">
             {user.username}
           </span>
         </p>
-        <p className="truncate text-ds-sm text-gray-400">{subtitle}</p>
+        <p className="truncate text-ds-sm text-muted">{subtitle}</p>
       </div>
       <div className="flex shrink-0 items-center gap-2.5">{children}</div>
     </div>

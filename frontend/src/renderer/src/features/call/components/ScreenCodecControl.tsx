@@ -46,7 +46,7 @@ export function ScreenCodecOptions({
         title={disabled ? NO_CARD : undefined}
         onClick={() => onChange(choice)}
         className={`min-w-0 font-semibold transition-colors ${size} ${wide ? 'col-span-4' : ''} ${
-          value === choice ? 'bg-brand text-white' : 'bg-fg/5 text-gray-300'
+          value === choice ? 'bg-brand text-white' : 'bg-fg/5 text-secondary'
         } ${disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer hover:bg-fg/10'}`}
       >
         {LABELS[choice]}
@@ -55,17 +55,17 @@ export function ScreenCodecOptions({
   }
   return (
     <details className={compact ? 'mt-3' : 'mt-4'}>
-      <summary className="cursor-pointer rounded text-xs font-semibold text-gray-400 hover:text-gray-200 focus-ring">
+      <summary className="cursor-pointer rounded text-xs font-semibold text-muted hover:text-normal focus-ring">
         Avançado
       </summary>
       <div role="group" aria-label="Codec" className="mt-2">
-        <p className="mb-1.5 text-[11px] font-semibold text-gray-400">Codec</p>
+        <p className="mb-1.5 text-[11px] font-semibold text-muted">Codec</p>
         <div className="grid grid-cols-4 gap-px overflow-hidden rounded-md">
           {option('auto', true)}
           {CODECS.map((codec) => option(codec))}
         </div>
-        {hint && <p className="mt-1.5 text-xs text-gray-500">{hint}</p>}
-        <p className="mt-1.5 text-xs text-gray-500">
+        {hint && <p className="mt-1.5 text-xs text-faint">{hint}</p>}
+        <p className="mt-1.5 text-xs text-faint">
           {compact
             ? 'Vale a partir da próxima transmissão.'
             : 'Automático usa o melhor que a sua placa de vídeo codifica: AV1, depois H.265, depois H.264. Use VP8 se a transmissão falhar para alguém.'}

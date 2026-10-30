@@ -664,7 +664,7 @@ function ChatPane({
               onBlur={() => setMention(null)}
               placeholder={composerPlaceholder(replyingTo !== null, replyTargetAuthor, placeholder)}
               maxLength={2000}
-              className="min-w-0 flex-1 bg-transparent text-ds-chat text-strong placeholder:text-gray-500 outline-none"
+              className="min-w-0 flex-1 bg-transparent text-ds-chat text-strong placeholder:text-faint outline-none"
             />
             <MediaPickerButton onClick={() => setMediaPickerOpen((v) => !v)} />
             <VoiceButton

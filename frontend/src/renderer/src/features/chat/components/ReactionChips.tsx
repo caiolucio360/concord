@@ -67,7 +67,7 @@ function ReactionChip({
       </span>
       <span
         className={`min-w-[9px] text-ds-sm font-semibold tabular-nums ${
-          meReacted ? 'text-brand' : 'text-gray-300'
+          meReacted ? 'text-brand' : 'text-secondary'
         }`}
       >
         {reaction.count}
@@ -92,7 +92,7 @@ function AddReactionChip({
       onClick={(e) => onClick(e.currentTarget)}
       title="Adicionar reação"
       aria-label="Adicionar reação"
-      className="inline-flex h-7 w-9 cursor-pointer items-center justify-center rounded-lg border border-transparent bg-fg/5 text-gray-400 transition-colors hover:border-strong hover:bg-fg/10 hover:text-strong focus-ring [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-within:opacity-100 [@media(hover:hover)]:focus-visible:opacity-100"
+      className="inline-flex h-7 w-9 cursor-pointer items-center justify-center rounded-lg border border-transparent bg-fg/5 text-muted transition-colors hover:border-strong hover:bg-fg/10 hover:text-strong focus-ring [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-within:opacity-100 [@media(hover:hover)]:focus-visible:opacity-100"
     >
       <AddReactionIcon className="h-5 w-5" />
     </button>

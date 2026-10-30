@@ -37,7 +37,7 @@ export function ActivityPrivacy(): React.JSX.Element | null {
   if (!api?.games && !api?.music) return null
   return (
     <section className="border-b border-subtle pb-6">
-      <h2 className="mb-3 text-ds-sm font-medium text-gray-400">Atividade</h2>
+      <h2 className="mb-3 text-ds-sm font-medium text-muted">Atividade</h2>
       <div className="flex flex-col gap-4">
         {api.games && <GameToggle />}
         {api.music && <MusicToggle />}

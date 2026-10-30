@@ -24,7 +24,7 @@ export default function SoundboardVolumeBar(): React.JSX.Element {
         onClick={toggleVolumeMute}
         aria-label={volume === 0 ? 'Ativar som da mesa' : 'Silenciar mesa de áudio'}
         title={volume === 0 ? 'Ativar som da mesa' : 'Silenciar mesa de áudio'}
-        className="cursor-pointer text-gray-300 transition-colors hover:text-strong"
+        className="cursor-pointer text-secondary transition-colors hover:text-strong"
       >
         {volume === 0 ? (
           <VolumeOffIcon className="h-4 w-4 text-danger" />
@@ -45,7 +45,7 @@ export default function SoundboardVolumeBar(): React.JSX.Element {
         aria-label="Volume da mesa de áudio"
         className="h-1.5 flex-1 cursor-pointer accent-brand"
       />
-      <span className="w-9 text-right text-[11px] font-semibold text-gray-300">
+      <span className="w-9 text-right text-[11px] font-semibold text-secondary">
         {Math.round(volume * 100)}%
       </span>
     </div>

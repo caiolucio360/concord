@@ -175,7 +175,7 @@ function ScreenMiniPlayer(): React.JSX.Element | null {
         }}
         aria-label="Fechar transmissão"
         title="Fechar transmissão"
-        className="absolute right-2 top-2 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-black/60 text-gray-200 backdrop-blur-sm transition-colors hover:bg-black/80 hover:text-white on-media"
+        className="absolute right-2 top-2 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-black/60 text-normal backdrop-blur-sm transition-colors hover:bg-black/80 hover:text-white on-media"
       >
         <XIcon className="h-3.5 w-3.5" />
       </button>

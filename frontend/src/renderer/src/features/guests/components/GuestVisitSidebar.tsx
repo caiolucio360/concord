@@ -23,7 +23,7 @@ function VisitChannelRow({ visit }: { visit: GuestPass }): React.JSX.Element {
       aria-current="page"
       className="flex min-h-10 w-full cursor-pointer items-center gap-2 rounded-md bg-fg/10 px-2 py-1.5 text-left text-ds-md font-medium text-strong transition-colors hover:bg-fg/15 focus-ring"
     >
-      <VolumeIcon className={`h-5 w-5 shrink-0 ${connected ? 'text-success' : 'text-gray-400'}`} />
+      <VolumeIcon className={`h-5 w-5 shrink-0 ${connected ? 'text-success' : 'text-muted'}`} />
       <span className="min-w-0 flex-1 truncate">{visit.channel_name}</span>
     </button>
   )
@@ -55,8 +55,8 @@ function GuestVisitSidebar(): React.JSX.Element {
         {visit && (
           <>
             <VisitChannelRow visit={visit} />
-            <p className="px-2 pt-3 text-ds-xs text-gray-400">{GUEST_COPY.sidebarHint}</p>
-            <p className="px-2 pt-1 text-ds-xs text-gray-300">
+            <p className="px-2 pt-3 text-ds-xs text-muted">{GUEST_COPY.sidebarHint}</p>
+            <p className="px-2 pt-1 text-ds-xs text-secondary">
               {GUEST_COPY.timeLeft(timeLeftLabel(visit.expires_at, now))}
             </p>
           </>

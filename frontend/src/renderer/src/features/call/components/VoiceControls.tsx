@@ -43,7 +43,7 @@ function DeviceChevron({
       aria-expanded={open}
       title={label}
       className={`absolute -right-0.5 -top-0.5 z-10 flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border border-subtle shadow transition-colors hover:bg-brand hover:text-white ${
-        open ? 'bg-brand text-white' : 'bg-floating text-gray-300'
+        open ? 'bg-brand text-white' : 'bg-floating text-secondary'
       }`}
     >
       <ChevronUpIcon className="h-2.5 w-2.5" />
@@ -113,7 +113,7 @@ function VoiceControls(): React.JSX.Element {
           className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors ${
             muted
               ? 'bg-[var(--text-strong)] text-[var(--bg-primary)]'
-              : 'bg-fg/5 text-gray-200 hover:bg-fg/10'
+              : 'bg-fg/5 text-normal hover:bg-fg/10'
           } ${canSpeak ? '' : 'opacity-50'}`}
         >
           {muted ? <MicOffIcon className="h-5 w-5" /> : <MicIcon className="h-5 w-5" />}
@@ -133,7 +133,7 @@ function VoiceControls(): React.JSX.Element {
           className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-colors ${
             deafened
               ? 'bg-[var(--text-strong)] text-[var(--bg-primary)]'
-              : 'bg-fg/5 text-gray-200 hover:bg-fg/10'
+              : 'bg-fg/5 text-normal hover:bg-fg/10'
           }`}
         >
           {deafened ? <HeadsetOffIcon className="h-5 w-5" /> : <HeadsetIcon className="h-5 w-5" />}
@@ -158,10 +158,10 @@ function VoiceControls(): React.JSX.Element {
           }
           className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
             !connected || (!canStream && !cameraOn)
-              ? 'cursor-not-allowed bg-fg/5 text-gray-500 opacity-50'
+              ? 'cursor-not-allowed bg-fg/5 text-faint opacity-50'
               : cameraOn
                 ? 'cursor-pointer bg-success-strong text-white hover:bg-success-strong-hover'
-                : 'cursor-pointer bg-fg/5 text-gray-200 hover:bg-fg/10'
+                : 'cursor-pointer bg-fg/5 text-normal hover:bg-fg/10'
           }`}
         >
           {cameraOn ? <CameraIcon className="h-5 w-5" /> : <CameraOffIcon className="h-5 w-5" />}
@@ -186,10 +186,10 @@ function VoiceControls(): React.JSX.Element {
           }
           className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
             !connected || (!canStream && !sharing)
-              ? 'cursor-not-allowed bg-fg/5 text-gray-500 opacity-50'
+              ? 'cursor-not-allowed bg-fg/5 text-faint opacity-50'
               : sharing
                 ? 'cursor-pointer bg-success-strong text-white hover:bg-success-strong-hover'
-                : 'cursor-pointer bg-fg/5 text-gray-200 hover:bg-fg/10'
+                : 'cursor-pointer bg-fg/5 text-normal hover:bg-fg/10'
           }`}
         >
           <MonitorIcon className="h-5 w-5" />
@@ -203,10 +203,10 @@ function VoiceControls(): React.JSX.Element {
           title={locked ? 'Destrancar sala' : 'Trancar sala (pedir permissão para entrar)'}
           className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
             !connected
-              ? 'cursor-not-allowed bg-fg/5 text-gray-500 opacity-50'
+              ? 'cursor-not-allowed bg-fg/5 text-faint opacity-50'
               : locked
                 ? 'cursor-pointer bg-warning text-black shadow-sm hover:bg-warning/80'
-                : 'cursor-pointer bg-fg/5 text-gray-200 hover:bg-fg/10'
+                : 'cursor-pointer bg-fg/5 text-normal hover:bg-fg/10'
           }`}
         >
           {locked ? <LockIcon className="h-5 w-5" /> : <LockOpenIcon className="h-5 w-5" />}
@@ -224,10 +224,10 @@ function VoiceControls(): React.JSX.Element {
           title="Mesa de Áudio"
           className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
             !connected
-              ? 'cursor-not-allowed bg-fg/5 text-gray-500 opacity-50'
+              ? 'cursor-not-allowed bg-fg/5 text-faint opacity-50'
               : soundboardOpen
                 ? 'cursor-pointer bg-brand text-white'
-                : 'cursor-pointer bg-fg/5 text-gray-200 hover:bg-fg/10'
+                : 'cursor-pointer bg-fg/5 text-normal hover:bg-fg/10'
           }`}
         >
           <span className="relative">
@@ -252,12 +252,12 @@ function VoiceControls(): React.JSX.Element {
         title="Atividades"
         className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
           !connected
-            ? 'cursor-not-allowed bg-fg/5 text-gray-500 opacity-50'
+            ? 'cursor-not-allowed bg-fg/5 text-faint opacity-50'
             : activityOpen
               ? 'cursor-pointer bg-brand text-white'
               : activityRunning
                 ? 'cursor-pointer bg-brand/25 text-strong hover:bg-brand/40'
-                : 'cursor-pointer bg-fg/5 text-gray-200 hover:bg-fg/10'
+                : 'cursor-pointer bg-fg/5 text-normal hover:bg-fg/10'
         }`}
       >
         <ActivityIcon className="h-5 w-5" />

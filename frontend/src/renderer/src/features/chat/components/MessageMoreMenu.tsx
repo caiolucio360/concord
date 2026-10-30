@@ -127,7 +127,7 @@ function MenuItem({
 }): React.JSX.Element {
   const tone = item.danger
     ? 'text-danger hover:bg-danger-strong hover:text-white focus-visible:bg-danger-strong focus-visible:text-white'
-    : 'text-gray-300 hover:bg-brand hover:text-white focus-visible:bg-brand focus-visible:text-white'
+    : 'text-secondary hover:bg-brand hover:text-white focus-visible:bg-brand focus-visible:text-white'
   return (
     <button
       type="button"

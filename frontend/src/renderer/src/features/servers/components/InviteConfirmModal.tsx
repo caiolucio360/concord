@@ -143,7 +143,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
             <div className="flex flex-col items-center text-center">
               <InviteServerIcon name="?" />
               <h1 className="mt-4 text-ds-lg font-bold text-strong">Convite indisponível</h1>
-              <p className="mt-2 text-ds-sm text-gray-300">{state.message}</p>
+              <p className="mt-2 text-ds-sm text-secondary">{state.message}</p>
               <Button variant="secondary" className="mt-8 w-full" onClick={close}>
                 Fechar
               </Button>
@@ -172,7 +172,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
                 </Button>
               ) : unverified && !isMember ? (
                 <>
-                  <p className="mt-6 text-center text-ds-sm text-gray-200">
+                  <p className="mt-6 text-center text-ds-sm text-normal">
                     Confirme seu e-mail{me?.email ? ` (${me.email})` : ''} para entrar no servidor.
                     O link está no e-mail que enviamos.
                   </p>
@@ -193,7 +193,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
                     </button>
                     <button
                       type="button"
-                      className="cursor-pointer text-ds-sm font-medium text-gray-300 hover:text-strong hover:underline"
+                      className="cursor-pointer text-ds-sm font-medium text-secondary hover:text-strong hover:underline"
                       onClick={close}
                     >
                       Não, obrigado
@@ -202,7 +202,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
                 </>
               ) : isMember ? (
                 <>
-                  <p className="mt-6 text-ds-sm font-medium text-gray-200">
+                  <p className="mt-6 text-ds-sm font-medium text-normal">
                     Você já está neste servidor
                   </p>
                   <Button
@@ -213,7 +213,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
                   </Button>
                   <button
                     type="button"
-                    className="mt-3 cursor-pointer text-ds-sm font-medium text-gray-300 hover:text-strong hover:underline"
+                    className="mt-3 cursor-pointer text-ds-sm font-medium text-secondary hover:text-strong hover:underline"
                     onClick={close}
                   >
                     Fechar
@@ -241,7 +241,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
                   </Button>
                   <button
                     type="button"
-                    className="mt-3 cursor-pointer text-ds-sm font-medium text-gray-300 hover:text-strong hover:underline disabled:opacity-50"
+                    className="mt-3 cursor-pointer text-ds-sm font-medium text-secondary hover:text-strong hover:underline disabled:opacity-50"
                     onClick={close}
                     disabled={joining}
                   >

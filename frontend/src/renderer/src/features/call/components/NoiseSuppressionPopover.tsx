@@ -22,7 +22,7 @@ export function NoiseSuppressionSettings(): React.JSX.Element {
         <p className="text-base font-bold text-strong">Supressão de ruído</p>
         <Switch checked={enabled} onChange={setEnabled} label="Supressão de ruído" />
       </div>
-      <p className="text-sm leading-snug text-gray-300">
+      <p className="text-sm leading-snug text-secondary">
         Ative a supressão de ruído RNNoise! Ruídos de fundo como ventilador, teclado e
         ar-condicionado são removidos enquanto você fala. Seus amigos só ouvirão a sua voz.
       </p>
@@ -38,9 +38,9 @@ export function NoiseSuppressionSettings(): React.JSX.Element {
       </div>
       <div className="flex items-end justify-between gap-3 pt-1">
         <div>
-          <p className="text-xs font-bold text-gray-400">Fornecido por</p>
+          <p className="text-xs font-bold text-muted">Fornecido por</p>
           <p className="text-lg font-black tracking-tight text-strong">
-            RNNoise <span className="text-xs font-medium text-gray-400">Xiph.Org</span>
+            RNNoise <span className="text-xs font-medium text-muted">Xiph.Org</span>
           </p>
         </div>
         <a

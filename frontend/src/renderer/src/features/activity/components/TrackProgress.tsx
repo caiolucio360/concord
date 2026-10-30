@@ -15,11 +15,11 @@ function TrackProgress({
   const now = useNow(1000)
   const progress = trackProgress(startedAt, durationMs, now)
   if (progress.ratio === null) {
-    return <p className="mt-2 text-ds-xs tabular-nums text-gray-400">{progress.elapsed}</p>
+    return <p className="mt-2 text-ds-xs tabular-nums text-muted">{progress.elapsed}</p>
   }
   const percent = Math.round(progress.ratio * 100)
   return (
-    <div className="mt-2 flex items-center gap-2 text-ds-xs tabular-nums text-gray-400">
+    <div className="mt-2 flex items-center gap-2 text-ds-xs tabular-nums text-muted">
       <span>{progress.elapsed}</span>
       <div
         role="progressbar"
@@ -31,7 +31,7 @@ function TrackProgress({
         className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-fg/15"
       >
         <div
-          className="h-full rounded-full bg-gray-200"
+          className="h-full rounded-full bg-[var(--text-normal)]"
           style={{ width: `${progress.ratio * 100}%` }}
         />
       </div>

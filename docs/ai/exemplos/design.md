@@ -100,7 +100,7 @@ arquivo novo sem "piorar": o achado só mudou de lugar. Regras:
 | `icone-texto` | string ou texto JSX com seta, símbolo, forma, dingbat, emoji, `×` ou `•` |
 | `texto-px` | `text-[Npx]` |
 | `hex-classe` | `-[#hex]` em classe |
-| `cor-crua` | `bg|text|border|ring|…-(violet|red|amber|emerald|…)-N` e os apelidos `discord-*` (os `gray-*` seguem o tema e passam) |
+| `cor-crua` | `bg|text|border|ring|…-(violet|red|amber|emerald|…)-N` (inclusive `gray-*`) e os apelidos `discord-*` |
 | `raio` | `rounded-2xl`, `-3xl`, `-sm` (com ou sem lado) |
 | `outline-none` | `outline-none` sem nenhum `focus` na mesma classe |
 | `svg` | `<svg>` fora de `shared/ui/icons/` e dos gráficos liberados |

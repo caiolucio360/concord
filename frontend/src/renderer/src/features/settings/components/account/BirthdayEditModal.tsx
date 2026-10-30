@@ -45,7 +45,7 @@ export default function BirthdayEditModal({
       >
         <BirthdayFields value={value} onChange={(next) => setValue({ ...value, ...next })} />
         {invalid && <p className="text-xs text-warning">{invalid}</p>}
-        <p className="text-ds-xs text-gray-500">
+        <p className="text-ds-xs text-faint">
           Sua idade aparece só para você, no recado de feliz aniversário.
         </p>
         <Toggle

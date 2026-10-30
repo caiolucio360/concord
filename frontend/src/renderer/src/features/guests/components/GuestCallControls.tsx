@@ -31,7 +31,7 @@ function ControlButton({
     ? 'bg-danger text-white hover:bg-danger/80'
     : active
       ? 'bg-fg/20 text-strong'
-      : 'bg-secondary text-gray-200 hover:bg-fg/10'
+      : 'bg-secondary text-normal hover:bg-fg/10'
   return (
     <button
       type="button"

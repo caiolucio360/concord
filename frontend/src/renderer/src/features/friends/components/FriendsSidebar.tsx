@@ -86,7 +86,7 @@ export function FriendsSidebar(): React.JSX.Element {
           <button
             type="button"
             onClick={() => setQuickSwitcherOpen(true)}
-            className="w-full cursor-pointer truncate rounded-md bg-floating px-2 py-1.5 text-left text-ds-sm text-gray-400 transition-colors hover:text-gray-200"
+            className="w-full cursor-pointer truncate rounded-md bg-floating px-2 py-1.5 text-left text-ds-sm text-muted transition-colors hover:text-normal"
           >
             Encontre ou comece uma conversa
           </button>
@@ -103,7 +103,7 @@ export function FriendsSidebar(): React.JSX.Element {
               className={`flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-ds-md font-medium transition-colors ${
                 onFriendsPage
                   ? 'bg-fg/10 text-strong'
-                  : 'text-gray-400 hover:bg-fg/6 hover:text-gray-200'
+                  : 'text-muted hover:bg-fg/6 hover:text-normal'
               }`}
             >
               <span className="flex items-center gap-3">
@@ -120,7 +120,7 @@ export function FriendsSidebar(): React.JSX.Element {
 
           <div>
             <div className="group flex items-center justify-between px-2">
-              <p className="text-ds-sm font-medium text-gray-400 group-hover:text-gray-200">
+              <p className="text-ds-sm font-medium text-muted group-hover:text-normal">
                 Mensagens diretas
               </p>
               <button
@@ -128,7 +128,7 @@ export function FriendsSidebar(): React.JSX.Element {
                 title="Criar DM"
                 aria-label="Criar DM"
                 onClick={() => setGroupOpen(true)}
-                className="cursor-pointer text-gray-400 hover:text-strong"
+                className="cursor-pointer text-muted hover:text-strong"
               >
                 <PlusIcon className="h-4 w-4" />
               </button>
@@ -136,7 +136,7 @@ export function FriendsSidebar(): React.JSX.Element {
             <div className="mt-1 flex flex-col gap-0.5">
               {!conversationsLoaded && conversations.length === 0 && <DmListSkeleton />}
               {conversationsLoaded && conversations.length === 0 && (
-                <p className="px-2 py-1 text-ds-sm italic text-gray-500">Nenhuma conversa ainda.</p>
+                <p className="px-2 py-1 text-ds-sm italic text-faint">Nenhuma conversa ainda.</p>
               )}
               {conversations.map((conv) => (
                 <ConversationRow

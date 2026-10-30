@@ -29,7 +29,7 @@ function MembersSection(): React.JSX.Element {
   const access = useServerAccess()
   const [query, setQuery] = useState('')
 
-  if (!server) return <p className="text-sm text-gray-400">Abra um servidor primeiro.</p>
+  if (!server) return <p className="text-sm text-muted">Abra um servidor primeiro.</p>
 
   const assignable = assignableRoles(roles, {
     isOwner: access.isOwner,
@@ -57,7 +57,7 @@ function MembersSection(): React.JSX.Element {
         onChange={(e) => setQuery(e.target.value)}
         className="mb-4"
       />
-      <p className="mb-2 text-ds-sm font-medium text-gray-400">Membros — {shown.length}</p>
+      <p className="mb-2 text-ds-sm font-medium text-muted">Membros — {shown.length}</p>
       <ul className="divide-y divide-subtle rounded-lg border border-subtle">
         {shown.map((m) => (
           <MemberSettingsRow
@@ -74,7 +74,7 @@ function MembersSection(): React.JSX.Element {
           />
         ))}
         {shown.length === 0 && (
-          <li className="px-4 py-6 text-center text-sm text-gray-500">Ninguém encontrado.</li>
+          <li className="px-4 py-6 text-center text-sm text-faint">Ninguém encontrado.</li>
         )}
       </ul>
     </div>

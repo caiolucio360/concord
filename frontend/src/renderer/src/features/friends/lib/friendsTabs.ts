@@ -14,7 +14,7 @@ export function tabHasSearch(tab: FriendsTab): boolean {
 
 /** Classes do botão de aba (ativa x inativa). */
 export function tabClass(active: boolean): string {
-  return active ? 'bg-fg/10 text-strong' : 'text-gray-400 hover:bg-fg/5 hover:text-gray-200'
+  return active ? 'bg-fg/10 text-strong' : 'text-muted hover:bg-fg/5 hover:text-normal'
 }
 
 /** O botão verde "Adicionar amigo" vira texto verde quando a aba está aberta. */

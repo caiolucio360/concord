@@ -55,7 +55,7 @@ function RoleMembers({
           {term && (
             <ul className="mt-2 divide-y divide-subtle rounded-lg border border-subtle">
               {candidates.length === 0 && (
-                <li className="px-3 py-2 text-xs text-gray-500">Ninguém encontrado.</li>
+                <li className="px-3 py-2 text-xs text-faint">Ninguém encontrado.</li>
               )}
               {candidates.map((m) => (
                 <li key={m.user_id} className="flex items-center justify-between gap-3 px-3 py-2">
@@ -83,11 +83,11 @@ function RoleMembers({
       )}
 
       <div>
-        <h3 className="mb-2 text-ds-sm font-medium text-gray-400">
+        <h3 className="mb-2 text-ds-sm font-medium text-muted">
           Com este cargo — {withRole.length}
         </h3>
         {withRole.length === 0 ? (
-          <p className="text-sm text-gray-500">Ninguém tem este cargo ainda.</p>
+          <p className="text-sm text-faint">Ninguém tem este cargo ainda.</p>
         ) : (
           <ul className="divide-y divide-subtle rounded-lg border border-subtle">
             {withRole.map((m) => (

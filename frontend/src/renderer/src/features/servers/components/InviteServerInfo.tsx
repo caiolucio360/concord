@@ -31,15 +31,15 @@ export function InviteServerInfo({ preview }: { preview: InvitePreview }): React
   return (
     <div className="flex flex-col items-center text-center">
       <InviteServerIcon name={preview.name} iconUrl={preview.icon_url} />
-      <p className="mt-4 text-ds-sm text-gray-300">Você foi convidado(a) para entrar</p>
+      <p className="mt-4 text-ds-sm text-secondary">Você foi convidado(a) para entrar</p>
       <h1 className="mt-1 break-words text-ds-xl font-bold text-strong">{preview.name}</h1>
-      <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-ds-sm text-gray-300">
+      <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-ds-sm text-secondary">
         <span className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full bg-success" aria-hidden />
           {formatInviteCount(preview.online_count, 'online', 'online')}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-gray-300" aria-hidden />
+          <span className="h-2 w-2 rounded-full bg-[var(--text-secondary)]" aria-hidden />
           {formatInviteCount(preview.member_count, 'membro', 'membros')}
         </span>
       </div>

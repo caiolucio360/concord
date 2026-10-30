@@ -15,7 +15,7 @@ describe('TTSVoiceStatus', () => {
     const html = render({ status: 'downloading', percent: 37 })
     expect(html).toContain('Baixando a voz de leitura… 37%')
     expect(html).not.toContain('<button')
-    expect(html).toContain('text-gray-400')
+    expect(html).toContain('text-muted')
   })
 
   it('erro: aviso e "Tentar de novo"', () => {

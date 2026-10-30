@@ -46,7 +46,7 @@ function GithubUsernameButton(): React.JSX.Element {
       </Button>
       <Modal open={open} title="Seu usuário do GitHub" onClose={() => setOpen(false)}>
         <form className="flex flex-col gap-4" onSubmit={submit} noValidate>
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-secondary">
             Quando você pegar um card, a issue dele no GitHub fica com você como responsável.
           </p>
           <Input

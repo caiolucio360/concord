@@ -35,9 +35,9 @@ function ForgotPassword(): React.JSX.Element {
   if (sent) {
     return (
       <AuthLayout>
-        <h1 className="text-2xl font-semibold text-gray-50">Confira seu e-mail</h1>
-        <p className="mt-3 text-sm leading-relaxed text-gray-300">
-          Se existir uma conta com <strong className="text-gray-100">{email.trim()}</strong>,
+        <h1 className="text-2xl font-semibold text-strong">Confira seu e-mail</h1>
+        <p className="mt-3 text-sm leading-relaxed text-secondary">
+          Se existir uma conta com <strong className="text-strong">{email.trim()}</strong>,
           enviamos um link para redefinir a senha. Ele vale por 1 hora. Veja também a caixa de
           spam.
         </p>
@@ -53,8 +53,8 @@ function ForgotPassword(): React.JSX.Element {
 
   return (
     <AuthLayout>
-      <h1 className="text-2xl font-semibold text-gray-50">Esqueceu a senha?</h1>
-      <p className="mb-6 mt-1 text-sm text-gray-400">
+      <h1 className="text-2xl font-semibold text-strong">Esqueceu a senha?</h1>
+      <p className="mb-6 mt-1 text-sm text-muted">
         Digite o e-mail da sua conta e enviaremos um link para criar uma nova senha.
       </p>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>

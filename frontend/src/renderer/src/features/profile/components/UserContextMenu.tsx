@@ -93,9 +93,9 @@ function StandardUserMenu({
       aria-label={`Opções de ${target.name}`}
       style={{ left, top, width: MENU_WIDTH }}
       data-user-context-menu="true"
-      className="fixed z-[80] flex max-h-[calc(100vh-16px)] flex-col gap-1 overflow-y-auto rounded-lg border border-subtle bg-floating p-2 text-sm text-gray-200 shadow-2xl"
+      className="fixed z-[80] flex max-h-[calc(100vh-16px)] flex-col gap-1 overflow-y-auto rounded-lg border border-subtle bg-floating p-2 text-sm text-normal shadow-2xl"
     >
-      <p className="truncate px-2 pb-1 pt-0.5 text-xs font-bold text-gray-400">{target.name}</p>
+      <p className="truncate px-2 pb-1 pt-0.5 text-xs font-bold text-muted">{target.name}</p>
 
       <StandardUserDMSection
         target={target}

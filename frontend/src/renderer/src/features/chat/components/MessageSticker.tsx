@@ -34,7 +34,7 @@ export default function MessageSticker({ sticker }: MessageStickerProps): React.
 
   if (failed) {
     return (
-      <div className="my-1 flex h-28 w-28 items-center justify-center rounded-lg border border-dashed border-white/10 bg-white/5 p-2 text-center text-xs text-gray-500">
+      <div className="my-1 flex h-28 w-28 items-center justify-center rounded-lg border border-dashed border-white/10 bg-white/5 p-2 text-center text-xs text-faint">
         Figurinha indisponível
       </div>
     )

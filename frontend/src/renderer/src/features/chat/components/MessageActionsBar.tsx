@@ -4,7 +4,7 @@ import { AddReactionIcon, MoreIcon, ReplyIcon } from '../../../shared/ui/icons'
 import MessageMoreMenu from './MessageMoreMenu'
 
 const iconButton =
-  'flex h-8 w-8 cursor-pointer items-center justify-center rounded text-gray-300 transition-colors hover:bg-fg/10 hover:text-strong focus-ring'
+  'flex h-8 w-8 cursor-pointer items-center justify-center rounded text-secondary transition-colors hover:bg-fg/10 hover:text-strong focus-ring'
 
 interface MessageActionsBarProps {
   canReact: boolean

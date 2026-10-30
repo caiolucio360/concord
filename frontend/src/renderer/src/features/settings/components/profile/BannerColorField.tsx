@@ -26,7 +26,7 @@ export default function BannerColorField({
 }): React.JSX.Element {
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xs text-gray-400">A cor aparece quando não há imagem de banner.</p>
+      <p className="text-xs text-muted">A cor aparece quando não há imagem de banner.</p>
       <div role="group" aria-label="Cores prontas" className="grid grid-cols-5 gap-2 sm:grid-cols-10">
         {QUICK_COLORS.map(({ hex: c, name }) => (
           <button

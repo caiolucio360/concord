@@ -7,9 +7,9 @@ export interface OverlayTheme {
   floating: string
   /** Nome de quem fala (text-strong). */
   strong: string
-  /** Nome dos outros e a dica da edição (text-gray-200 = text-normal). */
+  /** Nome dos outros e a dica da edição (text-normal = text-normal). */
   normal: string
-  /** Etiqueta "você" (text-gray-400 = text-muted). */
+  /** Etiqueta "você" (text-muted = text-muted). */
   muted: string
   /** Avatar sem foto e moldura da edição (brand). */
   brand: string

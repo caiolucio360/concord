@@ -42,7 +42,7 @@ export function MessageBadges({ message }: { message: Message }): React.JSX.Elem
     <>
       <TTSBadge show={message.tts} />
       {message.edited_at && (
-        <span className="text-ds-xs text-gray-500" title={formatEditedAt(message.edited_at)}>
+        <span className="text-ds-xs text-faint" title={formatEditedAt(message.edited_at)}>
           (editada)
         </span>
       )}
@@ -68,7 +68,7 @@ export function BlockedMessageNotice({
   onReveal: () => void
 }): React.JSX.Element {
   return (
-    <div id={`msg-${messageId}`} className="px-4 py-1 text-ds-sm text-gray-500">
+    <div id={`msg-${messageId}`} className="px-4 py-1 text-ds-sm text-faint">
       1 mensagem bloqueada —{' '}
       <button type="button" onClick={onReveal} className="cursor-pointer text-link hover:underline">
         Mostrar
@@ -144,7 +144,7 @@ export function MessageGutter({
     return (
       <span
         aria-hidden="true"
-        className="w-10 shrink-0 select-none self-start pt-[3px] text-center text-[10px] font-medium leading-[1.375rem] text-gray-500 opacity-0 group-hover:opacity-100"
+        className="w-10 shrink-0 select-none self-start pt-[3px] text-center text-[10px] font-medium leading-[1.375rem] text-faint opacity-0 group-hover:opacity-100"
       >
         {formatTime(message.created_at)}
       </span>
@@ -202,7 +202,7 @@ export function MessageHeader({
           <StyledName name={name} userId={message.author_id} style={message.author?.name_style} />
         )}
       </button>
-      <span className="shrink-0 text-ds-xs font-medium text-gray-500">
+      <span className="shrink-0 text-ds-xs font-medium text-faint">
         {formatTime(message.created_at)}
       </span>
       <MessageBadges message={message} />
@@ -215,7 +215,7 @@ function MessageStickerSlot({ message }: { message: Message }): React.JSX.Elemen
   if (message.sticker) return <MessageSticker sticker={message.sticker} />
   if (!stickerUnavailable(message)) return null
   return (
-    <div className="my-1 flex h-28 w-28 items-center justify-center rounded-lg border border-dashed border-white/10 bg-white/5 p-2 text-center text-xs text-gray-500">
+    <div className="my-1 flex h-28 w-28 items-center justify-center rounded-lg border border-dashed border-white/10 bg-white/5 p-2 text-center text-xs text-faint">
       Figurinha indisponível
     </div>
   )

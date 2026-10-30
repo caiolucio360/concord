@@ -57,7 +57,7 @@ function VoiceParticipantBadges({
       {p.guest_of && <GuestBadge />}
       {live && <LiveBadge />}
       {!isMe && mutedByMe && (
-        <span title="Silenciado por você" className="text-gray-400">
+        <span title="Silenciado por você" className="text-muted">
           <VolumeOffIcon className="h-3.5 w-3.5" />
         </span>
       )}
@@ -116,7 +116,7 @@ function VoiceParticipantItem({
       <span
         title={name}
         className={`min-w-0 truncate text-ds-sm transition-colors group-hover/voiceuser:text-strong ${
-          isMe ? 'font-bold text-strong' : 'font-medium text-gray-300'
+          isMe ? 'font-bold text-strong' : 'font-medium text-secondary'
         }`}
       >
         {nickname ? name : <StyledName name={name} userId={p.user_id} style={p.name_style} />}
@@ -157,7 +157,7 @@ function MaestroVoiceItem({ channelId }: { channelId: string }): React.JSX.Eleme
       className="group/voiceuser relative flex cursor-pointer items-center gap-2 overflow-hidden rounded-md px-2 py-1 transition-colors hover:bg-fg/[0.06]"
     >
       <MaestroAvatar size={24} />
-      <span className="min-w-0 truncate text-ds-sm font-medium text-gray-300 transition-colors group-hover/voiceuser:text-strong">
+      <span className="min-w-0 truncate text-ds-sm font-medium text-secondary transition-colors group-hover/voiceuser:text-strong">
         {MAESTRO_NAME}
       </span>
       <span className="ml-auto mr-1 rounded bg-brand/30 px-1 text-[9px] font-bold uppercase text-brand">

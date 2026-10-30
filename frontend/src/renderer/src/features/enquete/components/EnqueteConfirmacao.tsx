@@ -22,7 +22,7 @@ function EnqueteConfirmacao({ enquete }: { enquete: Enquete }): React.JSX.Elemen
       <h2 id={titleId} className="text-balance text-lg font-bold text-strong">
         Confirmar: {rotulo}?
       </h2>
-      <p className="mt-2 text-sm text-gray-400">Não dá para mudar depois.</p>
+      <p className="mt-2 text-sm text-muted">Não dá para mudar depois.</p>
       {erro && (
         <p role="alert" className="mt-3 text-sm text-danger">
           Não foi possível enviar. Tente de novo.
@@ -42,7 +42,7 @@ function EnqueteConfirmacao({ enquete }: { enquete: Enquete }): React.JSX.Elemen
           disabled={enviando}
           data-autofocus
           onClick={voltar}
-          className={`${BOTAO} border border-subtle bg-surface text-gray-200 hover:bg-white/10`}
+          className={`${BOTAO} border border-subtle bg-surface text-normal hover:bg-white/10`}
         >
           Voltar
         </button>

@@ -33,7 +33,7 @@ export function AppErrorScreen({ error }: { error?: unknown }): React.JSX.Elemen
     >
       <div className="w-full max-w-sm">
         <p className="text-xl font-semibold text-strong">Algo deu errado</p>
-        <p className="mt-2 text-sm text-gray-400">
+        <p className="mt-2 text-sm text-muted">
           Esta tela encontrou um problema. Recarregue o app; se continuar, verifique se há uma
           versão nova.
         </p>
@@ -45,12 +45,12 @@ export function AppErrorScreen({ error }: { error?: unknown }): React.JSX.Elemen
             </Button>
           )}
         </div>
-        {updateMessage && <p className="mt-3 text-xs text-gray-400">{updateMessage}</p>}
+        {updateMessage && <p className="mt-3 text-xs text-muted">{updateMessage}</p>}
         <div className="mt-4 w-full">
           <UpdateBar />
         </div>
         {detail && (
-          <details className="mt-5 text-left text-xs text-gray-500">
+          <details className="mt-5 text-left text-xs text-faint">
             <summary className="cursor-pointer">Detalhes</summary>
             <pre className="mt-2 whitespace-pre-wrap break-words">{detail}</pre>
           </details>

@@ -44,7 +44,7 @@ export default function ProfilePreview({
     <ProfileCardFrame
       look={look}
       effect={theme.effect}
-      className="text-sm text-gray-200 shadow-2xl"
+      className="text-sm text-normal shadow-2xl"
     >
       <ProfileCardBody
         preview

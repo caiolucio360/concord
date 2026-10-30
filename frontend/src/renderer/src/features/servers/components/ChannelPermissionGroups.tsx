@@ -22,7 +22,7 @@ function ChannelPermissionGroups({
     <div className="space-y-5">
       {groups.map((group) => (
         <section key={group.title}>
-          <h3 className="mb-2 text-ds-sm font-medium text-gray-400">{group.title}</h3>
+          <h3 className="mb-2 text-ds-sm font-medium text-muted">{group.title}</h3>
           <ul className="divide-y divide-subtle rounded-lg border border-subtle bg-fg/3">
             {group.permissions.map((p) => {
               const bit = Perm[p.name]
@@ -37,7 +37,7 @@ function ChannelPermissionGroups({
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-strong">{p.label}</p>
-                    <p className="text-[11px] leading-snug text-gray-400">{p.description}</p>
+                    <p className="text-[11px] leading-snug text-muted">{p.description}</p>
                   </div>
                   <PermissionTriState
                     label={p.label}

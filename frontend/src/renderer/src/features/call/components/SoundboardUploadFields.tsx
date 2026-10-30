@@ -10,7 +10,7 @@ const PRESET_EMOJIS = ['🎺', '😂', '🔥', '💀', '🎉', '👏', '🚨', '
 /** Emoji que um som novo leva até a pessoa escolher outro. */
 export const DEFAULT_SOUND_EMOJI = PRESET_EMOJIS[0]
 
-const LABEL = 'mb-1.5 block text-ds-sm font-medium text-gray-400'
+const LABEL = 'mb-1.5 block text-ds-sm font-medium text-muted'
 
 /** Escolher o arquivo, ver duração/tamanho e ouvir a prévia. */
 export function SoundFileField({
@@ -48,11 +48,11 @@ export function SoundFileField({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="flex flex-1 cursor-pointer items-center justify-between rounded-xl border border-dashed border-normal bg-fg/5 px-3 py-2.5 text-left text-xs text-gray-200 transition-colors hover:border-strong hover:bg-fg/10"
+          className="flex flex-1 cursor-pointer items-center justify-between rounded-xl border border-dashed border-normal bg-fg/5 px-3 py-2.5 text-left text-xs text-normal transition-colors hover:border-strong hover:bg-fg/10"
         >
           <span className="truncate">{file ? file.name : 'Escolher arquivo (.mp3, .wav, .ogg, .m4a)'}</span>
           {durationMs !== null && file && (
-            <span className="ml-2 shrink-0 rounded bg-fg/10 px-1.5 py-0.5 text-[11px] font-semibold text-gray-300">
+            <span className="ml-2 shrink-0 rounded bg-fg/10 px-1.5 py-0.5 text-[11px] font-semibold text-secondary">
               {(durationMs / 1000).toFixed(1)}s · {(file.size / 1024).toFixed(0)} KB
             </span>
           )}

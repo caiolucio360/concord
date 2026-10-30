@@ -18,7 +18,7 @@ export function StreamVolume({ userId }: { userId: string }): React.JSX.Element 
         aria-label={audio.muted ? 'Ouvir transmissão' : 'Silenciar transmissão para você'}
         title={audio.muted ? 'Ouvir transmissão' : 'Silenciar só para você'}
         className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-fg/10 ${
-          audio.muted ? 'text-danger' : 'text-gray-100'
+          audio.muted ? 'text-danger' : 'text-strong'
         }`}
       >
         {audio.muted ? <VolumeOffIcon className="h-4 w-4" /> : <VolumeIcon className="h-4 w-4" />}
@@ -80,7 +80,7 @@ function StreamAudioControls({
           onClick={onToggleFullscreen}
           aria-label="Tela cheia"
           title="Tela cheia"
-          className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-md text-gray-100 transition-colors hover:bg-fg/10"
+          className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-md text-strong transition-colors hover:bg-fg/10"
         >
           <FullscreenIcon className="h-4 w-4" />
         </button>

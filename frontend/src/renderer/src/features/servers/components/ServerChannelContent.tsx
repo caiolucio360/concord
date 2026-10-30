@@ -21,7 +21,7 @@ function ServerWelcome({ name }: { name: string }): React.JSX.Element {
           #
         </div>
         <h1 className="text-ds-xxl font-bold text-strong">Bem-vindo a #{name}!</h1>
-        <p className="text-ds-md text-gray-400">
+        <p className="text-ds-md text-muted">
           Este é o início do servidor <strong className="text-strong">{name}</strong>. Convide seus
           amigos e comece a conversar!
         </p>

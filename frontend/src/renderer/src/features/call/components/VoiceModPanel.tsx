@@ -26,8 +26,8 @@ function SliderRow({
   return (
     <div className="mb-3">
       <div className="mb-1 flex items-center justify-between text-xs">
-        <span className="font-semibold text-gray-200">{label}</span>
-        <span className="font-semibold text-gray-400">{display}</span>
+        <span className="font-semibold text-normal">{label}</span>
+        <span className="font-semibold text-muted">{display}</span>
       </div>
       <input
         type="range"
@@ -40,7 +40,7 @@ function SliderRow({
         className="h-1.5 w-full cursor-pointer accent-brand"
       />
       {hint && (
-        <div className="mt-0.5 flex justify-between text-[10px] text-gray-500">
+        <div className="mt-0.5 flex justify-between text-[10px] text-faint">
           <span>{hint[0]}</span>
           <span>{hint[1]}</span>
         </div>
@@ -94,7 +94,7 @@ function VoiceModPanel(): React.JSX.Element {
               className={`min-w-0 cursor-pointer truncate rounded-xl border px-1.5 py-2 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                 selected
                   ? 'border-brand bg-brand/20 text-strong'
-                  : 'border-subtle bg-fg/[0.04] text-gray-300 hover:border-normal hover:bg-fg/[0.08]'
+                  : 'border-subtle bg-fg/[0.04] text-secondary hover:border-normal hover:bg-fg/[0.08]'
               }`}
             >
               {VOICE_MOD_PRESETS[id].label}
@@ -146,12 +146,12 @@ function VoiceModPanel(): React.JSX.Element {
         className={`w-full cursor-pointer rounded-xl px-3 py-2 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
           monitoring
             ? 'bg-brand text-white hover:bg-brand-hover'
-            : 'bg-fg/10 text-gray-200 hover:bg-fg/15'
+            : 'bg-fg/10 text-normal hover:bg-fg/15'
         }`}
       >
         {monitoring ? 'Parar de ouvir' : 'Ouvir minha voz'}
       </button>
-      <p className="mt-1 text-[10px] text-gray-500">
+      <p className="mt-1 text-[10px] text-faint">
         {connected ? 'Use fone para evitar eco.' : 'Entre numa chamada para ouvir.'}
       </p>
     </div>

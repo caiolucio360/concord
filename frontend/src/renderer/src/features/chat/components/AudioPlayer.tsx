@@ -77,7 +77,7 @@ function AudioPlayer({ attachment }: { attachment: Attachment }): React.JSX.Elem
             style={{ width: `${fraction * 100}%` }}
           />
         </div>
-        <span className="shrink-0 text-xs tabular-nums text-gray-300">
+        <span className="shrink-0 text-xs tabular-nums text-secondary">
           {failed
             ? 'Indisponível'
             : `${formatDuration(current * 1000)} / ${total ? formatDuration(total * 1000) : '--:--'}`}
@@ -102,7 +102,7 @@ function AudioPlayer({ attachment }: { attachment: Attachment }): React.JSX.Elem
           onError={handleError}
         />
       </div>
-      <p className="mt-0.5 truncate text-[11px] text-gray-400">{attachment.filename}</p>
+      <p className="mt-0.5 truncate text-[11px] text-muted">{attachment.filename}</p>
     </div>
   )
 }

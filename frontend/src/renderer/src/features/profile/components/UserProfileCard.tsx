@@ -71,9 +71,9 @@ function MenuButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2 py-2 text-left text-sm font-medium text-gray-200 transition-colors hover:bg-fg/10 hover:text-strong"
+      className="flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2 py-2 text-left text-sm font-medium text-normal transition-colors hover:bg-fg/10 hover:text-strong"
     >
-      <span className="flex h-4 w-4 shrink-0 items-center justify-center text-gray-400">
+      <span className="flex h-4 w-4 shrink-0 items-center justify-center text-muted">
         {icon}
       </span>
       <span className="min-w-0 flex-1 truncate">{label}</span>
@@ -101,7 +101,7 @@ function StatusMenu({ status }: { status: PresenceStatus }): React.JSX.Element {
         icon={<StatusIcon status={status} size={12} />}
         label={STATUS_META[status].label}
         onClick={() => (open ? setOpen(false) : show())}
-        trailing={<span className="text-gray-400">›</span>}
+        trailing={<span className="text-muted">›</span>}
       />
       {open && (
         // pl-3 em vez de margem: o mouse passa do botão para o menu sem fechar.
@@ -126,11 +126,11 @@ function StatusMenu({ status }: { status: PresenceStatus }): React.JSX.Element {
               >
                 <StatusIcon status={s} size={12} className="mt-1" />
                 <span className="min-w-0">
-                  <span className="block text-sm font-medium text-gray-100">
+                  <span className="block text-sm font-medium text-strong">
                     {STATUS_META[s].label}
                   </span>
                   {STATUS_META[s].description && (
-                    <span className="block text-xs leading-snug text-gray-400">
+                    <span className="block text-xs leading-snug text-muted">
                       {STATUS_META[s].description}
                     </span>
                   )}
@@ -475,7 +475,7 @@ function UserProfileCard(): React.JSX.Element | null {
         // O tema troca o padding-box; "fixed" ganha do relative da moldura.
         position: 'fixed'
       }}
-      className="z-[60] text-sm text-gray-200 shadow-2xl"
+      className="z-[60] text-sm text-normal shadow-2xl"
     >
       <ProfileCardBody
         profile={card}
@@ -543,7 +543,7 @@ function UserProfileCard(): React.JSX.Element | null {
             {tier && (
               <div>
                 <SectionTitle>Nível de voz</SectionTitle>
-                <p className="text-xs text-gray-200">
+                <p className="text-xs text-normal">
                   Nível {level} ·{' '}
                   <TierName
                     name={tier.name}
@@ -558,15 +558,15 @@ function UserProfileCard(): React.JSX.Element | null {
             {(salinhaSince || serverSince) && (
               <div>
                 <SectionTitle>Membro desde</SectionTitle>
-                <div className="flex flex-col gap-0.5 text-xs text-gray-200">
+                <div className="flex flex-col gap-0.5 text-xs text-normal">
                   {salinhaSince && (
                     <p>
-                      {salinhaSince} <span className="text-gray-500">· no Salinha</span>
+                      {salinhaSince} <span className="text-faint">· no Salinha</span>
                     </p>
                   )}
                   {serverSince && (
                     <p>
-                      {serverSince} <span className="text-gray-500">· neste servidor</span>
+                      {serverSince} <span className="text-faint">· neste servidor</span>
                     </p>
                   )}
                 </div>
@@ -580,7 +580,7 @@ function UserProfileCard(): React.JSX.Element | null {
                     ? '1 servidor em comum'
                     : `${mutualServers.length} servidores em comum`}
                 </SectionTitle>
-                <p className="truncate text-xs text-gray-200">
+                <p className="truncate text-xs text-normal">
                   {mutualServers.map((sv) => sv.name).join(', ')}
                 </p>
               </div>
@@ -611,7 +611,7 @@ function UserProfileCard(): React.JSX.Element | null {
             {voiceChannel && (
               <div>
                 <SectionTitle>Em call</SectionTitle>
-                <p className="flex items-center gap-1.5 text-xs text-gray-200">
+                <p className="flex items-center gap-1.5 text-xs text-normal">
                   <VolumeIcon className="h-3.5 w-3.5 text-success" />
                   <span className="min-w-0 truncate">{voiceChannel.name}</span>
                   {live && <LiveBadge />}
@@ -669,7 +669,7 @@ function UserProfileCard(): React.JSX.Element | null {
               aria-label="Mais"
               title="Mais"
               onClick={openMore}
-              className="flex cursor-pointer items-center justify-center rounded-lg bg-fg/10 px-2.5 text-gray-200 transition-colors hover:bg-fg/15"
+              className="flex cursor-pointer items-center justify-center rounded-lg bg-fg/10 px-2.5 text-normal transition-colors hover:bg-fg/15"
             >
               <DotsIcon className="h-4 w-4" />
             </button>
