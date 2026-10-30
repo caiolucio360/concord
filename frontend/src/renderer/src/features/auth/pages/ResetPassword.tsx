@@ -42,11 +42,11 @@ function ResetPassword(): React.JSX.Element {
   if (!token) {
     return (
       <AuthLayout>
-        <h1 className="text-2xl font-semibold text-strong">Link inválido</h1>
-        <p className="mt-3 text-sm text-secondary">Peça um novo link para redefinir a senha.</p>
+        <h1 className="text-2xl font-semibold text-gray-50">Link inválido</h1>
+        <p className="mt-3 text-sm text-gray-300">Peça um novo link para redefinir a senha.</p>
         <Link
           to="/forgot-password"
-          className="mt-6 inline-block text-sm font-medium text-brand hover:underline"
+          className="mt-6 inline-block text-sm font-medium text-violet-400 hover:underline"
         >
           Pedir novo link
         </Link>
@@ -56,8 +56,8 @@ function ResetPassword(): React.JSX.Element {
 
   return (
     <AuthLayout>
-      <h1 className="text-2xl font-semibold text-strong">Criar nova senha</h1>
-      <p className="mb-6 mt-1 text-sm text-muted">
+      <h1 className="text-2xl font-semibold text-gray-50">Criar nova senha</h1>
+      <p className="mb-6 mt-1 text-sm text-gray-400">
         Você será desconectado dos outros dispositivos ao trocar a senha.
       </p>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
@@ -81,7 +81,7 @@ function ResetPassword(): React.JSX.Element {
           onChange={(e) => setConfirm(e.target.value)}
         />
         {error && (
-          <p className="rounded-lg border border-danger/30 bg-danger/15 px-3 py-2 text-sm text-danger">
+          <p className="rounded-lg border border-red-400/30 bg-red-500/15 px-3 py-2 text-sm text-red-300">
             {error}{' '}
             <Link to="/forgot-password" className="font-medium underline">
               Pedir novo link

@@ -90,7 +90,7 @@ describe('layouts: mesma estrutura da linha real (sem salto ao carregar)', () =>
 
   it('ícones de servidor: 48px arredondados', () => {
     const html = renderToStaticMarkup(<ServerRailSkeleton count={4} />)
-    expect(count(html, 'h-12 w-12 rounded-full')).toBe(4)
+    expect(count(html, 'h-12 w-12 rounded-3xl')).toBe(4)
   })
 
   it('badges: fileira com 3 ícones de 22px e grade 4 por linha', () => {
@@ -102,7 +102,7 @@ describe('layouts: mesma estrutura da linha real (sem salto ao carregar)', () =>
 
   it('convite: ícone de 64px e linha de nome de 32px', () => {
     const html = renderToStaticMarkup(<InvitePreviewSkeleton />)
-    expect(html).toContain('h-16 w-16 rounded-xl')
+    expect(html).toContain('h-16 w-16 rounded-2xl')
     expect(html).toContain('h-8')
   })
 

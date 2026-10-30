@@ -26,18 +26,18 @@ function VoiceXPBar({ paused }: { paused: boolean }): React.JSX.Element | null {
         <span className="font-bold" style={{ color: paused ? 'var(--text-faint)' : tier.color }}>
           Nível {me.level}
         </span>
-        <span className="text-faint">
+        <span className="text-gray-500">
           {paused ? 'XP pausado (mutado)' : `${me.xp_into_level}/${me.xp_for_next} XP`}
         </span>
       </div>
       <div className="relative">
         <div className="h-1.5 overflow-hidden rounded-full bg-fg/10">
           <div
-            className={`relative h-full overflow-hidden rounded-full transition-[width] duration-700 ${paused ? 'bg-accent' : ''}`}
+            className="relative h-full overflow-hidden rounded-full transition-[width] duration-700"
             style={{
               width: `${percent}%`,
               backgroundImage: paused
-                ? undefined
+                ? 'linear-gradient(90deg, #4b5563, #374151)'
                 : `linear-gradient(90deg, ${tier.accent}, ${tier.color})`,
               boxShadow: paused ? undefined : `0 0 8px ${tier.color}88`
             }}

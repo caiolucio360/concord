@@ -86,7 +86,7 @@ function CreateGroupModal({
       title={groupId ? 'Adicionar amigos ao grupo' : 'Selecionar amigos'}
       onClose={onClose}
     >
-      <p className="-mt-2 mb-3 text-xs text-muted">
+      <p className="-mt-2 mb-3 text-xs text-gray-400">
         {slots > 0
           ? `Você pode adicionar mais ${slots} ${slots === 1 ? 'amigo' : 'amigos'}.`
           : 'Este grupo já está cheio.'}
@@ -96,11 +96,11 @@ function CreateGroupModal({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Digite o nome de usuário de um amigo"
-        className="w-full rounded-md border border-black/40 bg-floating px-3 py-2 text-sm text-strong outline-none placeholder:text-faint focus:border-brand"
+        className="w-full rounded-md border border-black/40 bg-floating px-3 py-2 text-sm text-strong outline-none placeholder:text-gray-500 focus:border-brand"
       />
       <div className="mt-3 max-h-72 overflow-y-auto">
         {available.length === 0 && (
-          <p className="py-6 text-center text-sm text-faint">Nenhum amigo encontrado.</p>
+          <p className="py-6 text-center text-sm text-gray-500">Nenhum amigo encontrado.</p>
         )}
         {available.map((f) => (
           <label
@@ -115,7 +115,7 @@ function CreateGroupModal({
             />
             <span className="min-w-0 flex-1 truncate text-sm text-strong">
               <StyledName name={f.display_name || f.username} userId={f.id} style={f.name_style} />
-              <span className="ml-1.5 text-faint">{f.username}</span>
+              <span className="ml-1.5 text-gray-500">{f.username}</span>
             </span>
             <input
               type="checkbox"

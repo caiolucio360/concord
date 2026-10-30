@@ -33,7 +33,7 @@ function BansSection(): React.JSX.Element {
     }
   }, [serverId, attempt])
 
-  if (!serverId) return <p className="text-sm text-muted">Abra um servidor primeiro.</p>
+  if (!serverId) return <p className="text-sm text-gray-400">Abra um servidor primeiro.</p>
 
   const unban = async (ban: ServerBan): Promise<void> => {
     setBusyId(ban.user_id)
@@ -50,7 +50,7 @@ function BansSection(): React.JSX.Element {
 
   if (failed) {
     return (
-      <div className="text-sm text-muted">
+      <div className="text-sm text-gray-400">
         Não foi possível carregar os banimentos.{' '}
         <button
           type="button"
@@ -68,7 +68,7 @@ function BansSection(): React.JSX.Element {
   }
   if (bans === null) return <BanListSkeleton />
   if (bans.length === 0) {
-    return <p className="text-sm text-faint">Ninguém está banido deste servidor.</p>
+    return <p className="text-sm text-gray-500">Ninguém está banido deste servidor.</p>
   }
 
   return (
@@ -81,7 +81,7 @@ function BansSection(): React.JSX.Element {
               <Avatar userId={ban.user_id} name={name} avatarUrl={ban.avatar_url} size={32} />
               <span className="min-w-0">
                 <span className="block truncate text-sm font-semibold text-strong">{name}</span>
-                <span className="block truncate text-xs text-muted">
+                <span className="block truncate text-xs text-gray-400">
                   {ban.reason ? `Motivo: ${ban.reason}` : 'Sem motivo informado'}
                 </span>
               </span>

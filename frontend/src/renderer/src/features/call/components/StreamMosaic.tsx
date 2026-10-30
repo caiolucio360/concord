@@ -126,7 +126,7 @@ function Leaf({
       {renderTile(id)}
 
       {over && (
-        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-xl bg-brand/30 ring-2 ring-brand">
+        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-2xl bg-brand/30 ring-2 ring-brand">
           <span className="rounded-md bg-black/70 px-2 py-1 text-xs font-semibold text-white on-media">
             Trocar com {name}
           </span>
@@ -317,7 +317,7 @@ function StreamMosaic({ ids, renderTile, nameOf }: StreamMosaicProps): React.JSX
                 className={`flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-2 text-[11px] font-semibold transition-colors ${
                   preset === option.preset
                     ? 'bg-brand text-white'
-                    : 'text-muted hover:bg-fg/10 hover:text-strong'
+                    : 'text-gray-400 hover:bg-fg/10 hover:text-strong'
                 }`}
               >
                 <PresetGlyph preset={option.preset} cells={option.cells} />

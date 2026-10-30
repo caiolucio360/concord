@@ -35,7 +35,7 @@ function ImageAttachment({
         className="relative max-w-full cursor-zoom-in overflow-hidden rounded-md bg-fg/5"
       >
         {failed ? (
-          <span className="flex h-full w-full items-center justify-center p-2 text-center text-xs text-muted">
+          <span className="flex h-full w-full items-center justify-center p-2 text-center text-xs text-gray-400">
             Não foi possível carregar a imagem.
           </span>
         ) : (
@@ -98,10 +98,10 @@ function VideoAttachment({ attachment }: { attachment: Attachment }): React.JSX.
           onClick={() => setActivated(true)}
           disabled={failed}
           aria-label={`Reproduzir ${attachment.filename}`}
-          className="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-2 text-secondary transition-colors hover:text-strong disabled:cursor-default"
+          className="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-2 text-gray-300 transition-colors hover:text-strong disabled:cursor-default"
         >
           {failed ? (
-            <span className="p-2 text-center text-xs text-muted">
+            <span className="p-2 text-center text-xs text-gray-400">
               Não foi possível carregar o vídeo.
             </span>
           ) : (
@@ -110,7 +110,7 @@ function VideoAttachment({ attachment }: { attachment: Attachment }): React.JSX.
                 <PlayIcon className="h-8 w-8" />
               </span>
               <span className="max-w-[90%] truncate text-xs">{attachment.filename}</span>
-              <span className="text-[10px] text-muted">
+              <span className="text-[10px] text-gray-400">
                 {activated ? 'Carregando...' : formatBytes(attachment.size_bytes)}
               </span>
             </>

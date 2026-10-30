@@ -24,7 +24,7 @@ import { useInviteLinkStore } from '../../servers/store/inviteLinkStore'
 import { authPathWithInvite, inviteCodeFromSearch } from '../../servers/lib/inviteLink'
 
 const STRENGTH_LABEL = ['', 'Fraca', 'Razoável', 'Boa', 'Forte']
-const STRENGTH_COLOR = ['', 'bg-danger', 'bg-warning/60', 'bg-warning', 'bg-success']
+const STRENGTH_COLOR = ['', 'bg-red-400', 'bg-orange-400', 'bg-yellow-400', 'bg-emerald-400']
 
 function Register(): React.JSX.Element {
   const navigate = useNavigate()
@@ -97,13 +97,13 @@ function Register(): React.JSX.Element {
 
   return (
     <AuthLayout wide>
-      <h1 className="text-2xl font-semibold text-strong">Criar uma conta</h1>
+      <h1 className="text-2xl font-semibold text-gray-50">Criar uma conta</h1>
       {inviteCode && (
-        <p className="mt-3 rounded-lg border border-brand/30 bg-brand/10 px-3 py-2 text-sm text-brand">
+        <p className="mt-3 rounded-lg border border-violet-400/30 bg-violet-500/10 px-3 py-2 text-sm text-violet-200">
           Crie sua conta para aceitar o convite.
         </p>
       )}
-      <p className="mb-6 mt-1 text-sm text-muted">
+      <p className="mb-6 mt-1 text-sm text-gray-400">
         Enviaremos um e-mail para confirmar o seu endereço.
       </p>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
@@ -156,7 +156,7 @@ function Register(): React.JSX.Element {
                   />
                 ))}
               </div>
-              <span className="w-16 text-right text-xs text-muted">
+              <span className="w-16 text-right text-xs text-gray-400">
                 {STRENGTH_LABEL[strength]}
               </span>
             </div>
@@ -173,9 +173,9 @@ function Register(): React.JSX.Element {
           onBlur={() => confirm && setFieldError('confirm', confirmError(password, confirm))}
         />
         <BirthdayFields value={birthday} onChange={setBirthday} />
-        {errors.birthday && <p className="text-sm text-danger">{errors.birthday}</p>}
+        {errors.birthday && <p className="text-sm text-red-300">{errors.birthday}</p>}
         {error && (
-          <p className="rounded-lg border border-danger/30 bg-danger/15 px-3 py-2 text-sm text-danger">
+          <p className="rounded-lg border border-red-400/30 bg-red-500/15 px-3 py-2 text-sm text-red-300">
             {error}
           </p>
         )}
@@ -183,10 +183,10 @@ function Register(): React.JSX.Element {
           {loading ? 'Criando conta...' : 'Continuar'}
         </Button>
       </form>
-      <p className="mt-4 text-sm text-muted">
+      <p className="mt-4 text-sm text-gray-400">
         <Link
           to={authPathWithInvite('/login', inviteCode)}
-          className="font-medium text-brand hover:underline"
+          className="font-medium text-violet-400 hover:underline"
         >
           Já tem uma conta?
         </Link>

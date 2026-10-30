@@ -47,7 +47,7 @@ const ICON_BUTTON =
 type RowTone = 'idle' | 'on' | 'open' | 'running'
 
 const ROW_TONE: Record<RowTone, string> = {
-  idle: 'bg-fg/6 text-normal hover:bg-fg/12 hover:text-strong',
+  idle: 'bg-fg/6 text-gray-200 hover:bg-fg/12 hover:text-strong',
   on: 'bg-success-strong text-white hover:bg-success-strong-hover',
   open: 'bg-brand text-white',
   running: 'bg-brand/25 text-strong hover:bg-brand/40'
@@ -84,7 +84,7 @@ function RowButton({
       aria-expanded={expanded}
       title={title}
       className={`flex h-8 min-w-0 flex-1 items-center justify-center rounded-md transition-colors ${
-        disabled ? 'cursor-not-allowed bg-fg/5 text-interactive-muted' : `cursor-pointer ${ROW_TONE[tone]}`
+        disabled ? 'cursor-not-allowed bg-fg/5 text-gray-600' : `cursor-pointer ${ROW_TONE[tone]}`
       }`}
     >
       {children}
@@ -235,12 +235,12 @@ function VoiceConnectedPanel(): React.JSX.Element | null {
               onClick={() => navigate(route)}
               aria-label={`${goTitle}: ${label}`}
               title={`${goTitle}: ${label}`}
-              className="block w-full cursor-pointer truncate text-left text-ds-xs text-muted hover:text-normal hover:underline"
+              className="block w-full cursor-pointer truncate text-left text-ds-xs text-gray-400 hover:text-gray-200 hover:underline"
             >
               {label}
             </button>
           ) : (
-            <p className="truncate text-ds-xs text-muted" title={label}>
+            <p className="truncate text-ds-xs text-gray-400" title={label}>
               {label}
             </p>
           )}
@@ -253,12 +253,12 @@ function VoiceConnectedPanel(): React.JSX.Element | null {
             title={locked ? 'Destrancar sala' : 'Trancar sala (pedir permissão para entrar)'}
             className={`${ICON_BUTTON} ${
               locked
-                ? 'bg-warning/20 text-warning hover:bg-warning/30'
-                : 'text-secondary hover:bg-fg/10 hover:text-strong'
+                ? 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
+                : 'text-gray-300 hover:bg-fg/10 hover:text-strong'
             }`}
           >
             {locked ? (
-              <LockIcon className="h-5 w-5 text-warning" />
+              <LockIcon className="h-5 w-5 text-amber-400" />
             ) : (
               <LockOpenIcon className="h-5 w-5" />
             )}
@@ -279,7 +279,7 @@ function VoiceConnectedPanel(): React.JSX.Element | null {
           }
           className={`${ICON_BUTTON} ${
             noiseAnchor ? 'bg-fg/15 text-strong' : 'hover:bg-fg/10 hover:text-strong'
-          } ${noiseSuppression ? 'text-secondary' : 'text-faint'}`}
+          } ${noiseSuppression ? 'text-gray-300' : 'text-gray-500'}`}
         >
           <NoiseSuppressionIcon className="h-5 w-5" off={!noiseSuppression} />
         </button>
@@ -288,7 +288,7 @@ function VoiceConnectedPanel(): React.JSX.Element | null {
           onClick={endCall}
           aria-label="Desconectar da voz"
           title="Desconectar"
-          className={`${ICON_BUTTON} text-secondary hover:bg-danger/15 hover:text-danger`}
+          className={`${ICON_BUTTON} text-gray-300 hover:bg-danger/15 hover:text-danger`}
         >
           <HangUpIcon className="h-5 w-5" />
         </button>

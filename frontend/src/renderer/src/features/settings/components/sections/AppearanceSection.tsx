@@ -69,8 +69,8 @@ export function AppearanceSection(): React.JSX.Element {
       </div>
 
       <fieldset>
-        <legend className="mb-1 text-ds-sm font-medium text-muted">Tema</legend>
-        <p className="mb-3 text-ds-sm text-muted">
+        <legend className="mb-1 text-ds-sm font-medium text-gray-400">Tema</legend>
+        <p className="mb-3 text-ds-sm text-gray-400">
           A cor muda na hora e fica salva só neste computador.
         </p>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
@@ -97,14 +97,14 @@ export function AppearanceSection(): React.JSX.Element {
                   <span
                     aria-hidden="true"
                     className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${
-                      selected ? 'border-brand bg-brand' : 'border-[var(--text-faint)]'
+                      selected ? 'border-brand bg-brand' : 'border-gray-500'
                     }`}
                   >
                     {selected && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
                   </span>
                   {theme.label}
                 </span>
-                <span className="mt-0.5 block text-ds-xs text-muted">{theme.description}</span>
+                <span className="mt-0.5 block text-ds-xs text-gray-400">{theme.description}</span>
               </label>
             )
           })}

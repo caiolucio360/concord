@@ -57,10 +57,10 @@ function ServerIconPicker({
 
   return (
     <div>
-      <p className="mb-2 text-ds-sm font-medium text-secondary">Ícone do servidor</p>
-      <p className="mb-2 text-xs text-muted">PNG, JPG, WebP ou GIF animado, até 10 MB.</p>
+      <p className="mb-2 text-ds-sm font-medium text-gray-300">Ícone do servidor</p>
+      <p className="mb-2 text-xs text-gray-400">PNG, JPG, WebP ou GIF animado, até 10 MB.</p>
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-brand text-xl font-bold text-white">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-linear-to-br from-violet-600 to-indigo-600 text-xl font-bold text-white">
           {iconSrc ? (
             <img src={iconSrc} alt="" className="h-full w-full object-cover" />
           ) : (

@@ -103,12 +103,12 @@ function ProposalForm({
       }}
     >
       {dragging && (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-lg border-2 border-dashed border-brand bg-black/60 text-sm font-medium text-brand on-media">
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-lg border-2 border-dashed border-violet-400 bg-black/60 text-sm font-medium text-violet-200 on-media">
           Solte as imagens aqui
         </div>
       )}
       {!editing && (
-        <p className="text-xs text-muted">
+        <p className="text-xs text-gray-400">
           Todo mundo vota por 7 dias. Se tiver mais sim do que não, a ideia vai para o time tech e
           vira uma issue no GitHub.
         </p>
@@ -122,7 +122,7 @@ function ProposalForm({
         onChange={(e) => setTitle(e.target.value)}
       />
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="proposal-description" className="text-ds-sm font-medium text-secondary">
+        <label htmlFor="proposal-description" className="text-ds-sm font-medium text-gray-300">
           Descrição (opcional)
         </label>
         <textarea
@@ -140,13 +140,13 @@ function ProposalForm({
             images.add(files)
           }}
         />
-        <span className="self-end text-[11px] text-faint">
+        <span className="self-end text-[11px] text-gray-500">
           {description.length}/{MAX_DESCRIPTION}
         </span>
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="text-ds-sm font-medium text-secondary">
+          <span className="text-ds-sm font-medium text-gray-300">
             Imagens (opcional, até {MAX_IMAGES})
           </span>
           <Button
@@ -172,7 +172,7 @@ function ProposalForm({
         </div>
         <ProposalImageStrip drafts={images.drafts} onRemove={images.remove} />
         {images.drafts.length === 0 && (
-          <p className="text-[11px] text-faint">
+          <p className="text-[11px] text-gray-500">
             Escolha, cole (Ctrl+V) ou arraste PNG, JPG, WebP ou GIF de até 8 MB.
           </p>
         )}

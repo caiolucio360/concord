@@ -111,7 +111,7 @@ function BoostBanner(): React.JSX.Element | null {
 
           <div className="relative leading-tight">
             <p className="boost-text text-lg">{rank.text}</p>
-            <p className="text-xs font-bold text-normal">
+            <p className="text-xs font-bold text-gray-200">
               XP {rank.label}
               {celebration.eligible > 0 && ` · ${celebration.eligible} pessoas`}
             </p>

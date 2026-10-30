@@ -622,7 +622,7 @@ function ChatPane({
             />
             <form
             onSubmit={handleSubmit}
-            className="relative flex items-center gap-2 rounded-xl border border-subtle bg-input px-3 py-2 backdrop-blur-xl focus-within:border-brand/40 max-md:gap-0.5 max-md:px-1 max-md:py-1"
+            className="relative flex items-center gap-2 rounded-xl border border-subtle bg-input px-3 py-2 backdrop-blur-xl focus-within:border-violet-500/40 max-md:gap-0.5 max-md:px-1 max-md:py-1"
           >
             <SlashCommandSuggestions
               isChannel={isChannel}
@@ -664,7 +664,7 @@ function ChatPane({
               onBlur={() => setMention(null)}
               placeholder={composerPlaceholder(replyingTo !== null, replyTargetAuthor, placeholder)}
               maxLength={2000}
-              className="min-w-0 flex-1 bg-transparent text-ds-chat text-strong placeholder:text-faint outline-none"
+              className="min-w-0 flex-1 bg-transparent text-ds-chat text-strong placeholder:text-gray-500 outline-none"
             />
             <MediaPickerButton onClick={() => setMediaPickerOpen((v) => !v)} />
             <VoiceButton

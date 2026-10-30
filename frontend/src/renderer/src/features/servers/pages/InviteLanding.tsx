@@ -116,11 +116,11 @@ function InviteCard({ code }: { code: string }): React.JSX.Element {
         <InviteBackdrop iconUrl={preview?.icon_url} className="fixed inset-0" />
         <div
           role="status"
-          className="relative flex w-full max-w-[360px] flex-col items-center rounded-xl border border-subtle bg-modal p-8 text-center shadow-2xl shadow-black/60 backdrop-blur"
+          className="relative flex w-full max-w-[360px] flex-col items-center rounded-2xl border border-subtle bg-modal p-8 text-center shadow-2xl shadow-black/60 backdrop-blur"
         >
           <InviteSpinner />
           <h1 className="mt-4 text-ds-lg font-bold text-strong">Abrindo a Salinha…</h1>
-          <p className="mt-2 text-ds-sm text-secondary">
+          <p className="mt-2 text-ds-sm text-gray-300">
             Confirme no seu navegador, se ele perguntar.
           </p>
           <Button variant="secondary" className="mt-6 w-full py-2.5" onClick={continueInApp}>
@@ -134,7 +134,7 @@ function InviteCard({ code }: { code: string }): React.JSX.Element {
   return (
     <div className="fixed inset-0 z-10 flex items-center justify-center overflow-y-auto bg-tertiary p-4">
       <InviteBackdrop iconUrl={preview?.icon_url} className="fixed inset-0" />
-      <div className="relative w-full max-w-[480px] rounded-xl border border-subtle bg-modal p-8 shadow-2xl shadow-black/60 backdrop-blur">
+      <div className="relative w-full max-w-[480px] rounded-2xl border border-subtle bg-modal p-8 shadow-2xl shadow-black/60 backdrop-blur">
         {state.status === 'loading' && (
           <>
             <InvitePreviewSkeleton />
@@ -149,7 +149,7 @@ function InviteCard({ code }: { code: string }): React.JSX.Element {
           <div className="flex flex-col items-center text-center">
             <InviteServerIcon name="?" />
             <h1 className="mt-4 text-ds-lg font-bold text-strong">Convite indisponível</h1>
-            <p className="mt-2 text-ds-sm text-secondary">{state.message}</p>
+            <p className="mt-2 text-ds-sm text-gray-300">{state.message}</p>
             <Link
               to="/"
               className="mt-8 w-full rounded-lg bg-fg/10 px-4 py-2.5 text-ds-sm font-semibold text-strong transition-colors hover:bg-fg/15"
@@ -171,13 +171,13 @@ function InviteCard({ code }: { code: string }): React.JSX.Element {
               </Button>
             </div>
             {showDownload && (
-              <p className="mt-4 text-center text-ds-sm text-secondary">
+              <p className="mt-4 text-center text-ds-sm text-gray-300">
                 Não abriu?{' '}
                 <a
                   href={DOWNLOAD_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-brand hover:underline"
+                  className="font-semibold text-violet-400 hover:underline"
                 >
                   Baixe o app
                 </a>

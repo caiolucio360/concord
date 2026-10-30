@@ -124,7 +124,7 @@ function ReactionTooltip({
       style={{ ...position, width: WIDTH, maxHeight }}
       className="fixed z-40 flex flex-col rounded-lg border border-subtle bg-floating p-1.5 shadow-2xl shadow-black/60"
     >
-      <div className="flex shrink-0 items-center gap-1.5 px-1 pb-1 text-ds-xs text-muted">
+      <div className="flex shrink-0 items-center gap-1.5 px-1 pb-1 text-ds-xs text-gray-400">
         <span className="text-sm leading-none">{emoji}</span>
         <span>
           {userIds.length} {userIds.length === 1 ? 'reação' : 'reações'}
@@ -134,9 +134,9 @@ function ReactionTooltip({
         {people.map((person) => (
           <li key={person.id} className="flex items-center gap-2 px-1 py-1">
             <Avatar userId={person.id} name={person.name} avatarUrl={person.avatarUrl} size={20} />
-            <span className="min-w-0 truncate text-ds-sm text-normal">{person.name}</span>
+            <span className="min-w-0 truncate text-ds-sm text-gray-200">{person.name}</span>
             {person.id === meId && (
-              <span className="shrink-0 text-ds-xs text-faint">(você)</span>
+              <span className="shrink-0 text-ds-xs text-gray-500">(você)</span>
             )}
           </li>
         ))}

@@ -65,7 +65,7 @@ function DmCallView({ children }: { children?: React.ReactNode }): React.JSX.Ele
               <p className="truncate text-sm font-bold text-strong">
                 <StyledName name={peer.display_name} userId={peer.id} style={peer.name_style} />
               </p>
-              <p className="text-[11px] text-muted">{statusLabel}</p>
+              <p className="text-[11px] text-gray-400">{statusLabel}</p>
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-1">
@@ -76,7 +76,7 @@ function DmCallView({ children }: { children?: React.ReactNode }): React.JSX.Ele
               className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors ${
                 muted
                   ? 'bg-[var(--text-strong)] text-[var(--bg-primary)]'
-                  : 'bg-fg/5 text-secondary hover:bg-fg/10 hover:text-strong'
+                  : 'bg-fg/5 text-gray-300 hover:bg-fg/10 hover:text-strong'
               }`}
             >
               {muted ? <MicOffIcon className="h-4 w-4" /> : <MicIcon className="h-4 w-4" />}
@@ -88,10 +88,10 @@ function DmCallView({ children }: { children?: React.ReactNode }): React.JSX.Ele
               title={cameraOn ? 'Desligar câmera' : 'Ligar câmera'}
               className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${
                 status !== 'active'
-                  ? 'cursor-not-allowed bg-fg/5 text-faint opacity-50'
+                  ? 'cursor-not-allowed bg-fg/5 text-gray-500 opacity-50'
                   : cameraOn
                     ? 'cursor-pointer bg-success-strong text-white hover:bg-success-strong-hover'
-                    : 'cursor-pointer bg-fg/5 text-secondary hover:bg-fg/10 hover:text-strong'
+                    : 'cursor-pointer bg-fg/5 text-gray-300 hover:bg-fg/10 hover:text-strong'
               }`}
             >
               {cameraOn ? (
@@ -107,7 +107,7 @@ function DmCallView({ children }: { children?: React.ReactNode }): React.JSX.Ele
               className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors ${
                 deafened
                   ? 'bg-[var(--text-strong)] text-[var(--bg-primary)]'
-                  : 'bg-fg/5 text-secondary hover:bg-fg/10 hover:text-strong'
+                  : 'bg-fg/5 text-gray-300 hover:bg-fg/10 hover:text-strong'
               }`}
             >
               {deafened ? (
@@ -128,7 +128,7 @@ function DmCallView({ children }: { children?: React.ReactNode }): React.JSX.Ele
               onClick={() => setMinimized(false)}
               aria-label="Expandir chamada"
               title="Expandir"
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-fg/5 text-secondary transition-colors hover:bg-fg/10 hover:text-strong"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-fg/5 text-gray-300 transition-colors hover:bg-fg/10 hover:text-strong"
             >
               <ChevronUpIcon className="h-4 w-4" />
             </button>
@@ -147,7 +147,7 @@ function DmCallView({ children }: { children?: React.ReactNode }): React.JSX.Ele
           className={`flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${
             connected
               ? 'border border-success/30 bg-success/15 text-success'
-              : 'bg-fg/5 text-secondary'
+              : 'bg-fg/5 text-gray-300'
           }`}
         >
           {connected && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" />}
@@ -157,7 +157,7 @@ function DmCallView({ children }: { children?: React.ReactNode }): React.JSX.Ele
           onClick={() => setMinimized(true)}
           aria-label="Minimizar chamada"
           title="Minimizar"
-          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-fg/5 text-secondary transition-colors hover:bg-fg/10 hover:text-strong"
+          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-fg/5 text-gray-300 transition-colors hover:bg-fg/10 hover:text-strong"
         >
           <ChevronDownIcon className="h-4 w-4" />
         </button>

@@ -77,12 +77,12 @@ function BanModal(): React.JSX.Element | null {
 
   return (
     <Modal open title={`Banir ${ban.name}`} onClose={close}>
-      <p className="text-sm leading-relaxed text-secondary">
+      <p className="text-sm leading-relaxed text-gray-300">
         <b className="text-strong">{ban.name}</b> sai do servidor e não consegue voltar, nem por
         convite nem pelo código, até ser desbanido(a) em Configurações do servidor{' '}
         <ChevronRightIcon size={12} className="inline align-[-1px]" /> Banimentos.
       </p>
-      <label className="mt-4 block text-xs font-semibold text-muted" htmlFor="ban-reason">
+      <label className="mt-4 block text-xs font-semibold text-gray-400" htmlFor="ban-reason">
         Motivo (opcional)
       </label>
       <textarea
@@ -167,11 +167,11 @@ function NicknameModal(): React.JSX.Element | null {
         }}
       >
         <label
-          className="flex items-center justify-between text-ds-xs font-semibold text-muted"
+          className="flex items-center justify-between text-ds-xs font-semibold text-gray-400"
           htmlFor="nickname-input"
         >
           <span>Apelido</span>
-          <span className={check.ok ? 'text-faint' : 'text-danger'}>
+          <span className={check.ok ? 'text-gray-500' : 'text-danger'}>
             {charCount(value.trim())}/{MAX_NICKNAME}
           </span>
         </label>
@@ -185,7 +185,7 @@ function NicknameModal(): React.JSX.Element | null {
           className="glass-input mt-1 w-full text-ds-sm"
         />
         {!check.ok && <p className="mt-1.5 text-ds-xs text-danger">{check.error}</p>}
-        <p className="mt-2 text-ds-xs text-muted">
+        <p className="mt-2 text-ds-xs text-gray-400">
           {target.self ? 'Seu nome' : 'O nome'} só muda neste servidor, para todo mundo daqui. O
           nome de exibição e o @ continuam os mesmos.
         </p>

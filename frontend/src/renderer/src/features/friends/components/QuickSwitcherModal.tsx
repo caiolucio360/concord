@@ -138,11 +138,11 @@ function QuickSwitcherModal({
           }
         }}
         placeholder="Para onde você quer ir?"
-        className="w-full rounded-md border border-black/40 bg-floating px-3 py-2.5 text-base text-strong outline-none placeholder:text-faint focus:border-brand"
+        className="w-full rounded-md border border-black/40 bg-floating px-3 py-2.5 text-base text-strong outline-none placeholder:text-gray-500 focus:border-brand"
       />
       <div className="mt-3 max-h-80 overflow-y-auto">
         {items.length === 0 && (
-          <p className="py-6 text-center text-sm text-faint">Nada encontrado.</p>
+          <p className="py-6 text-center text-sm text-gray-500">Nada encontrado.</p>
         )}
         {items.map((item, i) => (
           <button
@@ -175,11 +175,11 @@ function QuickSwitcherModal({
                 item.label
               )}
             </span>
-            <span className="truncate text-xs text-faint">{item.hint}</span>
+            <span className="truncate text-xs text-gray-500">{item.hint}</span>
           </button>
         ))}
       </div>
-      <p className="mt-3 border-t border-subtle pt-2 text-xs text-faint">
+      <p className="mt-3 border-t border-subtle pt-2 text-xs text-gray-500">
         Dica: use <b>@</b> para pessoas, <b>*</b> para servidores e <b>#</b> para canais.
       </p>
     </Modal>

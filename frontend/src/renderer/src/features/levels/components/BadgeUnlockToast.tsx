@@ -47,7 +47,7 @@ function BadgeUnlockToast(): React.JSX.Element | null {
       <button
         type="button"
         onClick={open}
-        className="badge-toast pointer-events-auto relative flex cursor-pointer items-center gap-3 overflow-hidden rounded-xl border bg-floating py-2 pl-2.5 pr-4 text-left shadow-2xl backdrop-blur-xl"
+        className="badge-toast pointer-events-auto relative flex cursor-pointer items-center gap-3 overflow-hidden rounded-2xl border bg-floating py-2 pl-2.5 pr-4 text-left shadow-2xl backdrop-blur-xl"
         style={
           {
             borderColor: `${meta.color}55`,
@@ -61,7 +61,7 @@ function BadgeUnlockToast(): React.JSX.Element | null {
           <span className="block text-sm font-bold text-strong">
             {count > 1 ? `${count} badges novos!` : 'Badge novo!'}
           </span>
-          <span className="block text-[11px] text-muted">
+          <span className="block text-[11px] text-gray-400">
             {isMythic(first.rarity) ? (
               <span className="mythic-text font-bold">{first.tier_name}</span>
             ) : (

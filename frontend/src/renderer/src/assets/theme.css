@@ -62,7 +62,7 @@
      --shadow            cor da sombra
      --decor-opacity     brilho do fundo animado (0 = sem)
    Classe .on-media: texto claro por cima de vídeo/imagem/véu preto, em qualquer tema.
-   Texto: use text-strong/normal/secondary/muted/faint (nunca text-gray-*).
+   Texto: use text-strong/normal/secondary/muted/faint (text-gray-* é legado).
 
    Fonte do Discord Claro: variáveis públicas do cliente web
    (https://discord.com/app, build 649389, arquivo
@@ -175,6 +175,52 @@
   --scrollbar-thumb-hover: #6c6d76;
   --shadow: rgba(0, 0, 0, 0.16);
   --decor-opacity: 0;
+}
+
+/* LEGADO (lote 7): sai quando os últimos arquivos com cor crua migrarem (a catraca
+   de design lista quais são). Os tons claros do Tailwind (text-amber-300, text-violet-400…) foram pensados
+   para fundo escuro: no tema claro viram os tons 700/800 do mesmo matiz. */
+[data-theme='discord-light'] {
+  --color-red-50: oklch(44.4% 0.177 26.899); /* red-800 */
+  --color-red-100: oklch(44.4% 0.177 26.899); /* red-800 */
+  --color-red-200: oklch(44.4% 0.177 26.899); /* red-800 */
+  --color-red-300: oklch(50.5% 0.213 27.518); /* red-700 */
+  --color-red-400: oklch(50.5% 0.213 27.518); /* red-700 */
+  --color-orange-50: oklch(47% 0.157 37.304); /* orange-800 */
+  --color-orange-100: oklch(47% 0.157 37.304); /* orange-800 */
+  --color-orange-200: oklch(47% 0.157 37.304); /* orange-800 */
+  --color-orange-300: oklch(55.3% 0.195 38.402); /* orange-700 */
+  --color-orange-400: oklch(55.3% 0.195 38.402); /* orange-700 */
+  --color-amber-50: oklch(47.3% 0.137 46.201); /* amber-800 */
+  --color-amber-100: oklch(47.3% 0.137 46.201); /* amber-800 */
+  --color-amber-200: oklch(47.3% 0.137 46.201); /* amber-800 */
+  --color-amber-300: oklch(55.5% 0.163 48.998); /* amber-700 */
+  --color-amber-400: oklch(55.5% 0.163 48.998); /* amber-700 */
+  --color-yellow-50: oklch(47.6% 0.114 61.907); /* yellow-800 */
+  --color-yellow-100: oklch(47.6% 0.114 61.907); /* yellow-800 */
+  --color-yellow-200: oklch(47.6% 0.114 61.907); /* yellow-800 */
+  --color-yellow-300: oklch(55.4% 0.135 66.442); /* yellow-700 */
+  --color-yellow-400: oklch(55.4% 0.135 66.442); /* yellow-700 */
+  --color-emerald-50: oklch(43.2% 0.095 166.913); /* emerald-800 */
+  --color-emerald-100: oklch(43.2% 0.095 166.913); /* emerald-800 */
+  --color-emerald-200: oklch(43.2% 0.095 166.913); /* emerald-800 */
+  --color-emerald-300: oklch(50.8% 0.118 165.612); /* emerald-700 */
+  --color-emerald-400: oklch(50.8% 0.118 165.612); /* emerald-700 */
+  --color-cyan-50: oklch(45% 0.085 224.283); /* cyan-800 */
+  --color-cyan-100: oklch(45% 0.085 224.283); /* cyan-800 */
+  --color-cyan-200: oklch(45% 0.085 224.283); /* cyan-800 */
+  --color-cyan-300: oklch(52% 0.105 223.128); /* cyan-700 */
+  --color-cyan-400: oklch(52% 0.105 223.128); /* cyan-700 */
+  --color-violet-50: oklch(43.2% 0.232 292.759); /* violet-800 */
+  --color-violet-100: oklch(43.2% 0.232 292.759); /* violet-800 */
+  --color-violet-200: oklch(43.2% 0.232 292.759); /* violet-800 */
+  --color-violet-300: oklch(49.1% 0.27 292.581); /* violet-700 */
+  --color-violet-400: oklch(49.1% 0.27 292.581); /* violet-700 */
+  --color-rose-50: oklch(45.5% 0.188 13.697); /* rose-800 */
+  --color-rose-100: oklch(45.5% 0.188 13.697); /* rose-800 */
+  --color-rose-200: oklch(45.5% 0.188 13.697); /* rose-800 */
+  --color-rose-300: oklch(51.4% 0.222 16.935); /* rose-700 */
+  --color-rose-400: oklch(51.4% 0.222 16.935); /* rose-700 */
 }
 
 /* O visual de antes: preto quase puro com painéis de vidro sobre o brilho animado. */
@@ -547,4 +593,24 @@
   --color-hero-2: #4338ca;
   --color-hero-3: #0e7490;
   --color-hero-4: #9d174d;
+
+  /* LEGADO: nomes antigos e cinzas, só para os arquivos que ainda não migraram
+     (ver a catraca). Código novo usa os tokens. */
+  --color-discord-violet: var(--brand);
+  --color-discord-violet-hover: var(--brand-hover);
+  --color-discord-green: var(--green);
+  --color-discord-green-hover: var(--green-strong);
+  --color-discord-dnd: var(--red);
+  --color-discord-idle: var(--yellow);
+  --color-discord-offline: var(--text-faint);
+
+  /* Cinzas do Tailwind no tema: text-gray-400 etc. continuam funcionando e
+     trocam de cor junto (no tema claro viram cinzas escuros). */
+  --color-gray-50: var(--text-strong);
+  --color-gray-100: var(--text-strong);
+  --color-gray-200: var(--text-normal);
+  --color-gray-300: var(--text-secondary);
+  --color-gray-400: var(--text-muted);
+  --color-gray-500: var(--text-faint);
+  --color-gray-600: var(--interactive-muted);
 }

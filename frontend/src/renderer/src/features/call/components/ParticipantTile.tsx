@@ -139,7 +139,7 @@ function ParticipantTile({
       title={onClick && isScreen ? 'Expandir tela' : undefined}
       style={inFullscreen ? undefined : fillStyle}
       className={`group/tile relative flex items-center justify-center overflow-hidden transition-all ${
-        inFullscreen ? 'bg-black' : `rounded-xl bg-white/[0.04] ${dims}`
+        inFullscreen ? 'bg-black' : `rounded-2xl bg-white/[0.04] ${dims}`
       } ${
         inFullscreen
           ? ''
@@ -163,7 +163,7 @@ function ParticipantTile({
         <span
           key={celebration.key}
           aria-hidden="true"
-          className="level-anim pointer-events-none absolute inset-0 z-[1] rounded-xl"
+          className="level-anim pointer-events-none absolute inset-0 z-[1] rounded-2xl"
           style={{
             boxShadow: `inset 0 0 ${Math.round(24 + 32 * levelFx.glow)}px ${Math.round(4 + 8 * levelFx.glow)}px ${levelFx.tier.color}, inset 0 0 0 2px ${levelFx.tier.color}`,
             animation: 'level-tile-glow 1.6s ease-in-out 2 both'
@@ -223,7 +223,7 @@ function ParticipantTile({
             className={`flex h-6 items-center gap-1 rounded-md px-1.5 text-xs font-semibold backdrop-blur-sm transition-colors cursor-pointer ${
               isDrawing
                 ? 'bg-success-strong text-white shadow-md ring-1 ring-fg/30'
-                : 'bg-black/60 text-normal hover:bg-black/80 hover:text-white on-media'
+                : 'bg-black/60 text-gray-200 hover:bg-black/80 hover:text-white on-media'
             }`}
           >
             <PencilIcon className="h-3.5 w-3.5" />
@@ -246,7 +246,7 @@ function ParticipantTile({
             }}
             aria-label="Fechar transmissão"
             title="Fechar transmissão"
-            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-black/60 text-normal backdrop-blur-sm transition-colors hover:bg-black/80 hover:text-white on-media"
+            className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-black/60 text-gray-200 backdrop-blur-sm transition-colors hover:bg-black/80 hover:text-white on-media"
           >
             <XIcon className="h-3.5 w-3.5" />
           </button>
@@ -287,7 +287,7 @@ function ParticipantTile({
         }`}
       >
         {locallyMuted && (
-          <span title="Silenciado por você" className="text-secondary">
+          <span title="Silenciado por você" className="text-gray-300">
             <VolumeOffIcon className="h-3 w-3" />
           </span>
         )}
@@ -303,7 +303,7 @@ function ParticipantTile({
         </span>
         {!isScreen && <CallActivityBadge userId={user.id} className="h-3.5 w-3.5" />}
         {isMaestroIdentity(user.id) && (
-          <span className="rounded bg-brand/30 px-1 text-[9px] font-bold uppercase text-brand">
+          <span className="rounded bg-violet-400/30 px-1 text-[9px] font-bold uppercase text-violet-100">
             {T18.tag}
           </span>
         )}

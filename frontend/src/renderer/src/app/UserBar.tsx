@@ -50,7 +50,7 @@ function AudioToggle({
 }): React.JSX.Element {
   const tone = off
     ? 'bg-danger/15 text-danger hover:bg-danger/25'
-    : 'text-secondary hover:bg-fg/10 hover:text-strong'
+    : 'text-gray-300 hover:bg-fg/10 hover:text-strong'
   const menuLabel = kind === 'input' ? 'Opções de entrada' : 'Opções de saída'
   return (
     <div className="flex shrink-0 items-center">
@@ -154,12 +154,12 @@ function UserBar(): React.JSX.Element {
           {/* Como no Discord: "Em call", a nota (ou o status) e, com o mouse, o @. */}
           <p
             className={`truncate text-ds-xs leading-[13px] font-medium group-hover:hidden ${
-              inCall && !game ? 'text-success' : 'text-muted'
+              inCall && !game ? 'text-success' : 'text-gray-400'
             }`}
           >
             {subtitle}
           </p>
-          <p className="hidden truncate text-ds-xs leading-[13px] font-medium text-muted group-hover:block">
+          <p className="hidden truncate text-ds-xs leading-[13px] font-medium text-gray-400 group-hover:block">
             @{user?.username}
           </p>
         </div>
@@ -206,7 +206,7 @@ function UserBar(): React.JSX.Element {
         onClick={() => openSettings('account')}
         aria-label="Configurações do usuário"
         title="Configurações do usuário"
-        className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-fg/10 hover:text-strong"
+        className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong"
       >
         <GearIcon className="h-[18px] w-[18px]" />
       </button>

@@ -123,7 +123,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
         role="dialog"
         aria-modal="true"
         aria-label={preview ? `Convite para ${preview.name}` : 'Convite'}
-        className="flex max-h-full w-full max-w-[880px] overflow-hidden rounded-xl border border-subtle bg-modal shadow-2xl shadow-black/60"
+        className="flex max-h-full w-full max-w-[880px] overflow-hidden rounded-2xl border border-subtle bg-modal shadow-2xl shadow-black/60"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex min-h-[420px] w-full flex-col items-center justify-center px-8 py-10 md:w-[420px] md:shrink-0">
@@ -143,7 +143,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
             <div className="flex flex-col items-center text-center">
               <InviteServerIcon name="?" />
               <h1 className="mt-4 text-ds-lg font-bold text-strong">Convite indisponível</h1>
-              <p className="mt-2 text-ds-sm text-secondary">{state.message}</p>
+              <p className="mt-2 text-ds-sm text-gray-300">{state.message}</p>
               <Button variant="secondary" className="mt-8 w-full" onClick={close}>
                 Fechar
               </Button>
@@ -158,13 +158,13 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
               {joinError && (
                 <p
                   role="alert"
-                  className="mt-6 w-full rounded-lg border border-danger/30 bg-danger/15 px-3 py-2 text-center text-ds-sm text-danger"
+                  className="mt-6 w-full rounded-lg border border-red-400/30 bg-red-500/15 px-3 py-2 text-center text-ds-sm text-red-300"
                 >
                   {joinError}
                 </p>
               )}
               {notice && (
-                <p className="mt-6 w-full text-center text-ds-sm text-success">{notice}</p>
+                <p className="mt-6 w-full text-center text-ds-sm text-emerald-300">{notice}</p>
               )}
               {banned ? (
                 <Button variant="secondary" className="mt-6 w-full py-2.5" onClick={close}>
@@ -172,7 +172,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
                 </Button>
               ) : unverified && !isMember ? (
                 <>
-                  <p className="mt-6 text-center text-ds-sm text-normal">
+                  <p className="mt-6 text-center text-ds-sm text-gray-200">
                     Confirme seu e-mail{me?.email ? ` (${me.email})` : ''} para entrar no servidor.
                     O link está no e-mail que enviamos.
                   </p>
@@ -186,14 +186,14 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
                   <div className="mt-3 flex gap-4">
                     <button
                       type="button"
-                      className="cursor-pointer text-ds-sm font-medium text-brand hover:text-strong hover:underline"
+                      className="cursor-pointer text-ds-sm font-medium text-violet-300 hover:text-strong hover:underline"
                       onClick={() => void resend()}
                     >
                       Reenviar e-mail
                     </button>
                     <button
                       type="button"
-                      className="cursor-pointer text-ds-sm font-medium text-secondary hover:text-strong hover:underline"
+                      className="cursor-pointer text-ds-sm font-medium text-gray-300 hover:text-strong hover:underline"
                       onClick={close}
                     >
                       Não, obrigado
@@ -202,7 +202,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
                 </>
               ) : isMember ? (
                 <>
-                  <p className="mt-6 text-ds-sm font-medium text-normal">
+                  <p className="mt-6 text-ds-sm font-medium text-gray-200">
                     Você já está neste servidor
                   </p>
                   <Button
@@ -213,7 +213,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
                   </Button>
                   <button
                     type="button"
-                    className="mt-3 cursor-pointer text-ds-sm font-medium text-secondary hover:text-strong hover:underline"
+                    className="mt-3 cursor-pointer text-ds-sm font-medium text-gray-300 hover:text-strong hover:underline"
                     onClick={close}
                   >
                     Fechar
@@ -241,7 +241,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
                   </Button>
                   <button
                     type="button"
-                    className="mt-3 cursor-pointer text-ds-sm font-medium text-secondary hover:text-strong hover:underline disabled:opacity-50"
+                    className="mt-3 cursor-pointer text-ds-sm font-medium text-gray-300 hover:text-strong hover:underline disabled:opacity-50"
                     onClick={close}
                     disabled={joining}
                   >
@@ -263,7 +263,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
           )}
           {state.status === 'loading' && (
             <div aria-hidden className="absolute inset-0 flex items-center justify-center">
-              <Skeleton className="h-40 w-40 rounded-xl" />
+              <Skeleton className="h-40 w-40 rounded-2xl" />
             </div>
           )}
         </div>

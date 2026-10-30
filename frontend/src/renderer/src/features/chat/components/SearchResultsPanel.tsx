@@ -73,7 +73,7 @@ export default function SearchResultsPanel({
           onClick={close}
           aria-label="Fechar resultados"
           title="Fechar"
-          className="cursor-pointer rounded p-1 text-muted hover:bg-fg/10 hover:text-strong"
+          className="cursor-pointer rounded p-1 text-gray-400 hover:bg-fg/10 hover:text-strong"
         >
           <XIcon className="h-4 w-4" />
         </button>
@@ -93,7 +93,7 @@ export default function SearchResultsPanel({
             className={`cursor-pointer rounded-md px-2.5 py-1 text-ds-xs font-medium transition ${
               sort === s
                 ? 'bg-brand/30 text-strong'
-                : 'text-muted hover:bg-fg/5 hover:text-strong'
+                : 'text-gray-400 hover:bg-fg/5 hover:text-strong'
             }`}
           >
             {SORT_LABELS[s]}
@@ -103,18 +103,18 @@ export default function SearchResultsPanel({
 
       <div className="min-h-0 flex-1 overflow-y-auto p-3">
         {error ? (
-          <p role="alert" className="px-2 py-8 text-center text-ds-sm text-secondary">
+          <p role="alert" className="px-2 py-8 text-center text-ds-sm text-gray-300">
             {error}
           </p>
         ) : loading && !page ? (
-          <p className="px-2 py-8 text-center text-ds-sm text-muted">Buscando mensagens…</p>
+          <p className="px-2 py-8 text-center text-ds-sm text-gray-400">Buscando mensagens…</p>
         ) : page && page.results.length === 0 ? (
           <div className="flex flex-col items-center px-4 py-10 text-center">
-            <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-fg/5 text-muted">
+            <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-fg/5 text-gray-400">
               <SearchIcon className="h-6 w-6" />
             </span>
-            <p className="text-ds-sm font-medium text-normal">Nenhum resultado</p>
-            <p className="mt-1 text-ds-xs text-muted">
+            <p className="text-ds-sm font-medium text-gray-200">Nenhum resultado</p>
+            <p className="mt-1 text-ds-xs text-gray-400">
               Tente outras palavras ou tire algum filtro.
             </p>
           </div>
@@ -144,18 +144,18 @@ export default function SearchResultsPanel({
             type="button"
             disabled={current <= 1 || loading}
             onClick={() => goTo(offset - SEARCH_PAGE_SIZE)}
-            className="cursor-pointer rounded-md px-2.5 py-1 text-ds-xs font-medium text-secondary hover:bg-fg/5 hover:text-strong disabled:cursor-not-allowed disabled:opacity-40"
+            className="cursor-pointer rounded-md px-2.5 py-1 text-ds-xs font-medium text-gray-300 hover:bg-fg/5 hover:text-strong disabled:cursor-not-allowed disabled:opacity-40"
           >
             Anterior
           </button>
-          <span className="text-ds-xs text-muted">
+          <span className="text-ds-xs text-gray-400">
             Página {current} de {pages}
           </span>
           <button
             type="button"
             disabled={current >= pages || loading}
             onClick={() => goTo(offset + SEARCH_PAGE_SIZE)}
-            className="cursor-pointer rounded-md px-2.5 py-1 text-ds-xs font-medium text-secondary hover:bg-fg/5 hover:text-strong disabled:cursor-not-allowed disabled:opacity-40"
+            className="cursor-pointer rounded-md px-2.5 py-1 text-ds-xs font-medium text-gray-300 hover:bg-fg/5 hover:text-strong disabled:cursor-not-allowed disabled:opacity-40"
           >
             Próxima
           </button>

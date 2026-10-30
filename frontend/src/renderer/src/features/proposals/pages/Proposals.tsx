@@ -205,10 +205,10 @@ function Proposals(): React.JSX.Element {
   }
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-primary backdrop-blur-2xl text-strong">
+    <div className="flex h-full w-full overflow-hidden bg-primary backdrop-blur-2xl text-gray-100">
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="flex h-14 shrink-0 items-center gap-3 border-b border-subtle px-4">
-          <DiamondIcon className="h-6 w-6 text-brand" />
+          <DiamondIcon className="h-6 w-6 text-violet-400" />
           <span className="text-base font-bold tracking-wide text-strong">Propostas</span>
           <div className="flex items-center gap-2">
             {isTech && <GithubUsernameButton />}
@@ -254,7 +254,7 @@ function Proposals(): React.JSX.Element {
                       dragFrom={dragging?.status ?? null}
                     >
                       {cards.length === 0 ? (
-                        <p className="py-6 text-center text-xs text-faint">
+                        <p className="py-6 text-center text-xs text-gray-500">
                           Nada por aqui ainda.
                         </p>
                       ) : (

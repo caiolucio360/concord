@@ -80,7 +80,7 @@ function BadgeRow({
               </span>
             )}
             {b.tier_name !== b.name && (
-              <span className="block text-[10px] text-muted">{b.name}</span>
+              <span className="block text-[10px] text-gray-400">{b.name}</span>
             )}
           </span>
         </button>
@@ -90,7 +90,7 @@ function BadgeRow({
           type="button"
           onClick={() => open()}
           aria-label={`Ver mais ${overflow} badges`}
-          className="cursor-pointer rounded px-1 text-[11px] font-semibold text-secondary transition-colors hover:bg-fg/10 hover:text-strong"
+          className="cursor-pointer rounded px-1 text-[11px] font-semibold text-gray-300 transition-colors hover:bg-fg/10 hover:text-strong"
         >
           +{overflow}
         </button>

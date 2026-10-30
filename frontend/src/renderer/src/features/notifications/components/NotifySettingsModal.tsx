@@ -80,7 +80,7 @@ function Form({
         </h3>
         {muted ? (
           <div className="flex items-center justify-between gap-3 rounded-lg bg-fg/5 p-3">
-            <span className="text-ds-sm text-secondary">{muteLabel(current)}</span>
+            <span className="text-ds-sm text-gray-300">{muteLabel(current)}</span>
             <button
               type="button"
               disabled={saving}
@@ -98,14 +98,14 @@ function Form({
                 type="button"
                 disabled={saving}
                 onClick={() => mute(d.ms)}
-                className="cursor-pointer rounded-md bg-fg/10 px-3 py-1.5 text-ds-sm font-medium text-normal hover:bg-fg/20 disabled:opacity-50"
+                className="cursor-pointer rounded-md bg-fg/10 px-3 py-1.5 text-ds-sm font-medium text-gray-200 hover:bg-fg/20 disabled:opacity-50"
               >
                 {d.label}
               </button>
             ))}
           </div>
         )}
-        <p className="mt-2 text-ds-xs text-faint">
+        <p className="mt-2 text-ds-xs text-gray-500">
           Silenciado, não avisa nem conta como não lido; só uma @menção direta a você aparece como
           selo.
         </p>
@@ -122,7 +122,7 @@ function Form({
               aria-checked={current.level === l.value}
               disabled={saving}
               onClick={() => void save({ ...current, level: l.value })}
-              className="flex cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2 text-left text-ds-sm text-normal hover:bg-fg/10 disabled:opacity-50"
+              className="flex cursor-pointer items-center gap-3 rounded-lg px-2.5 py-2 text-left text-ds-sm text-gray-200 hover:bg-fg/10 disabled:opacity-50"
             >
               <span
                 className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
@@ -136,7 +136,7 @@ function Form({
           ))}
         </div>
         {!isServer && (
-          <p className="mt-1 text-ds-xs text-faint">
+          <p className="mt-1 text-ds-xs text-gray-500">
             &quot;Todas as mensagens&quot; usa a opção do servidor.
           </p>
         )}
@@ -146,7 +146,7 @@ function Form({
         <section className="flex items-center justify-between gap-4">
           <div>
             <div className="text-ds-sm font-semibold text-strong">Ignorar @all e @here</div>
-            <div className="text-ds-xs text-faint">
+            <div className="text-ds-xs text-gray-500">
               Menções em massa não avisam nem viram selo.
             </div>
           </div>

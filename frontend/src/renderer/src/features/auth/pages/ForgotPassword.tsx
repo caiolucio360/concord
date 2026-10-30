@@ -35,15 +35,15 @@ function ForgotPassword(): React.JSX.Element {
   if (sent) {
     return (
       <AuthLayout>
-        <h1 className="text-2xl font-semibold text-strong">Confira seu e-mail</h1>
-        <p className="mt-3 text-sm leading-relaxed text-secondary">
-          Se existir uma conta com <strong className="text-strong">{email.trim()}</strong>,
+        <h1 className="text-2xl font-semibold text-gray-50">Confira seu e-mail</h1>
+        <p className="mt-3 text-sm leading-relaxed text-gray-300">
+          Se existir uma conta com <strong className="text-gray-100">{email.trim()}</strong>,
           enviamos um link para redefinir a senha. Ele vale por 1 hora. Veja também a caixa de
           spam.
         </p>
         <Link
           to="/login"
-          className="mt-6 inline-block text-sm font-medium text-brand hover:underline"
+          className="mt-6 inline-block text-sm font-medium text-violet-400 hover:underline"
         >
           Voltar para o login
         </Link>
@@ -53,8 +53,8 @@ function ForgotPassword(): React.JSX.Element {
 
   return (
     <AuthLayout>
-      <h1 className="text-2xl font-semibold text-strong">Esqueceu a senha?</h1>
-      <p className="mb-6 mt-1 text-sm text-muted">
+      <h1 className="text-2xl font-semibold text-gray-50">Esqueceu a senha?</h1>
+      <p className="mb-6 mt-1 text-sm text-gray-400">
         Digite o e-mail da sua conta e enviaremos um link para criar uma nova senha.
       </p>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
@@ -68,7 +68,7 @@ function ForgotPassword(): React.JSX.Element {
           autoFocus
         />
         {error && (
-          <p className="rounded-lg border border-danger/30 bg-danger/15 px-3 py-2 text-sm text-danger">
+          <p className="rounded-lg border border-red-400/30 bg-red-500/15 px-3 py-2 text-sm text-red-300">
             {error}
           </p>
         )}
@@ -78,7 +78,7 @@ function ForgotPassword(): React.JSX.Element {
       </form>
       <Link
         to="/login"
-        className="mt-4 inline-block text-sm font-medium text-brand hover:underline"
+        className="mt-4 inline-block text-sm font-medium text-violet-400 hover:underline"
       >
         Voltar para o login
       </Link>
