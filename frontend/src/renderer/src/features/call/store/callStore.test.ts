@@ -64,10 +64,22 @@ function deferred<T>(): { promise: Promise<T>; resolve: (v: T) => void } {
 
 const rtc = vi.hoisted(() => ({
   getAudioStream: vi.fn(),
+  // Modal do app (sem seletor do sistema): a qualidade vem com a fonte.
+  askScreenQuality: vi.fn(async () => null),
   getDisplayStream: vi.fn(),
   getCameraStream: vi.fn()
 }))
 vi.mock('../lib/rtc', () => rtc)
+
+// Motor nativo da live: por padrão indisponível (segue pelo Chromium).
+const native = vi.hoisted(() => ({
+  tryNativeLive: vi.fn(async (_request: { onEnded: (failed: boolean) => void }) => 'fallback'),
+  nativeLiveActive: vi.fn(() => false),
+  nativeLivePreview: vi.fn(() => null),
+  setNativeLiveQuality: vi.fn(() => false),
+  stopNativeLive: vi.fn()
+}))
+vi.mock('../lib/nativeLiveShare', () => native)
 
 const media = vi.hoisted(() => ({
   instances: [] as Array<Record<string, ReturnType<typeof vi.fn>> & { handlers: unknown }>,
@@ -200,6 +212,44 @@ beforeEach(() => {
 })
 
 describe('callStore — mídia via LiveKit', () => {
+  it('motor nativo: live no ar sem stream local; caiu no meio, volta pelo Chromium', async () => {
+    await joinChannel()
+    const quality = { resolution: '1080p', frameRate: 30 } as const
+    rtc.askScreenQuality.mockResolvedValueOnce(quality as never)
+    native.tryNativeLive.mockResolvedValueOnce('started')
+    await useCallStore.getState().startScreenShare()
+    expect(rtc.getDisplayStream).not.toHaveBeenCalled()
+    expect(useCallStore.getState()).toMatchObject({
+      isScreenSharing: true,
+      localScreenStream: null,
+      screenShareQuality: quality
+    })
+    expect(chat.sendEvent).toHaveBeenCalledWith('call:screen', { call_id: 'call-1', active: true })
+
+    native.setNativeLiveQuality.mockReturnValueOnce(true)
+    useCallStore.getState().updateScreenQuality({ resolution: '720p', frameRate: 60 })
+    expect(media.updateScreenQuality).not.toHaveBeenCalled()
+    expect(useCallStore.getState().screenShareQuality).toEqual({ resolution: '720p', frameRate: 60 })
+
+    const stream = fakeStream('video')
+    rtc.getDisplayStream.mockResolvedValueOnce(stream)
+    const { onEnded } = native.tryNativeLive.mock.calls[0][0]
+    onEnded(true)
+    await flush()
+    expect(native.stopNativeLive).toHaveBeenCalled()
+    expect(useCallStore.getState().localScreenStream).toBe(stream)
+    expect(media.publishScreen).toHaveBeenCalledWith(stream)
+  })
+
+  it('motor nativo: fechar o seletor do sistema não abre o do Chromium', async () => {
+    await joinChannel()
+    rtc.askScreenQuality.mockResolvedValueOnce({ resolution: '1080p', frameRate: 30 } as never)
+    native.tryNativeLive.mockResolvedValueOnce('cancelled')
+    await useCallStore.getState().startScreenShare()
+    expect(rtc.getDisplayStream).not.toHaveBeenCalled()
+    expect(useCallStore.getState().isScreenSharing).toBe(false)
+  })
+
   it('troca qualidade sem encerrar a transmissão nem anunciar saída aos espectadores', async () => {
     await joinChannel()
     const stream = fakeStream('video', 'audio')

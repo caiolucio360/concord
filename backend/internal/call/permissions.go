@@ -331,6 +331,7 @@ func (s *Service) RevalidateServer(ctx context.Context, serverID string) {
 				if err := s.media.UpdatePermissions(ctx, callID, userID, grant); err != nil {
 					log.Printf("[call] revalidate: update %s in %s failed: %v", userID, callID, err)
 				}
+				dropScreenWithoutStream(ctx, s.media, callID, userID, grant)
 			}
 		}
 	}

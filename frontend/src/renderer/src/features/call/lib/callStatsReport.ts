@@ -1,8 +1,9 @@
 import { Track } from 'livekit-client'
 
-// getStats() da voz da chamada, para a telemetria das calls (RTT, perda,
-// jitter e o par ICE: UDP, TCP ou TURN). O meu microfone; só ouvindo, o de
-// alguém (o transporte é o mesmo). Puro sobre a sala.
+// getStats() da voz da chamada, para a telemetria das calls: o meu microfone
+// (RTT, perda e jitter vistos pelo servidor, par ICE: UDP, TCP ou TURN) e a
+// voz de cada pessoa que eu ouço (áudio sintetizado, perda até mim), num
+// relatório só. Puro sobre a sala.
 
 interface StatsPublication {
   track?: { getRTCStatsReport(): Promise<RTCStatsReport | undefined> }
@@ -32,9 +33,8 @@ export async function readCallReport(room: CallStatsRoom): Promise<RTCStatsRepor
       p.getTrackPublication(Track.Source.Microphone)
     )
   ]
-  for (const publication of publications) {
-    const report = await reportOf(publication)
-    if (report) return report
-  }
-  return null
+  const reports = await Promise.all(publications.map(reportOf))
+  const merged = new Map<string, unknown>()
+  reports.forEach((report) => report?.forEach((stat, id) => merged.set(id, stat)))
+  return merged.size > 0 ? (merged as unknown as RTCStatsReport) : null
 }

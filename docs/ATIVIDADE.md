@@ -61,6 +61,19 @@ Decisão e alternativas: [ADR 0006](adr/0006-musica-em-atividade.md).
    amigos e DMs: "Ouvindo <música>" com o ícone do player (o jogo tem
    prioridade). Coluna Atividade dos Amigos: card de quem está ouvindo.
 
+6. **Ouvir também.** Clicar na música (cartão de perfil) ou no botão do card da
+   coluna Atividade abre o menu `ListeningActions`: "Ouvir no" YouTube, Spotify,
+   YouTube Music, Deezer e Apple Music (`lib/listeningLinks.ts`) e "Adicionar à
+   fila do Maestro". A atividade só guarda app, título, artista e álbum (sem URL
+   nem ID da faixa), então os links são sempre **busca por "artista - título"**;
+   abrem no navegador de fora (`target="_blank"`, que o main manda para
+   `shell.openExternal` só para http/https). A fila usa
+   `POST /api/servers/:id/music/enqueue {query}` (`music/activity_enqueue.go`):
+   mesmas travas do `/play` (Maestro no servidor, quem pede na call, ao vivo e
+   longo demais recusados, um pedido por vez por pessoa), mas sem seletor: entra
+   o primeiro resultado tocável. Fora de call de servidor o item fica
+   desabilitado com o motivo (`lib/queueTarget.ts`).
+
 ## Privacidade
 
 - Quem vê: amigos aceitos + servidores em comum, menos bloqueios.

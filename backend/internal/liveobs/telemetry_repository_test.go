@@ -9,7 +9,10 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-const telemetryMigration = "000173_live_telemetry.up.sql"
+const (
+	telemetryMigration = "000173_live_telemetry.up.sql"
+	qualityMigration   = "000176_live_samples_quality.up.sql"
+)
 
 const (
 	userAna = "6f1c1b7e-8a5e-4a51-9f2a-000000000001"
@@ -17,7 +20,7 @@ const (
 )
 
 func newTelemetryDB(t *testing.T) *pgxpool.Pool {
-	db := newTestDB(t, serverMigration, telemetryMigration)
+	db := newTestDB(t, serverMigration, telemetryMigration, qualityMigration)
 	if _, err := db.Exec(context.Background(), `INSERT INTO users (id) VALUES ($1), ($2)`, userAna, userBia); err != nil {
 		t.Fatal(err)
 	}
@@ -108,5 +111,33 @@ func TestTelemetryRepositoryApagaSessoesAntigas(t *testing.T) {
 	}
 	if n := count(t, db, `SELECT count(*) FROM live_samples`) + count(t, db, `SELECT count(*) FROM live_events`); n != 0 {
 		t.Errorf("amostras/eventos sobraram: %d", n)
+	}
+}
+
+func TestTelemetryRepositoryGravaOsSinaisDeQualidade(t *testing.T) {
+	db := newTelemetryDB(t)
+	ctx := context.Background()
+	capture, codecMs, concealed, recvLoss := 41.5, 6.2, 3.5, 0.4
+	r := Report{SessionID: sessionA, Kind: KindCall, CallID: callA, Sample: &Sample{
+		Seconds: 60, CaptureFPS: &capture, CodecMs: &codecMs, ConcealedPct: &concealed,
+		RecvLossPct: &recvLoss, ConnectMs: intp(1850),
+	}}
+	if err := NewTelemetryRepository(db).Save(ctx, userAna, r); err != nil {
+		t.Fatal(err)
+	}
+	var gotCapture, gotCodec, gotConcealed, gotLoss float64
+	var gotConnect int
+	var recv *float64
+	err := db.QueryRow(ctx, `SELECT capture_fps, recv_fps, codec_ms, concealed_pct, recv_loss_pct, connect_ms
+		FROM live_samples WHERE session_id = $1`, sessionA).
+		Scan(&gotCapture, &recv, &gotCodec, &gotConcealed, &gotLoss, &gotConnect)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if gotCapture != 41.5 || recv != nil || gotConcealed != 3.5 || gotConnect != 1850 {
+		t.Errorf("captura %v, recebidos %v, sintetizado %v, conectar %v", gotCapture, recv, gotConcealed, gotConnect)
+	}
+	if gotCodec < 6.19 || gotCodec > 6.21 || gotLoss < 0.39 || gotLoss > 0.41 {
+		t.Errorf("codec %v ms, perda recebida %v", gotCodec, gotLoss)
 	}
 }

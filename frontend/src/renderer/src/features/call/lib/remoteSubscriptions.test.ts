@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import { VideoQuality } from 'livekit-client'
 import { RemoteSubscriptions, type RemoteParticipantLike } from './remoteSubscriptions'
 
 const paused = (windowHidden: boolean, offscreen: string[] = [], pip: string | null = null) => ({
@@ -107,4 +108,37 @@ describe('RemoteSubscriptions', () => {
     subs.apply([participant('caio', [screen])])
     expect(screen.setSubscribed).not.toHaveBeenCalled()
   })
+
+  it('live pelo helper nativo (<id>:screen) segue quem assisto o dono', () => {
+    const screen = publication('screen_share', 'video')
+    const screenAudio = publication('screen_share_audio', 'audio')
+    const people = [participant('bia:screen', [screen, screenAudio])]
+    const subs = new RemoteSubscriptions()
+    subs.apply(people)
+    expect(screen.isDesired).toBe(false)
+    subs.setWatched(['bia'])
+    subs.setPause(paused(false, ['bia']))
+    subs.apply(people)
+    expect(screen.isDesired).toBe(true)
+    expect(screenAudio.isDesired).toBe(true)
+    // Fora de vista: a live da bia pausa igual à do Chromium.
+    expect(screen.setEnabled).toHaveBeenLastCalledWith(false)
+  })
+
+  it('a minha live nativa: só o vídeo, na camada de baixo, para a minha prévia', () => {
+    const screen = Object.assign(publication('screen_share', 'video'), { setVideoQuality: vi.fn() })
+    const screenAudio = publication('screen_share_audio', 'audio')
+    const people = [participant('eu:screen', [screen, screenAudio])]
+    const subs = new RemoteSubscriptions()
+    subs.setOwnScreen('eu:screen')
+    subs.apply(people)
+    expect(screen.isDesired).toBe(true)
+    expect(screen.setVideoQuality).toHaveBeenCalledWith(VideoQuality.LOW)
+    // O som da minha própria tela não volta para mim (eco).
+    expect(screenAudio.isDesired).toBe(false)
+    subs.setOwnScreen(null)
+    subs.apply(people)
+    expect(screen.isDesired).toBe(false)
+  })
 })
+
