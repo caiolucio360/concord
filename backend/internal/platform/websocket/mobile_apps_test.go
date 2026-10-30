@@ -55,3 +55,21 @@ func TestIsMobileClient(t *testing.T) {
 		}
 	}
 }
+
+func TestHandlerTrackMobile(t *testing.T) {
+	h := (&Handler{}).WithMobileApps(NewMobileApps())
+	desktop, _ := url.ParseQuery("token=x")
+	h.trackMobile(desktop, "u1")
+	if h.mobile.IsOpen("u1") {
+		t.Fatal("conexão do desktop não conta como app do celular")
+	}
+	mobile, _ := url.ParseQuery("token=x&client=mobile")
+	closeFn := h.trackMobile(mobile, "u1")
+	if !h.mobile.IsOpen("u1") {
+		t.Fatal("conexão do celular conta")
+	}
+	closeFn()
+	if h.mobile.IsOpen("u1") {
+		t.Fatal("ao fechar, deixa de contar")
+	}
+}

@@ -3,6 +3,7 @@ package websocket
 import (
 	"context"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"gin-quickstart/backend/internal/auth"
@@ -107,10 +108,16 @@ func (h *Handler) ServeWS(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	if isMobileClient(c.Request.URL.Query()) {
-		defer h.mobile.Track(userID)()
-	}
+	defer h.trackMobile(c.Request.URL.Query(), userID)()
 	h.serve(c.Request.Context(), conn, userID)
+}
+
+// trackMobile conta a conexão se ela é do app do celular (?client=mobile) e devolve o "fechou".
+func (h *Handler) trackMobile(q url.Values, userID string) func() {
+	if !isMobileClient(q) {
+		return func() {}
+	}
+	return h.mobile.Track(userID)
 }
 
 // WithMobileApps liga o contador de conexões do app do celular.
