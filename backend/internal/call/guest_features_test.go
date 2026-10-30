@@ -3,6 +3,7 @@ package call
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 
 	"gin-quickstart/backend/internal/permission"
@@ -84,5 +85,58 @@ func TestGuestSoundboardFollowsEveryoneInTheChannel(t *testing.T) {
 	}
 	if err := svc.TriggerSoundboard(ctx, "c2", "outra", "buzina"); err != nil {
 		t.Fatalf("@everyone com mesa no canal: %v", err)
+	}
+}
+
+// Regressão: o visitante que vira membro segue na call (mesma conexão), com a
+// mídia de membro, e quem está na call tira o selo "Visitante".
+func TestGuestBecomingMemberStaysInTheCall(t *testing.T) {
+	snap := voiceSnapshot()
+	svc, media, pub := newVoiceService(snap)
+	guests := &fakeGuests{passes: map[string]guestPass{
+		"visita": {serverID: "srv-1", channelID: "geral"}, // convite só para ouvir
+	}}
+	svc.SetGuests(guests)
+	putInCall(svc, "c1", "geral", "visita", "ana")
+	ctx := context.Background()
+
+	// O guest.Service já encerrou o acesso; o servidor já tem o membro novo.
+	delete(guests.passes, "visita")
+	snap.WithMember("visita")
+	svc.GuestBecameMember(ctx, "srv-1", "visita")
+
+	if !svc.IsParticipant("c1", "visita") {
+		t.Fatal("virar membro não tira da call")
+	}
+	var got *mediaUpdate
+	for i := range media.updates {
+		if media.updates[i].identity == "visita" {
+			got = &media.updates[i]
+		}
+	}
+	if got == nil || got.grant.NoSpeak || got.grant.NoStream {
+		t.Fatalf("grant = %+v, want o de membro (fala e transmite)", got)
+	}
+	if !strings.Contains(string(pub.callEvents["c1"][len(pub.callEvents["c1"])-1]), `"type":"guest:member"`) {
+		t.Fatal("a call recebe guest:member (tira o selo de visitante)")
+	}
+	if info, _ := svc.lookupUser(ctx, "visita"); info.GuestOf != "" {
+		t.Fatalf("GuestOf = %q, want vazio", info.GuestOf)
+	}
+}
+
+// Membro que não pode estar no canal sai (as permissões de membro valem).
+func TestGuestBecomingMemberWithoutConnectLeaves(t *testing.T) {
+	snap := voiceSnapshot()
+	svc, _, _ := newVoiceService(snap)
+	guests := &fakeGuests{passes: map[string]guestPass{"visita": {serverID: "srv-1", channelID: "vip-voz"}}}
+	svc.SetGuests(guests)
+	putInCall(svc, "c1", "vip-voz", "visita", "vip")
+
+	delete(guests.passes, "visita")
+	snap.WithMember("visita")
+	svc.GuestBecameMember(context.Background(), "srv-1", "visita")
+	if svc.IsParticipant("c1", "visita") {
+		t.Fatal("como membro sem acesso ao canal privado, sai da call")
 	}
 }

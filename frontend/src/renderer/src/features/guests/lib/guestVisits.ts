@@ -44,3 +44,38 @@ export function visitOf<T extends VisitLike>(
   if (!serverId) return null
   return liveVisits(list, now).find((v) => v.server_id === serverId) ?? null
 }
+
+/**
+ * As visitas que o trilho mostra: sem as de servidor de que já sou membro (quem
+ * virou membro tem o ícone normal do servidor, não dois).
+ */
+export function visitsOutsideServers<T extends VisitLike>(list: T[], memberOf: string[]): T[] {
+  const member = new Set(memberOf)
+  return list.filter((v) => !member.has(v.server_id))
+}
+
+export type VisitPageTarget = { kind: 'visit' } | { kind: 'wait' } | { kind: 'go'; path: string }
+
+export interface VisitPageInput {
+  serverId: string
+  /** Sou membro do servidor (está na lista de servidores). */
+  member: boolean
+  visit: { channel_id: string } | null
+  /** Já leu as visitas do servidor. */
+  loaded: boolean
+  /** Acabei de virar membro: o canal da call em que eu estava como visitante. */
+  joinedChannel?: string
+}
+
+/**
+ * O que /visitas/<servidor> faz: quem é membro (ou acabou de virar) vai para o
+ * servidor, no canal da call; visitante abre a visita; sem visita, espera a
+ * lista ou volta ao Início.
+ */
+export function visitPageTarget(input: VisitPageInput): VisitPageTarget {
+  const channel = input.joinedChannel ?? (input.member ? input.visit?.channel_id : undefined)
+  if (channel) return { kind: 'go', path: `/servers/${input.serverId}/channels/${channel}` }
+  if (input.member) return { kind: 'go', path: `/servers/${input.serverId}` }
+  if (input.visit) return { kind: 'visit' }
+  return input.loaded ? { kind: 'go', path: '/friends' } : { kind: 'wait' }
+}

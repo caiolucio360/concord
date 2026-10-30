@@ -1,15 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { call, toast } = vi.hoisted(() => ({
+const { call, toast, servers } = vi.hoisted(() => ({
   call: { status: 'active', type: 'channel', serverId: 's' as string | null, endCall: vi.fn() },
-  toast: { info: vi.fn(), error: vi.fn() }
+  toast: { info: vi.fn(), error: vi.fn() },
+  servers: { fetchServers: vi.fn(() => Promise.resolve()) }
 }))
 vi.mock('../../call/store/callStore', () => ({ useCallStore: { getState: () => call } }))
+vi.mock('../../servers/store/serverStore', () => ({ useServerStore: { getState: () => servers } }))
 vi.mock('../../../shared/store/toastStore', () => ({ showToast: toast }))
 
 import { handleGuestWsEvent } from './guestWsEvents'
 import { useGuestVisitsStore } from './guestVisitsStore'
 import { useGuestSessionStore } from './guestSessionStore'
+import { useGuestRosterStore } from './guestRosterStore'
 
 const pass = {
   server_id: 's',
@@ -29,6 +32,23 @@ describe('eventos de visitante no app', () => {
     toast.info.mockClear()
     toast.error.mockClear()
     call.serverId = 's'
+    servers.fetchServers.mockClear()
+  })
+
+  it('com conta: virar membro tira a visita sem sair da call e traz o servidor', () => {
+    useGuestVisitsStore.getState().set([pass])
+    handleGuestWsEvent({ type: 'guest:ended', payload: { server_id: 's', reason: 'member' } })
+    expect(useGuestVisitsStore.getState().visits).toEqual([])
+    expect(useGuestVisitsStore.getState().joined).toEqual({ s: 'c' })
+    expect(call.endCall).not.toHaveBeenCalled()
+    expect(toast.info).not.toHaveBeenCalled()
+    expect(servers.fetchServers).toHaveBeenCalled()
+  })
+
+  it('guest:member tira o selo de visitante de quem virou membro', () => {
+    useGuestRosterStore.getState().set(['u', 'v'])
+    handleGuestWsEvent({ type: 'guest:member', payload: { call_id: 'c', server_id: 's', user_id: 'u' } })
+    expect(useGuestRosterStore.getState().ids).toEqual(['v'])
   })
 
   it('com conta: entrar e mover atualizam a visita no trilho', () => {

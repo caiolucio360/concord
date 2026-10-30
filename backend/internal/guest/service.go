@@ -49,6 +49,8 @@ type Directory interface {
 type Calls interface {
 	VoiceLocationOf(userID string) (call.VoiceLocation, bool)
 	RemoveFromServerCalls(ctx context.Context, serverID, userID string)
+	// GuestBecameMember: o visitante virou membro e segue na call como membro.
+	GuestBecameMember(ctx context.Context, serverID, userID string)
 }
 
 // Notifier manda um evento só para o usuário (websocket.Hub).
@@ -133,10 +135,7 @@ func (s *Service) MoveGuest(ctx context.Context, userID, serverID, channelID str
 
 // end encerra o acesso: grava, tira das calls do servidor e avisa o visitante.
 func (s *Service) end(ctx context.Context, p Pass, reason string) {
-	if err := s.store.EndPass(ctx, p.ID, s.now()); err != nil {
-		log.Printf("[guest] encerrar acesso %s falhou: %v", p.ID, err)
-	}
-	s.active.remove(p)
+	s.close(ctx, p)
 	s.calls.RemoveFromServerCalls(ctx, p.ServerID, p.UserID)
 	s.notify.SendToUser(p.UserID, endedEvent(p.ServerID, reason))
 }

@@ -156,6 +156,35 @@ O dono decidiu que o visitante usa esses recursos na call do convite. Decisões:
   navegador não ganhou os botões (ele não tem token de mídia para ouvir os sons
   da mesa). Fica para depois.
 
+## Emenda (2026-10-29): visitante que vira membro
+
+Quem entrava como visitante (com conta) e depois aceitava um convite do
+servidor ficava com o ícone duplicado no trilho (visita e servidor) e podia
+entrar na call pelos dois fluxos. Decisões:
+
+- **Virar membro encerra o acesso de visitante, sem tirar da call.** O
+  `guest.Service` escuta o `server.OnMemberJoined` (todo caminho de entrada
+  passa por ele: código de convite, convite por DM). O acesso daquele servidor
+  é gravado como encerrado (`ended_at`; não volta na subida) e sai do índice,
+  inclusive o já vencido que o sweep ainda não pegou (senão o sweep tiraria o
+  novo membro da call). Não chama `RemoveFromServerCalls`.
+- **Na chamada** (`call.GuestBecameMember`, em `call/guest.go`): reaplica as
+  permissões do servidor (`RevalidateServer`), que agora são as de membro; a
+  mesma conexão do LiveKit só tem o grant atualizado. Se, como membro, a pessoa
+  não pode estar naquele canal (canal privado ao @everyone), sai da call, como
+  qualquer membro que perde o acesso: as permissões de membro valem.
+- **Eventos:** `guest:ended` com o motivo `member` para os apps da conta (o
+  trilho tira a visita sem sair da call nem mostrar aviso, e relê a lista de
+  servidores para o ícone normal aparecer em todos os apps) e `guest:member`
+  (`call_id`, `server_id`, `user_id`) para a call e para quem vê o canal (tira o
+  selo "Visitante"; a lista do canal na barra lateral se corrige na próxima
+  leitura, a cada 10 s).
+- **Front:** o trilho nunca mostra visita de servidor de que a conta é membro;
+  `/visitas/<servidor>` de quem é membro (ou acabou de virar) redireciona para
+  `/servers/<id>/channels/<canal da call>`.
+- **O inverso já existia:** abrir um link de visitante sendo membro responde
+  `already_member` com o canal, e o app abre o canal.
+
 ## Modelo de ameaça (resumo)
 
 | Ameaça | Mitigação |

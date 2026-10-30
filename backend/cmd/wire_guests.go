@@ -24,6 +24,10 @@ func (a *app) wireGuests() {
 	a.guestService = guest.NewService(guest.NewRepository(a.db), a.permissionService, dir, a.callService, a.hub, a.authService)
 	must(a.guestService.Warm(a.ctx), "não foi possível carregar os acessos de visitante")
 	a.callService.SetGuests(a.guestService)
+	// Virou membro (convite do servidor ou outro caminho): deixa de ser visitante lá.
+	a.serverService.OnMemberJoined(func(ctx context.Context, serverID string, member server.ServerMember) {
+		a.guestService.MemberJoined(ctx, serverID, member.UserID)
+	})
 	go a.guestService.RunSweeper(a.ctx, guestSweepEvery)
 
 	handler := guest.NewHandler(a.guestService)
