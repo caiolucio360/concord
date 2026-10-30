@@ -2,13 +2,11 @@ import { useState } from 'react'
 import Modal from '../../../shared/ui/Modal'
 import Button from '../../../shared/ui/Button'
 import { PlusIcon } from '../../../shared/ui/icons'
-import { PollAnswerMedia } from './PollAnswerMedia'
+import { PollAnswerField } from './PollAnswerField'
 import { showToast } from '../../../shared/store/toastStore'
 import type { CreatePollInput } from '../api/messages'
 import {
-  POLL_ANSWER_MAX,
   POLL_DURATIONS,
-  POLL_EMOJIS,
   POLL_MAX_ANSWERS,
   POLL_MIN_ANSWERS,
   POLL_QUESTION_MAX,
@@ -32,79 +30,6 @@ const emptyDraft = (): PollDraft => ({
   duration_hours: 24,
   allow_multiselect: false
 })
-
-/** Seletor do emoji ou da mini imagem de uma resposta. */
-function MediaPicker({
-  answer,
-  onChange,
-  onClose
-}: {
-  answer: PollDraftAnswer
-  onChange: (media: Pick<PollDraftAnswer, 'emoji' | 'image_url'>) => void
-  onClose: () => void
-}): React.JSX.Element {
-  const [url, setUrl] = useState(answer.image_url)
-
-  return (
-    <div
-      className="absolute left-0 top-full z-10 mt-1 w-72 rounded-lg border border-subtle bg-floating p-3 shadow-2xl"
-      onMouseDown={(e) => e.stopPropagation()}
-    >
-      <div className="grid grid-cols-8 gap-1">
-        {POLL_EMOJIS.map((emoji) => (
-          <button
-            key={emoji}
-            type="button"
-            onClick={() => {
-              onChange({ emoji, image_url: '' })
-              onClose()
-            }}
-            className={`cursor-pointer rounded-md p-1 text-lg leading-none transition-colors hover:bg-fg/10 ${
-              answer.emoji === emoji ? 'bg-brand/30' : ''
-            }`}
-          >
-            {emoji}
-          </button>
-        ))}
-      </div>
-      <form
-        className="mt-3 flex gap-2"
-        onSubmit={(e) => {
-          e.preventDefault()
-          onChange({ emoji: '', image_url: url.trim() })
-          onClose()
-        }}
-      >
-        <input
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="ou link de uma imagem (https://…)"
-          maxLength={512}
-          className="glass-input min-w-0 flex-1 !py-1.5 text-xs"
-        />
-        <button
-          type="submit"
-          disabled={!url.trim()}
-          className="cursor-pointer rounded-md bg-fg/10 px-2 text-xs font-semibold text-strong hover:bg-fg/15 disabled:opacity-40"
-        >
-          Usar
-        </button>
-      </form>
-      {(answer.emoji || answer.image_url) && (
-        <button
-          type="button"
-          onClick={() => {
-            onChange({ emoji: '', image_url: '' })
-            onClose()
-          }}
-          className="mt-2 cursor-pointer text-xs font-semibold text-gray-400 hover:text-red-400"
-        >
-          Remover emoji/imagem
-        </button>
-      )}
-    </div>
-  )
-}
 
 function CreatePollModal({ open, onClose, onCreate }: CreatePollModalProps): React.JSX.Element {
   const [draft, setDraft] = useState<PollDraft>(emptyDraft)
@@ -171,48 +96,17 @@ function CreatePollModal({ open, onClose, onCreate }: CreatePollModalProps): Rea
         <div className="flex flex-col gap-2">
           <span className="text-sm font-medium text-gray-300">Respostas</span>
           {draft.answers.map((answer, i) => (
-            <div key={i} className="relative flex items-center gap-2">
-              <button
-                type="button"
-                title="Escolher emoji ou imagem"
-                aria-label={`Emoji ou imagem da resposta ${i + 1}`}
-                onMouseDown={(e) => e.stopPropagation()}
-                onClick={() => setPicker((p) => (p === i ? null : i))}
-                className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-subtle bg-fg/5 text-lg text-gray-400 transition-colors hover:bg-fg/10"
-              >
-                {answer.emoji || answer.image_url ? (
-                  <PollAnswerMedia answer={answer} />
-                ) : (
-                  <span aria-hidden="true" className="grayscale">
-                    🙂
-                  </span>
-                )}
-              </button>
-              {picker === i && (
-                <MediaPicker
-                  answer={answer}
-                  onChange={(media) => updateAnswer(i, media)}
-                  onClose={() => setPicker(null)}
-                />
-              )}
-              <input
-                value={answer.text}
-                onChange={(e) => updateAnswer(i, { text: e.target.value })}
-                maxLength={POLL_ANSWER_MAX}
-                placeholder={`Resposta ${i + 1}`}
-                className="glass-input min-w-0 flex-1"
-              />
-              {draft.answers.length > POLL_MIN_ANSWERS && (
-                <button
-                  type="button"
-                  onClick={() => removeAnswer(i)}
-                  aria-label={`Remover resposta ${i + 1}`}
-                  className="shrink-0 cursor-pointer px-1 text-strong/50 transition-colors hover:text-red-400"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
+            <PollAnswerField
+              key={i}
+              index={i}
+              answer={answer}
+              pickerOpen={picker === i}
+              removable={draft.answers.length > POLL_MIN_ANSWERS}
+              onTogglePicker={() => setPicker((p) => (p === i ? null : i))}
+              onClosePicker={() => setPicker(null)}
+              onChange={(patch) => updateAnswer(i, patch)}
+              onRemove={() => removeAnswer(i)}
+            />
           ))}
           {draft.answers.length < POLL_MAX_ANSWERS && (
             <button

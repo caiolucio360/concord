@@ -59,6 +59,29 @@ function OwnRoleChip({
   )
 }
 
+/** Um cargo na lista do "+": marcado quando o membro já tem. */
+export function RoleOption({
+  role,
+  has,
+  onToggle
+}: {
+  role: Role
+  has: boolean
+  onToggle: () => void
+}): React.JSX.Element {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold text-gray-200 hover:bg-fg/10"
+    >
+      <RoleDot color={role.color} />
+      <span className="min-w-0 flex-1 truncate">{role.name}</span>
+      {has && <span className="text-success">✓</span>}
+    </button>
+  )
+}
+
 /** O "+" e a lista de cargos para marcar/desmarcar. */
 function RolePicker({
   name,
@@ -85,15 +108,7 @@ function RolePicker({
               const has = !!memberRoleIds?.includes(role.id)
               return (
                 <li key={role.id}>
-                  <button
-                    type="button"
-                    onClick={() => onToggle(role.id, has)}
-                    className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold text-gray-200 hover:bg-fg/10"
-                  >
-                    <RoleDot color={role.color} />
-                    <span className="min-w-0 flex-1 truncate">{role.name}</span>
-                    {has && <span className="text-success">✓</span>}
-                  </button>
+                  <RoleOption role={role} has={has} onToggle={() => onToggle(role.id, has)} />
                 </li>
               )
             })}
