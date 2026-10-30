@@ -4,11 +4,13 @@ import { AppState } from 'react-native'
 import { realtime } from '../../../shared/api/realtime'
 import { bindRealtimeLifecycle } from '../../../shared/api/realtimeLifecycle'
 import { useNetworkStore } from '../../../shared/store/networkStore'
+import { useCallSessionStore } from '../../call/store/callSessionStore'
 import { useAuthStore } from '../store/authStore'
 
 /**
  * Com a sessão ativa, mantém o WebSocket conectado (e reconecta ao voltar do
- * segundo plano ou da queda de rede); no logout, desconecta.
+ * segundo plano ou da queda de rede); em segundo plano fora de chamada fecha a
+ * conexão para o servidor ver o app offline e mandar push; no logout, desconecta.
  */
 export function useRealtimeSession(): void {
   const signedIn = useAuthStore((s) => s.status === 'signedIn')
@@ -16,7 +18,11 @@ export function useRealtimeSession(): void {
   useEffect(() => {
     if (!signedIn) return
     realtime.connect()
-    const stop = bindRealtimeLifecycle(realtime, AppState, NetInfo)
+    // Em chamada (ou tocando) a conexão fica aberta mesmo em segundo plano; fora dela é fechada para o servidor mandar push.
+    const stop = bindRealtimeLifecycle(realtime, AppState, NetInfo, {
+      keepAlive: () => useCallSessionStore.getState().phase !== 'idle',
+      onKeepAliveChange: (listener) => useCallSessionStore.subscribe(listener)
+    })
     return () => {
       stop()
       realtime.disconnect()

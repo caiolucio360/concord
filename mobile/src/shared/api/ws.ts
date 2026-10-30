@@ -46,6 +46,8 @@ export class WsClient {
   private ws: WebSocket | null = null
   private subscriptions = new Set<string>()
   private closedByUser = false
+  /** Fechado de propósito com o app em segundo plano: não reconecta sozinho, mas guarda as salas. */
+  private suspended = false
   /** Tentativas de reconectar desde a última conexão aberta. */
   private attempt = 0
   /** O servidor avisou que estava reiniciando (1012): reconecta logo. */
@@ -70,6 +72,24 @@ export class WsClient {
     this.subscriptions.clear()
     this.ws?.close()
     this.ws = null
+  }
+
+  /**
+   * Fecha a conexão sem reconectar e sem esquecer as salas: com o app em segundo plano o servidor precisa
+   * ver a pessoa offline para mandar push. `resume()` volta.
+   */
+  suspend(): void {
+    this.suspended = true
+    this.clearRetry()
+    const ws = this.ws
+    this.ws = null
+    ws?.close()
+  }
+
+  /** Volta do `suspend()`: reabre na hora e reassina as salas. */
+  resume(): void {
+    this.suspended = false
+    this.retryNow()
   }
 
   /** "Tentar agora": pula a espera do backoff (sem efeito se já conectado ou conectando). */
@@ -104,7 +124,7 @@ export class WsClient {
 
   private open(): void {
     const token = this.config.getToken()
-    if (!token || this.closedByUser || this.isActive()) return
+    if (!token || this.closedByUser || this.suspended || this.isActive()) return
 
     const ws = new WebSocket(`${WS_URL}?token=${encodeURIComponent(token)}`)
     ws.onopen = () => this.handleOpen()
