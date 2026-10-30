@@ -30,8 +30,11 @@ func (a *app) wireLiveObs() {
 	// Telemetria do app: resumo técnico de cada live/call, a cada 20–60 s.
 	telemetry := liveobs.NewTelemetryRepository(a.db)
 	handler := liveobs.NewTelemetryHandler(telemetry)
+	// Painel dos devs (dev_badge_users): lives, piores sessões, distribuição e a série do LiveKit.
+	report := liveobs.NewReportHandler(liveobs.NewReportRepository(a.db), servers)
 	a.route(func(_ *gin.Engine, api *gin.RouterGroup) {
 		liveobs.TelemetryRoutes(api, handler, a.authMiddleware)
+		liveobs.ReportRoutes(api, report, a.authMiddleware)
 	})
 	go liveobs.NewRetention(servers, telemetry).Run(a.ctx)
 }

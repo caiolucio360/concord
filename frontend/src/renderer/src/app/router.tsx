@@ -9,6 +9,7 @@ import Changelog from '../features/updates/pages/Changelog'
 import HubBackFrame from '../features/improvements/components/HubBackFrame'
 import ImprovementsHub from '../features/improvements/pages/ImprovementsHub'
 import Ranking from '../features/ranking/pages/Ranking'
+import LiveObservability from '../features/observability/pages/LiveObservability'
 import Login from '../features/auth/pages/Login'
 import Register from '../features/auth/pages/Register'
 import ForgotPassword from '../features/auth/pages/ForgotPassword'
@@ -46,6 +47,15 @@ export const router = createRouter([
     children: [
       { index: true, element: <Home /> },
       { path: 'friends', element: <Friends /> },
+      // Painel das lives, só devs e sem link no app (docs/OBSERVABILIDADE.md).
+      {
+        path: 'observabilidade',
+        element: (
+          <MobileBackFrame>
+            <LiveObservability />
+          </MobileBackFrame>
+        )
+      },
       // Antiga página de convites: agora é a aba "Convites" do Início.
       { path: 'invites', element: <Navigate to="/friends?tab=invites" replace /> },
       // Aba do diamante: o hub com 3 cards e as telas que ele abre. As telas
