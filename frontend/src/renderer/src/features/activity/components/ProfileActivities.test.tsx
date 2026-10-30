@@ -6,6 +6,7 @@ const state = vi.hoisted(() => ({
   listening: null as Record<string, unknown> | null,
   now: 0
 }))
+vi.mock('../../call/store/callStore', () => ({ useCallStore: () => null }))
 vi.mock('../store/presenceActivityStore', () => ({ useActivity: () => state.activity }))
 vi.mock('../store/listeningStore', () => ({ useListening: () => state.listening }))
 vi.mock('../../../shared/hooks/useNow', () => ({ useNow: () => state.now }))
@@ -45,6 +46,13 @@ describe('ProfileActivities', () => {
     expect(html).toContain('role="progressbar"')
     expect(html).toContain('aria-valuenow="37"')
     expect(html).toContain('aria-valuetext="1:23 de 3:45"')
+  })
+
+  it('o menu "Ouvir também" começa fechado; clicar na música é que abre', () => {
+    state.listening = { app: 'Spotify', title: 'Águas de Março', started_at: 1000 }
+    const html = render()
+    expect(html).toContain('aria-expanded="false"')
+    expect(html).not.toContain('Ouvir no')
   })
 
   it('sem duração, só o tempo decorrido; jogo e música juntos', () => {
