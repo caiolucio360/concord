@@ -1,4 +1,4 @@
-// Serviço em primeiro plano da chamada (ADR 0029): o notifee declara o serviço dele como "shortService" (o Android
+// Serviço em primeiro plano da chamada (ADR 0030): o notifee declara o serviço dele como "shortService" (o Android
 // encerra em ~3 min); a chamada precisa dos tipos microphone e camera. O prebuild sobrescreve o tipo no manifest
 // final e declara as permissões. JavaScript (e não TypeScript) pelo mesmo motivo do withProguardRules.
 const { withAndroidManifest } = require('expo/config-plugins')

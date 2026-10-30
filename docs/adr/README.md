@@ -66,4 +66,5 @@ O que fica mais fácil, o que fica mais difícil, o que precisa ser feito depois
 - [0026. Enviar anexos no app mobile com `expo-image-picker` e `expo-document-picker`](0026-anexos-no-app-mobile.md)
 - [0027. Transmitir e assistir tela no app mobile (MediaProjection e assinatura sob demanda)](0027-transmissao-de-tela-no-app-mobile.md)
 - [0028. Servir os instaladores do app pela GitHub Release, com os manifestos na VPS](0028-atualizacoes-pelo-github-releases.md)
-- [0029. Manter a chamada do app mobile em segundo plano com um serviço em primeiro plano (`@notifee/react-native`)](0029-servico-em-primeiro-plano-da-chamada-no-app-mobile.md)
+- [0029. Observar as lives pelo próprio backend: Prometheus do LiveKit e telemetria do app no Postgres](0029-observabilidade-das-lives.md)
+- [0030. Manter a chamada do app mobile em segundo plano com um serviço em primeiro plano (`@notifee/react-native`)](0030-servico-em-primeiro-plano-da-chamada-no-app-mobile.md)

@@ -45,7 +45,9 @@ describe('initialPanel', () => {
     ['/changelog', 'content'],
     ['/ranking', 'content'],
     // Visita (link de visitante): abre direto na call, com o voltar para a lista.
-    ['/visitas/s1', 'content']
+    ['/visitas/s1', 'content'],
+    // Painel das lives (devs): tela própria, sem lista.
+    ['/observabilidade', 'content']
   ] as const)('abrir em %s mostra %s', (path, panel) => {
     expect(initialPanel(path)).toBe(panel)
   })
