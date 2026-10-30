@@ -7,6 +7,7 @@ import { useProfileStore } from '../../profile/store/profileStore'
 import { useServerStore } from '../../servers/store/serverStore'
 import { useServerNicknames } from '../../servers/hooks/useServerNames'
 import { resolveReactionPeople } from '../lib/reactionPeople'
+import { insideElement } from '../lib/insideElement'
 import Avatar from '../../../shared/ui/Avatar'
 import ReactionEmoji, { useReactionLabel } from '../../emojis/components/ReactionEmoji'
 
@@ -85,8 +86,7 @@ function ReactionTooltip({
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const onScroll = (e: Event): void => {
-      if (ref.current && e.target instanceof Node && ref.current.contains(e.target)) return
-      onClose()
+      if (!insideElement(ref.current, e.target)) onClose()
     }
     const close = (): void => onClose()
     const onKeyDown = (e: KeyboardEvent): void => {

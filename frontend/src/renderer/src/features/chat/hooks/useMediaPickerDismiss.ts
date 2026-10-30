@@ -1,8 +1,9 @@
 import { useEffect, type RefObject } from 'react'
+import { insideElement } from '../lib/insideElement'
 
 /** O clique foi fora do seletor? */
 export function isOutside(container: HTMLElement | null, target: EventTarget | null): boolean {
-  return Boolean(container) && !(target instanceof Node && container?.contains(target))
+  return Boolean(container) && !insideElement(container, target)
 }
 
 /**
