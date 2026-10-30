@@ -32,9 +32,9 @@ export interface SampleResult {
   counters: SampleCounters
 }
 
-const n0 = (value: unknown): number => num(value) ?? 0
+export const n0 = (value: unknown): number => num(value) ?? 0
 
-function countersOf(stat: Stat, bytesKey: string, keyFramesKey: string): SampleCounters {
+export function countersOf(stat: Stat, bytesKey: string, keyFramesKey: string): SampleCounters {
   return {
     timestamp: n0(stat.timestamp),
     bytes: n0(stat[bytesKey]),
@@ -69,7 +69,7 @@ function lossPct(d: Deltas): number | null {
   return total > 0 ? Math.round((d.lost * 10000) / total) / 100 : null
 }
 
-const ms = (seconds: unknown): number | null => {
+export const ms = (seconds: unknown): number | null => {
   const value = num(seconds)
   return value === null ? null : Math.round(value * 1000)
 }
@@ -98,7 +98,7 @@ function selectedPair(report: RTCStatsReport): Stat | undefined {
   return selected ?? nominated
 }
 
-function rttMs(report: RTCStatsReport): number | null {
+export function rttMs(report: RTCStatsReport): number | null {
   return ms(selectedPair(report)?.currentRoundTripTime)
 }
 
@@ -191,38 +191,6 @@ export function watchSample(
       freeze_ms: d.freezeMs,
       frames_dropped: d.dropped,
       paused: input.streamState === 'paused'
-    }
-  }
-}
-
-function remoteInbound(report: RTCStatsReport): Stat | undefined {
-  let found: Stat | undefined
-  report.forEach((stat: Stat) => {
-    if (stat.type === 'remote-inbound-rtp') found ??= stat
-  })
-  return found
-}
-
-function fractionPct(value: unknown): number | null {
-  const fraction = num(value)
-  return fraction === null ? null : Math.round(fraction * 10000) / 100
-}
-
-/** A voz da call: o que o servidor diz que recebe de mim (perda, jitter) e o RTT. */
-export function callSample(report: RTCStatsReport, prev: SampleCounters | null): SampleResult {
-  const remote = remoteInbound(report)
-  const counters = { ...countersOf({}, '', ''), timestamp: n0(remote?.timestamp) }
-  const elapsed =
-    prev && counters.timestamp > prev.timestamp ? counters.timestamp - prev.timestamp : 0
-  return {
-    counters,
-    sample: {
-      ...emptySample(),
-      seconds: elapsed / 1000,
-      transport: transportOf(report),
-      rtt_ms: rttMs(report),
-      loss_pct: fractionPct(remote?.fractionLost),
-      jitter_ms: ms(remote?.jitter)
     }
   }
 }

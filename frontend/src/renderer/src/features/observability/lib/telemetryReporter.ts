@@ -1,7 +1,7 @@
 import type { ScreenStatsInput } from '../../call/lib/screenStats'
 import { sampleEvents } from './telemetryEvents'
+import { callSample } from './telemetryCall'
 import {
-  callSample,
   shareSample,
   watchSample,
   type SampleCounters,
