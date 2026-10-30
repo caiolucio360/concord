@@ -25,6 +25,8 @@ type snapshotCache struct {
 	mu       sync.Mutex
 	gens     map[string]uint64
 	inflight map[string]*snapshotLoad
+
+	stats cacheCounters
 }
 
 // snapshotLoad é uma leitura em andamento; done fecha quando snap/err valem.
@@ -46,19 +48,23 @@ func newSnapshotCache() *snapshotCache {
 // há leitura em andamento e quem chamou deve ler e chamar finish.
 func (c *snapshotCache) begin(serverID string) (snap *Snapshot, load *snapshotLoad, leader bool) {
 	if snap, ok := c.cached(serverID); ok {
+		c.stats.hits.Add(1)
 		return snap, nil, false
 	}
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	// De novo com o lock: outra leitura pode ter acabado entre os dois passos.
 	if snap, ok := c.cached(serverID); ok {
+		c.stats.hits.Add(1)
 		return snap, nil, false
 	}
 	if load, ok := c.inflight[serverID]; ok {
+		c.stats.shared.Add(1)
 		return nil, load, false
 	}
 	load = &snapshotLoad{done: make(chan struct{}), gen: c.gens[serverID]}
 	c.inflight[serverID] = load
+	c.stats.loads.Add(1)
 	return nil, load, true
 }
 
@@ -115,6 +121,7 @@ func (c *snapshotCache) invalidateLocked(serverID string) {
 	}
 	delete(c.inflight, serverID)
 	c.gens[serverID]++
+	c.stats.invalidations.Add(1)
 }
 
 // invalidateChannel invalida o servidor do canal. Canal fora do índice não

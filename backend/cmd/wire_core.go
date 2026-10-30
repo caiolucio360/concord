@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
 	"gin-quickstart/backend/internal/auth"
 	"gin-quickstart/backend/internal/channel"
@@ -40,6 +41,8 @@ func (a *app) wireCore() {
 	// Permissões (cargos, @everyone, sobrescritas por canal)
 	a.permissionService = permission.PermissionService(permission.PermissionRepository(a.db))
 	a.hub.SetVisibility(a.permissionService)
+	// Movimento do cache de permissões no log (acertos, idas ao banco, invalidações).
+	go a.permissionService.LogStatsEvery(a.ctx, 10*time.Minute, log.Printf)
 
 	a.roleRepository = role.RoleRepository(a.db)
 	a.roleService = role.RoleService(a.roleRepository, a.permissionService, a.hub)
