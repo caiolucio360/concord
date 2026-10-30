@@ -26,7 +26,7 @@ export default function ScreenWatchersOverlay({
       className={`on-media z-20 flex items-center gap-1.5 rounded-full bg-black/65 px-2 py-1 text-xs text-white backdrop-blur-md shadow-lg border border-white/10 select-none ${className}`}
     >
       <div className="flex items-center gap-1 text-gray-300">
-        <EyeIcon className="h-3.5 w-3.5 text-emerald-400" />
+        <EyeIcon className="h-3.5 w-3.5 text-success" />
         <span className="text-[11px] font-bold text-gray-200">{watchers.length}</span>
       </div>
 

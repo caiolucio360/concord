@@ -253,12 +253,12 @@ function VoiceConnectedPanel(): React.JSX.Element | null {
             title={locked ? 'Destrancar sala' : 'Trancar sala (pedir permissão para entrar)'}
             className={`${ICON_BUTTON} ${
               locked
-                ? 'bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
+                ? 'bg-warning/20 text-warning hover:bg-warning/30'
                 : 'text-gray-300 hover:bg-fg/10 hover:text-strong'
             }`}
           >
             {locked ? (
-              <LockIcon className="h-5 w-5 text-amber-400" />
+              <LockIcon className="h-5 w-5 text-warning" />
             ) : (
               <LockOpenIcon className="h-5 w-5" />
             )}

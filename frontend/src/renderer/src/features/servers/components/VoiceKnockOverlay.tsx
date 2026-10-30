@@ -22,10 +22,10 @@ function VoiceKnockOverlay({
   if (!locked || connectedHere) return null
   if (knock === 'pending') {
     return (
-      <div className="absolute inset-0 z-10 flex items-center justify-between rounded-lg bg-amber-950/80 px-2.5 backdrop-blur-sm border border-amber-500/40 animate-in fade-in duration-150">
+      <div className="absolute inset-0 z-10 flex items-center justify-between rounded-lg bg-black/80 px-2.5 backdrop-blur-sm border border-warning/40 animate-in on-media fade-in duration-150">
         <div className="flex items-center gap-1.5 min-w-0">
-          <span className="h-2 w-2 shrink-0 animate-ping rounded-full bg-amber-400" />
-          <span className="truncate text-xs font-semibold text-amber-200">Pedido enviado...</span>
+          <span className="h-2 w-2 shrink-0 animate-ping rounded-full bg-warning" />
+          <span className="truncate text-xs font-semibold text-warning">Pedido enviado...</span>
         </div>
         <button
           onClick={(e) => {
@@ -42,19 +42,19 @@ function VoiceKnockOverlay({
   }
   if (knock === 'declined') {
     return (
-      <div className="absolute inset-0 z-10 flex items-center gap-1.5 rounded-lg bg-red-950/80 px-2.5 backdrop-blur-sm border border-red-500/40 animate-in fade-in duration-150">
-        <XIcon className="h-3.5 w-3.5 text-red-400 shrink-0" />
-        <span className="truncate text-xs font-medium text-red-200">Pedido recusado</span>
+      <div className="absolute inset-0 z-10 flex items-center gap-1.5 rounded-lg bg-black/80 px-2.5 backdrop-blur-sm border border-danger/40 animate-in fade-in duration-150 on-media">
+        <XIcon className="h-3.5 w-3.5 text-danger shrink-0" />
+        <span className="truncate text-xs font-medium text-danger">Pedido recusado</span>
       </div>
     )
   }
   return (
     <div
       onClick={onJoin}
-      className="pointer-events-none group-hover/voicech:pointer-events-auto absolute inset-0 z-10 flex items-center justify-center gap-1.5 rounded-lg bg-black/80 px-2 opacity-0 backdrop-blur-xs transition-opacity group-hover/voicech:opacity-100 cursor-pointer border border-amber-500/20 on-media"
+      className="pointer-events-none group-hover/voicech:pointer-events-auto absolute inset-0 z-10 flex items-center justify-center gap-1.5 rounded-lg bg-black/80 px-2 opacity-0 backdrop-blur-xs transition-opacity group-hover/voicech:opacity-100 cursor-pointer border border-warning/20 on-media"
     >
-      <LockIcon className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-      <span className="truncate text-xs font-semibold text-amber-200">
+      <LockIcon className="h-3.5 w-3.5 text-warning shrink-0" />
+      <span className="truncate text-xs font-semibold text-warning">
         Sala trancada · Pedir permissão
       </span>
     </div>

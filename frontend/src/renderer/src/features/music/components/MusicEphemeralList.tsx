@@ -92,7 +92,7 @@ function MusicEphemeralList({
           <MaestroAvatar />
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline gap-2">
-              <span className="text-sm font-semibold text-violet-200">{MAESTRO_NAME}</span>
+              <span className="text-sm font-semibold text-brand">{MAESTRO_NAME}</span>
               <span className="inline-flex flex-wrap items-center gap-x-1 text-[10px] text-gray-500">
                 <EyeIcon size={12} />
                 {T14_LABEL} ·

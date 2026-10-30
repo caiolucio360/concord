@@ -24,7 +24,7 @@ function EnqueteConfirmacao({ enquete }: { enquete: Enquete }): React.JSX.Elemen
       </h2>
       <p className="mt-2 text-sm text-gray-400">Não dá para mudar depois.</p>
       {erro && (
-        <p role="alert" className="mt-3 text-sm text-red-400">
+        <p role="alert" className="mt-3 text-sm text-danger">
           Não foi possível enviar. Tente de novo.
         </p>
       )}
@@ -33,7 +33,7 @@ function EnqueteConfirmacao({ enquete }: { enquete: Enquete }): React.JSX.Elemen
           type="button"
           disabled={enviando}
           onClick={() => void confirmar()}
-          className={`${BOTAO} bg-violet-600 text-white hover:bg-violet-500`}
+          className={`${BOTAO} bg-brand text-white hover:bg-brand-hover`}
         >
           Confirmar
         </button>

@@ -43,7 +43,7 @@ function VoiceChannelMeta({
         <span className={`flex h-6 shrink-0 items-center ${FADE_ON_HOVER}`}>
           <span
             title={badge.mention ? 'Menções no chat' : 'Mensagens não lidas no chat'}
-            className="rounded-full bg-red-500 px-1.5 py-0.2 text-[10px] font-bold text-white"
+            className="rounded-full bg-danger px-1.5 py-0.2 text-[10px] font-bold text-white"
           >
             {badge.label}
           </span>
@@ -123,7 +123,7 @@ function VoiceChannelButton({
       <span title={channel.name} className={`min-w-0 flex-1 leading-6 ${WRAP_NAME}`}>
         {channel.name}
         {locked && (
-          <span title="Sala trancada" className="ml-1.5 inline-flex align-[-1px] text-amber-500/90">
+          <span title="Sala trancada" className="ml-1.5 inline-flex align-[-1px] text-warning/90">
             <LockIcon className="h-3 w-3" />
             <span className="sr-only">(trancada)</span>
           </span>

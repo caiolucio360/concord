@@ -19,7 +19,7 @@ function ComposerAttachments({
         <div
           key={d.localId}
           className={`relative flex w-40 shrink-0 flex-col gap-1 rounded-lg border bg-input p-2 ${
-            d.status === 'error' ? 'border-red-500/50' : 'border-subtle'
+            d.status === 'error' ? 'border-danger/50' : 'border-subtle'
           }`}
         >
           <div className="relative flex h-20 items-center justify-center overflow-hidden rounded-md bg-fg/5 text-gray-400">
@@ -46,12 +46,12 @@ function ComposerAttachments({
           {d.status === 'uploading' && (
             <div className="h-1 overflow-hidden rounded-full bg-fg/10">
               <div
-                className="h-full rounded-full bg-violet-400 transition-[width]"
+                className="h-full rounded-full bg-brand transition-[width]"
                 style={{ width: `${Math.round(d.progress * 100)}%` }}
               />
             </div>
           )}
-          {d.status === 'error' && <p className="text-[10px] text-red-400">{d.error}</p>}
+          {d.status === 'error' && <p className="text-[10px] text-danger">{d.error}</p>}
           <CloseButton
             label="Remover anexo"
             size="xs"

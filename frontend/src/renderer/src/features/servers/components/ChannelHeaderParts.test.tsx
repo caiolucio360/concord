@@ -84,7 +84,7 @@ describe('ChannelActions', () => {
 
   it('fixadas abertas: botão aceso e o popover do canal', () => {
     const html = actions({ pinsOpen: true, canModerate: true })
-    expect(html).toContain('border-amber-500/50')
+    expect(html).toContain('border-warning/50')
     expect(html).toContain('data-fixadas="c1" data-modera="true"')
   })
 })

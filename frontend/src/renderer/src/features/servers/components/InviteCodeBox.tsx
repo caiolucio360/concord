@@ -55,7 +55,7 @@ function InviteCodeBox({ serverId }: { serverId: string }): React.JSX.Element {
             aria-label="Link de convite"
             value={link}
             onFocus={(e) => e.currentTarget.select()}
-            className="min-w-0 flex-1 truncate rounded-lg bg-input px-3 py-2 font-mono text-ds-sm text-strong outline-none focus:ring-2 focus:ring-violet-500/50"
+            className="min-w-0 flex-1 truncate rounded-lg bg-input px-3 py-2 font-mono text-ds-sm text-strong outline-none focus:ring-2 focus:ring-brand/50"
           />
         ) : (
           // Mesma caixa do campo (py-2 + linha de 18px = 34px) enquanto o link chega.
@@ -81,7 +81,7 @@ function InviteCodeBox({ serverId }: { serverId: string }): React.JSX.Element {
         type="button"
         onClick={() => setConfirmReset(true)}
         disabled={!code}
-        className="cursor-pointer text-ds-xs font-medium text-violet-300 hover:text-strong hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+        className="cursor-pointer text-ds-xs font-medium text-brand hover:text-strong hover:underline disabled:cursor-not-allowed disabled:opacity-50"
       >
         Gerar novo link
       </button>

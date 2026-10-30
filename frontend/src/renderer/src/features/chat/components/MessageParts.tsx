@@ -48,7 +48,7 @@ export function MessageBadges({ message }: { message: Message }): React.JSX.Elem
       )}
       {message.pinned_at && (
         <span
-          className="flex items-center gap-0.5 text-ds-xs text-amber-400 font-medium"
+          className="flex items-center gap-0.5 text-ds-xs text-warning font-medium"
           title="Mensagem fixada"
         >
           <PinIcon className="h-3 w-3" />

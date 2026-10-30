@@ -46,9 +46,9 @@ function ProposalCard({
   return (
     <article
       {...cardInteraction(overlay, p.title, onOpen)}
-      className={`flex flex-col gap-3 rounded-xl border p-3 focus-visible:outline-2 focus-visible:outline-violet-400 ${
+      className={`flex flex-col gap-3 rounded-xl border p-3 focus-visible:outline-2 focus-visible:outline-brand ${
         overlay
-          ? 'rotate-2 cursor-grabbing border-violet-400/60 bg-floating shadow-2xl shadow-black/60'
+          ? 'rotate-2 cursor-grabbing border-brand/60 bg-floating shadow-2xl shadow-black/60'
           : 'cursor-pointer border-subtle bg-fg/3 transition-colors hover:bg-fg/5'
       }`}
     >

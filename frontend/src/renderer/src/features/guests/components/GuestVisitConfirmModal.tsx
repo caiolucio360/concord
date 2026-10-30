@@ -79,7 +79,7 @@ export function ConfirmBody({
         {GUEST_COPY.landingPerms(preview.can_speak, preview.can_stream)}
       </p>
       {visit.error && (
-        <p role="alert" className="text-ds-sm text-red-300">
+        <p role="alert" className="text-ds-sm text-danger">
           {visit.error}
         </p>
       )}

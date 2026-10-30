@@ -59,7 +59,7 @@ function ServerRail(): React.JSX.Element {
             onClick={() => setCreateModalOpen(true)}
             title="Adicionar um servidor"
             aria-label="Adicionar servidor"
-            className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-3xl border border-subtle bg-surface text-discord-green transition-all duration-200 hover:rounded-2xl hover:bg-discord-green hover:text-white hover:shadow-lg hover:shadow-discord-green/25"
+            className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-3xl border border-subtle bg-surface text-success transition-all duration-200 hover:rounded-2xl hover:bg-success hover:text-white hover:shadow-lg hover:shadow-success/25"
           >
             <PlusIcon className="h-6 w-6" />
           </button>

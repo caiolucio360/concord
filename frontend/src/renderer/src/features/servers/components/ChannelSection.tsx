@@ -8,7 +8,7 @@ export function ChannelDropLine({ side }: { side: DropLineSide }): React.JSX.Ele
   return (
     <div
       aria-hidden
-      className={`pointer-events-none absolute inset-x-1 z-20 h-0.5 rounded-full bg-violet-500 shadow-[0_0_6px_rgba(139,92,246,0.8)] ${
+      className={`pointer-events-none absolute inset-x-1 z-20 h-0.5 rounded-full bg-brand shadow-[0_0_6px_var(--brand)] ${
         side === 'before' ? '-top-0.5' : '-bottom-0.5'
       }`}
     />

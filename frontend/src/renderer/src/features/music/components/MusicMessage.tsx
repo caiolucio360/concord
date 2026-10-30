@@ -39,13 +39,13 @@ function MusicMessage({ message }: { message: Message }): React.JSX.Element {
   return (
     <div
       id={`msg-${message.id}`}
-      className="mx-2 my-1 flex gap-3 rounded-lg border border-violet-400/20 bg-gradient-to-r from-violet-500/10 via-fuchsia-500/5 to-transparent px-3 py-2.5"
+      className="mx-2 my-1 flex gap-3 rounded-lg border border-brand/20 bg-gradient-to-r from-brand/10 to-transparent px-3 py-2.5"
     >
       <MaestroAvatar />
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2">
-          <span className="text-sm font-semibold text-violet-200">{MAESTRO_NAME}</span>
-          <span className="rounded bg-violet-400/20 px-1 py-px text-[9px] font-bold uppercase tracking-wide text-violet-200">
+          <span className="text-sm font-semibold text-brand">{MAESTRO_NAME}</span>
+          <span className="rounded bg-brand/20 px-1 py-px text-[9px] font-bold uppercase tracking-wide text-brand">
             {T18.tag}
           </span>
           <span className="text-[10px] text-gray-500">{formatTime(message.created_at)}</span>

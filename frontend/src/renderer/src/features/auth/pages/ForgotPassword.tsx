@@ -43,7 +43,7 @@ function ForgotPassword(): React.JSX.Element {
         </p>
         <Link
           to="/login"
-          className="mt-6 inline-block text-sm font-medium text-violet-400 hover:underline"
+          className="mt-6 inline-block text-sm font-medium text-brand hover:underline"
         >
           Voltar para o login
         </Link>
@@ -68,7 +68,7 @@ function ForgotPassword(): React.JSX.Element {
           autoFocus
         />
         {error && (
-          <p className="rounded-lg border border-red-400/30 bg-red-500/15 px-3 py-2 text-sm text-red-300">
+          <p className="rounded-lg border border-danger/30 bg-danger/15 px-3 py-2 text-sm text-danger">
             {error}
           </p>
         )}
@@ -78,7 +78,7 @@ function ForgotPassword(): React.JSX.Element {
       </form>
       <Link
         to="/login"
-        className="mt-4 inline-block text-sm font-medium text-violet-400 hover:underline"
+        className="mt-4 inline-block text-sm font-medium text-brand hover:underline"
       >
         Voltar para o login
       </Link>

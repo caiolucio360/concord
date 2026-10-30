@@ -65,7 +65,7 @@ function VerifyEmail(): React.JSX.Element {
           <p className="mt-3 text-sm text-gray-300">{state.message}</p>
           <Link
             to={home}
-            className="mt-6 inline-block text-sm font-medium text-violet-400 hover:underline"
+            className="mt-6 inline-block text-sm font-medium text-brand hover:underline"
           >
             {accessToken ? 'Voltar ao app e reenviar o e-mail' : 'Ir para o login'}
           </Link>

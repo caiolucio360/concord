@@ -24,8 +24,8 @@ function ConfirmCloseModal({
         <p className="text-sm text-gray-300">
           Mover <span className="font-semibold text-strong">“{proposal.title}”</span> para{' '}
           <span className="font-semibold text-strong">{STATUS_ACTION_LABEL[target]}</span> encerra a
-          votação agora, com <span className="text-discord-green">{proposal.yes_votes} sim</span> e{' '}
-          <span className="text-discord-dnd">{proposal.no_votes} não</span>. Não dá para reabri-la.
+          votação agora, com <span className="text-success">{proposal.yes_votes} sim</span> e{' '}
+          <span className="text-danger">{proposal.no_votes} não</span>. Não dá para reabri-la.
         </p>
         <div className="flex justify-end gap-2">
           <Button variant="ghost" onClick={onCancel}>

@@ -33,11 +33,11 @@ function VoiceXPBar({ paused }: { paused: boolean }): React.JSX.Element | null {
       <div className="relative">
         <div className="h-1.5 overflow-hidden rounded-full bg-fg/10">
           <div
-            className="relative h-full overflow-hidden rounded-full transition-[width] duration-700"
+            className={`relative h-full overflow-hidden rounded-full transition-[width] duration-700 ${paused ? 'bg-accent' : ''}`}
             style={{
               width: `${percent}%`,
               backgroundImage: paused
-                ? 'linear-gradient(90deg, #4b5563, #374151)'
+                ? undefined
                 : `linear-gradient(90deg, ${tier.accent}, ${tier.color})`,
               boxShadow: paused ? undefined : `0 0 8px ${tier.color}88`
             }}

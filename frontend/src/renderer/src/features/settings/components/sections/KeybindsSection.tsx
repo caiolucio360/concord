@@ -185,7 +185,7 @@ function Row({
             onChange={() => setGlobal(def.id, !global[def.id])}
           />
           {global[def.id] && bindings[def.id] && globalActive[def.id] === false && (
-            <p className="mt-2 text-xs text-amber-300">
+            <p className="mt-2 text-xs text-warning">
               Não foi possível ativar fora do app: o atalho está em uso por outro programa.
             </p>
           )}
@@ -211,7 +211,7 @@ export function KeybindsSection(): React.JSX.Element {
           Clique em um atalho e aperte a nova tecla ou um botão do mouse (meio ou laterais). Esc
           cancela.
         </p>
-        {error && <p className="mt-2 text-xs text-amber-300">{error}</p>}
+        {error && <p className="mt-2 text-xs text-warning">{error}</p>}
       </div>
 
       {GROUP_ORDER.map((group) => (

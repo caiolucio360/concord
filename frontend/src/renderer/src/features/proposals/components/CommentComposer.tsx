@@ -214,7 +214,7 @@ function CommentComposer({
 
   return (
     <div
-      className={`relative flex flex-col gap-2 rounded-lg ${overDrop ? 'ring-2 ring-violet-400/60' : ''}`}
+      className={`relative flex flex-col gap-2 rounded-lg ${overDrop ? 'ring-2 ring-brand/60' : ''}`}
       onDragOver={(e) => {
         if (!hasFiles(e)) return
         e.preventDefault()

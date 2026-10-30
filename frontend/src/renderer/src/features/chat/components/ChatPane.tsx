@@ -622,7 +622,7 @@ function ChatPane({
             />
             <form
             onSubmit={handleSubmit}
-            className="relative flex items-center gap-2 rounded-xl border border-subtle bg-input px-3 py-2 backdrop-blur-xl focus-within:border-violet-500/40 max-md:gap-0.5 max-md:px-1 max-md:py-1"
+            className="relative flex items-center gap-2 rounded-xl border border-subtle bg-input px-3 py-2 backdrop-blur-xl focus-within:border-brand/40 max-md:gap-0.5 max-md:px-1 max-md:py-1"
           >
             <SlashCommandSuggestions
               isChannel={isChannel}

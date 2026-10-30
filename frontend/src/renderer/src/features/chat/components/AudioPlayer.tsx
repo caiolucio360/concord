@@ -73,7 +73,7 @@ function AudioPlayer({ attachment }: { attachment: Attachment }): React.JSX.Elem
           className="relative h-1.5 min-w-0 flex-1 cursor-pointer rounded-full bg-fg/10"
         >
           <div
-            className="absolute inset-y-0 left-0 rounded-full bg-violet-400"
+            className="absolute inset-y-0 left-0 rounded-full bg-brand"
             style={{ width: `${fraction * 100}%` }}
           />
         </div>

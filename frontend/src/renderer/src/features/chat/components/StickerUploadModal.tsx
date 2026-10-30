@@ -96,14 +96,14 @@ export default function StickerUploadModal({
     <Modal open={open} title="Nova Figurinha" onClose={handleClose}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {error && (
-          <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-2.5 text-xs text-red-300">
+          <div className="rounded-lg border border-danger/20 bg-danger/10 p-2.5 text-xs text-danger">
             {error}
           </div>
         )}
 
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/20 bg-white/5 p-6 transition-colors hover:border-violet-500/50 hover:bg-white/10 cursor-pointer"
+          className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/20 bg-white/5 p-6 transition-colors hover:border-brand/50 hover:bg-white/10 cursor-pointer"
         >
           <input
             ref={fileInputRef}

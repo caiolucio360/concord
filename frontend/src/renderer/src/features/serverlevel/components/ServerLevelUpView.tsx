@@ -58,7 +58,7 @@ function IconWithRing({
         />
       </svg>
       <div
-        className="flex h-full w-full items-center justify-center overflow-hidden rounded-[30%] bg-violet-600 text-white shadow-2xl"
+        className="flex h-full w-full items-center justify-center overflow-hidden rounded-[30%] bg-brand text-white shadow-2xl"
         style={{ boxShadow: `0 0 ${icon}px ${scene.color}`, fontSize: icon * 0.9 }}
       >
         {iconUrl ? (

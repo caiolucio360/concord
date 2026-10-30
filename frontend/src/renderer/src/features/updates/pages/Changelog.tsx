@@ -39,13 +39,13 @@ export function ChangelogView({ releases, current, loading, error }: ViewProps):
     <div className="flex h-full w-full overflow-hidden bg-primary backdrop-blur-2xl text-gray-100">
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="flex h-14 shrink-0 items-center gap-3 border-b border-subtle px-4">
-          <ChangelogIcon className="h-5 w-5 text-violet-400" />
+          <ChangelogIcon className="h-5 w-5 text-brand" />
           <h1 className="text-base font-semibold">Novidades</h1>
         </header>
         <main className="flex-1 overflow-y-auto p-4">
           <div className="mx-auto flex max-w-2xl flex-col gap-4">
             {loading && <ChangelogSkeleton />}
-            {error && <p className="text-sm text-red-400">{error}</p>}
+            {error && <p className="text-sm text-danger">{error}</p>}
             {!loading && !error && releases.length === 0 && (
               <p className="text-sm text-gray-400">Nenhuma versão publicada ainda.</p>
             )}
@@ -62,7 +62,7 @@ export function ChangelogView({ releases, current, loading, error }: ViewProps):
                       {formatReleaseDate(rel.released_at)}
                     </span>
                     {current === rel.version && (
-                      <span className="rounded-full bg-violet-600/30 px-2 py-0.5 text-xs font-semibold text-violet-300">
+                      <span className="rounded-full bg-brand/30 px-2 py-0.5 text-xs font-semibold text-brand">
                         Você está aqui
                       </span>
                     )}
@@ -71,9 +71,9 @@ export function ChangelogView({ releases, current, loading, error }: ViewProps):
                   <Group
                     title="Novidades"
                     items={features}
-                    tone="bg-emerald-500/20 text-emerald-300"
+                    tone="bg-success/20 text-success"
                   />
-                  <Group title="Correções" items={fixes} tone="bg-amber-500/20 text-amber-300" />
+                  <Group title="Correções" items={fixes} tone="bg-warning/20 text-warning" />
                   {features.length + fixes.length === 0 && (
                     <p className="mt-3 text-sm text-gray-500">Sem notas para esta versão.</p>
                   )}

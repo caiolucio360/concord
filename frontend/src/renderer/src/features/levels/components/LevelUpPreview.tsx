@@ -21,8 +21,8 @@ function LevelUpPreview(): React.JSX.Element {
   const [level, setLevel] = useState('42')
 
   return (
-    <div className="rounded-xl border border-dashed border-amber-400/40 bg-amber-400/5 p-4">
-      <h3 className="mb-1 text-xs font-bold uppercase tracking-wide text-amber-300">
+    <div className="rounded-xl border border-dashed border-warning/40 bg-warning/5 p-4">
+      <h3 className="mb-1 text-xs font-bold uppercase tracking-wide text-warning">
         Prévia da subida de nível (dev)
       </h3>
       <p className="mb-3 text-xs text-gray-400">
@@ -64,7 +64,7 @@ function LevelUpPreview(): React.JSX.Element {
         ))}
         <button
           onClick={previewNext}
-          className="cursor-pointer rounded-md bg-amber-500/20 px-2 py-1 text-xs font-bold text-amber-200 hover:bg-amber-500/30"
+          className="cursor-pointer rounded-md bg-warning/20 px-2 py-1 text-xs font-bold text-warning hover:bg-warning/30"
         >
           Próximo marco
         </button>
@@ -82,7 +82,7 @@ function LevelUpPreview(): React.JSX.Element {
         />
         <button
           onClick={() => preview(Number(level))}
-          className="cursor-pointer rounded-md bg-amber-500/80 px-2 py-1 text-xs font-bold text-black hover:bg-amber-400"
+          className="cursor-pointer rounded-md bg-warning/80 px-2 py-1 text-xs font-bold text-black hover:bg-warning/80"
         >
           Tocar
         </button>

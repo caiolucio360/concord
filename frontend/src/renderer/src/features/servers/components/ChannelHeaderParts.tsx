@@ -65,7 +65,7 @@ export function ChannelActions({
             aria-expanded={pinsOpen}
             className={`flex size-10 items-center justify-center rounded-lg border transition md:size-8 ${
               pinsOpen
-                ? 'border-amber-500/50 bg-amber-500/10 text-amber-400'
+                ? 'border-warning/50 bg-warning/10 text-warning'
                 : 'border-subtle bg-fg/5 text-gray-400 hover:border-normal hover:text-strong'
             }`}
           >

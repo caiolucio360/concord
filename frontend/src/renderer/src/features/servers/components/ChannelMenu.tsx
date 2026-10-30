@@ -58,7 +58,7 @@ const LOOK: Record<
   'move-down': { label: 'Mover para baixo', icon: <ChevronDownIcon className={ICON} /> },
   'make-primary': {
     label: 'Definir como principal',
-    icon: <StarIcon className={`${ICON} text-amber-400`} />
+    icon: <StarIcon className={`${ICON} text-warning`} />
   },
   edit: { label: 'Editar canal', icon: <PencilIcon className={ICON} /> },
   permissions: { label: 'Permissões', icon: <LockIcon className={ICON} /> },

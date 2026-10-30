@@ -61,7 +61,7 @@ function StickerItem({
             onDelete(sticker)
           }}
           title="Excluir figurinha"
-          className="absolute right-1 top-1 rounded-md bg-black/80 p-1 text-red-400 opacity-80 hover:opacity-100 focus-visible:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-80"
+          className="absolute right-1 top-1 rounded-md bg-black/80 p-1 text-danger opacity-80 hover:opacity-100 focus-visible:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-80"
         >
           <TrashIcon className="h-3 w-3" />
         </button>
@@ -113,7 +113,7 @@ export default function StickersTab({
           <button
             type="button"
             onClick={onAdd}
-            className="flex items-center gap-1 rounded-md bg-violet-600/30 px-2 py-1 text-[11px] font-medium text-violet-300 transition-colors hover:bg-violet-600/50 cursor-pointer"
+            className="flex items-center gap-1 rounded-md bg-brand/30 px-2 py-1 text-[11px] font-medium text-brand transition-colors hover:bg-brand/50 cursor-pointer"
           >
             <PlusIcon className="h-3 w-3" />
             <span>Nova Figurinha</span>

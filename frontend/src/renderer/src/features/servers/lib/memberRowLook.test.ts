@@ -10,7 +10,7 @@ describe('memberRowLook', () => {
     expect(look).toEqual({
       displayName: 'Ana',
       handle: 'ana',
-      colorClass: 'bg-indigo-600',
+      colorClass: 'bg-brand',
       nameClass: 'text-gray-200'
     })
   })
@@ -34,7 +34,7 @@ describe('memberRowLook', () => {
   // Issue #332: o dono não tem cor própria; vale a do cargo, como para todos.
   it('o dono online tem a cor de reserva de qualquer membro', () => {
     const look = memberRowLook({ user_id: 'dono', username: 'dono' }, online)
-    expect(look.colorClass).toBe('bg-indigo-600')
+    expect(look.colorClass).toBe('bg-brand')
     expect(look.nameClass).toBe('text-gray-200')
   })
 

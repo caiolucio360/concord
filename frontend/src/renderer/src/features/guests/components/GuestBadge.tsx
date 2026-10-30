@@ -4,7 +4,7 @@ import { GUEST_COPY } from '../lib/guestCopy'
 function GuestBadge({ className = '' }: { className?: string }): React.JSX.Element {
   return (
     <span
-      className={`inline-flex shrink-0 items-center rounded-sm bg-amber-400/15 px-1.5 py-px text-ds-xxs font-bold uppercase tracking-wide text-amber-300 ${className}`}
+      className={`inline-flex shrink-0 items-center rounded-sm bg-warning/15 px-1.5 py-px text-ds-xxs font-bold uppercase tracking-wide text-warning ${className}`}
     >
       {GUEST_COPY.badge}
     </span>

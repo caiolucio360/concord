@@ -50,7 +50,7 @@ export function MessageListTail({
 export function DropOverlay({ visible }: { visible: boolean }): React.JSX.Element | null {
   if (!visible) return null
   return (
-    <div className="pointer-events-none absolute inset-2 z-20 flex items-center justify-center rounded-xl border-2 border-dashed border-violet-400/70 bg-black/60 text-sm font-semibold text-white on-media">
+    <div className="pointer-events-none absolute inset-2 z-20 flex items-center justify-center rounded-xl border-2 border-dashed border-brand/70 bg-black/60 text-sm font-semibold text-white on-media">
       Solte os arquivos para enviar
     </div>
   )

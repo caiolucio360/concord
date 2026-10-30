@@ -15,7 +15,7 @@ export interface OverlayTheme {
   brand: string
   /** Anel de quem fala (ring-success). */
   speaking: string
-  /** Microfone/fone cortados (text-red-400). */
+  /** Microfone/fone cortados (text-danger). */
   danger: string
 }
 
@@ -27,7 +27,7 @@ export const OVERLAY_THEME_VARS: Record<keyof OverlayTheme, string> = {
   muted: '--text-muted',
   brand: '--brand',
   speaking: '--green',
-  danger: '--color-red-400'
+  danger: '--text-danger'
 }
 
 const HEX = /^#[0-9a-f]{6}$/

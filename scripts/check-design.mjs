@@ -66,7 +66,7 @@ const CLASS_RULES = [
   ['hex-classe', /-\[#[0-9a-fA-F]{3,8}\]/g],
   [
     'cor-crua',
-    /(?<![\w-])(?:bg|text|border|ring|from|to|via|shadow|outline|fill|stroke|divide|decoration|placeholder|caret|accent)-(?:violet|red|amber|emerald|green|blue|yellow|orange|purple|indigo|pink|rose|sky|cyan|teal|lime|fuchsia|slate|zinc|neutral|stone)-\d{2,3}\b/g
+    /(?<![\w-])(?:bg|text|border(?:-[trblxyse])?|ring|from|to|via|shadow|outline|fill|stroke|divide|decoration|placeholder|caret|accent)-(?:(?:violet|red|amber|emerald|green|blue|yellow|orange|purple|indigo|pink|rose|sky|cyan|teal|lime|fuchsia|slate|zinc|neutral|stone)-\d{2,3}\b|discord-(?:violet|green|dnd|idle|offline)(?![\w-]))/g
   ],
   ['raio', /(?<![\w-])rounded(?:-[trblse]{1,2})?-(?:2xl|3xl|sm)(?![\w-])/g]
 ]

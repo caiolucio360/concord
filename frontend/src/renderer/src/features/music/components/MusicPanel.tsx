@@ -138,7 +138,7 @@ function MusicPanel({ serverId }: { serverId: string }): React.JSX.Element | nul
           </div>
           <div className="h-1 overflow-hidden rounded bg-fg/10">
             <div
-              className="h-full bg-violet-400"
+              className="h-full bg-brand"
               style={{
                 width: `${Math.min(100, ((elapsed * 1000) / Math.max(1, now.item.duration_ms)) * 100)}%`
               }}

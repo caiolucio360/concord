@@ -35,7 +35,7 @@ function ChannelTypePicker({
           onClick={() => onChange('text')}
           className={`${TYPE_BUTTON} ${
             type === 'text'
-              ? 'border-violet-500 bg-violet-600/20 text-strong'
+              ? 'border-brand bg-brand/20 text-strong'
               : 'border-subtle text-gray-400 hover:bg-fg/5'
           }`}
         >

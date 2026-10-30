@@ -158,13 +158,13 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
               {joinError && (
                 <p
                   role="alert"
-                  className="mt-6 w-full rounded-lg border border-red-400/30 bg-red-500/15 px-3 py-2 text-center text-ds-sm text-red-300"
+                  className="mt-6 w-full rounded-lg border border-danger/30 bg-danger/15 px-3 py-2 text-center text-ds-sm text-danger"
                 >
                   {joinError}
                 </p>
               )}
               {notice && (
-                <p className="mt-6 w-full text-center text-ds-sm text-emerald-300">{notice}</p>
+                <p className="mt-6 w-full text-center text-ds-sm text-success">{notice}</p>
               )}
               {banned ? (
                 <Button variant="secondary" className="mt-6 w-full py-2.5" onClick={close}>
@@ -186,7 +186,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
                   <div className="mt-3 flex gap-4">
                     <button
                       type="button"
-                      className="cursor-pointer text-ds-sm font-medium text-violet-300 hover:text-strong hover:underline"
+                      className="cursor-pointer text-ds-sm font-medium text-brand hover:text-strong hover:underline"
                       onClick={() => void resend()}
                     >
                       Reenviar e-mail

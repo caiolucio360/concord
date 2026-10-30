@@ -227,7 +227,7 @@ function RoleEditor({ serverId, role }: { serverId: string; role: Role }): React
       </div>
 
       {!manageable && (
-        <p className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+        <p className="mb-4 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-warning">
           Este cargo está acima do seu: você pode ver, mas não editar.
         </p>
       )}

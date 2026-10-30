@@ -19,12 +19,8 @@ export default function AccountHeader({
   return (
     <>
       <div
-        className="h-[100px]"
-        style={
-          bannerSrc
-            ? undefined
-            : { background: user.banner_color || 'linear-gradient(135deg, #5865f2, #8b5cf6)' }
-        }
+        className={`h-[100px] ${bannerSrc || user.banner_color ? '' : 'bg-gradient-brand'}`}
+        style={bannerSrc || !user.banner_color ? undefined : { background: user.banner_color }}
       >
         {bannerSrc && <img src={bannerSrc} alt="" className="h-full w-full object-cover" />}
       </div>

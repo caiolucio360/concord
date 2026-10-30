@@ -106,7 +106,7 @@ function ConversationText({
         )}
       </p>
       {typing ? (
-        <p className="truncate text-ds-xs italic text-violet-300">digitando…</p>
+        <p className="truncate text-ds-xs italic text-brand">digitando…</p>
       ) : (
         (isGroup && (
           <p className="truncate text-ds-xs font-medium text-gray-500">

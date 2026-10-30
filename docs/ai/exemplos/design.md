@@ -24,6 +24,10 @@ roda no `affected-tests.mjs pr` e barra o diff que piora alguma regra.
    `success`, `text-strong|normal|secondary|muted|faint`, `bg-*`, véus `bg-fg/5…`.
    Nada de `violet-*`, `red-*`, `amber-*`, `emerald-*`… nem `[#hex]` em classe.
    Hex só em dado (paleta de preset, cor de nível, cor de anotação).
+   Degradê da marca: `bg-gradient-brand` (parte do `--brand` do tema); capa
+   decorativa: `bg-gradient-hero`; manchas do fundo animado: `bg-hero-1…4`
+   (todos em `assets/theme.css`). Marca: `text-brand`, `bg-brand`,
+   `hover:bg-brand-hover`; erro: `danger`; aviso: `warning`; sucesso: `success`.
 6. **Texto pela escala `text-ds-*`** (xxs 10, xs 12, sm 14, md 16, lg 20, xl 24);
    nada de `text-[Npx]`. Abaixo de 10 px não se lê no celular.
 7. **Raio:** `rounded` (4 px: botão, campo, chip de cargo), `rounded-md` (6 px:
@@ -96,7 +100,7 @@ arquivo novo sem "piorar": o achado só mudou de lugar. Regras:
 | `icone-texto` | string ou texto JSX com seta, símbolo, forma, dingbat, emoji, `×` ou `•` |
 | `texto-px` | `text-[Npx]` |
 | `hex-classe` | `-[#hex]` em classe |
-| `cor-crua` | `bg|text|border|ring|…-(violet|red|amber|emerald|…)-N` (os `gray-*` seguem o tema e passam) |
+| `cor-crua` | `bg|text|border|ring|…-(violet|red|amber|emerald|…)-N` e os apelidos `discord-*` (os `gray-*` seguem o tema e passam) |
 | `raio` | `rounded-2xl`, `-3xl`, `-sm` (com ou sem lado) |
 | `outline-none` | `outline-none` sem nenhum `focus` na mesma classe |
 | `svg` | `<svg>` fora de `shared/ui/icons/` e dos gráficos liberados |

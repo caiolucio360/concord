@@ -9,7 +9,7 @@ import { acceptLabel, inviteSubtitle, pendingInvitesLabel, serverInitial } from 
 
 function InviteIcon({ invite }: { invite: ServerInvite }): React.JSX.Element {
   return (
-    <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-linear-to-br from-violet-600 to-indigo-600 text-base font-bold text-white shadow-md">
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-brand text-base font-bold text-white shadow-md">
       {invite.server_icon_url ? (
         <img
           src={serverIconSrc(invite.server_icon_url)}

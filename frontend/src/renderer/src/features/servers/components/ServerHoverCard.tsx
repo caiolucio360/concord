@@ -25,7 +25,7 @@ export function ServerHoverCardBody({
           aria-label={voicePeopleLabel(people)}
           className="mt-1.5 flex items-center gap-2"
         >
-          <VolumeIcon className="h-4 w-4 shrink-0 text-discord-green" />
+          <VolumeIcon className="h-4 w-4 shrink-0 text-success" />
           <div className="flex items-center -space-x-1.5">
             {visible.map((person) => (
               <Avatar

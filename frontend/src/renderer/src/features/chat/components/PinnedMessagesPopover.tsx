@@ -84,7 +84,7 @@ function PinnedMessageItem({
             type="button"
             onClick={() => onJump(pin.id)}
             title="Ir para a mensagem no chat"
-            className="rounded bg-fg/5 px-2 py-0.5 text-[11px] font-medium text-gray-300 hover:bg-violet-600 hover:text-white"
+            className="rounded bg-fg/5 px-2 py-0.5 text-[11px] font-medium text-gray-300 hover:bg-brand hover:text-white"
           >
             Ir
           </button>
@@ -93,7 +93,7 @@ function PinnedMessageItem({
               type="button"
               onClick={() => onUnpin(pin.id)}
               title="Desafixar mensagem"
-              className="rounded bg-fg/5 px-2 py-0.5 text-[11px] font-medium text-gray-400 hover:bg-red-500/20 hover:text-red-400"
+              className="rounded bg-fg/5 px-2 py-0.5 text-[11px] font-medium text-gray-400 hover:bg-danger/20 hover:text-danger"
             >
               Desafixar
             </button>
@@ -129,7 +129,7 @@ function PinnedMessageItem({
 
       {/* Rodapé: Quem fixou */}
       <div className="mt-2.5 flex items-center gap-1 text-[10px] text-gray-500">
-        <PinIcon className="h-3 w-3 text-amber-400/80" />
+        <PinIcon className="h-3 w-3 text-warning/80" />
         <span>
           Fixado por <strong className="text-gray-400">{pinnedByName}</strong> em{' '}
           {formatDateTime(pin.pinned_at)}
@@ -202,7 +202,7 @@ export default function PinnedMessagesPopover({
       {/* Header */}
       <div className="flex shrink-0 items-center justify-between border-b border-subtle px-4 py-3">
         <div className="flex items-center gap-2">
-          <PinIcon className="h-4 w-4 text-amber-400" />
+          <PinIcon className="h-4 w-4 text-warning" />
           <h3 className="text-ds-sm font-semibold text-strong">Mensagens Fixadas</h3>
           <span className="rounded bg-fg/10 px-1.5 py-0.5 text-[11px] font-medium text-gray-300">
             {pins.length}/50

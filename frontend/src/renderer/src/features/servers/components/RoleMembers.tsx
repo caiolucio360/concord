@@ -100,7 +100,7 @@ function RoleMembers({
                   <button
                     type="button"
                     onClick={() => void run(() => removeMemberRole(serverId, m.user_id, role.id))}
-                    className="cursor-pointer text-xs font-semibold text-red-400 hover:text-red-300"
+                    className="cursor-pointer text-xs font-semibold text-danger hover:text-danger"
                   >
                     Remover
                   </button>

@@ -177,7 +177,7 @@ function InviteCard({ code }: { code: string }): React.JSX.Element {
                   href={DOWNLOAD_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-violet-400 hover:underline"
+                  className="font-semibold text-brand hover:underline"
                 >
                   Baixe o app
                 </a>

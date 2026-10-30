@@ -41,6 +41,7 @@ test('classes: px, hex, cor crua e raio fora da escala', () => {
   assert.deepEqual(rules(`<p className="bg-[#14161a]" />`), ['hex-classe'])
   assert.deepEqual(rules(`<p className="bg-violet-600 hover:text-red-400 border-amber-400/30" />`), ['cor-crua', 'cor-crua', 'cor-crua'])
   assert.deepEqual(rules(`<p className="text-gray-400 bg-brand text-danger" />`), [])
+  assert.deepEqual(rules(`<p className="border-t-violet-500 bg-discord-green text-discord-dnd" />`), ['cor-crua', 'cor-crua', 'cor-crua'])
   assert.deepEqual(rules(`<p className="rounded-2xl rounded-t-3xl rounded-sm" />`), ['raio', 'raio', 'raio'])
   assert.deepEqual(rules(`<p className="rounded rounded-md rounded-lg rounded-xl rounded-full" />`), [])
 })

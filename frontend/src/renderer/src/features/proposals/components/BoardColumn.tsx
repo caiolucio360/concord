@@ -30,9 +30,9 @@ function BoardColumn({
   const isOrigin = dragging && dragFrom === status
 
   let state = 'border-subtle'
-  if (accepts) state = isOver ? 'border-violet-400 bg-violet-500/10' : 'border-violet-400/30'
+  if (accepts) state = isOver ? 'border-brand bg-brand/10' : 'border-brand/30'
   else if (dragging && !isOrigin)
-    state = `cursor-not-allowed border-dashed ${isOver ? 'border-red-400/70' : 'border-subtle'}`
+    state = `cursor-not-allowed border-dashed ${isOver ? 'border-danger/70' : 'border-subtle'}`
 
   return (
     <section

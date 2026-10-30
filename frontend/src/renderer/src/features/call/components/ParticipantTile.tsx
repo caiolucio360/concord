@@ -303,7 +303,7 @@ function ParticipantTile({
         </span>
         {!isScreen && <CallActivityBadge userId={user.id} className="h-3.5 w-3.5" />}
         {isMaestroIdentity(user.id) && (
-          <span className="rounded bg-violet-400/30 px-1 text-[9px] font-bold uppercase text-violet-100">
+          <span className="rounded bg-brand/30 px-1 text-[9px] font-bold uppercase text-brand">
             {T18.tag}
           </span>
         )}

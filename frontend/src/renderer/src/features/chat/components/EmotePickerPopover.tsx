@@ -104,7 +104,7 @@ function EmotePickerPanel({
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Buscar emote..."
         aria-label="Buscar emote"
-        className="mb-2 w-full rounded-md border border-subtle bg-input px-2.5 py-1 text-xs text-strong max-md:py-2 max-md:text-base placeholder:text-gray-500 outline-none focus:border-violet-500/50"
+        className="mb-2 w-full rounded-md border border-subtle bg-input px-2.5 py-1 text-xs text-strong max-md:py-2 max-md:text-base placeholder:text-gray-500 outline-none focus:border-brand/50"
       />
       <EmoteGrid search={search} onPick={pick} />
     </div>

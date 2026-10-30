@@ -60,7 +60,7 @@ function MessageEditor({
         maxLength={Math.max(2000, initial.length)}
         aria-label="Editar mensagem"
         disabled={saving}
-        className="w-full resize-none rounded-lg border border-subtle bg-input px-3 py-2 text-ds-chat text-strong outline-none focus:border-violet-500/40 disabled:opacity-60"
+        className="w-full resize-none rounded-lg border border-subtle bg-input px-3 py-2 text-ds-chat text-strong outline-none focus:border-brand/40 disabled:opacity-60"
       />
       <div className="mt-0.5 text-ds-xs text-gray-500">
         Esc para{' '}

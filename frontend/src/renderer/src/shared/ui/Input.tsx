@@ -29,7 +29,7 @@ function Input({
       {label && (
         <label
           htmlFor={inputId}
-          className={`text-ds-sm font-medium ${error ? 'text-red-300' : 'text-gray-300'}`}
+          className={`text-ds-sm font-medium ${error ? 'text-danger' : 'text-gray-300'}`}
         >
           {label}
           {error && <span className="font-normal normal-case"> — {error}</span>}
@@ -41,7 +41,7 @@ function Input({
           type={canReveal && shown ? 'text' : type}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
-          className={`glass-input ${canReveal ? 'pr-16' : ''} ${error ? 'border-red-400/60' : ''} ${className}`}
+          className={`glass-input ${canReveal ? 'pr-16' : ''} ${error ? 'border-danger/60' : ''} ${className}`}
           {...props}
         />
         {canReveal && (

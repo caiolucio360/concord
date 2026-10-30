@@ -89,7 +89,7 @@ export default function SavedProfileCard({
           title="Excluir"
           disabled={busy}
           onClick={onDelete}
-          className={`${ICON_BUTTON} hover:text-red-400`}
+          className={`${ICON_BUTTON} hover:text-danger`}
         >
           <TrashIcon className="size-4" />
         </button>

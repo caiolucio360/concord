@@ -16,7 +16,7 @@ export function ImprovementsHubView({ proposalsStat, rankStat }: ViewProps): Rea
     <div className="flex h-full w-full overflow-hidden bg-primary backdrop-blur-2xl text-gray-100">
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="flex h-14 shrink-0 items-center gap-3 border-b border-subtle px-4">
-          <DiamondIcon className="h-6 w-6 text-violet-400" />
+          <DiamondIcon className="h-6 w-6 text-brand" />
           <h1 className="text-base font-bold tracking-wide text-strong">Melhorias</h1>
         </header>
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">
@@ -31,7 +31,7 @@ export function ImprovementsHubView({ proposalsStat, rankStat }: ViewProps): Rea
                 title="Propostas de melhorias"
                 description="Sugira ideias e vote no que o time deve construir."
                 stat={proposalsStat}
-                tone={{ glow: 'bg-violet-500', icon: 'text-violet-400' }}
+                tone={{ glow: 'bg-brand', icon: 'text-brand' }}
               />
               <HubCard
                 to={CHANGELOG_PATH}
@@ -39,7 +39,7 @@ export function ImprovementsHubView({ proposalsStat, rankStat }: ViewProps): Rea
                 title="Novidades"
                 description="O que mudou em cada versão do Salinha."
                 stat={null}
-                tone={{ glow: 'bg-emerald-500', icon: 'text-emerald-400' }}
+                tone={{ glow: 'bg-success', icon: 'text-success' }}
               />
               <HubCard
                 to={RANKING_PATH}
@@ -47,7 +47,7 @@ export function ImprovementsHubView({ proposalsStat, rankStat }: ViewProps): Rea
                 title="Rank global"
                 description="Os 100 maiores níveis do Salinha."
                 stat={rankStat}
-                tone={{ glow: 'bg-amber-400', icon: 'text-amber-300' }}
+                tone={{ glow: 'bg-warning', icon: 'text-warning' }}
               />
             </div>
           </div>

@@ -69,7 +69,7 @@ export function ProposalByline({ proposal: p, now }: { proposal: Proposal; now: 
         </span>
       )}
       {p.status === 'voting' && (
-        <span className="ml-auto shrink-0 text-violet-300">{timeLeftLabel(p.voting_ends_at, now)}</span>
+        <span className="ml-auto shrink-0 text-brand">{timeLeftLabel(p.voting_ends_at, now)}</span>
       )}
     </div>
   )
@@ -87,9 +87,9 @@ export function ProposalVoteBar({ proposal: p }: { proposal: Proposal }): React.
         role="img"
         aria-label={`${p.yes_votes} sim e ${p.no_votes} não`}
       >
-        <div className="bg-discord-green transition-all" style={{ width: `${percent}%` }} />
+        <div className="bg-success transition-all" style={{ width: `${percent}%` }} />
         <div
-          className="bg-discord-dnd transition-all"
+          className="bg-danger transition-all"
           style={{ width: total === 0 ? '0%' : `${100 - percent}%` }}
         />
       </div>
@@ -146,7 +146,7 @@ export function ProposalIssueLink({ proposal: p }: { proposal: Proposal }): Reac
       target="_blank"
       rel="noreferrer"
       onClick={stopPropagation}
-      className="text-xs font-medium text-violet-300 hover:text-violet-200 hover:underline"
+      className="text-xs font-medium text-brand hover:text-strong hover:underline"
     >
       Issue #{p.github_issue_number} no GitHub
     </a>

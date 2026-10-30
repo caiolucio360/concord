@@ -86,7 +86,7 @@ describe('ServerMemberList', () => {
     const html = render()
     expect(html.match(/aria-label="Dono do servidor"/g)).toHaveLength(1)
     expect(html).toContain('title="Dono do servidor"')
-    expect(html).not.toContain('bg-amber-600')
+    expect(html).not.toContain('bg-warning')
   })
 
   it('o cargo colorido pinta o nome e o offline fica cinza', () => {
@@ -98,7 +98,7 @@ describe('ServerMemberList', () => {
 
   it('o bot está sempre online e tem a etiqueta no lugar do nível', () => {
     const html = render()
-    expect(html).toMatch(/data-status="online" data-cor="bg-indigo-600"/)
+    expect(html).toMatch(/data-status="online" data-cor="bg-brand"/)
     expect(html).not.toContain('Membros — 0')
   })
 

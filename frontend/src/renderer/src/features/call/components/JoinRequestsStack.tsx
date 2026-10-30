@@ -15,7 +15,7 @@ export function JoinRequestsStack(): React.JSX.Element | null {
         return (
           <div
             key={user.id}
-            className="pointer-events-auto flex items-center justify-between gap-3 rounded-xl border border-amber-500/30 bg-floating p-3 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-bottom-2 duration-200"
+            className="pointer-events-auto flex items-center justify-between gap-3 rounded-xl border border-warning/30 bg-floating p-3 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-bottom-2 duration-200"
           >
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="relative shrink-0">
@@ -30,13 +30,13 @@ export function JoinRequestsStack(): React.JSX.Element | null {
                     {name.slice(0, 1).toUpperCase()}
                   </div>
                 )}
-                <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-black">
+                <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-warning text-black">
                   <LockIcon className="h-2.5 w-2.5" />
                 </div>
               </div>
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-strong">{name}</p>
-                <p className="text-xs text-amber-400/90 font-medium">Pediu para entrar na sala</p>
+                <p className="text-xs text-warning/90 font-medium">Pediu para entrar na sala</p>
               </div>
             </div>
 

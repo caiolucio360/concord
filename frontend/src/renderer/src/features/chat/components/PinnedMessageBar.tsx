@@ -27,7 +27,7 @@ export default function PinnedMessageBar({
       className="group relative z-10 flex shrink-0 cursor-pointer items-center justify-between border-b border-subtle bg-floating px-4 py-2 backdrop-blur transition hover:bg-surface"
     >
       <div className="flex min-w-0 items-center gap-2.5">
-        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-amber-400/15 text-amber-400">
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-warning/15 text-warning">
           <PinIcon className="h-3.5 w-3.5" />
         </span>
         <div className="flex min-w-0 items-center gap-1.5 text-ds-xs">
@@ -44,7 +44,7 @@ export default function PinnedMessageBar({
             {more}
           </span>
         )}
-        <span className="flex items-center gap-0.5 text-[11px] font-medium text-violet-400 opacity-80 group-hover:opacity-100 group-hover:underline">
+        <span className="flex items-center gap-0.5 text-[11px] font-medium text-brand opacity-80 group-hover:opacity-100 group-hover:underline">
           Ir para mensagem
           <ChevronRightIcon size={12} />
         </span>

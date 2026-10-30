@@ -205,7 +205,7 @@ function VoiceControls(): React.JSX.Element {
             !connected
               ? 'cursor-not-allowed bg-fg/5 text-gray-500 opacity-50'
               : locked
-                ? 'cursor-pointer bg-amber-500 text-black shadow-sm hover:bg-amber-400'
+                ? 'cursor-pointer bg-warning text-black shadow-sm hover:bg-warning/80'
                 : 'cursor-pointer bg-fg/5 text-gray-200 hover:bg-fg/10'
           }`}
         >

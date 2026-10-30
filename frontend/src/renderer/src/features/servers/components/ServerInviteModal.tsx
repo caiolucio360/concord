@@ -111,7 +111,7 @@ function ServerInviteModal({ server }: { server: Server }): React.JSX.Element {
                   {alreadyInServer ? (
                     <span className="text-xs text-gray-500">Já é membro</span>
                   ) : alreadyInvited ? (
-                    <span className="text-xs text-violet-300">Convite pendente</span>
+                    <span className="text-xs text-brand">Convite pendente</span>
                   ) : (
                     <Button
                       variant="success"

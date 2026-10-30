@@ -34,7 +34,7 @@ function EmailVerifyBanner(): React.JSX.Element | null {
   return (
     <div
       role="status"
-      className="flex items-center gap-3 border-b border-amber-400/20 bg-amber-500/10 px-4 py-2 text-sm text-amber-100"
+      className="flex items-center gap-3 border-b border-warning/20 bg-warning/10 px-4 py-2 text-sm text-warning"
     >
       <span className="min-w-0 flex-1 truncate">
         {message ?? `Confirme seu e-mail (${user.email}) para liberar convites e entrada em servidores.`}
@@ -44,7 +44,7 @@ function EmailVerifyBanner(): React.JSX.Element | null {
           type="button"
           onClick={resend}
           disabled={status === 'sending'}
-          className="shrink-0 cursor-pointer font-semibold text-amber-200 underline-offset-2 hover:underline disabled:opacity-50"
+          className="shrink-0 cursor-pointer font-semibold text-warning underline-offset-2 hover:underline disabled:opacity-50"
         >
           {status === 'sending' ? 'Enviando...' : 'Reenviar e-mail'}
         </button>

@@ -103,7 +103,7 @@ function ProposalForm({
       }}
     >
       {dragging && (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-lg border-2 border-dashed border-violet-400 bg-black/60 text-sm font-medium text-violet-200 on-media">
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-lg border-2 border-dashed border-brand bg-black/60 text-sm font-medium text-brand on-media">
           Solte as imagens aqui
         </div>
       )}

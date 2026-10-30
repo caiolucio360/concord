@@ -70,11 +70,11 @@ function ProposalDetailModal({
                 size={24}
               />
               <span className="font-medium text-gray-200">{p.author_name}</span>
-              <span className="rounded-full bg-violet-500/15 px-2.5 py-0.5 text-[11px] font-medium text-violet-200 ring-1 ring-violet-400/30">
+              <span className="rounded-full bg-brand/15 px-2.5 py-0.5 text-[11px] font-medium text-brand ring-1 ring-brand/30">
                 {columnTitle(p.status)}
               </span>
               {p.status === 'voting' && (
-                <span className="text-violet-300">{timeLeftLabel(p.voting_ends_at, now)}</span>
+                <span className="text-brand">{timeLeftLabel(p.voting_ends_at, now)}</span>
               )}
               {p.edited_at && <span className="text-gray-500">(editada)</span>}
             </div>
@@ -120,11 +120,11 @@ function ProposalDetailModal({
                   aria-label={`${p.yes_votes} sim e ${p.no_votes} não`}
                 >
                   <div
-                    className="bg-discord-green transition-all"
+                    className="bg-success transition-all"
                     style={{ width: `${percent}%` }}
                   />
                   <div
-                    className="bg-discord-dnd transition-all"
+                    className="bg-danger transition-all"
                     style={{ width: total === 0 ? '0%' : `${100 - percent}%` }}
                   />
                 </div>
@@ -171,7 +171,7 @@ function ProposalDetailModal({
                     href={p.github_issue_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs font-medium text-violet-300 hover:text-violet-200 hover:underline"
+                    className="text-xs font-medium text-brand hover:text-strong hover:underline"
                   >
                     Issue #{p.github_issue_number} no GitHub
                   </a>

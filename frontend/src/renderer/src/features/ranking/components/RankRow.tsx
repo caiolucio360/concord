@@ -13,7 +13,7 @@ function RankRow({ entry, isMe }: { entry: RankingEntry; isMe: boolean }): React
       <button
         type="button"
         onClick={profileCardHandler(entry.user_id, name, entry.username, 'top')}
-        className={`flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors hover:bg-fg/5 focus-ring ${isMe ? 'bg-violet-500/10' : ''}`}
+        className={`flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors hover:bg-fg/5 focus-ring ${isMe ? 'bg-brand/10' : ''}`}
       >
         <span className="w-10 shrink-0 text-right text-sm font-bold tabular-nums text-gray-400">
           {positionLabel(entry.position)}

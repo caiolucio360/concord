@@ -21,7 +21,7 @@ function InviteFriendRow({
   return (
     <li>
       <label
-        className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 transition-colors focus-within:outline-2 focus-within:outline-violet-400 hover:bg-fg/5 ${
+        className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 transition-colors focus-within:outline-2 focus-within:outline-brand hover:bg-fg/5 ${
           selected ? 'bg-fg/10' : ''
         }`}
       >

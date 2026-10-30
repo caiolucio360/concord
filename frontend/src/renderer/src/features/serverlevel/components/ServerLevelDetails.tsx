@@ -39,7 +39,7 @@ function ServerLevelDetails({ serverId }: { serverId: string }): React.JSX.Eleme
               </div>
               <div className="h-1 overflow-hidden rounded-full bg-fg/10" aria-hidden="true">
                 <div
-                  className="h-full rounded-full bg-violet-400"
+                  className="h-full rounded-full bg-brand"
                   style={{ width: `${row.percent}%` }}
                 />
               </div>

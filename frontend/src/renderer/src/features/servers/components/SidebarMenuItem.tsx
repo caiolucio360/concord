@@ -1,7 +1,7 @@
 const TONES = {
   normal: 'text-gray-200 hover:bg-fg/10',
-  brand: 'text-violet-300 hover:bg-violet-600/20 hover:text-violet-200',
-  danger: 'text-red-400 hover:bg-red-500/15'
+  brand: 'text-brand hover:bg-brand/20',
+  danger: 'text-danger hover:bg-danger/15'
 } as const
 
 export type SidebarMenuTone = keyof typeof TONES

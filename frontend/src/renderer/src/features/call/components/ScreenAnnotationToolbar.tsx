@@ -146,7 +146,7 @@ export default function ScreenAnnotationToolbar({
           type="button"
           title="Limpar todas as anotações"
           onClick={() => clear(callId, sharerId)}
-          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-gray-300 transition-colors hover:bg-rose-500/20 hover:text-rose-400"
+          className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg text-gray-300 transition-colors hover:bg-danger/20 hover:text-danger"
         >
           <TrashIcon className="h-4 w-4" />
         </button>

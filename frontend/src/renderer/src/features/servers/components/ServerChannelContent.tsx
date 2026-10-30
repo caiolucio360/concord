@@ -17,7 +17,7 @@ function ServerWelcome({ name }: { name: string }): React.JSX.Element {
   return (
     <div className="flex flex-1 flex-col justify-between overflow-y-auto p-6">
       <div className="my-auto max-w-lg space-y-4">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-violet-600/30 border border-violet-500/40 text-violet-300 font-bold text-2xl shadow-lg">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand/30 border border-brand/40 text-brand font-bold text-2xl shadow-lg">
           #
         </div>
         <h1 className="text-ds-xxl font-bold text-strong">Bem-vindo a #{name}!</h1>

@@ -48,7 +48,7 @@ const CARD_WIDTH = 300
 /** Altura aproximada do submenu de status (4 opções, duas com descrição). */
 const STATUS_MENU_HEIGHT = 230
 
-const OWNER_STYLE = { label: 'Dono do servidor', color: '#f59e0b', avatar: 'bg-amber-600' } as const
+const OWNER_STYLE = { label: 'Dono do servidor', color: '#f59e0b', avatar: 'bg-warning' } as const
 /** Cor de quem não tem cargo colorido. */
 const NO_ROLE_COLOR = '#6366f1'
 
@@ -330,7 +330,7 @@ function UserProfileCard(): React.JSX.Element | null {
     color: isServerOwner
       ? OWNER_STYLE.color
       : (roleColorCss(memberColor(serverRoles, member?.role_ids)) ?? NO_ROLE_COLOR),
-    avatar: isServerOwner ? OWNER_STYLE.avatar : 'bg-indigo-600'
+    avatar: isServerOwner ? OWNER_STYLE.avatar : 'bg-brand'
   }
   const tier = level !== undefined ? levelTier(level) : null
 

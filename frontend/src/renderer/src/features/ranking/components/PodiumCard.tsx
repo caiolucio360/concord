@@ -6,9 +6,9 @@ import LevelChip from './LevelChip'
 
 // Por colocação: tamanho do avatar, altura do degrau e cor do destaque.
 const PLACE = {
-  1: { avatar: 72, step: 'h-24', ring: 'ring-amber-300', text: 'text-amber-300' },
-  2: { avatar: 56, step: 'h-16', ring: 'ring-slate-300', text: 'text-slate-300' },
-  3: { avatar: 56, step: 'h-12', ring: 'ring-orange-400', text: 'text-orange-400' }
+  1: { avatar: 72, step: 'h-24', ring: 'ring-warning', text: 'text-warning' },
+  2: { avatar: 56, step: 'h-16', ring: 'ring-fg/50', text: 'text-secondary' },
+  3: { avatar: 56, step: 'h-12', ring: 'ring-warning/60', text: 'text-warning/70' }
 } as const
 
 function PodiumCard({ slot }: { slot: PodiumSlot }): React.JSX.Element {

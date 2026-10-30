@@ -59,8 +59,8 @@ function ServerRailItem({
           view.dimmed ? 'opacity-50' : ''
         } ${
           isActive
-            ? 'rounded-2xl bg-violet-600 text-white shadow-md shadow-violet-500/30'
-            : 'rounded-3xl bg-surface border border-subtle text-strong hover:text-white hover:rounded-2xl hover:bg-violet-600 hover:shadow-md hover:shadow-violet-500/30'
+            ? 'rounded-2xl bg-brand text-white shadow-md shadow-brand/30'
+            : 'rounded-3xl bg-surface border border-subtle text-strong hover:text-white hover:rounded-2xl hover:bg-brand hover:shadow-md hover:shadow-brand/30'
         }`}
       >
         {iconUrl ? (
@@ -70,7 +70,7 @@ function ServerRailItem({
         )}
       </button>
       {view.badge > 0 && (
-        <span className="absolute -bottom-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-md">
+        <span className="absolute -bottom-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white shadow-md">
           {badgeText(view.badge)}
         </span>
       )}
@@ -78,7 +78,7 @@ function ServerRailItem({
         <span
           aria-label={voiceLabel}
           className={`absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border-[3px] border-[var(--bg-app)] shadow-md ${
-            view.voice === 'mine' ? 'bg-discord-green text-white' : 'bg-accent text-discord-green'
+            view.voice === 'mine' ? 'bg-success text-white' : 'bg-accent text-success'
           }`}
         >
           <VolumeIcon className="h-3 w-3" />
