@@ -39,11 +39,65 @@ const EVENTS: Record<string, string> = {
   decoder_software: 'Decodificando no processador',
   congelamento_longo: 'Congelamento longo',
   pausada_pelo_servidor: 'Pausada pelo servidor',
-  codec_trocou: 'Codec trocou'
+  codec_trocou: 'Codec trocou',
+  codec_escolhido: 'Codec escolhido',
+  conexao_falhou: 'Voz não conectou',
+  reconectou: 'Voz reconectou'
 }
 
 export function eventLabel(type: string): string {
   return EVENTS[type] ?? type
+}
+
+/** Os sinais da ADR 0032 de uma sessão (o que qualityLine lê). */
+export interface QualitySignals {
+  kind: string
+  fps: number | null
+  capture_fps: number | null
+  recv_fps: number | null
+  codec_ms: number | null
+  concealed_pct: number | null
+  recv_loss_pct: number | null
+  connect_ms: number | null
+  reconnects: number
+  failures: number
+}
+
+type Part = [value: number | null, label: (v: string) => string, digits?: number]
+
+const positive = (n: number): number | null => (n > 0 ? n : null)
+
+function partsOf(s: QualitySignals): Part[] {
+  if (s.kind === 'call') {
+    return [
+      [s.concealed_pct, (v) => `Áudio sintetizado ${v}%`],
+      [s.recv_loss_pct, (v) => `perda recebida ${v}%`],
+      [s.connect_ms === null ? null : s.connect_ms / 1000, (v) => `entrou em ${v} s`],
+      [positive(s.reconnects), (v) => `${v} ${s.reconnects === 1 ? 'reconexão' : 'reconexões'}`, 0],
+      [positive(s.failures), (v) => `${v} ${s.failures === 1 ? 'falha' : 'falhas'}`, 0]
+    ]
+  }
+  const [first, second] =
+    s.kind === 'transmite' ? ['Captura', 'codificado'] : ['Chegam', 'decodificados']
+  const head = s.kind === 'transmite' ? s.capture_fps : s.recv_fps
+  return [
+    [head, (v) => `${first} ${v} fps`, 0],
+    [head === null ? null : s.fps, (v) => `${second} ${v} fps`, 0],
+    [s.codec_ms, (v) => `${v} ms/quadro`]
+  ]
+}
+
+/**
+ * Onde os quadros se perdem (captura × codificado; chegam × decodificados) ou
+ * como foi a voz (áudio sintetizado, perda, entrada, quedas). null sem dado.
+ */
+export function qualityLine(s: QualitySignals): string | null {
+  const parts = partsOf(s).filter(([value]) => value !== null)
+  if (parts.length === 0) return null
+  const text = parts
+    .map(([value, label, digits = 1]) => label(decimal(value as number, digits)))
+    .join(' · ')
+  return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
 /** Teto do eixo: 1, 2, 2,5 ou 5 × 10ⁿ logo acima do maior valor. */

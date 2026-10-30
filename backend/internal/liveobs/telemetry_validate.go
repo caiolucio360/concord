@@ -33,6 +33,7 @@ var (
 	clientEvents = map[string]bool{
 		EventStepDown: true, EventStepUp: true, EventBackupOn: true, EventEncoderSW: true,
 		EventDecoderSW: true, EventLongFreeze: true, EventServerPaused: true, EventCodecSwitched: true,
+		EventCodecChosen: true, EventConnectFailed: true, EventReconnected: true,
 	}
 )
 
@@ -100,6 +101,17 @@ func (s *Sample) clean() {
 		*p = countIn(*p)
 	}
 	s.FreezeMs = int(between(float64(s.FreezeMs), 0, maxMs))
+	s.cleanQuality()
+}
+
+// cleanQuality: os sinais da ADR 0032.
+func (s *Sample) cleanQuality() {
+	s.CaptureFPS = floatIn(s.CaptureFPS, maxFPS)
+	s.RecvFPS = floatIn(s.RecvFPS, maxFPS)
+	s.CodecMs = floatIn(s.CodecMs, maxMs)
+	s.ConcealedPct = floatIn(s.ConcealedPct, 100)
+	s.RecvLossPct = floatIn(s.RecvLossPct, 100)
+	s.ConnectMs = intIn(s.ConnectMs, int(maxMs))
 }
 
 // cleanEvents: só os tipos conhecidos, no máximo maxEvents, detalhe cortado.

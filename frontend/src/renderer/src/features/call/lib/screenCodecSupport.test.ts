@@ -3,7 +3,8 @@ import {
   clearScreenCodecCache,
   detectScreenCodecs,
   markSoftwareCodec,
-  screenCodecSupport
+  screenCodecSupport,
+  softwareMarkedCodecs
 } from './screenCodecSupport'
 
 const video = { width: 1920, height: 1080, bitrate: 7_000_000, framerate: 60 }
@@ -117,5 +118,13 @@ describe('detectScreenCodecs', () => {
       h264: null,
       vp8: 'software'
     })
+  })
+})
+
+describe('softwareMarkedCodecs', () => {
+  it('os codecs que já caíram no processador neste aparelho', () => {
+    expect(softwareMarkedCodecs()).toEqual([])
+    markSoftwareCodec('h265')
+    expect(softwareMarkedCodecs()).toEqual(['h265'])
   })
 })
