@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('../../chat/components/ReplyReference', () => ({
-  default: (p: { authorName: string | null; content: string }) => (
-    <p data-reply>{`${p.authorName}|${p.content}`}</p>
+  default: (p: { authorName: string | null; preview: { text: string } }) => (
+    <p data-reply>{`${p.authorName}|${p.preview.text}`}</p>
   )
 }))
 vi.mock('../../chat/components/MessageText', () => ({

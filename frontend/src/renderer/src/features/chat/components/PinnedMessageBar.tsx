@@ -1,6 +1,7 @@
 import type { PinnedMessage } from '../api/messages'
 import { ChevronRightIcon, PinIcon } from '../../../shared/ui/icons'
 import { messageAuthorName, morePinsLabel, pinnedPreview } from '../lib/chatPaneView'
+import PreviewText from './PreviewText'
 
 /** Barra com a última mensagem fixada no topo do canal; clicar pula até ela. */
 export default function PinnedMessageBar({
@@ -33,7 +34,7 @@ export default function PinnedMessageBar({
           <span className="shrink-0 font-semibold text-strong">
             {messageAuthorName(latestPin, nicknames)}:
           </span>
-          <span className="truncate text-gray-300">{pinnedPreview(latestPin)}</span>
+          <PreviewText preview={pinnedPreview(latestPin)} className="text-gray-300" />
         </div>
       </div>
 

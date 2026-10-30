@@ -16,7 +16,8 @@ import MessageSticker from './MessageSticker'
 import MessageGif from './MessageGif'
 import TTSBadge from '../../tts/components/TTSBadge'
 import { useChatStore } from '../store/chatStore'
-import { messagePreview } from '../lib/polls'
+import { messagePreviewParts } from '../lib/polls'
+import { textPreview, type Preview } from '../lib/preview'
 
 // Pedaços da linha de mensagem do chat (ver MessageItem).
 
@@ -76,14 +77,13 @@ export function BlockedMessageNotice({
   )
 }
 
-/** Prévia do texto citado na resposta (anexo, enquete, figurinha, GIF ou texto comum). */
-export function replyPreviewText(
+/** Prévia do que foi citado na resposta (anexo, enquete, figurinha, GIF ou texto comum). */
+export function replyPreview(
   original: Message | undefined,
   replyTo: ReplyPreview | null | undefined
-): string {
-  if (original) return messagePreview(original)
-  if (!replyTo) return ''
-  return replyTo.content || ''
+): Preview {
+  if (original) return messagePreviewParts(original)
+  return textPreview(replyTo?.content || '')
 }
 
 /** "Respondendo a…" acima da mensagem, com o avatar, o apelido, a cor e a prévia do que foi respondido. */
@@ -111,7 +111,7 @@ export function MessageReplyReference({
   const replyNickname = useServerNickname(serverId, replyAuthorId)
   const replyAuthorColor = useServerMemberColor(serverId, replyAuthorId)
   const replyAuthorName = serverDisplayName({ nickname: replyNickname }, replyAuthor)
-  const previewText = replyPreviewText(originalMessage, message.reply_to)
+  const preview = replyPreview(originalMessage, message.reply_to)
 
   return (
     <ReplyReference
@@ -119,8 +119,7 @@ export function MessageReplyReference({
       authorAvatarUrl={replyAuthor?.avatar_url}
       authorId={replyAuthorId}
       authorColor={replyAuthorColor}
-      content={previewText}
-      emptyLabel="🖼️ Imagem"
+      preview={preview}
       onJump={() => message.reply_to && onJumpToMessage(message.reply_to.id)}
     />
   )

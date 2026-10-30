@@ -3,7 +3,10 @@ import MessageAttachments from '../../chat/components/MessageAttachments'
 import MessageText from '../../chat/components/MessageText'
 import ReplyReference from '../../chat/components/ReplyReference'
 import { commentPreview } from '../lib/proposals'
+import { textPreview, type Preview } from '../../chat/lib/preview'
 import CommentEditForm from './CommentEditForm'
+
+const ATTACHMENT: Preview = { icon: 'attachment', text: 'Anexo' }
 
 const formatTime = (iso: string): string =>
   new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
@@ -21,8 +24,8 @@ export function CommentReply({
   return (
     <ReplyReference
       authorName={original ? original.author_name : null}
-      content={original ? commentPreview(original) : ''}
-      emptyLabel="📎 Anexo"
+      preview={original ? commentPreview(original) : textPreview('')}
+      empty={ATTACHMENT}
       onJump={() => original && onJump(original.id)}
     />
   )

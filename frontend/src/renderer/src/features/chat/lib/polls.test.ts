@@ -4,6 +4,7 @@ import {
   applyPollUpdate,
   isPollClosed,
   messagePreview,
+  messagePreviewParts,
   pollDraftError,
   pollDraftToInput,
   pollPercent,
@@ -112,6 +113,18 @@ describe('messagePreview', () => {
     expect(messagePreview({ content: '', poll: null, attachments: audio })).toBe('🎤 Áudio')
     expect(messagePreview({ content: 'olha', poll: null, attachments: audio })).toBe('olha')
     expect(messagePreview({ content: '', poll: poll(), attachments: audio })).toBe('📊 Jantar?')
+  })
+})
+
+describe('messagePreviewParts (dentro do app: o ícone é desenhado)', () => {
+  it('enquete, figurinha, GIF e anexo levam o tipo; o texto vem sem emoji', () => {
+    const audio = [{ kind: 'audio' }] as Attachment[]
+    expect(messagePreviewParts({ content: '', poll: poll() })).toEqual({ icon: 'poll', text: 'Jantar?' })
+    expect(messagePreviewParts({ content: 'oi' })).toEqual({ icon: null, text: 'oi' })
+    expect(messagePreviewParts({ content: '', sticker_id: 's' })).toEqual({ icon: 'sticker', text: 'Figurinha' })
+    expect(messagePreviewParts({ content: '', gif_url: 'g' })).toEqual({ icon: 'gif', text: 'GIF' })
+    expect(messagePreviewParts({ content: '', attachments: audio })).toEqual({ icon: 'audio', text: 'Áudio' })
+    expect(messagePreviewParts({ content: '' })).toEqual({ icon: null, text: '' })
   })
 })
 

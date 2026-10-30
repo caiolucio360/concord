@@ -9,7 +9,8 @@ import UnifiedMediaPickerPopover from './UnifiedMediaPickerPopover'
 import VoiceRecordButton from './VoiceRecordButton'
 import MobileSheet from '../../../shared/ui/MobileSheet'
 import CloseButton from '../../../shared/ui/CloseButton'
-import { messagePreview } from '../lib/polls'
+import { messagePreviewParts } from '../lib/polls'
+import PreviewText from './PreviewText'
 import { submitLabel } from '../lib/chatPaneView'
 
 // Peças do campo de mensagem do ChatPane: cada uma decide sozinha se aparece.
@@ -46,7 +47,7 @@ export function ReplyBar({
     <div className="mb-1.5 flex items-center justify-between gap-2 rounded-lg border border-subtle bg-floating px-3 py-1.5 text-ds-sm text-gray-300">
       <div className="min-w-0 truncate">
         Respondendo a <span className="font-semibold text-strong">@{authorName}</span>
-        <span className="ml-2 text-gray-400">{messagePreview(replyingTo)}</span>
+        <PreviewText preview={messagePreviewParts(replyingTo)} className="ml-2 text-gray-400" />
       </div>
       <CloseButton
         label="Cancelar resposta"

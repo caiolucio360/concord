@@ -38,6 +38,8 @@ const GLYPH_ALLOW = [
   'features/profile/components/ProfileCardFrame.tsx',
   'features/profile/components/BirthdayModal.tsx',
   'features/notifications/lib/notifications.ts',
+  // Prévia em texto puro (notificação do SO e espelho da prévia do backend).
+  'features/chat/lib/previewEmoji.ts',
   'features/call/lib/screenStatsFormat.ts'
 ]
 

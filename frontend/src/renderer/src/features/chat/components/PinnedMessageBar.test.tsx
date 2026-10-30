@@ -29,4 +29,10 @@ describe('PinnedMessageBar', () => {
     expect(html).not.toContain('→')
     expect(html).toMatch(/Ir para mensagem<svg[^>]*aria-hidden="true"/)
   })
+
+  it('fixada só com imagem: ícone desenhado e "Imagem", sem emoji', () => {
+    const html = render([pin({ content: '', attachments: [{ kind: 'image' }] } as Partial<PinnedMessage>)])
+    expect(html).not.toMatch(/📷|🖼/)
+    expect(html).toMatch(/<svg[^>]*aria-hidden="true"(?:(?!<\/svg>).)*<\/svg><span class="truncate">Imagem<\/span>/)
+  })
 })

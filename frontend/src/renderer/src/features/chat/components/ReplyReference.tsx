@@ -1,4 +1,8 @@
 import Avatar from '../../../shared/ui/Avatar'
+import type { Preview } from '../lib/preview'
+import PreviewText from './PreviewText'
+
+const IMAGE: Preview = { icon: 'image', text: 'Imagem' }
 
 /**
  * Linha "↳ [avatar] @fulano texto…" acima de uma mensagem que responde a outra. Clicar
@@ -9,8 +13,8 @@ function ReplyReference({
   authorAvatarUrl,
   authorId,
   authorColor,
-  content,
-  emptyLabel = '🖼️ Imagem',
+  preview,
+  empty = IMAGE,
   onJump
 }: {
   /** Nulo quando a mensagem original foi excluída. */
@@ -19,9 +23,9 @@ function ReplyReference({
   authorId?: string
   /** Cor do cargo mais alto do autor no servidor (CSS). */
   authorColor?: string
-  content: string
+  preview: Preview
   /** O que mostrar quando a original não tem texto (só anexo). */
-  emptyLabel?: string
+  empty?: Preview
   onJump: () => void
 }): React.JSX.Element {
   return (
@@ -46,7 +50,7 @@ function ReplyReference({
           >
             @{authorName}
           </span>
-          <span className="truncate text-gray-400">{content || emptyLabel}</span>
+          <PreviewText preview={preview.text ? preview : empty} className="text-gray-400" />
         </button>
       ) : (
         <span className="italic text-gray-500">Mensagem original foi excluída</span>

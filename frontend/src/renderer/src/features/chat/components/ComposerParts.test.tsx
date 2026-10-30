@@ -23,4 +23,11 @@ describe('ReplyBar', () => {
     expect(html).not.toContain('✕')
     expect(html).toContain('<svg')
   })
+
+  it('respondendo a uma enquete: ícone de enquete e a pergunta, sem emoji', () => {
+    const poll = { ...msg, content: '', poll: { question: 'Pizza?' } } as Message
+    const html = renderToStaticMarkup(<ReplyBar replyingTo={poll} authorName="ana" onCancel={() => {}} />)
+    expect(html).not.toContain('📊')
+    expect(html).toMatch(/<svg[^>]*aria-hidden="true"(?:(?!<\/svg>).)*<\/svg><span class="truncate">Pizza\?<\/span>/)
+  })
 })

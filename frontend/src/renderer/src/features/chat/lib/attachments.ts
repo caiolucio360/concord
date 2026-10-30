@@ -1,4 +1,5 @@
 import type { Attachment, AttachmentKind } from '../api/messages'
+import type { Preview } from './preview'
 
 // Limites iguais aos do backend (internal/platform/media e internal/message).
 export const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024
@@ -135,18 +136,18 @@ export function formatDuration(ms: number): string {
 }
 
 /** Prévia de mensagem só com anexos (mesmos rótulos do backend). */
-export function attachmentLabel(
+export function attachmentPreview(
   attachments: Pick<Attachment, 'kind'>[] | null | undefined
-): string | null {
+): Preview | null {
   if (!attachments || attachments.length === 0) return null
-  if (attachments.length > 1) return `📎 ${attachments.length} anexos`
+  if (attachments.length > 1) return { icon: 'attachment', text: `${attachments.length} anexos` }
   switch (attachments[0].kind) {
     case 'image':
-      return '🖼️ Imagem'
+      return { icon: 'image', text: 'Imagem' }
     case 'video':
-      return '🎬 Vídeo'
+      return { icon: 'video', text: 'Vídeo' }
     default:
-      return '🎤 Áudio'
+      return { icon: 'audio', text: 'Áudio' }
   }
 }
 

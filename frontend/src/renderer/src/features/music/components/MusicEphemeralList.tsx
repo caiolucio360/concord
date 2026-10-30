@@ -4,6 +4,7 @@ import { pickSearchResult } from '../api/music'
 import { formatDuration, MAESTRO_NAME, T14_DISMISS, T14_LABEL, T16_TITLE } from '../lib/music'
 import { useMusicStore, type MusicEphemeral } from '../store/musicStore'
 import { showToast } from '../../../shared/store/toastStore'
+import { EyeIcon, SearchIcon } from '../../../shared/ui/icons'
 import MaestroAvatar from './MaestroAvatar'
 import { MaestroText } from './MusicMessage'
 
@@ -40,7 +41,10 @@ function SearchPicker({ e, serverId }: { e: MusicEphemeral; serverId: string }):
 
   return (
     <div className="mt-1">
-      <p className="text-sm text-gray-100">{T16_TITLE(search.query)}</p>
+      <p className="flex items-start gap-1.5 text-sm text-gray-100">
+        <SearchIcon size={16} className="mt-0.5 shrink-0 text-muted" />
+        {T16_TITLE(search.query)}
+      </p>
       <div className="mt-2 flex flex-col gap-1">
         {search.results.map((r, i) => (
           <button
@@ -89,8 +93,9 @@ function MusicEphemeralList({
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline gap-2">
               <span className="text-sm font-semibold text-violet-200">{MAESTRO_NAME}</span>
-              <span className="text-[10px] text-gray-500">
-                {T14_LABEL} ·{' '}
+              <span className="inline-flex flex-wrap items-center gap-x-1 text-[10px] text-gray-500">
+                <EyeIcon size={12} />
+                {T14_LABEL} ·
                 <button
                   type="button"
                   onClick={() => dismiss(e.id)}

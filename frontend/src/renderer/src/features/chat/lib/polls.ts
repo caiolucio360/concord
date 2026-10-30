@@ -1,5 +1,7 @@
 import type { CreatePollInput, Message, Poll } from '../api/messages'
-import { attachmentLabel } from './attachments'
+import { attachmentPreview } from './attachments'
+import { textPreview, type Preview } from './preview'
+import { previewToText } from './previewEmoji'
 
 // Limites iguais aos do backend (e do Discord).
 export const POLL_QUESTION_MAX = 300
@@ -87,16 +89,24 @@ export function applyPollUpdate(
   }
 }
 
-/** Texto da mensagem para prévias (lista de DMs, notificações, barra de resposta). */
-export function messagePreview(
-  message: Pick<Message, 'content' | 'poll' | 'attachments' | 'sticker' | 'sticker_id' | 'gif_url'>
-): string {
-  if (message.poll) return `📊 ${message.poll.question}`
-  if (message.content) return message.content
-  if (message.sticker) return `💟 Figurinha :${message.sticker.name}:`
-  if (message.sticker_id) return '💟 Figurinha'
-  if (message.gif_url) return '👾 GIF'
-  return attachmentLabel(message.attachments) ?? ''
+type PreviewSource = Pick<
+  Message,
+  'content' | 'poll' | 'attachments' | 'sticker' | 'sticker_id' | 'gif_url'
+>
+
+/** Prévia da mensagem dentro do app (barra de resposta, busca): texto e tipo. */
+export function messagePreviewParts(message: PreviewSource): Preview {
+  if (message.poll) return { icon: 'poll', text: message.poll.question }
+  if (message.content) return textPreview(message.content)
+  if (message.sticker) return { icon: 'sticker', text: `Figurinha :${message.sticker.name}:` }
+  if (message.sticker_id) return { icon: 'sticker', text: 'Figurinha' }
+  if (message.gif_url) return { icon: 'gif', text: 'GIF' }
+  return attachmentPreview(message.attachments) ?? textPreview('')
+}
+
+/** A mesma prévia em texto puro (notificação do SO, última mensagem da conversa). */
+export function messagePreview(message: PreviewSource): string {
+  return previewToText(messagePreviewParts(message))
 }
 
 export interface PollDraftAnswer {

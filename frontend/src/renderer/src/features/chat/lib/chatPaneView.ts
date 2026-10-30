@@ -8,6 +8,7 @@ import { sendDeniedReason, type ChatPermissions } from './chatPermissions'
 import { mentionSuggestions, type MentionSuggestion, type UserSuggestionInput } from './mentions'
 import { MUSIC_COMMANDS, type SlashSuggestion } from '../../music/lib/music'
 import { TTS_SUGGESTION } from '../../tts/lib/ttsCommand'
+import { textPreview, type Preview } from './preview'
 
 /** Id do canal de uma sala `channel:<id>`; DM e grupo não têm (null). */
 export function channelIdOf(room: string): string | null {
@@ -63,30 +64,37 @@ export function messageAuthorName(
   return serverDisplayName({ nickname }, message?.author)
 }
 
-const ATTACHMENT_PREVIEW: Record<string, string> = {
-  image: '📷 Imagem',
-  video: '🎥 Vídeo',
-  audio: '🎵 Áudio'
+const ATTACHMENT_PREVIEW: Record<string, Preview> = {
+  image: { icon: 'image', text: 'Imagem' },
+  video: { icon: 'video', text: 'Vídeo' },
+  audio: { icon: 'audio', text: 'Áudio' }
 }
 
-function attachmentPreview(pin: PinnedMessage): string | null {
+function pinAttachmentPreview(pin: PinnedMessage): Preview | null {
   const first = pin.attachments?.[0]
   if (!first) return null
-  return ATTACHMENT_PREVIEW[first.kind] ?? '📎 Anexo'
+  return ATTACHMENT_PREVIEW[first.kind] ?? { icon: 'attachment', text: 'Anexo' }
 }
 
-function richPreview(pin: PinnedMessage): string | null {
-  if (pin.sticker) return `💟 Figurinha :${pin.sticker.name}:`
-  return pin.gif_url ? '👾 GIF' : null
+function richPreview(pin: PinnedMessage): Preview | null {
+  if (pin.sticker) return { icon: 'sticker', text: `Figurinha :${pin.sticker.name}:` }
+  return pin.gif_url ? { icon: 'gif', text: 'GIF' } : null
+}
+
+function contentPreview(pin: PinnedMessage): Preview | null {
+  const text = pin.content?.trim()
+  return text ? textPreview(text) : null
 }
 
 /** Prévia da mensagem fixada na barra do topo do canal. */
-export function pinnedPreview(pin: PinnedMessage): string {
+export function pinnedPreview(pin: PinnedMessage): Preview {
   return (
-    richPreview(pin) ||
-    pin.content?.trim() ||
-    attachmentPreview(pin) ||
-    (pin.poll ? '📊 Enquete: ' + pin.poll.question : 'Mensagem fixada')
+    richPreview(pin) ??
+    contentPreview(pin) ??
+    pinAttachmentPreview(pin) ??
+    (pin.poll
+      ? { icon: 'poll', text: 'Enquete: ' + pin.poll.question }
+      : textPreview('Mensagem fixada'))
   )
 }
 

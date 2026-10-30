@@ -1,6 +1,7 @@
 import type { ProposalComment } from '../api/proposals'
 import { commentPreview } from '../lib/proposals'
 import CloseButton from '../../../shared/ui/CloseButton'
+import PreviewText from '../../chat/components/PreviewText'
 
 /** "Respondendo a @fulano" acima do campo, com o botão de cancelar. */
 function CommentReplyBar({
@@ -19,7 +20,7 @@ function CommentReplyBar({
       <div className="min-w-0 truncate">
         Respondendo a{' '}
         <span className="font-semibold text-strong">@{replyingTo.author_name}</span>
-        <span className="ml-2 text-gray-400">{commentPreview(replyingTo)}</span>
+        <PreviewText preview={commentPreview(replyingTo)} className="ml-2 text-gray-400" />
       </div>
       <CloseButton
         label="Cancelar resposta"
