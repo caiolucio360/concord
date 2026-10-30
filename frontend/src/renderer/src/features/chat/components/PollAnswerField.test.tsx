@@ -36,6 +36,8 @@ describe('PollAnswerField', () => {
       <PollAnswerField {...field} answer={{ text: 'Pizza', emoji: '', image_url: '' }} removable />
     )
     expect(html).toContain('placeholder="Resposta 3"')
+    expect(html).not.toContain('🙂')
+    expect(html).toMatch(/aria-label="Emoji ou imagem da resposta 3"[^>]*><svg/)
     expect(html).toContain('aria-label="Remover resposta 3"')
     expect(html).not.toContain('✕')
     expect(html).toMatch(/aria-label="Remover resposta 3"[^>]*><svg/)

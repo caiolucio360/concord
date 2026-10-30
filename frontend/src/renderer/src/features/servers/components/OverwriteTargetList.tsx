@@ -2,6 +2,7 @@ import type { OverwriteRow, OverwriteTargetRef } from '../lib/channelPermissions
 import type { MemberCandidate } from '../lib/overwriteEditor'
 import { roleColorCss } from '../lib/permissions'
 import Input from '../../../shared/ui/Input'
+import { AtIcon } from '../../../shared/ui/icons'
 
 const sameRef = (a: OverwriteTargetRef | null, b: OverwriteTargetRef): boolean =>
   a?.type === b.type && a.id === b.id
@@ -81,19 +82,21 @@ function TargetButton({
         active ? 'bg-fg/10 text-strong' : 'text-gray-400 hover:bg-fg/5'
       }`}
     >
-      <span
-        aria-hidden
-        className="shrink-0 text-xs"
-        style={{ color: roleColorCss(row.color) ?? 'var(--text-muted)' }}
-      >
-        {row.type === 'role' ? '◆' : '@'}
-      </span>
+      {row.type === 'role' ? (
+        <span
+          aria-hidden
+          className="size-2.5 shrink-0 rounded-full"
+          style={{ background: roleColorCss(row.color) ?? 'var(--text-muted)' }}
+        />
+      ) : (
+        <AtIcon size={12} className="shrink-0 text-muted" />
+      )}
       <span className="truncate">{row.name}</span>
       {row.hasRules && (
         <span
           aria-label="Tem regras neste canal"
           title="Tem regras neste canal"
-          className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-violet-400"
+          className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-brand"
         />
       )}
     </button>

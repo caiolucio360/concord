@@ -4,6 +4,7 @@ import { PauseIcon, PlayIcon } from '../../../shared/ui/icons'
 
 // Partes do formulário de "Adicionar som" (SoundboardUploadModal).
 
+// design-allow: emojis sugeridos para o botão do som (conteúdo, não ícone)
 const PRESET_EMOJIS = ['🎺', '😂', '🔥', '💀', '🎉', '👏', '🚨', '💥', '🥁', '🐸', '🎸', '🔔']
 
 const LABEL = 'mb-1.5 block text-ds-sm font-medium text-gray-400'
@@ -49,7 +50,7 @@ export function SoundFileField({
           <span className="truncate">{file ? file.name : 'Escolher arquivo (.mp3, .wav, .ogg, .m4a)'}</span>
           {durationMs !== null && file && (
             <span className="ml-2 shrink-0 rounded bg-fg/10 px-1.5 py-0.5 text-[11px] font-semibold text-gray-300">
-              {(durationMs / 1000).toFixed(1)}s • {(file.size / 1024).toFixed(0)} KB
+              {(durationMs / 1000).toFixed(1)}s · {(file.size / 1024).toFixed(0)} KB
             </span>
           )}
         </button>
@@ -99,6 +100,7 @@ export function SoundEmojiField({
           type="text"
           value={emoji}
           onChange={(e) => onChange(e.target.value.slice(0, 4))}
+          // design-allow: exemplo de emoji no campo de emoji
           placeholder="🎵"
           aria-label="Emoji personalizado"
           className="h-8 w-12 rounded-lg border border-subtle bg-fg/5 text-center text-sm text-strong focus:border-brand focus:outline-none"

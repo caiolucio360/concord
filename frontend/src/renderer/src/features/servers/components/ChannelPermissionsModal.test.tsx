@@ -61,6 +61,7 @@ describe('ChannelPermissionsModal', () => {
     expect(html).toContain('data-modal="Permissões de #geral"')
     expect(html).toMatch(/role="switch" aria-checked="true"/)
     expect(html).toMatch(/aria-current="true"[^>]*>.*@everyone/)
+    expect(html).not.toContain('◆')
     expect(html).toContain('aria-label="Ver canais: Negar"')
   })
 

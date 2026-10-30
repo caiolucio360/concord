@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { POLL_ANSWER_MAX, POLL_EMOJIS, type PollDraftAnswer } from '../lib/polls'
 import { PollAnswerMedia } from './PollAnswerMedia'
 import CloseButton from '../../../shared/ui/CloseButton'
+import { SmileyIcon } from '../../../shared/ui/icons'
 
 // Uma resposta no formulário de criar enquete (CreatePollModal).
 
@@ -69,7 +70,7 @@ function MediaPicker({
             onChange({ emoji: '', image_url: '' })
             onClose()
           }}
-          className="mt-2 cursor-pointer text-xs font-semibold text-gray-400 hover:text-red-400"
+          className="mt-2 cursor-pointer text-xs font-semibold text-gray-400 hover:text-danger"
         >
           Remover emoji/imagem
         </button>
@@ -111,9 +112,7 @@ export function PollAnswerField({
         {answer.emoji || answer.image_url ? (
           <PollAnswerMedia answer={answer} />
         ) : (
-          <span aria-hidden="true" className="grayscale">
-            🙂
-          </span>
+          <SmileyIcon />
         )}
       </button>
       {pickerOpen && <MediaPicker answer={answer} onChange={onChange} onClose={onClosePicker} />}
