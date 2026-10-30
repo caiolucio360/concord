@@ -177,6 +177,31 @@ describe('profileCardView', () => {
   })
 })
 
+describe('profileCardView: vínculo', () => {
+  it('sem vínculo (perfil): sem o @ e marcado como none', () => {
+    const v = profileCardView(
+      input({ profile: profile({ relationship: 'none', username: 'ana' }) })
+    )
+    expect(v.card.username).toBeUndefined()
+    expect(v.link).toBe('none')
+    expect(v.stranger).toBe(true)
+  })
+
+  it('antes do perfil chegar, vale o vínculo de onde o cartão abriu (ranking)', () => {
+    const v = profileCardView(
+      input({ target: { ...target, username: 'ana', relationship: 'none' } })
+    )
+    expect(v.stranger).toBe(true)
+    expect(v.card.username).toBeUndefined()
+  })
+
+  it('com vínculo mostra o @', () => {
+    const v = profileCardView(input({ profile: profile({ relationship: 'shared_server' }) }))
+    expect(v.stranger).toBe(false)
+    expect(v.card.username).toBe('ana')
+  })
+})
+
 describe('hasCardInfo', () => {
   const empty = {
     tier: null,

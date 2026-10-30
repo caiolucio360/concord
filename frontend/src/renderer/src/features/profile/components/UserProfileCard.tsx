@@ -179,6 +179,7 @@ function CardFooter(props: FooterProps): React.JSX.Element {
           name={view.shownName}
           displayName={view.card.display_name}
           username={view.card.username}
+          relationship={view.link}
           onClose={close}
         />
       )}

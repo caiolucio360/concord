@@ -13,6 +13,7 @@ import type { PublicProfile } from '../api/users'
 import type { CardProfile } from '../components/ProfileCardBody'
 import type { ProfileCardTarget } from '../store/profileCardStore'
 import { formatMemberSince } from './profileCard'
+import { isStranger, type ProfileRelationship } from './profileRelationship'
 
 // O que o cartão de perfil mostra, derivado dos stores (sem React).
 
@@ -78,6 +79,10 @@ export interface CardInfo {
 export interface ProfileCardView extends MemberContext {
   isMe: boolean
   isBot: boolean
+  /** Vínculo comigo: o do perfil carregado ou, antes dele, o de onde o cartão abriu. */
+  link?: ProfileRelationship
+  /** Sem vínculo (aberto pelo ranking): sem o @ e sem atalhos de DM e amizade. */
+  stranger: boolean
   card: CardProfile
   /** Apelido ou nome de exibição. */
   shownName: string
@@ -116,7 +121,8 @@ export function cardProfileOf(
   input: CardViewInput,
   source: CardSource,
   nickname: string | null,
-  isBot: boolean
+  isBot: boolean,
+  stranger: boolean
 ): CardProfile {
   const { target, member } = input
   return {
@@ -124,7 +130,7 @@ export function cardProfileOf(
     display_name: source?.display_name || member?.display_name || target.name,
     name_style: source?.name_style ?? member?.name_style,
     nickname,
-    username: source?.username || member?.username || target.username,
+    username: stranger ? undefined : source?.username || member?.username || target.username,
     avatar_url: source ? source.avatar_url : member?.avatar_url,
     banner_url: source?.banner_url,
     banner_color: source?.banner_color,
@@ -184,14 +190,18 @@ export function profileCardView(input: CardViewInput): ProfileCardView {
   const { target, me, profile } = input
   const isMe = target.userId === me?.id
   const isBot = Boolean(profile?.is_bot || input.member?.is_bot)
+  const link = profile?.relationship ?? input.target.relationship
+  const stranger = !isMe && isStranger(link)
   const context = memberContextOf(input)
   const source = isMe ? me : profile
-  const card = cardProfileOf(input, source, context.nickname, isBot)
+  const card = cardProfileOf(input, source, context.nickname, isBot, stranger)
   const info = cardInfoOf(input, source, isMe, context.inServer)
   return {
     ...context,
     isMe,
     isBot,
+    link,
+    stranger,
     card,
     shownName: context.nickname || card.display_name,
     status: cardStatusOf(input, isMe, isBot),

@@ -14,10 +14,12 @@ import (
 	"testing"
 
 	"gin-quickstart/backend/internal/platform/media"
+	"gin-quickstart/backend/internal/relationship"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
 )
+
 const meID = "11111111-1111-4111-8111-111111111111"
 const otherID = "22222222-2222-4222-8222-222222222222"
 
@@ -111,6 +113,22 @@ func (e *fakeEvents) EffectiveStatus(id string) string {
 	return EffectiveStatus(e.statuses[id], true)
 }
 
+// fakeLinks: vínculo de meID com cada pessoa; quem falta é sem vínculo.
+type fakeLinks struct {
+	kinds map[string]relationship.Kind
+	err   error
+}
+
+func (f *fakeLinks) Between(_ context.Context, viewerID, userID string) (relationship.Kind, error) {
+	if viewerID == userID {
+		return relationship.Self, nil
+	}
+	if k, ok := f.kinds[userID]; ok {
+		return k, f.err
+	}
+	return relationship.None, f.err
+}
+
 type fakeSpace struct{ ok bool }
 
 func (s fakeSpace) HasRoom(int64) bool { return s.ok }
@@ -120,6 +138,7 @@ type profileEnv struct {
 	h      *ProfileHandler
 	repo   *fakeProfileRepo
 	events *fakeEvents
+	links  *fakeLinks
 	store  *media.Store
 	static *media.Store
 	dir    string
@@ -142,7 +161,9 @@ func newProfileEnv(t *testing.T) *profileEnv {
 		otherID: {ID: otherID, Username: "baal", DisplayName: "Baal", Email: "b@x.com", Status: StatusInvisible, Links: []ProfileLink{}},
 	}}
 	events := &fakeEvents{statuses: map[string]string{otherID: StatusInvisible}}
-	h := NewProfileHandler(NewProfileService(repo, events), store, static, fakeSpace{ok: true})
+	// Por padrão a outra pessoa divide um servidor comigo.
+	links := &fakeLinks{kinds: map[string]relationship.Kind{otherID: relationship.SharedServer}}
+	h := NewProfileHandler(NewProfileService(repo, events, links), store, static, fakeSpace{ok: true})
 	h.maxBytes = 1024
 	router := gin.New()
 	fakeAuth := func(c *gin.Context) {
@@ -150,7 +171,7 @@ func newProfileEnv(t *testing.T) *profileEnv {
 		c.Next()
 	}
 	ProfileRoutes(router.Group("/api"), h, fakeAuth)
-	return &profileEnv{router: router, h: h, repo: repo, events: events, store: store, static: static, dir: dir}
+	return &profileEnv{router: router, h: h, repo: repo, events: events, links: links, store: store, static: static, dir: dir}
 }
 
 func (e *profileEnv) do(t *testing.T, method, path string, body []byte, contentType string) *httptest.ResponseRecorder {
@@ -197,6 +218,8 @@ func decodeUser(t *testing.T, rec *httptest.ResponseRecorder) User {
 	return u
 }
 
-func pngData() []byte  { return append([]byte("\x89PNG\r\n\x1a\n"), bytes.Repeat([]byte{1}, 100)...) }
-func gifData() []byte  { return append([]byte("GIF89a"), bytes.Repeat([]byte{2}, 100)...) }
-func webpData() []byte { return append([]byte("RIFF\x00\x00\x00\x00WEBPVP8 "), bytes.Repeat([]byte{3}, 100)...) }
+func pngData() []byte { return append([]byte("\x89PNG\r\n\x1a\n"), bytes.Repeat([]byte{1}, 100)...) }
+func gifData() []byte { return append([]byte("GIF89a"), bytes.Repeat([]byte{2}, 100)...) }
+func webpData() []byte {
+	return append([]byte("RIFF\x00\x00\x00\x00WEBPVP8 "), bytes.Repeat([]byte{3}, 100)...)
+}

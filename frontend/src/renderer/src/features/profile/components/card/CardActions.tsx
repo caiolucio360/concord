@@ -3,6 +3,7 @@ import router from '../../../../app/router'
 import { useFriendStore, useRelationship } from '../../../friends/store/friendStore'
 import { useUserMenuStore } from '../../store/userMenuStore'
 import { befriend, friendButtonOf } from '../../lib/cardFriendship'
+import { isStranger, type ProfileRelationship } from '../../lib/profileRelationship'
 import { showToast } from '../../../../shared/store/toastStore'
 import { DotsIcon } from '../../../../shared/ui/icons'
 
@@ -12,17 +13,23 @@ interface CardActionsProps {
   name: string
   displayName: string
   username?: string
+  /** Vínculo comigo; sem vínculo (none) não há atalho para DM nem amizade. */
+  relationship?: ProfileRelationship
   onClose: () => void
 }
 
-/** "Enviar mensagem", "Adicionar amigo" e "Mais" no cartão de outra pessoa. */
+/**
+ * "Enviar mensagem", "Adicionar amigo" e "Mais" no cartão de outra pessoa.
+ * Quem não tem vínculo comigo (aberto pelo ranking) fica sem nenhum deles.
+ */
 function CardActions({
   userId,
   name,
   displayName,
   username,
+  relationship: link,
   onClose
-}: CardActionsProps): React.JSX.Element {
+}: CardActionsProps): React.JSX.Element | null {
   const relationship = useRelationship(userId)
   const sendRequest = useFriendStore((s) => s.sendRequest)
   const accept = useFriendStore((s) => s.accept)
@@ -58,6 +65,8 @@ function CardActions({
       anchorEl: e.currentTarget
     })
   }
+
+  if (isStranger(link)) return null
 
   return (
     <div className="mt-3 flex gap-2">
