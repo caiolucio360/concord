@@ -290,12 +290,12 @@ func allowed(all notifysettings.All, serverID, channelID string, direct bool, no
 	return direct || !server.SuppressEveryone
 }
 
-// deliver manda para todos os aparelhos da pessoa, se ela não está com o app aberto nem em Não perturbar.
 // pushable: quem está online recebe pelo app; "não perturbe" não recebe.
 func (n *Notifier) pushable(userID string) bool {
 	return !n.Presence.IsOnline(userID) && n.Presence.EffectiveStatus(userID) != "dnd"
 }
 
+// deliver manda para todos os aparelhos da pessoa, se ela não está com o app aberto nem em Não perturbar.
 func (n *Notifier) deliver(ctx context.Context, userID string, m fcm.Message) {
 	if !n.pushable(userID) {
 		return
