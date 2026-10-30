@@ -14,6 +14,7 @@ import { useCallPresence } from '../src/features/call/hooks/useCallPresence'
 import { useIncomingCallRoute } from '../src/features/call/hooks/useIncomingCallRoute'
 import { useCurrentUser } from '../src/features/auth/hooks/useCurrentUser'
 import { useUnreadLive } from '../src/features/chat/hooks/useUnreadLive'
+import { useChannelsLive } from '../src/features/servers/hooks/useChannelsLive'
 import { useNotificationTap } from '../src/features/notifications/hooks/useNotificationTap'
 import { usePushRegistration } from '../src/features/notifications/hooks/usePushRegistration'
 import { useResetOnSignOut } from '../src/features/servers/hooks/useResetOnSignOut'
@@ -35,6 +36,7 @@ function Gate() {
   useCurrentUser()
   useResetOnSignOut()
   useUnreadLive()
+  useChannelsLive()
   usePushRegistration()
   useStartupPermissions()
   useNotificationTap()

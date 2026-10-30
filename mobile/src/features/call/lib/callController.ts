@@ -106,6 +106,7 @@ export function createCallController(deps: ControllerDeps) {
     const s = session()
     if (s.phase === 'idle') return
     const callId = s.callId
+    const wasSharing = useScreenShareStore.getState().sharing
     if (s.phase === 'active' || s.phase === 'reconnecting') playSound('leave')
     mediaCallId = null
     s.reset()
@@ -116,6 +117,8 @@ export function createCallController(deps: ControllerDeps) {
       if (notify) deps.ws.send('call:leave', { call_id: callId })
       deps.ws.unsubscribe(`call:${callId}`)
     }
+    // Transmitindo, desliga a captura antes de desconectar: sem isso o serviço de captura de tela do Android fica preso.
+    if (wasSharing) await deps.media.setScreenShareEnabled(false).catch(() => {})
     await deps.media.disconnect().catch(() => {})
   }
 
@@ -200,6 +203,8 @@ export function createCallController(deps: ControllerDeps) {
       if (next) playSound('liveStart')
     } catch {
       store.setSharing(false)
+      // A captura pode ter começado antes da falha (a chamada caiu no meio): desliga para não deixar o serviço de tela preso.
+      await deps.media.setScreenShareEnabled(false).catch(() => {})
       notice('Não foi possível transmitir a tela. Permita a captura de tela quando o Android pedir.')
     }
   }
