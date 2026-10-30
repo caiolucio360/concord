@@ -5,6 +5,7 @@ const state = vi.hoisted(() => ({
   games: {} as Record<string, unknown>,
   music: {} as Record<string, unknown>
 }))
+vi.mock('../../call/store/callStore', () => ({ useCallStore: () => null }))
 vi.mock('react-router-dom', () => ({ useNavigate: () => () => {} }))
 vi.mock('../store/presenceActivityStore', () => ({
   usePresenceActivityStore: (sel: (s: { byUser: unknown }) => unknown) =>
@@ -50,5 +51,13 @@ describe('FriendsActivity', () => {
     expect(html).toContain('Elis Regina · Spotify')
     expect(html).not.toContain('Outra')
     expect(html).not.toContain('Caio')
+  })
+
+  it('cada card de música tem o botão "Ouvir também", com o menu fechado', () => {
+    state.music = { b: { app: 'Spotify', title: 'Águas de Março', started_at: 2 } }
+    const html = renderToStaticMarkup(<FriendsActivity friends={friends} />)
+    expect(html).toContain('aria-label="Ouvir também"')
+    expect(html).toContain('aria-expanded="false"')
+    expect(html).not.toContain('Ouvir no')
   })
 })
