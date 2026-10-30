@@ -27,3 +27,12 @@ describe('addProguardRules', () => {
     expect(addProguardRules(BASE).endsWith('\n')).toBe(true)
   })
 })
+
+// Regressão: o APK de release fechava ao abrir ("Failed to create an instance of class
+// androidx.work.impl.WorkDatabase"). O WorkManager (que veio com o notifee, ADR 0030) cria o banco do Room por
+// reflexão e o R8 removia o construtor sem argumentos do WorkDatabase_Impl.
+describe('regras do Room/WorkManager', () => {
+  it('mantém o construtor dos bancos do Room que o WorkManager instancia por reflexão', () => {
+    expect(addProguardRules('')).toContain('-keep class * extends androidx.room.RoomDatabase { <init>(); }')
+  })
+})

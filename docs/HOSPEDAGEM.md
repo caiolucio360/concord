@@ -28,7 +28,8 @@ Edite `backend/.env`:
 - `JWT_SECRET` e `LIVEKIT_API_SECRET`: gere com `openssl rand -hex 32`.
 - `PORT`: porta do backend. Se a 8080 já estiver em uso, troque (ex.: `8090`).
 - `POSTGRES_PORT` e a porta no `DATABASE_URL`: troque se a 5432 estiver em uso.
-- As portas do LiveKit e o `LIVEKIT_NODE_IP` saem do passo 3.
+- As portas do LiveKit e o `LIVEKIT_NODE_IP` saem do passo 3 (só com playit;
+  numa VPS, deixe `LIVEKIT_NODE_IP` vazio — seção 7).
 
 ## 3. Criar os túneis no playit
 
@@ -57,7 +58,10 @@ Edite `backend/.env`:
    LIVEKIT_UDP_PORT=41234   # porta do túnel UDP
    LIVEKIT_TCP_PORT=41890   # porta do túnel "mídia TCP"
    ```
-4. Descubra o IP público do túnel UDP e ponha em `LIVEKIT_NODE_IP`:
+4. Descubra o IP público do túnel UDP e ponha em `LIVEKIT_NODE_IP`. Aqui o
+   valor é necessário: o PC está atrás de NAT, o LiveKit só enxerga IPs
+   locais e, sem isso, anunciaria aos amigos um endereço que eles não
+   alcançam:
    ```bash
    scripts/playit-ip.sh abc.gl.at.ply.gg
    ```
@@ -265,8 +269,13 @@ terminar com sucesso antes de executar o deploy. No CI isso é obrigatório.
   entrar num canal de voz.
 - Duas pessoas compartilhando tela ao mesmo tempo, com som de jogo/vídeo.
 - Se a chamada abre mas fica sem áudio/vídeo, quase sempre é porta local ≠
-  porta pública no túnel de mídia, ou `LIVEKIT_NODE_IP` errado. Veja
-  `docker logs concord-livekit`.
+  porta pública no túnel de mídia, ou `LIVEKIT_NODE_IP` errado (no playit) ou
+  preenchido (numa VPS, onde deve ficar vazio). Veja `docker logs
+  concord-livekit`.
+- **Só quem tem IPv6 conecta na call** (quem só tem IPv4 não entra, e o
+  LiveKit não mostra erro): num servidor com IP público (VPS), é o
+  `LIVEKIT_NODE_IP` preenchido. Esvazie no `.env` e recrie o LiveKit
+  (`scripts/deploy-vps.sh --infra root@IP`; derruba as chamadas em andamento).
 - Quem está na **mesma rede** que o servidor (o seu desktop) conecta a mídia
   direto pela rede local, sem passar pelo playit.
 
@@ -282,7 +291,10 @@ Numa VPS com IP público não precisa de playit, e dá para ter HTTPS de graça.
      com isso o backend confia no `X-Forwarded-For` só quando a conexão vem
      do loopback (o Caddy), e o limite de tentativas de login usa o IP real.
      `TRUSTED_PROXIES` troca essa escolha (veja o `.env.example`);
-   - `LIVEKIT_NODE_IP` com o IP público da VPS;
+   - `LIVEKIT_NODE_IP` **vazio** (não ponha o IP da VPS): o LiveKit descobre o
+     IP sozinho. Em 2026-10-30, com o IP público preenchido, ele passou a
+     ignorar todo pedido de conexão ICE por IPv4 e só quem tinha IPv6
+     entrava na call. O valor só é necessário no playit (seção 3);
    - `LIVEKIT_UDP_PORT=7882` e `LIVEKIT_TCP_PORT=7881` (sem túnel, as portas
      são as mesmas);
    - `PUBLIC_URL=https://<seu-endereço>`;
