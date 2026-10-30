@@ -16,6 +16,8 @@ import { useCurrentUser } from '../src/features/auth/hooks/useCurrentUser'
 import { useUnreadLive } from '../src/features/chat/hooks/useUnreadLive'
 import { useChannelsLive } from '../src/features/servers/hooks/useChannelsLive'
 import { useInAppNotifications } from '../src/features/notifications/hooks/useInAppNotifications'
+import { useCallForeground } from '../src/features/call/hooks/useCallForeground'
+import { registerCallService } from '../src/features/call/lib/notifeeForeground'
 import { useNotificationTap } from '../src/features/notifications/hooks/useNotificationTap'
 import { usePushRegistration } from '../src/features/notifications/hooks/usePushRegistration'
 import { useResetOnSignOut } from '../src/features/servers/hooks/useResetOnSignOut'
@@ -24,6 +26,9 @@ import { bindAuthSession } from '../src/features/auth/lib/bindAuthSession'
 import { useAuthStore } from '../src/features/auth/store/authStore'
 import { colors } from '../src/shared/theme/tokens'
 import { ErrorBoundary } from '../src/shared/ui/ErrorBoundary'
+
+// A tarefa do serviço em primeiro plano da chamada precisa estar registrada antes de ele ser ligado (ADR 0028).
+registerCallService()
 
 void SplashScreen.preventAutoHideAsync()
 // WebRTC do LiveKit: precisa rodar uma vez, antes de qualquer chamada (ADR 0023).
@@ -39,6 +44,7 @@ function Gate() {
   useUnreadLive()
   useChannelsLive()
   useInAppNotifications()
+  useCallForeground()
   usePushRegistration()
   useStartupPermissions()
   useNotificationTap()

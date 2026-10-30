@@ -42,3 +42,11 @@ jest.mock('react-native-reanimated', () => ({
 
 // Áudio nativo não existe no Jest; o player de sons é testado com uma porta falsa (soundPlayer.test.ts).
 jest.mock('expo-audio', () => ({ createAudioPlayer: jest.fn(() => ({ seekTo: jest.fn(), play: jest.fn() })) }))
+
+// O notifee é módulo nativo: no Jest a lógica usa uma porta falsa (callForeground); aqui só para importar sem erro.
+jest.mock('@notifee/react-native', () => ({
+  __esModule: true,
+  default: { registerForegroundService: jest.fn(), createChannel: jest.fn(), displayNotification: jest.fn(), stopForegroundService: jest.fn() },
+  AndroidImportance: { LOW: 2 },
+  AndroidForegroundServiceType: { FOREGROUND_SERVICE_TYPE_MICROPHONE: 128 }
+}))

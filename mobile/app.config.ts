@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs'
 import type { ExpoConfig } from 'expo/config'
+import { withCallForegroundService } from './plugins/withCallForegroundService'
 import { withProguardRules } from './plugins/withProguardRules'
 
 // google-services.json (Firebase) é segredo do dono: vem de GOOGLE_SERVICES_JSON no build e fica fora do git.
@@ -50,5 +51,6 @@ const config: ExpoConfig = {
   experiments: { typedRoutes: true }
 }
 
-// O R8 do build de release precisa de uma regra para o LiveKit (plugins/withProguardRules.ts).
-export default withProguardRules(config)
+// O R8 do build de release precisa de uma regra para o LiveKit (plugins/withProguardRules.ts) e a chamada, do
+// serviço em primeiro plano com os tipos microfone e câmera (plugins/withCallForegroundService.js, ADR 0028).
+export default withCallForegroundService(withProguardRules(config))
