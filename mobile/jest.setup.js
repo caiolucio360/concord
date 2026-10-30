@@ -5,6 +5,7 @@ jest.mock('@expo/vector-icons', () => ({ Ionicons: Object.assign(() => null, { g
 jest.mock('expo-notifications', () => ({
   AndroidImportance: { HIGH: 4 },
   setNotificationHandler: jest.fn(),
+  scheduleNotificationAsync: jest.fn().mockResolvedValue('id-local'),
   setNotificationChannelAsync: jest.fn().mockResolvedValue(null),
   getPermissionsAsync: jest.fn().mockResolvedValue({ granted: true }),
   requestPermissionsAsync: jest.fn().mockResolvedValue({ granted: true }),

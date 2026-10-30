@@ -54,7 +54,8 @@ describe('WsClient', () => {
   it('conecta com o token na URL e assina a sala do usuário', () => {
     const { client, onOpen } = makeClient()
     client.connect()
-    expect(last().url).toBe('ws://localhost:8080/ws?token=tok')
+    // O servidor só manda push quando o app do celular não está aberto: ele se identifica com client=mobile.
+    expect(last().url).toBe('ws://localhost:8080/ws?token=tok&client=mobile')
     last().open()
     expect(JSON.parse(last().sent[0])).toEqual({ type: 'subscribe', payload: { room: 'user:u1' } })
     expect(onOpen).toHaveBeenCalledWith(false)

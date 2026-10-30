@@ -126,7 +126,8 @@ export class WsClient {
     const token = this.config.getToken()
     if (!token || this.closedByUser || this.suspended || this.isActive()) return
 
-    const ws = new WebSocket(`${WS_URL}?token=${encodeURIComponent(token)}`)
+    // client=mobile: o servidor só manda push quando o app do celular não está aberto (o desktop não conta).
+    const ws = new WebSocket(`${WS_URL}?token=${encodeURIComponent(token)}&client=mobile`)
     ws.onopen = () => this.handleOpen()
     ws.onmessage = (event: MessageEvent) => this.handleMessage(event)
     ws.onclose = (event: CloseEvent) => this.handleClose(ws, event.code)
