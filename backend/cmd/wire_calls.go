@@ -46,6 +46,9 @@ func (a *app) wireCalls() {
 	a.callPresence = call.NewMediaPresence(a.callService, a.liveKitAdmin, time.Now)
 	go a.callPresence.Run(a.ctx, call.MediaSweepEvery)
 	callHandler := call.CallHandler(a.callService, a.liveKitTokens)
+	// Live pelo helper nativo: o participante "tela" de quem sai da chamada sai junto.
+	a.callService.OnParticipantLeft(call.ScreenPublisherCleanup(a.liveKitAdmin))
+	screenTokens := call.NewScreenTokenHandler(a.callService, a.liveKitTokens)
 	// Reinício do servidor não derruba quem está em chamada. Sem conseguir
 	// recarregar as chamadas o servidor não fica pronto (a porta nem abre):
 	// tenta de novo por até 30 s e então desiste (o systemd reinicia e o
@@ -54,6 +57,7 @@ func (a *app) wireCalls() {
 
 	a.route(func(router *gin.Engine, api *gin.RouterGroup) {
 		call.CallRoutes(api, callHandler, a.authMiddleware, a.memberOrGuest)
+		call.ScreenPublisherRoutes(api, screenTokens, a.authMiddleware)
 		// Sinalização do LiveKit (auth pelo token do LiveKit em ?access_token=)
 		router.Any("/rtc", rtcProxy)
 		router.Any("/rtc/*path", rtcProxy)

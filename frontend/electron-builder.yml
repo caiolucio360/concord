@@ -15,6 +15,7 @@ files:
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
   - '!resources/win/**'
+  - '!resources/linux/**'
   - '!**/*.test.ts'
 asarUnpack:
   - resources/**
@@ -116,6 +117,13 @@ dmg:
 linux:
   icon: resources/icon.png
   executableName: salinha
+  # Helper da live pelo motor nativo (gerado por scripts/build-linux.sh; sem ele
+  # a live segue só pelo Chromium).
+  extraResources:
+    - from: resources/linux/
+      to: .
+      filter:
+        - concord-live
   target:
     - AppImage
   category: Network

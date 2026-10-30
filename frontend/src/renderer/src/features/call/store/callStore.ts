@@ -9,7 +9,7 @@ import {
   type CallStateResponse
 } from '../api/calls'
 import { ApiError } from '../../../shared/api/client'
-import { getAudioStream, getCameraStream, getDisplayStream } from '../lib/rtc'
+import { askScreenQuality, getAudioStream, getCameraStream, getDisplayStream } from '../lib/rtc'
 import {
   createBackgroundPipeline,
   type BackgroundEffect,
@@ -27,6 +27,23 @@ import {
 } from '../lib/screenShareQuality'
 import type { MicHandle } from '../lib/noiseSuppression'
 import { CallMedia, type CallMediaHandlers, type RemoteMedia } from '../lib/livekit'
+import type {
+  EndedPayload,
+  InvitePayload,
+  ResponsePayload,
+  RingPayload,
+  ScreenSharePayload,
+  StatePayload,
+  VoicePayload
+} from '../lib/callWsPayloads'
+import { sameScreenQuality, ScreenQualityQueue } from '../lib/screenQualityQueue'
+import {
+  nativeLiveActive,
+  nativeLivePreview,
+  setNativeLiveQuality,
+  stopNativeLive,
+  tryNativeLive
+} from '../lib/nativeLiveShare'
 import { watchLocalSpeaking } from '../lib/localSpeaking'
 import { mergeLocalSpeaking, sameIds } from '../lib/voiceActivity'
 import { voiceServerId } from '../lib/voiceServer'
@@ -98,53 +115,11 @@ export interface CallUserInfo {
   name_style?: NameStyle | null
 }
 
-interface InvitePayload {
-  call_id: string
-  type: string
-  initiator: CallUserInfo
-  conversation_id?: string | null
-}
-
-interface RingPayload {
-  call_id: string
-  callee: CallUserInfo
-}
-
-interface ResponsePayload {
-  call_id: string
-  user: CallUserInfo
-}
-
-interface StatePayload {
-  call_id: string
-  user: CallUserInfo
-}
-
-interface ScreenSharePayload {
-  call_id: string
-  user: CallUserInfo
-  active: boolean
-}
-
-interface VoicePayload {
-  call_id: string
-  user_id: string
-  muted: boolean
-  deafened: boolean
-  /** Impostos por um moderador (silenciar/ensurdecer no servidor). */
-  server_muted?: boolean
-  server_deafened?: boolean
-}
-
 export interface VoiceState {
   muted: boolean
   deafened: boolean
   serverMuted?: boolean
   serverDeafened?: boolean
-}
-
-interface EndedPayload {
-  call_id: string
 }
 
 /** Meu pedido para entrar numa sala trancada. */
@@ -329,57 +304,20 @@ let speakingWatch: { track: MediaStreamTrack; stop: () => void } | null = null
 
 // Compartilhamento de tela (não-reativo; o estado reativo é localScreenStream)
 let localScreenStream: MediaStream | null = null
-/** Troca de qualidade esperando a vez: só a mais recente fica na fila. */
-let screenQualityQueue: ScreenQualityRequest | null = null
-let screenQualityRunning = false
-
-interface ScreenQualityRequest {
-  stream: MediaStream
-  connection: CallMedia
-  callId: string | null
-  quality: ScreenShareQuality
-}
-
-const sameScreenQuality = (a: ScreenShareQuality | null, b: ScreenShareQuality): boolean =>
-  a?.resolution === b.resolution && a?.frameRate === b.frameRate
-
-/** A troca ainda vale: mesma transmissão, mesma conexão e mesma chamada. */
-function isCurrentScreen(request: ScreenQualityRequest): boolean {
-  return (
+/** Trocas de qualidade da minha live (Chromium), uma de cada vez. */
+const screenQualities = new ScreenQualityQueue<CallMedia>({
+  isCurrent: (request) =>
     localScreenStream === request.stream &&
     media === request.connection &&
-    useCallStore.getState().callId === request.callId
-  )
-}
-
-/**
- * Aplica as trocas uma de cada vez. Enquanto uma está em andamento, cliques
- * novos substituem a fila: só a escolha final chega ao servidor.
- */
-async function runScreenQualityQueue(): Promise<void> {
-  screenQualityRunning = true
-  try {
-    while (screenQualityQueue) {
-      const request = screenQualityQueue
-      screenQualityQueue = null
-      if (!isCurrentScreen(request)) continue
-      try {
-        await request.connection.updateScreenQuality(request.stream, request.quality)
-        if (!isCurrentScreen(request)) continue
-        rememberStreamQuality(request.stream, request.quality)
-        saveScreenQuality(request.quality)
-        useCallStore.setState({ screenShareQuality: { ...request.quality } })
-      } catch {
-        if (isCurrentScreen(request)) {
-          showToast.error('Não foi possível alterar a qualidade da transmissão.')
-        }
-      }
-    }
-  } finally {
-    screenQualityRunning = false
-    useCallStore.setState({ pendingScreenQuality: null })
-  }
-}
+    useCallStore.getState().callId === request.callId,
+  applied: (request) => {
+    rememberStreamQuality(request.stream, request.quality)
+    saveScreenQuality(request.quality)
+    useCallStore.setState({ screenShareQuality: { ...request.quality } })
+  },
+  failed: () => showToast.error('Não foi possível alterar a qualidade da transmissão.'),
+  idle: () => useCallStore.setState({ pendingScreenQuality: null })
+})
 
 /** Foto da própria tela para a prévia no cartão de perfil, só quando o servidor pede. */
 const sendScreenPreview = createPreviewSender({
@@ -621,7 +559,8 @@ export const useCallStore = create<CallState>()((set, get) => {
         mediaPeers: remote.mediaPeers ?? {},
         availableScreens,
         watchedScreenIds,
-        focusedScreenUserId
+        focusedScreenUserId,
+        ...nativeLivePreview(remote.screenStreams, meId)
       }
     })
   }
@@ -841,11 +780,112 @@ export const useCallStore = create<CallState>()((set, get) => {
     }
   }
 
+  /** A minha live está no ar (Chromium com `stream`, ou o motor nativo sem stream local). */
+  const markScreenSharing = (quality: ScreenShareQuality, stream: MediaStream | null): void => {
+    const meId = useAuthStore.getState().user?.id
+    set((prev) => ({
+      isScreenSharing: true,
+      screenShareQuality: quality,
+      localScreenStream: stream,
+      screenSharers: meId ? Array.from(new Set([...prev.screenSharers, meId])) : prev.screenSharers,
+      focusedScreenUserId: prev.focusedScreenUserId ?? meId ?? null
+    }))
+    useChatStore.getState().sendEvent('call:screen', { call_id: get().callId, active: true })
+  }
+
+  /**
+   * Live pelo motor nativo (docs/adr/0031); true = resolvido (no ar ou a
+   * pessoa desistiu no seletor), false = seguir pelo Chromium. Se o helper
+   * cair no meio, a live volta pelo Chromium (a pessoa escolhe a tela de novo).
+   */
+  const shareNatively = async (quality: ScreenShareQuality): Promise<boolean> => {
+    const callId = get().callId
+    if (!media || !callId) return false
+    const result = await tryNativeLive({
+      callId,
+      quality,
+      media,
+      onEnded: (failed) => {
+        if (get().isScreenSharing && !localScreenStream) get().stopScreenShare()
+        if (!failed) return
+        showToast.error('A transmissão pelo motor nativo caiu. Escolha a tela de novo.')
+        void get().startScreenShare()
+      }
+    })
+    if (result === 'started' && get().callId !== callId) stopNativeLive(media)
+    else if (result === 'started') markScreenSharing(quality, null)
+    return result !== 'fallback'
+  }
+
+  /**
+   * Qualidade (seletor do sistema), motor nativo ou o stream do Chromium. null =
+   * resolvido sem stream (live nativa, desistiu no seletor ou falhou com aviso).
+   */
+  const pickScreen = async (): Promise<MediaStream | null> => {
+    resetWindowAudio()
+    try {
+      const asked = await askScreenQuality()
+      if (asked && (await shareNatively(asked))) return null
+      return await getDisplayStream(asked)
+    } catch (err) {
+      abortWindowAudio()
+      // NotAllowedError: usuário cancelou o picker — sem toast.
+      if (err instanceof ScreenShareSetupError) {
+        // Ex.: Linux sem o xdg-desktop-portal: diz o que instalar.
+        showToast.error(err.message, SETUP_TOAST_MS)
+      } else if ((err as DOMException)?.name !== 'NotAllowedError') {
+        showToast.error('Não foi possível compartilhar a tela.')
+      }
+      return null
+    }
+  }
+
+  /** Janela no Windows: o som vem do helper (só o app da janela). false = a chamada mudou. */
+  const addWindowAudio = async (stream: MediaStream, callId: string | null): Promise<boolean> => {
+    const captured = await takeWindowAudio()
+    // A chamada pode ter acabado (ou mudado) com o seletor aberto.
+    if (get().callId !== callId || get().status !== 'active') {
+      captured?.stop()
+      stream.getTracks().forEach((t) => t.stop())
+      return false
+    }
+    if (captured) {
+      // O som da janela substitui qualquer som de sistema da captura.
+      stream.getAudioTracks().forEach((t) => {
+        stream.removeTrack(t)
+        t.stop()
+      })
+      windowAudio = captured
+      stream.addTrack(captured.track)
+    }
+    return true
+  }
+
+  /** A live pelo Chromium: no ar e publicada; parar pela barra do sistema encerra. */
+  const goLive = async (stream: MediaStream): Promise<void> => {
+    localScreenStream = stream
+    markScreenSharing(streamQuality(stream), stream)
+    stream.getVideoTracks().forEach((track) => {
+      track.addEventListener('ended', () => {
+        if (get().isScreenSharing) get().stopScreenShare()
+      })
+    })
+    try {
+      await media?.publishScreen(stream)
+    } catch {
+      showToast.error('Não foi possível transmitir a tela.')
+      get().stopScreenShare()
+    }
+  }
+
   /** Reenvia ao servidor se estou transmitindo (ou não) — corrige o que se perdeu na queda. */
   const sendScreenState = (callId: string): void => {
     useChatStore
       .getState()
-      .sendEvent('call:screen', { call_id: callId, active: localScreenStream !== null })
+      .sendEvent('call:screen', {
+        call_id: callId,
+        active: localScreenStream !== null || nativeLiveActive()
+      })
   }
 
   /**
@@ -976,7 +1016,8 @@ export const useCallStore = create<CallState>()((set, get) => {
     stopLocalStream()
     localScreenStream?.getTracks().forEach((t) => t.stop())
     localScreenStream = null
-    screenQualityQueue = null
+    stopNativeLive(null)
+    screenQualities.clear()
     windowAudio?.stop()
     windowAudio = null
     localCameraStream?.getTracks().forEach((t) => t.stop())
@@ -1211,7 +1252,8 @@ export const useCallStore = create<CallState>()((set, get) => {
     'call:screen_preview_request': ({ payload }) => {
       // Alguém abriu meu cartão de perfil: manda uma foto pequena da tela.
       const p = payload as unknown as { call_id: string }
-      const stream = localScreenStream
+      // Live nativa: a minha prévia vinda do servidor.
+      const stream = localScreenStream ?? get().localScreenStream
       if (!stream || get().callId !== p.call_id || !get().isScreenSharing) return
       void sendScreenPreview(p.call_id, stream)
       return
@@ -1673,73 +1715,19 @@ export const useCallStore = create<CallState>()((set, get) => {
       }
       screenSharePending = true
       try {
-        let stream: MediaStream
-        resetWindowAudio()
-        try {
-          stream = await getDisplayStream()
-        } catch (err) {
-          abortWindowAudio()
-          // NotAllowedError: usuário cancelou o picker — sem toast.
-          if (err instanceof ScreenShareSetupError) {
-            // Ex.: Linux sem o xdg-desktop-portal: diz o que instalar.
-            showToast.error(err.message, SETUP_TOAST_MS)
-          } else if ((err as DOMException)?.name !== 'NotAllowedError') {
-            showToast.error('Não foi possível compartilhar a tela.')
-          }
-          return
-        }
-        // Janela no Windows: o som vem do helper (só o app da janela).
-        const captured = await takeWindowAudio()
-        // A chamada pode ter acabado (ou mudado) com o seletor aberto.
-        if (get().callId !== s.callId || get().status !== 'active') {
-          captured?.stop()
-          stream.getTracks().forEach((t) => t.stop())
-          return
-        }
-        if (captured) {
-          // O som da janela substitui qualquer som de sistema da captura.
-          stream.getAudioTracks().forEach((t) => {
-            stream.removeTrack(t)
-            t.stop()
-          })
-          windowAudio = captured
-          stream.addTrack(captured.track)
-        }
-
-        localScreenStream = stream
-        const meId = useAuthStore.getState().user?.id
-        const callId = get().callId
-        set((prev) => ({
-          isScreenSharing: true,
-          screenShareQuality: streamQuality(stream),
-          localScreenStream: stream,
-          screenSharers: meId
-            ? Array.from(new Set([...prev.screenSharers, meId]))
-            : prev.screenSharers,
-          focusedScreenUserId: prev.focusedScreenUserId ?? meId ?? null
-        }))
-
-        // Parar pela barra nativa do Electron / fim da fonte encerra o share.
-        stream.getVideoTracks().forEach((track) => {
-          track.addEventListener('ended', () => {
-            if (get().isScreenSharing) get().stopScreenShare()
-          })
-        })
-
-        useChatStore.getState().sendEvent('call:screen', { call_id: callId, active: true })
-
-        try {
-          await media?.publishScreen(stream)
-        } catch {
-          showToast.error('Não foi possível transmitir a tela.')
-          get().stopScreenShare()
-        }
+        const stream = await pickScreen()
+        if (stream && (await addWindowAudio(stream, s.callId))) await goLive(stream)
       } finally {
         screenSharePending = false
       }
     },
 
     updateScreenQuality: (quality) => {
+      if (setNativeLiveQuality(quality)) {
+        saveScreenQuality(quality)
+        set({ screenShareQuality: { ...quality } })
+        return
+      }
       const s = get()
       const stream = localScreenStream
       const connection = media
@@ -1753,9 +1741,8 @@ export const useCallStore = create<CallState>()((set, get) => {
       )
         return
       if (sameScreenQuality(s.pendingScreenQuality ?? s.screenShareQuality, quality)) return
-      screenQualityQueue = { stream, connection, callId: s.callId, quality: { ...quality } }
       set({ pendingScreenQuality: { ...quality } })
-      if (!screenQualityRunning) void runScreenQualityQueue()
+      screenQualities.push({ stream, connection, callId: s.callId, quality: { ...quality } })
     },
 
     stopScreenShare: () => {
@@ -1765,9 +1752,10 @@ export const useCallStore = create<CallState>()((set, get) => {
       const callId = s.callId
       const stream = localScreenStream
       localScreenStream = null
-      screenQualityQueue = null
+      screenQualities.clear()
       windowAudio?.stop()
       windowAudio = null
+      stopNativeLive(media)
 
       if (stream) releaseStream(stream)
 

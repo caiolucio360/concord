@@ -7,6 +7,7 @@ import { screenShareFlow, type PortalStatus } from '../shared/screenShareFlow'
 import { serverFromArgv, type ServerDiagnostics } from '../shared/serverConnection'
 import { overlayApi } from './overlayApi'
 import { ttsApi } from './ttsApi'
+import { nativeLiveApi } from './nativeLiveApi'
 
 interface ScreenSourceInfo {
   id: string
@@ -315,7 +316,9 @@ const api = {
   },
   overlay: overlayApi,
   /** Voz do /tts baixada no primeiro uso: só no Linux (os outros usam a Web Speech). */
-  tts: process.platform === 'linux' ? ttsApi : undefined
+  tts: process.platform === 'linux' ? ttsApi : undefined,
+  /** Live pelo motor nativo (helper concord-live): só no Linux por enquanto. */
+  nativeLive: process.platform === 'linux' ? nativeLiveApi : undefined
 }
 
 // Som da janela compartilhada: o MessagePort não passa pelo contextBridge,

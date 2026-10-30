@@ -3,25 +3,20 @@ import {
   DisconnectReason,
   Room,
   RoomEvent,
-  Track,
-  type RemoteParticipant
+  Track
 } from 'livekit-client'
 import { RemoteSubscriptions } from './remoteSubscriptions'
 import { watchVideoPause } from './screenVideoPause'
-import {
-  groupTracks,
-  listScreenPublishers,
-  StreamCache,
-  type MediaKind,
-  type PublicationEntry,
-  type TrackEntry
-} from './callMedia'
+import { groupTracks, listScreenPublishers, StreamCache, type MediaKind } from './callMedia'
+import { remoteEntries } from './remoteEntries'
+import { isScreenHelper } from './screenIdentity'
 import { canPublishSource, type PublishSource } from './mediaPermissions'
 import { asCallQuality, type CallQuality, type QualityDetails } from './connectionQuality'
 import { CallQualityReader } from './callQualityReader'
 import { MicPublisher } from './micPublisher'
 import type { ScreenShareQuality } from './screenShareQuality'
 import { ScreenSender } from './screenSender'
+import type { ScreenEncoderInfo } from './screenEncoderInfo'
 import type { ScreenStatsInput } from './screenStats'
 import { RemoteEncoders, serveScreenEncoder } from './screenEncoderRpc'
 import { readCallReport } from './callStatsReport'
@@ -78,6 +73,14 @@ export interface CallMediaHandlers {
   onRemovedByModerator?: () => void
 }
 
+/** A minha live pelo helper nativo, como a CallMedia a enxerga. */
+export interface NativeScreen {
+  /** Identidade do helper na sala (`<meu id>:screen`). */
+  identity: string
+  statsInput(): ScreenStatsInput | null
+  encoderInfo(): ScreenEncoderInfo | null
+}
+
 export class CallMedia {
   private room: Room
   private cache = new StreamCache<MediaStream>((tracks) => new MediaStream(tracks))
@@ -95,6 +98,8 @@ export class CallMedia {
   private screen: ScreenSender
   /** O codificador de quem transmite, para o painel "Recebendo" (por RPC). */
   private remoteEncoders: RemoteEncoders
+  /** A minha live pelo helper nativo (ADR 0031): identidade dele e o que ele mede. */
+  private nativeScreen: NativeScreen | null = null
 
   constructor(private readonly handlers: CallMediaHandlers) {
     this.room = new Room({
@@ -117,7 +122,9 @@ export class CallMedia {
     )
     setActiveScreenStats(this)
     this.remoteEncoders = new RemoteEncoders(this.room)
-    serveScreenEncoder(this.room, () => this.screen.encoderInfo())
+    serveScreenEncoder(this.room, async () =>
+      this.nativeScreen ? this.nativeScreen.encoderInfo() : this.screen.encoderInfo()
+    )
     this.stopWindowWatch = watchVideoPause((pause) => {
       if (this.subscriptions.setPause(pause)) this.applySubscriptions()
     })
@@ -158,7 +165,7 @@ export class CallMedia {
       .on(
         RoomEvent.ConnectionQualityChanged,
         (quality: unknown, participant?: { identity?: string }) => {
-          if (this.closing || !participant?.identity) return
+          if (this.closing || !participant?.identity || isScreenHelper(participant.identity)) return
           this.handlers.onConnectionQuality?.(participant.identity, asCallQuality(quality))
         }
       )
@@ -214,6 +221,7 @@ export class CallMedia {
   /** getStats() do vídeo da live, para o painel de estatísticas (só com ele aberto). */
   async readScreenStats(userId: string, local: boolean): Promise<ScreenStatsInput | null> {
     if (this.closing) return null
+    if (local && this.nativeScreen) return this.nativeScreen.statsInput()
     const input = await readScreenStatsInput(this.room, userId, local)
     if (!input) return null
     return input.local
@@ -294,6 +302,13 @@ export class CallMedia {
     await this.room.localParticipant.unpublishTracks(tracks)
   }
 
+  /** A minha live passou a sair (ou deixou de sair) pelo helper nativo. */
+  setNativeScreen(native: NativeScreen | null): void {
+    this.nativeScreen = native
+    this.subscriptions.setOwnScreen(native?.identity ?? null)
+    this.applySubscriptions()
+  }
+
   /** Passa a baixar a tela (e o som dela) só dessas pessoas. */
   setWatchedScreens(userIds: string[]): void {
     this.subscriptions.setWatched(userIds)
@@ -314,24 +329,10 @@ export class CallMedia {
   }
 
   private emitRemoteMedia(): void {
-    const entries: TrackEntry[] = []
-    const publications: PublicationEntry[] = []
-    const mediaPeers: Record<string, string> = {}
-    this.room.remoteParticipants.forEach((participant: RemoteParticipant) => {
-      mediaPeers[participant.identity] = participant.name ?? ''
-      participant.trackPublications.forEach((publication) => {
-        publications.push({ userId: participant.identity, source: publication.source })
-        const track = publication.track
-        if (!publication.isSubscribed || !track) return
-        // Vídeo pausado (câmera desligada pelo SO, etc.) some da UI.
-        if (track.kind === Track.Kind.Video && publication.isMuted) return
-        entries.push({
-          userId: participant.identity,
-          source: publication.source,
-          track: track.mediaStreamTrack
-        })
-      })
-    })
+    const { entries, publications, mediaPeers } = remoteEntries(
+      this.room.remoteParticipants.values(),
+      this.nativeScreen?.identity ?? null
+    )
 
     const grouped = groupTracks(entries)
     const inUse = new Set<string>()
