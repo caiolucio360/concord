@@ -18,6 +18,8 @@ vi.mock('../../chat/store/chatStore', () => ({
 }))
 vi.mock('../../call/components/CallActivityBadge', () => ({ default: () => null }))
 vi.mock('../../activity/components/ActivityLine', () => ({ GameBadge: () => null }))
+// O "Assistir" da prévia do selo LIVE abre a chamada pelo router (o app inteiro).
+vi.mock('../../call/store/streamJoinStore', () => ({ requestWatchStream: vi.fn() }))
 vi.mock('../../../app/SidebarFooter', () => ({ default: () => <footer data-rodape="" /> }))
 vi.mock('./ChannelPermissionsModal', () => ({ default: () => null }))
 

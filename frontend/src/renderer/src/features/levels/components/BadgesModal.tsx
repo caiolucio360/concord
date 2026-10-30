@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import type { Badge } from '../api/badges'
+import type { Badge, BadgeStreak as Streak } from '../api/badges'
 import type { BadgesModalTarget } from '../store/badgeStore'
 import { useAuthStore } from '../../auth/store/authStore'
 import { useBadgeStore } from '../store/badgeStore'
@@ -17,6 +17,7 @@ import { trapTab } from '../../../shared/lib/focusTrap'
 import BadgeIcon from './BadgeIcon'
 import BadgesAside from './BadgesAside'
 import BadgeProgress from './BadgeProgress'
+import BadgeStreak from './BadgeStreak'
 import BadgeTierLadder from './BadgeTierLadder'
 import { BadgeDetailSkeleton } from '../../../shared/ui/skeleton/layouts'
 
@@ -48,11 +49,13 @@ function RarityChip({ badge }: { badge: Badge }): React.JSX.Element {
 function Detail({
   badge,
   isMe,
-  ownerName
+  ownerName,
+  streak
 }: {
   badge: Badge
   isMe: boolean
   ownerName: string
+  streak?: Streak
 }): React.JSX.Element {
   const meta = rarityMeta(badge.rarity)
   const title = badge.tier_name
@@ -104,6 +107,7 @@ function Detail({
       </p>
 
       <div className="mt-5 w-full rounded-xl bg-input p-4">
+        {badge.category === 'sequencia' && <BadgeStreak streak={streak} isMe={isMe} />}
         {isMe && <BadgeProgress badge={badge} mythic={mythic} />}
 
         <p className="text-sm leading-snug text-gray-200">{badge.description}</p>
@@ -134,6 +138,7 @@ function BadgesModal(): React.JSX.Element | null {
   const hiddenRemaining = useBadgeStore((s) =>
     target ? s.byUser[target.userId]?.hiddenRemaining : undefined
   )
+  const streak = useBadgeStore((s) => (target ? s.byUser[target.userId]?.streak : undefined))
   // Escolha vale só para esta abertura do modal (target novo = escolha nova).
   const [picked, setPicked] = useState<{ target: BadgesModalTarget; category: string } | null>(null)
 
@@ -222,7 +227,7 @@ function BadgesModal(): React.JSX.Element | null {
             ✕
           </button>
           {selected ? (
-            <Detail badge={selected} isMe={isMe} ownerName={target.name} />
+            <Detail badge={selected} isMe={isMe} ownerName={target.name} streak={streak} />
           ) : !badges ? (
             <BadgeDetailSkeleton />
           ) : (

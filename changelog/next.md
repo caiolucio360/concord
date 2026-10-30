@@ -1,5 +1,8 @@
 ## Novidades
 
+- Lives: passe o mouse no selo LIVE de alguém na lista do canal de voz (no celular, toque nele) para ver a prévia da transmissão, quantos estão assistindo e o botão "Assistir".
+- Lives: o botão "Janela flutuante" no canto da live de outra pessoa abre a transmissão numa janela por cima de tudo, que continua tocando com o app minimizado ou em outro canal.
+- Rank global: quem não é seu amigo nem está num servidor com você aparece só com o nome de exibição e o perfil personalizado, sem o @ e sem os botões de mensagem e de amizade.
 - Lives: nas estatísticas de quem assiste, a linha Codec agora mostra onde quem transmite codifica (placa de vídeo ou processador) e em que qualidade a live está saindo; antes aparecia o seu próprio decodificador. Quem não consegue assistir no codec principal recebe uma cópia em 720p 30, mais leve para quem transmite. No Linux com placa NVIDIA, a live é decodificada na placa quando o nvidia-vaapi-driver está instalado (o painel avisa quando falta).
 - Overlay: quando você transmite a tela, o overlay mostra um olho com o número de quem assiste e um olho ao lado de cada espectador. Dá para desligar em Configurações → Aplicativo → "Mostrar quem assiste a minha live".
 - Lives: a opção "Enviar também em 720p para quem tem internet fraca" agora é Automático por padrão: liga sozinha quando a sua placa de vídeo codifica a live (1080p ou Fonte) e fica desligada quando seria pelo processador. Dá para forçar Ligada ou Desligada no seletor de qualidade.
@@ -71,3 +74,4 @@
 - Avisos: os avisos (toasts) agora aparecem na frente das janelas abertas, em vez de ficarem escondidos atrás do fundo desfocado.
 - Grupos de DM: em janela estreita a lista de membros começa escondida e, ao abrir, aparece por cima do chat em vez de espremê-lo.
 - Perfil: em Configurações → Perfis, agora dá para salvar o perfil inteiro (avatar, banner, nome, tema, bio e o resto) com um nome e trocar entre até 10 perfis salvos com um toque. Quem está com você vê a troca na hora.
+- Badges: o badge Sequência agora mostra a sua sequência atual de dias seguidos (com a chama), o recorde e um aviso quando hoje ainda não contou; nos perfis dos outros aparece só a sequência atual.

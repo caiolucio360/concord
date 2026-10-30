@@ -68,6 +68,12 @@ describe('CardNames', () => {
     expect(screen.queryByTestId('card-status')).toBeNull()
   })
 
+  it('sem vínculo (aberto pelo ranking) o @ vem vazio e não aparece', async () => {
+    await render(<CardNames displayName="Ana" username="" nameStyle={undefined} look={LOOK} />)
+    expect(screen.getByText('Ana')).toBeOnTheScreen()
+    expect(screen.queryByText('@')).toBeNull()
+  })
+
   it('o nome usa a cor do estilo escolhido', async () => {
     await render(
       <CardNames displayName="Ana" username="ana" nameStyle={{ font: 'default', effect: 'solid', colors: ['#00ffaa'] }} look={LOOK} />
