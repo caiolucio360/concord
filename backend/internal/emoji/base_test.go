@@ -3,10 +3,13 @@ package emoji
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -81,16 +84,54 @@ func TestBasePackEnxugaOrdenaECacheia(t *testing.T) {
 	}
 }
 
-func TestBasePackFalhaNaoFicaGuardada(t *testing.T) {
+func TestBasePackFalhaGuardadaPorUmMinuto(t *testing.T) {
 	var hits atomic.Int32
 	svc := NewBaseService(fakeEmojibase(t, &hits, true).URL)
+	clock := time.Now()
+	svc.now = func() time.Time { return clock }
 	if _, _, err := svc.Payload(context.Background()); err == nil {
 		t.Fatal("esperava erro com o CDN fora")
 	}
 	before := hits.Load()
+	if _, _, err := svc.Payload(context.Background()); err == nil || hits.Load() != before {
+		t.Fatalf("dentro do backoff: erro %v, pedidos ao CDN %d → %d", err, before, hits.Load())
+	}
+	clock = clock.Add(failureBackoff + time.Second)
 	_, _, _ = svc.Payload(context.Background())
 	if hits.Load() == before {
-		t.Fatal("depois de falhar, tem que tentar de novo")
+		t.Fatal("passado o backoff, tem que tentar de novo")
+	}
+}
+
+func TestBasePackPedidosSimultaneosBuscamUmaVez(t *testing.T) {
+	var hits atomic.Int32
+	svc := NewBaseService(fakeEmojibase(t, &hits, false).URL)
+	svc.Warm()
+	var wg sync.WaitGroup
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if _, _, err := svc.Payload(context.Background()); err != nil {
+				t.Error(err)
+			}
+		}()
+	}
+	wg.Wait()
+	if hits.Load() != 2 {
+		t.Fatalf("pedidos ao CDN = %d, want 2 (compact + messages)", hits.Load())
+	}
+}
+
+func TestBasePackDesistePeloProprioPrazo(t *testing.T) {
+	block := make(chan struct{})
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { <-block }))
+	t.Cleanup(func() { close(block); srv.Close() })
+	svc := NewBaseService(srv.URL)
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, _, err := svc.Payload(ctx); !errors.Is(err, context.Canceled) {
+		t.Fatalf("err = %v, want context.Canceled", err)
 	}
 }
 

@@ -30,10 +30,11 @@ func ValidateEmoji(emoji string) error {
 	return nil
 }
 
-// validateCustomEmoji: "<:" + UUID canônico (36 caracteres) + ">".
+// validateCustomEmoji: "<:" + UUID canônico (36 caracteres, minúsculo) + ">".
+// Só minúsculo: <:ABC…> e <:abc…> seriam duas reações do mesmo emoji.
 func validateCustomEmoji(emoji string) error {
 	id, ok := strings.CutSuffix(emoji[2:], ">")
-	if !ok || len(id) != 36 || uuid.Validate(id) != nil {
+	if !ok || len(id) != 36 || id != strings.ToLower(id) || uuid.Validate(id) != nil {
 		return ErrInvalidEmoji
 	}
 	return nil

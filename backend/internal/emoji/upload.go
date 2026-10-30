@@ -2,6 +2,7 @@ package emoji
 
 import (
 	"bytes"
+	"encoding/binary"
 	"context"
 	"errors"
 	"log"
@@ -71,8 +72,8 @@ func (h *Handler) receiveEmoji(c *gin.Context, e *Emoji) *uploadErr {
 }
 
 func createError(err error) *uploadErr {
-	if errors.Is(err, ErrNameTaken) {
-		return fail(http.StatusConflict, ErrNameTaken)
+	if errors.Is(err, ErrNameTaken) || errors.Is(err, ErrServerFull) {
+		return fail(http.StatusConflict, err)
 	}
 	log.Printf("emoji create record failed: %v", err)
 	return fail(http.StatusInternalServerError, errors.New("failed to save emoji"))
@@ -176,12 +177,20 @@ func imageType(form media.Form) (string, bool) {
 	return contentType, true
 }
 
-// isAVIF: caixa "ftyp" no byte 4 com a marca "avif" (estático) ou "avis"
-// (sequência animada).
+// isAVIF: caixa "ftyp" no byte 4 com "avif" (estático) ou "avis" (animado)
+// na marca principal ou nas compatíveis (ex.: "mif1" + "avif").
 func isAVIF(head []byte) bool {
-	if len(head) < 12 || !bytes.Equal(head[4:8], []byte("ftyp")) {
+	if len(head) < 16 || !bytes.Equal(head[4:8], []byte("ftyp")) {
 		return false
 	}
-	brand := string(head[8:12])
-	return brand == "avif" || brand == "avis"
+	size := min(int(binary.BigEndian.Uint32(head[0:4])), len(head))
+	for i := 8; i+4 <= size; i += 4 {
+		if i == 12 {
+			continue // versão da marca, não é marca
+		}
+		if brand := string(head[i : i+4]); brand == "avif" || brand == "avis" {
+			return true
+		}
+	}
+	return false
 }

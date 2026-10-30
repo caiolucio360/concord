@@ -34,7 +34,7 @@ func TestValidateEmojiPersonalizado(t *testing.T) {
 	if err := ValidateEmoji("<:" + id + ">"); err != nil {
 		t.Fatalf("reação <:id> deveria valer, veio %v", err)
 	}
-	for _, emoji := range []string{"<:nao-e-uuid>", "<:" + id, "<:>", "<:" + id + ">x"} {
+	for _, emoji := range []string{"<:" + strings.ToUpper(id) + ">", "<:nao-e-uuid>", "<:" + id, "<:>", "<:" + id + ">x"} {
 		if err := ValidateEmoji(emoji); err == nil {
 			t.Errorf("esperava %q inválido", emoji)
 		}

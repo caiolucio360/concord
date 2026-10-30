@@ -222,6 +222,17 @@ func TestUploadAceitaAVIF(t *testing.T) {
 	}
 }
 
+func TestIsAVIF(t *testing.T) {
+	compat := append([]byte{0, 0, 0, 0x18, 'f', 't', 'y', 'p', 'm', 'i', 'f', '1', 0, 0, 0, 0, 'm', 'i', 'f', '1', 'a', 'v', 'i', 'f'}, make([]byte, 8)...)
+	if !isAVIF(avifHead) || !isAVIF(compat) {
+		t.Fatal("AVIF pela marca principal e pela compatível")
+	}
+	heic := []byte{0, 0, 0, 0x18, 'f', 't', 'y', 'p', 'h', 'e', 'i', 'c', 0, 0, 0, 0, 'm', 'i', 'f', '1', 'h', 'e', 'i', 'c'}
+	if isAVIF(heic) || isAVIF(pngBytes[:8]) {
+		t.Fatal("HEIC e cabeçalho curto não são AVIF")
+	}
+}
+
 func TestUploadRecusa(t *testing.T) {
 	big := append(append([]byte{}, pngBytes...), make([]byte, MaxEmojiBytes)...)
 	cases := []struct {

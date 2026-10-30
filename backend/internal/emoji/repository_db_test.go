@@ -3,7 +3,9 @@ package emoji
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
+	"sync"
 	"testing"
 
 	"gin-quickstart/backend/internal/platform/database"
@@ -90,6 +92,35 @@ func TestRepositoryEmojis(t *testing.T) {
 	}
 	if err := repo.Delete(ctx, festa.ID); !errors.Is(err, ErrEmojiNotFound) {
 		t.Fatalf("apagar de novo: %v", err)
+	}
+}
+
+func TestRepositoryLimiteDoServidor(t *testing.T) {
+	db, ctx := emojiDB(t)
+	repo := NewRepository(db)
+	ana, srv := seedUserAndServer(t, db, "Cheio")
+	errs := make(chan error, MaxEmojisPerServer+5)
+	var wg sync.WaitGroup
+	for i := 0; i < MaxEmojisPerServer+5; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			e := &Emoji{ID: uuid.NewString(), ServerID: srv, UploaderID: ana, Name: fmt.Sprintf("e%d", i), ContentType: "image/png", SizeBytes: 1}
+			errs <- repo.Create(ctx, e)
+		}(i)
+	}
+	wg.Wait()
+	close(errs)
+	full := 0
+	for err := range errs {
+		if errors.Is(err, ErrServerFull) {
+			full++
+		} else if err != nil {
+			t.Fatal(err)
+		}
+	}
+	if n, _ := repo.CountByServer(ctx, srv); n != MaxEmojisPerServer || full != 5 {
+		t.Fatalf("envios ao mesmo tempo: %d gravados, %d recusados", n, full)
 	}
 }
 

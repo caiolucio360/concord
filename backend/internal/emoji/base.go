@@ -48,40 +48,90 @@ type basePayload struct {
 	etag string
 }
 
+// failureBackoff: depois de uma falha do CDN, quanto tempo responder o mesmo
+// erro sem tentar de novo (CDN fora não vira uma fila de pedidos de 30 s).
+const failureBackoff = time.Minute
+
+// fetchTimeout: prazo da busca dos dois arquivos, independente de quem pediu.
+const fetchTimeout = 30 * time.Second
+
 type BaseService struct {
-	baseURL string
-	client  *http.Client
-	ready   atomic.Pointer[basePayload]
-	loading sync.Mutex
+	baseURL  string
+	client   *http.Client
+	ready    atomic.Pointer[basePayload]
+	now      func() time.Time
+	mu       sync.Mutex
+	inflight chan struct{}
+	lastErr  error
+	failedAt time.Time
 }
 
 func NewBaseService(baseURL string) *BaseService {
-	return &BaseService{baseURL: baseURL, client: &http.Client{Timeout: 15 * time.Second}}
+	return &BaseService{baseURL: baseURL, client: &http.Client{Timeout: 15 * time.Second}, now: time.Now}
 }
 
 // Warm busca o pack em segundo plano no boot, para o primeiro pedido já sair
-// da memória. Se falhar, o primeiro pedido tenta de novo.
+// da memória.
 func (s *BaseService) Warm() {
-	go func() { _, _, _ = s.Payload(context.Background()) }()
+	_, _ = s.start()
 }
 
 // Payload devolve o JSON do pack e o ETag. Depois de carregado é só uma
-// leitura atômica; pedidos simultâneos antes disso esperam uma busca só.
+// leitura atômica. Antes disso, uma busca só (em segundo plano, sem depender
+// de quem pediu), e cada pedido espera até o próprio prazo.
 func (s *BaseService) Payload(ctx context.Context) ([]byte, string, error) {
 	if p := s.ready.Load(); p != nil {
 		return p.body, p.etag, nil
 	}
-	s.loading.Lock()
-	defer s.loading.Unlock()
-	if p := s.ready.Load(); p != nil {
-		return p.body, p.etag, nil
-	}
-	p, err := s.fetch(ctx)
+	done, err := s.start()
 	if err != nil {
 		return nil, "", err
 	}
-	s.ready.Store(p)
-	return p.body, p.etag, nil
+	select {
+	case <-done:
+	case <-ctx.Done():
+		return nil, "", ctx.Err()
+	}
+	if p := s.ready.Load(); p != nil {
+		return p.body, p.etag, nil
+	}
+	return nil, "", s.failure()
+}
+
+// start: a busca em andamento, uma nova, ou o erro recente (dentro do backoff).
+func (s *BaseService) start() (chan struct{}, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.inflight != nil {
+		return s.inflight, nil
+	}
+	if s.lastErr != nil && s.now().Sub(s.failedAt) < failureBackoff {
+		return nil, s.lastErr
+	}
+	done := make(chan struct{})
+	s.inflight = done
+	go s.load(done)
+	return done, nil
+}
+
+func (s *BaseService) load(done chan struct{}) {
+	ctx, cancel := context.WithTimeout(context.Background(), fetchTimeout)
+	defer cancel()
+	p, err := s.fetch(ctx)
+	s.mu.Lock()
+	if err == nil {
+		s.ready.Store(p)
+	}
+	s.lastErr, s.failedAt = err, s.now()
+	s.inflight = nil
+	s.mu.Unlock()
+	close(done)
+}
+
+func (s *BaseService) failure() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.lastErr
 }
 
 type rawEmoji struct {

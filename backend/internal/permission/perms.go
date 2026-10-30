@@ -11,23 +11,23 @@ import (
 // Bits de permissão. Todos abaixo de 1<<31 para o frontend fazer bitwise sem
 // BigInt. Os números são contrato com o app (lib/permissions.ts): não mudar.
 const (
-	ViewChannel       int64 = 1 << 0
-	ManageChannels    int64 = 1 << 1
-	ManageRoles       int64 = 1 << 2
-	ManageServer      int64 = 1 << 3
-	CreateInvite      int64 = 1 << 4
-	KickMembers       int64 = 1 << 5
-	BanMembers        int64 = 1 << 6
-	Administrator     int64 = 1 << 7
-	SendMessages      int64 = 1 << 8
-	AttachFiles       int64 = 1 << 9
-	AddReactions      int64 = 1 << 10
-	MentionEveryone   int64 = 1 << 11
-	ManageMessages    int64 = 1 << 12
-	ReadHistory       int64 = 1 << 13
+	ViewChannel     int64 = 1 << 0
+	ManageChannels  int64 = 1 << 1
+	ManageRoles     int64 = 1 << 2
+	ManageServer    int64 = 1 << 3
+	CreateInvite    int64 = 1 << 4
+	KickMembers     int64 = 1 << 5
+	BanMembers      int64 = 1 << 6
+	Administrator   int64 = 1 << 7
+	SendMessages    int64 = 1 << 8
+	AttachFiles     int64 = 1 << 9
+	AddReactions    int64 = 1 << 10
+	MentionEveryone int64 = 1 << 11
+	ManageMessages  int64 = 1 << 12
+	ReadHistory     int64 = 1 << 13
 	// Enviar emojis personalizados novos ao servidor (vale no servidor todo).
 	// Ver docs/adr/0028-emojis-personalizados.md.
-	AddEmojis int64 = 1 << 15
+	AddEmojis         int64 = 1 << 15
 	Connect           int64 = 1 << 16
 	Speak             int64 = 1 << 17
 	Stream            int64 = 1 << 18
