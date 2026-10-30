@@ -6,7 +6,6 @@ import type { Role } from '../lib/permissions'
 import { useAuthStore } from '../../auth/store/authStore'
 import {
   listServers,
-  getServer,
   createServer as apiCreateServer,
   inviteMember as apiInviteMember,
   updateServer as apiUpdateServer,
@@ -29,7 +28,6 @@ import {
 } from '../api/roles'
 import { listServerInvites } from '../api/invites'
 import {
-  listChannels as apiListChannels,
   createChannel as apiCreateChannel,
   updateChannel as apiUpdateChannel,
   deleteChannel as apiDeleteChannel,
@@ -43,9 +41,10 @@ import {
   trackOwnReorderRequest
 } from '../lib/channelReorderQueue'
 import { removeRole, sortRoles, stripRoleFromMembers, upsertRole } from '../lib/roleList'
-import { nicknameMap, withNickname } from '../lib/serverNames'
+import { withNickname } from '../lib/serverNames'
+import { isSameSession, serverViewActions } from './serverViewLoad'
 
-interface ServerState {
+export interface ServerState {
   servers: Server[]
   currentServer: Server | null
   currentMembers: ServerMember[]
@@ -138,14 +137,8 @@ interface ServerState {
   reset: () => void
 }
 
-/** Conta as chamadas de selectServer: só a mais recente grava o resultado. */
-let selectSeq = 0
-/** Idem para a busca de convites e a de canais (a resposta velha chega depois da nova). */
+/** Conta as buscas de convites: só a mais recente grava o resultado. */
 let invitesSeq = 0
-let channelsSeq = 0
-
-const isSameSession = (tokenAtStart: string | null): boolean =>
-  useAuthStore.getState().accessToken === tokenAtStart
 
 const refetchOnFocus = (): void => {
   if (!useAuthStore.getState().accessToken) return
@@ -186,48 +179,7 @@ export const useServerStore = create<ServerState>()((set, get) => ({
       if (isSameSession(token)) set({ servers: [], serversLoaded: true })
     }
   },
-  selectServer: async (id: string) => {
-    const token = useAuthStore.getState().accessToken
-    const seq = ++selectSeq
-    // Já é o servidor na tela: busca por baixo e troca quando chegar. O
-    // "carregando" (que tira a tela toda, modal junto) é só para abrir outro.
-    const refreshing = get().currentServer?.id === id
-    if (!refreshing) set({ loading: true })
-    try {
-      const res = await getServer(id)
-      if (!isSameSession(token) || seq !== selectSeq) return
-      set({
-        currentServer: res.server,
-        currentMembers: res.members,
-        roles: sortRoles(res.roles ?? []),
-        nicknames: { ...get().nicknames, [id]: nicknameMap(res.members) }
-      })
-    } catch (err) {
-      if (!isSameSession(token) || seq !== selectSeq) return
-      if (!refreshing) set({ currentServer: null, currentMembers: [], roles: [] })
-      throw err
-    } finally {
-      if (seq === selectSeq) set({ loading: false })
-    }
-  },
-  refreshServer: async (serverId: string) => {
-    const token = useAuthStore.getState().accessToken
-    try {
-      const [res, channels] = await Promise.all([getServer(serverId), apiListChannels(serverId)])
-      if (!isSameSession(token) || get().currentServer?.id !== serverId) return
-      set({
-        currentServer: res.server,
-        currentMembers: res.members,
-        roles: sortRoles(res.roles ?? []),
-        channels: Array.isArray(channels) ? channels : [],
-        channelsLoadedFor: serverId,
-        nicknames: { ...get().nicknames, [serverId]: nicknameMap(res.members) }
-      })
-    } catch {
-      // Sem acesso (foi expulso/banido) ou rede fora: o evento server:removed
-      // cuida do primeiro caso e o próximo evento tenta de novo.
-    }
-  },
+  ...serverViewActions(set, get),
   fetchServerInvites: async (serverId: string) => {
     const token = useAuthStore.getState().accessToken
     const seq = ++invitesSeq
@@ -237,19 +189,6 @@ export const useServerStore = create<ServerState>()((set, get) => ({
       set({ serverInvites: Array.isArray(invites) ? invites : [] })
     } catch {
       if (isSameSession(token) && seq === invitesSeq) set({ serverInvites: [] })
-    }
-  },
-  fetchChannels: async (serverId: string) => {
-    const token = useAuthStore.getState().accessToken
-    const seq = ++channelsSeq
-    try {
-      const channels = await apiListChannels(serverId)
-      if (!isSameSession(token) || seq !== channelsSeq) return
-      set({ channels: Array.isArray(channels) ? channels : [], channelsLoadedFor: serverId })
-    } catch {
-      if (isSameSession(token) && seq === channelsSeq) {
-        set({ channels: [], channelsLoadedFor: serverId })
-      }
     }
   },
   addServer: async (name: string, icon_url?: string) => {
