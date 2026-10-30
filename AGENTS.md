@@ -37,6 +37,11 @@ para áudio de janela no Windows.
 8. **Evidência antes de "pronto".** Só diga que terminou com a saída de
    `node scripts/affected-tests.mjs pr` verde na mão.
 9. **Segredos**: nunca imprima, logue ou commite o conteúdo de `.env` ou de chaves.
+10. **Design: ícones, tokens e componentes de `shared/ui`.** Ícone é SVG de
+    `shared/ui/icons` (nunca emoji/✕/✓ de texto); botão é `Button`,
+    `IconButton` ou `CloseButton`; cor, texto e raio só pelos tokens; foco
+    visível (`focus-ring`). A catraca `scripts/check-design.mjs` barra o diff que
+    piora. → [docs/ai/exemplos/design.md](docs/ai/exemplos/design.md)
 
 ## Fluxo de trabalho (da ideia ao PR)
 
@@ -57,10 +62,11 @@ valem igual.
 ```bash
 # Pipeline de verificação (raiz do repo)
 node scripts/affected-tests.mjs loop    # a cada ciclo TDD: só os testes afetados
-node scripts/affected-tests.mjs pr      # antes do PR: afetados + vet/typecheck + estrutura + CRAP
+node scripts/affected-tests.mjs pr      # antes do PR: afetados + vet/typecheck + estrutura + design + CRAP
 node scripts/affected-tests.mjs full    # suíte inteira
 node scripts/crap.mjs [--files a b | --base <ref>]
 node scripts/check-structure.mjs        # pastas + catraca anti-god
+node scripts/check-design.mjs           # catraca de design (--all: inventário do renderer)
 
 # Backend (backend/, Go 1.26, módulo gin-quickstart/backend)
 go build ./... && go vet ./...

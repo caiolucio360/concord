@@ -10,6 +10,8 @@
 
    Use sempre os tokens, nunca hex solto. Em CSS: var(--bg-primary). Em
    Tailwind: as classes da coluna da direita (aceitam /opacidade: bg-brand/20).
+   Regras de design (ícones, raio, texto, foco) e a catraca que as confere:
+   docs/ai/exemplos/design.md.
 
    Fundos
      --bg-app            fundo da janela (opaco; base para compor os translúcidos)
