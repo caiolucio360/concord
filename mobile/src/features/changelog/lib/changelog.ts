@@ -7,6 +7,11 @@ export function groupEntries(release: ChangelogRelease): { features: string[]; f
   return { features, fixes }
 }
 
+/** Só as versões com algo a contar (o servidor devolve todas). */
+export function withContent(releases: ChangelogRelease[]): ChangelogRelease[] {
+  return releases.filter((r) => r.entries.length > 0 || r.summary !== '')
+}
+
 export function formatReleaseDate(iso: string): string {
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return ''

@@ -26,6 +26,14 @@ export function PlusIcon(props: IconProps): React.JSX.Element {
   )
 }
 
+export function MinusIcon(props: IconProps): React.JSX.Element {
+  return (
+    <LineIcon {...props}>
+      <path d="M5 12h14" />
+    </LineIcon>
+  )
+}
+
 export function PencilIcon(props: IconProps): React.JSX.Element {
   return (
     <Icon {...props}>

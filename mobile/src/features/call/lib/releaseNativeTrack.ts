@@ -11,3 +11,24 @@ export function releaseNativeTrack(track: unknown): void {
     // Já liberada ou módulo indisponível: quem chamou está encerrando de qualquer jeito.
   }
 }
+
+/**
+ * As faixas nativas que eu publiquei (tela e câmera), para liberar mesmo quando o LiveKit já limpou as publicações
+ * (sala derrubada pelo servidor ou por outro aparelho da mesma conta): sem isso o serviço de captura fica preso.
+ */
+export function createNativeTracks() {
+  const kept = new Set<unknown>()
+  return {
+    keep(track: unknown): void {
+      if (track) kept.add(track)
+    },
+    release(track: unknown): void {
+      if (!kept.delete(track)) return
+      releaseNativeTrack(track)
+    },
+    releaseAll(): void {
+      kept.forEach((track) => releaseNativeTrack(track))
+      kept.clear()
+    }
+  }
+}

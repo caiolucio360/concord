@@ -1,6 +1,9 @@
 # Deploy automático: a cada push/merge na main publica na VPS o backend, a página de download (site/), o app web
 # (frontend/dist-web) e uma versão nova do app desktop (os apps abertos
-# mostram "Nova atualização disponível").
+# mostram "Nova atualização disponível"). Os instaladores da versão nova saem
+# numa GitHub Release (tag v<versão>, com o GITHUB_TOKEN do próprio Actions);
+# a VPS publica só os manifestos (latest*.yml) e o Caddy manda os downloads
+# para a release (docs/adr/0028-atualizacoes-pelo-github-releases.md).
 #
 # Configuração do repositório (Settings → Secrets and variables → Actions):
 #   Secrets:
@@ -40,6 +43,9 @@ jobs:
     # um binário antigo não sobe com o socket do systemd ativo).
     if: github.ref == 'refs/heads/main' && vars.DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
+    # Criar a GitHub Release com os instaladores (scripts/github-release.mjs).
+    permissions:
+      contents: write
     env:
       PUBLIC_URL: ${{ vars.PUBLIC_URL }}
       VPS_HOST: ${{ vars.VPS_HOST }}
@@ -58,7 +64,7 @@ jobs:
       # Nota acima do limite do servidor faria o PUT do changelog falhar só no
       # fim, com a versão já no ar. Aqui falha antes de publicar qualquer coisa.
       - name: Changelog (limites)
-        run: node scripts/publish-changelog.mjs --check changelog/next.md
+        run: node scripts/publish-changelog.mjs --check changelog/pending
 
       - uses: actions/setup-go@v7
         with:
@@ -116,6 +122,14 @@ jobs:
       - name: App desktop Linux (AppImage e .tar.gz assinados)
         run: scripts/release-linux.sh "${{ steps.version.outputs.version }}"
 
+      # Antes da VPS: os latest*.yml que ela publica citam arquivos que o Caddy
+      # manda buscar nesta release. Rascunho até ter todos os arquivos.
+      - name: GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: node scripts/github-release.mjs "${{ steps.version.outputs.version }}" backend/updates changelog/pending
+
       - name: Publicar na VPS (backend + página de download + app web + atualização do app)
         env:
           TECH_TEAM_USER_IDS: ${{ secrets.TECH_TEAM_USER_IDS }}
@@ -127,11 +141,14 @@ jobs:
           curl -fsS "${PUBLIC_URL%/}/updates/latest.yml" | grep -q "version: ${{ steps.version.outputs.version }}"
           curl -fsS "${PUBLIC_URL%/}/updates/latest-linux.yml" | grep -q "version: ${{ steps.version.outputs.version }}"
           curl -fsS "${PUBLIC_URL%/}/updates/latest-linux-tar.yml" | grep -q "version: ${{ steps.version.outputs.version }}"
+          # Os instaladores e as .sig podem vir do disco ou, com o Caddyfile
+          # novo, da GitHub Release (302): -L segue até o arquivo.
           for manifest in latest.yml latest-linux.yml latest-linux-tar.yml; do
             path=$(curl -fsS "${PUBLIC_URL%/}/updates/$manifest" | awk '/^path:/ {print $2}' | tr -d "\"'")
             test -n "$path"
-            curl -fsSI "${PUBLIC_URL%/}/updates/$path"
-            curl -fsS "${PUBLIC_URL%/}/updates/$path.sig" | grep -q .
+            curl -fsSIL "${PUBLIC_URL%/}/updates/$path"
+            curl -fsSL "${PUBLIC_URL%/}/updates/$path.sig" | grep -q .
+            curl -fsSIL -o /dev/null "https://github.com/$GITHUB_REPOSITORY/releases/download/v${{ steps.version.outputs.version }}/$path"
           done
           test "$(curl -s -o /dev/null -w '%{http_code}' "${PUBLIC_URL%/}/rtc/validate")" = 401
           curl -fsS "${PUBLIC_URL%/}/healthz" | grep -q '"ok"'
@@ -158,12 +175,12 @@ jobs:
           echo "Salinha ${{ steps.version.outputs.version }} no ar em ${PUBLIC_URL%/}"
 
       # Depois do "Conferir": a versão já está no ar e o endpoint novo também.
-      # O PUT é idempotente; o servidor guarda só as notas que nenhuma versão
-      # anterior trouxe, porque o next.md acumula entre deploys.
+      # O PUT é idempotente; o servidor guarda só as notas cujo arquivo nenhuma
+      # versão anterior trouxe, porque changelog/pending/ acumula entre deploys.
       - name: Changelog
         env:
           CHANGELOG_TOKEN: ${{ secrets.CHANGELOG_TOKEN }}
-        run: node scripts/publish-changelog.mjs "${{ steps.version.outputs.version }}" changelog/next.md "$PUBLIC_URL"
+        run: node scripts/publish-changelog.mjs "${{ steps.version.outputs.version }}" changelog/pending "$PUBLIC_URL"
 
       - name: Limpar chaves
         if: always()

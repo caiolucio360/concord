@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { formatMemberSince, placeProfileCard } from './profileCard'
+import {
+  cardPlacementStyle,
+  formatMemberSince,
+  isCardMenu,
+  keepsCardOpen,
+  placeProfileCard
+} from './profileCard'
 
 const card = { width: 300, height: 360 }
 const viewport = { width: 1280, height: 800 }
@@ -55,5 +61,45 @@ describe("placeProfileCard 'top' (barra de baixo)", () => {
     const pos = placeProfileCard(anchor, 'top', card, { width: 1280, height: 360 })
     expect(pos.left).toBe(1280 - 300 - 8)
     expect(pos.top).toBeGreaterThanOrEqual(8)
+  })
+})
+
+describe('keepsCardOpen', () => {
+  const inside = { contains: () => true }
+  const outside = { contains: () => false }
+  it('clique no cartão ou no item que abriu não fecha', () => {
+    expect(keepsCardOpen({}, inside, undefined)).toBe(true)
+    expect(keepsCardOpen({}, outside, inside)).toBe(true)
+  })
+  it('clique num menu de contexto aberto do cartão não fecha', () => {
+    expect(keepsCardOpen({ closest: () => ({}) }, null, undefined)).toBe(true)
+  })
+  it('clique fora fecha', () => {
+    expect(keepsCardOpen({ closest: () => null }, outside, outside)).toBe(false)
+    expect(keepsCardOpen({}, null, undefined)).toBe(false)
+  })
+})
+
+describe('isCardMenu', () => {
+  it('só o menu aberto pelo cartão da mesma pessoa', () => {
+    expect(isCardMenu({ userId: 'u1', anchorEl: {} }, 'u1')).toBe(true)
+    expect(isCardMenu({ userId: 'u1' }, 'u1')).toBe(false)
+    expect(isCardMenu({ userId: 'u2', anchorEl: {} }, 'u1')).toBe(false)
+    expect(isCardMenu(null, 'u1')).toBe(false)
+  })
+})
+
+describe('cardPlacementStyle', () => {
+  it('antes de medir: escondido fora da tela', () => {
+    expect(cardPlacementStyle(null)).toMatchObject({ left: -9999, top: 0, visibility: 'hidden' })
+  })
+  it('medido: na posição e visível', () => {
+    expect(cardPlacementStyle({ left: 10, top: 20 })).toEqual({
+      width: 300,
+      left: 10,
+      top: 20,
+      visibility: 'visible',
+      position: 'fixed'
+    })
   })
 })

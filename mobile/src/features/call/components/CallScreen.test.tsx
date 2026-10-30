@@ -3,6 +3,7 @@ import { Text } from 'react-native'
 import { useAuthStore } from '../../auth/store/authStore'
 import { useMusicStore } from '../../music/store/musicStore'
 import { useCallSessionStore } from '../store/callSessionStore'
+import { useCameraStore } from '../store/cameraStore'
 import { useScreenShareStore } from '../store/screenShareStore'
 import { useParticipantsStore } from '../store/participantsStore'
 import { useSpeakingStore } from '../store/speakingStore'
@@ -117,5 +118,54 @@ describe('CallScreen', () => {
     await render(<CallScreen onBack={jest.fn()} onLeave={jest.fn()} />)
     expect(screen.getByRole('button', { name: 'Silenciar microfone' })).toBeOnTheScreen()
     expect(screen.getByRole('button', { name: 'Ensurdecer' })).toBeOnTheScreen()
+  })
+})
+
+describe('CallScreen: layout', () => {
+  const props = { onBack: jest.fn(), onLeave: jest.fn() }
+
+  it('mostra o nome do canal e quantas pessoas estão na chamada (eu incluído)', async () => {
+    useParticipantsStore.getState().upsert(ana)
+    await render(<CallScreen {...props} />)
+    expect(screen.getByText('Geral')).toBeOnTheScreen()
+    expect(screen.getByText('2 pessoas na chamada')).toBeOnTheScreen()
+  })
+
+  it('sozinho na chamada: "1 pessoa" e o tile de quem já estava (bug: só aparecia quem entrava depois)', async () => {
+    await render(<CallScreen {...props} />)
+    expect(screen.getByText('1 pessoa na chamada')).toBeOnTheScreen()
+    await act(async () => useParticipantsStore.getState().replace([ana], {}))
+    expect(screen.getByLabelText('Ana')).toBeOnTheScreen()
+  })
+
+  it('quem fala ganha o anel verde; quem está mudo não', async () => {
+    useParticipantsStore.getState().upsert(ana)
+    await render(<CallScreen {...props} />)
+    await act(async () => useSpeakingStore.getState().set(['u1']))
+    expect(screen.getAllByTestId('speaking-ring')).toHaveLength(1)
+  })
+
+  it('a barra de baixo tem microfone, fone e sair', async () => {
+    await render(<CallScreen {...props} />)
+    for (const name of ['Silenciar microfone', 'Ensurdecer', 'Sair da chamada']) {
+      expect(screen.getByRole('button', { name })).toBeOnTheScreen()
+    }
+  })
+})
+
+describe('CallScreen: câmera', () => {
+  const props = { onBack: jest.fn(), onLeave: jest.fn() }
+
+  it('quem está com a câmera ligada aparece em vídeo (eu inclusive); o botão liga a minha', async () => {
+    useParticipantsStore.getState().upsert(ana)
+    useCameraStore.getState().reset()
+    const onToggleCamera = jest.fn()
+    await render(<CallScreen {...props} onToggleCamera={onToggleCamera} onFlipCamera={jest.fn()} renderCamera={(id) => <Text>{`câmera de ${id}`}</Text>} />)
+    expect(screen.queryByText('câmera de u1')).toBeNull()
+    await act(async () => useCameraStore.getState().setCameras(['u1', 'me']))
+    expect(screen.getByText('câmera de u1')).toBeOnTheScreen()
+    expect(screen.getByText('câmera de me')).toBeOnTheScreen()
+    await fireEvent.press(screen.getByRole('button', { name: 'Ligar câmera' }))
+    expect(onToggleCamera).toHaveBeenCalled()
   })
 })

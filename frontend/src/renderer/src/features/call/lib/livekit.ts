@@ -24,6 +24,7 @@ import type { ScreenShareQuality } from './screenShareQuality'
 import { ScreenSender } from './screenSender'
 import type { ScreenStatsInput } from './screenStats'
 import { RemoteEncoders, serveScreenEncoder } from './screenEncoderRpc'
+import { readCallReport } from './callStatsReport'
 import {
   clearActiveScreenStats,
   readScreenStatsInput,
@@ -218,6 +219,11 @@ export class CallMedia {
     return input.local
       ? { ...input, quality: this.screen.current() }
       : { ...input, encoder: this.remoteEncoders.get(userId) }
+  }
+
+  /** getStats() da voz, para a telemetria das calls (features/observability). */
+  readCallStats(): Promise<RTCStatsReport | null> {
+    return this.closing ? Promise.resolve(null) : readCallReport(this.room)
   }
 
   /** Pode publicar essa fonte, segundo as permissões que o servidor deu. */

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"gin-quickstart/backend/internal/namestyle"
+	"gin-quickstart/backend/internal/relationship"
 )
 
 const (
@@ -17,16 +18,18 @@ const (
 	rankingTTL = 60 * time.Second
 )
 
-// RankingEntry é uma linha do ranking global. Position começa em 1.
+// RankingEntry é uma linha do ranking global. Position começa em 1. Username
+// vem vazio para quem não tem vínculo com quem pediu (Relationship = none).
 type RankingEntry struct {
-	Position    int             `json:"position"`
-	UserID      string          `json:"user_id"`
-	Username    string          `json:"username"`
-	DisplayName string          `json:"display_name"`
-	AvatarURL   *string         `json:"avatar_url"`
-	NameStyle   namestyle.Style `json:"name_style"`
-	Level       int             `json:"level"`
-	XP          int64           `json:"xp"`
+	Position     int               `json:"position"`
+	UserID       string            `json:"user_id"`
+	Username     string            `json:"username"`
+	Relationship relationship.Kind `json:"relationship"`
+	DisplayName  string            `json:"display_name"`
+	AvatarURL    *string           `json:"avatar_url"`
+	NameStyle    namestyle.Style   `json:"name_style"`
+	Level        int               `json:"level"`
+	XP           int64             `json:"xp"`
 }
 
 // MyRank é a posição de quem pediu o ranking, mesmo fora do top.
@@ -50,9 +53,11 @@ type rankingStore interface {
 	RankOf(ctx context.Context, userID string) (MyRank, bool, error)
 }
 
-// RankingService monta o ranking global com um cache curto do top.
+// RankingService monta o ranking global com um cache curto do top; o filtro
+// de privacidade de quem pede vem depois do cache.
 type RankingService struct {
 	store rankingStore
+	links linkResolver
 	ttl   time.Duration
 	now   func() time.Time
 
@@ -61,8 +66,8 @@ type RankingService struct {
 	cachedAt time.Time
 }
 
-func RankingServiceFor(repository *Repository) *RankingService {
-	return &RankingService{store: repository, ttl: rankingTTL, now: time.Now}
+func RankingServiceFor(repository *Repository, links linkResolver) *RankingService {
+	return &RankingService{store: repository, links: links, ttl: rankingTTL, now: time.Now}
 }
 
 func clampRankingLimit(limit int) int {
@@ -83,7 +88,11 @@ func (s *RankingService) Get(ctx context.Context, userID string, limit int) (Ran
 	if err != nil {
 		return Ranking{}, err
 	}
-	return Ranking{Entries: top[:min(limit, len(top))], Me: me}, nil
+	entries, err := forViewer(ctx, s.links, userID, top[:min(limit, len(top))])
+	if err != nil {
+		return Ranking{}, err
+	}
+	return Ranking{Entries: entries, Me: me}, nil
 }
 
 // top devolve o top máximo do cache, recarregando quando vence. Erro não vai

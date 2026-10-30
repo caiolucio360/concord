@@ -13,7 +13,10 @@ interface CardNamesProps {
   look: CardLook
 }
 
-/** Nome (na cor do estilo escolhido), @usuário, pronomes e status. Parte vazia não aparece. */
+/**
+ * Nome (na cor do estilo escolhido), @usuário, pronomes e status. Parte vazia
+ * não aparece (o @ vem vazio de quem não tem vínculo comigo).
+ */
 export function CardNames({ displayName, username, nameStyle, pronouns, statusText, look }: CardNamesProps) {
   const pronounsText = pronouns?.trim()
   const status = statusText?.trim()
@@ -22,9 +25,11 @@ export function CardNames({ displayName, username, nameStyle, pronouns, statusTe
       <Text numberOfLines={2} style={[styles.name, { color: nameColorOf(nameStyle, look.textColor) }]}>
         {displayName}
       </Text>
-      <Text numberOfLines={1} style={[styles.small, { color: look.mutedColor }]}>
-        @{username}
-      </Text>
+      {username ? (
+        <Text numberOfLines={1} style={[styles.small, { color: look.mutedColor }]}>
+          @{username}
+        </Text>
+      ) : null}
       {pronounsText ? (
         <Text testID="card-pronouns" numberOfLines={1} style={[styles.small, { color: look.mutedColor }]}>
           {pronounsText}

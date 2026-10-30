@@ -17,7 +17,7 @@ type fakePresence struct {
 	status map[string]string
 }
 
-func (p fakePresence) IsOnline(id string) bool { return p.online[id] }
+func (p fakePresence) IsAppOpen(id string) bool { return p.online[id] }
 func (p fakePresence) EffectiveStatus(id string) string {
 	if s, ok := p.status[id]; ok {
 		return s

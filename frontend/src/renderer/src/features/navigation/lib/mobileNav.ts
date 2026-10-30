@@ -32,8 +32,14 @@ export function sectionKind(path: string): string {
 }
 
 // Rotas que são uma conversa/tela própria (não só "a lista daquele lugar"). A
-// visita de visitante só tem a call: abre direto nela.
-const CONTENT_PATHS = [/^\/servers\/[^/]+\/channels\//, /^\/dm\//, /^\/visitas\//]
+// visita de visitante só tem a call: abre direto nela. O painel das lives
+// (devs) é uma tela sem lista.
+const CONTENT_PATHS = [
+  /^\/servers\/[^/]+\/channels\//,
+  /^\/dm\//,
+  /^\/visitas\//,
+  /^\/observabilidade/
+]
 
 // A aba do diamante (Melhorias, Propostas, Novidades, Rank global) não tem lista
 // própria: abre direto no conteúdo, e cada tela volta ao hub pelo próprio botão.

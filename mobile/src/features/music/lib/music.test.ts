@@ -1,5 +1,5 @@
 import type { MusicItem } from '../api/music'
-import { canSwap, formatDuration, isMaestroMessageKind, slashSuggestions, splitBold } from './music'
+import { canSwap, formatDuration, isMaestroMessageKind, slashSuggestions, splitBold, isMaestroIdentity } from './music'
 
 const item = (id: string, by: string): MusicItem => ({
   id,
@@ -50,5 +50,13 @@ describe('lib do Maestro', () => {
     expect(isMaestroMessageKind('music_commands')).toBe(true)
     expect(isMaestroMessageKind('birthday')).toBe(false)
     expect(isMaestroMessageKind(null)).toBe(false)
+  })
+})
+
+describe('isMaestroIdentity', () => {
+  it('só a identidade do bot de música na sala de mídia', () => {
+    expect(isMaestroIdentity('bot-music:ch1')).toBe(true)
+    expect(isMaestroIdentity('4d414553-5452-4f00-8000-000000000001')).toBe(false)
+    expect(isMaestroIdentity('u1')).toBe(false)
   })
 })

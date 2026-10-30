@@ -5,7 +5,7 @@ const MAESTRO_GIF = require('../../../../assets/music/maestro.gif')
 
 /** Avatar do Maestro: o GIF embutido no app, sem imagem no banco. */
 export function MaestroAvatar({ size = 36 }: { size?: number }) {
-  return <Image accessibilityLabel="Maestro" source={MAESTRO_GIF} style={[styles.image, { width: size, height: size, borderRadius: size / 2 }]} />
+  return <Image testID="maestro-avatar" accessibilityLabel="Maestro" source={MAESTRO_GIF} style={[styles.image, { width: size, height: size, borderRadius: size / 2 }]} />
 }
 
 const styles = StyleSheet.create({

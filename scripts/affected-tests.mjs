@@ -15,7 +15,7 @@ const backend = path.join(ROOT, 'backend')
 const frontend = path.join(ROOT, 'frontend')
 const mobile = path.join(ROOT, 'mobile')
 // Notas da próxima release: o deploy recusa o PUT se passarem do limite.
-const NOTES = 'changelog/next.md'
+const NOTES = 'changelog/pending'
 const GO_LIST = '{{.ImportPath}}|{{join .Imports ","}}|{{join .TestImports ","}}|{{join .XTestImports ","}}'
 
 // goAffected: pacotes alterados + quem importa deles, no formato do go test.
@@ -41,7 +41,9 @@ function loop(files) {
 }
 
 function checkNotes(files) {
-  return files.includes(NOTES) ? [run('node', ['scripts/publish-changelog.mjs', '--check', NOTES])] : []
+  return files.some((file) => file.startsWith(`${NOTES}/`))
+    ? [run('node', ['scripts/publish-changelog.mjs', '--check', NOTES])]
+    : []
 }
 
 function checks(files, base) {

@@ -1,12 +1,13 @@
 import { wantsSubscription, type TrackSourceName } from './callMedia'
 import { pruneWatched } from './screenWatch'
-import { videoEnabled, type VideoPauseState } from './screenVideoPause'
+import { samePause, videoEnabled, type VideoPauseState } from './screenVideoPause'
 
 // O que baixar de cada pessoa na chamada: voz e câmera sempre, tela (e o som
 // dela) só de quem estou assistindo. Com a janela fora da tela (minimizada ou na
 // bandeja), ou a live fora da área visível do app, o vídeo fica pausado no
 // servidor: ninguém está vendo, e decodificar e desenhar uma live a 30-60 qps
-// custa CPU e GPU que o jogo precisa. O som segue (ver screenVideoPause.ts).
+// custa CPU e GPU que o jogo precisa. O som segue, e a live na janela flutuante
+// não pausa (ver screenVideoPause.ts).
 
 export interface RemotePublicationLike {
   source: string
@@ -23,7 +24,7 @@ export interface RemoteParticipantLike {
 
 export class RemoteSubscriptions {
   private watched = new Set<string>()
-  private pause: VideoPauseState = { windowHidden: false, offscreen: new Set() }
+  private pause: VideoPauseState = { windowHidden: false, offscreen: new Set(), pip: null }
 
   setWatched(userIds: string[]): void {
     this.watched = new Set(userIds)
@@ -36,10 +37,7 @@ export class RemoteSubscriptions {
 
   /** true se mudou (quem chama reaplica). */
   setPause(pause: VideoPauseState): boolean {
-    const same =
-      this.pause.windowHidden === pause.windowHidden &&
-      this.pause.offscreen.size === pause.offscreen.size &&
-      [...pause.offscreen].every((id) => this.pause.offscreen.has(id))
+    const same = samePause(this.pause, pause)
     this.pause = pause
     return !same
   }

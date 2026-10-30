@@ -29,7 +29,15 @@ function ImageAttachment({ attachment }: { attachment: Attachment }) {
           <Image testID="anexo-imagem" source={{ uri: src }} style={styles.fill} resizeMode="cover" onError={onError} />
         ) : null}
       </Pressable>
-      {open && src ? <MediaLightbox src={src} label={attachment.filename} onClose={() => setOpen(false)} /> : null}
+      {open && src ? (
+        <MediaLightbox
+          src={src}
+          label={attachment.filename}
+          width={attachment.width}
+          height={attachment.height}
+          onClose={() => setOpen(false)}
+        />
+      ) : null}
     </>
   )
 }

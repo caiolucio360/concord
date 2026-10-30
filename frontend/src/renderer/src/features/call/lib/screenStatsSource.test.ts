@@ -6,6 +6,7 @@ vi.mock('livekit-client', () => ({
 
 import {
   clearActiveScreenStats,
+  readActiveCallStats,
   readActiveScreenStats,
   readScreenStatsInput,
   setActiveScreenStats,
@@ -132,5 +133,19 @@ describe('chamada ativa', () => {
     clearActiveScreenStats(reader)
     expect(await readActiveScreenStats('bia', false)).toBeNull()
     expect(reader.readScreenStats).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('voz da chamada ativa (telemetria)', () => {
+  it('lê o getStats() da voz da chamada registrada; sem chamada, null', async () => {
+    const voice = new Map([['t', { type: 'transport' }]]) as unknown as RTCStatsReport
+    const reader = {
+      readScreenStats: vi.fn(async () => null),
+      readCallStats: vi.fn(async () => voice)
+    }
+    setActiveScreenStats(reader)
+    expect(await readActiveCallStats()).toBe(voice)
+    clearActiveScreenStats(reader)
+    expect(await readActiveCallStats()).toBeNull()
   })
 })

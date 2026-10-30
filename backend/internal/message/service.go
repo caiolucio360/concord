@@ -8,8 +8,6 @@ import (
 	"log"
 	"strings"
 	"time"
-	"unicode"
-	"unicode/utf8"
 
 	"github.com/google/uuid"
 )
@@ -21,7 +19,6 @@ var (
 	ErrSystemChannelDelete = errors.New("messages in system channels cannot be deleted")
 	ErrMessageHidden       = errors.New("message not found")
 	ErrInvalidReply        = errors.New("invalid reply target")
-	ErrInvalidEmoji        = errors.New("invalid emoji reaction")
 	ErrInvalidSticker      = errors.New("invalid sticker or sticker does not belong to this server")
 	ErrInvalidGifURL       = errors.New("invalid gif url")
 )
@@ -88,18 +85,6 @@ func MessageService(repository *Repository, publisher EventPublisher, channelRes
 
 func (s *Service) SetStickerChecker(checker StickerChecker) {
 	s.stickerChecker = checker
-}
-
-func ValidateEmoji(emoji string) error {
-	if emoji == "" || len(emoji) > 32 || !utf8.ValidString(emoji) {
-		return ErrInvalidEmoji
-	}
-	for _, r := range emoji {
-		if unicode.IsSpace(r) || unicode.IsControl(r) {
-			return ErrInvalidEmoji
-		}
-	}
-	return nil
 }
 
 func SameRoomTarget(target *Message, channelID string, conversationID string) bool {
