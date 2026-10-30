@@ -35,7 +35,15 @@ const base: SessionStats = {
   step_changes: 2,
   bitrate_kbps: 6000,
   loss_pct: 0.1,
-  rtt_ms: 30
+  rtt_ms: 30,
+  capture_fps: 58,
+  recv_fps: null,
+  codec_ms: 4,
+  concealed_pct: null,
+  recv_loss_pct: null,
+  connect_ms: null,
+  reconnects: 0,
+  failures: 0
 }
 
 const report = (up: boolean): LiveReport => ({
@@ -77,6 +85,19 @@ const report = (up: boolean): LiveReport => ({
       freezes_per_min: 2,
       score: 80,
       reasons: ['Decodificando no processador']
+    },
+    {
+      ...base,
+      id: 'w2',
+      kind: 'call',
+      username: 'caio',
+      duration_seconds: 900,
+      freezes_per_min: 0,
+      score: 130,
+      concealed_pct: 6,
+      recv_loss_pct: 0.2,
+      failures: 1,
+      reasons: ['Voz não conectou']
     }
   ],
   breakdown: {
@@ -112,6 +133,7 @@ describe('LiveReportBody', () => {
       'CPU 40%',
       'Piores sessões e por quê',
       'Decodificando no processador',
+      'Áudio sintetizado 6% · perda recebida 0,2% · 1 falha',
       'Distribuição',
       'Qualidade caiu',
       '0 → 1 (cpu)'

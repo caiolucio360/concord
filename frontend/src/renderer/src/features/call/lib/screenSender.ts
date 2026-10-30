@@ -11,8 +11,10 @@ import { loadScreenCodec, screenCodecOptions } from './screenCodec'
 import {
   detectScreenCodecs,
   markSoftwareCodec,
+  softwareMarkedCodecs,
   type ScreenCodecSupport
 } from './screenCodecSupport'
+import { describeCodecChoice, noteScreenCodecChoice } from './screenCodecChoice'
 import { chooseScreenSimulcast, loadScreenSimulcast } from './screenSimulcast'
 import { ScreenAdapt } from './screenAdapt'
 import { senderReports } from './screenStatsSource'
@@ -65,6 +67,8 @@ export class ScreenSender {
     )
     const codec = screenCodecOptions(preference, support, simulcast)
     this.codec = codec.videoCodec
+    const marked = softwareMarkedCodecs()
+    noteScreenCodecChoice(describeCodecChoice({ preference, support, simulcast, codec, marked }))
     await publishScreenTracks(this.participant, stream, { codec, simulcast })
     if (video) this.watch(stream, quality, screenSource(video), simulcast)
   }

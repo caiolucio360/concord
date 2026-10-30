@@ -25,6 +25,17 @@ export interface SampleCounters {
   dropped: number
   lost: number
   received: number
+  /** Quadros codificados (envio) ou decodificados (recepção); -1 = o navegador não conta. */
+  frames: number
+  /** Recepção: quadros que chegaram. */
+  framesReceived: number
+  /** Envio: quadros que a captura entregou (media-source). */
+  captured: number
+  /** ms gastos no codec (totalEncodeTime/totalDecodeTime). */
+  codecMs: number
+  /** Call: amostras de áudio sintetizadas (sem o silêncio) e recebidas. */
+  concealed: number
+  samples: number
 }
 
 export interface SampleResult {
@@ -34,7 +45,30 @@ export interface SampleResult {
 
 export const n0 = (value: unknown): number => num(value) ?? 0
 
-export function countersOf(stat: Stat, bytesKey: string, keyFramesKey: string): SampleCounters {
+/** Os nomes dos contadores no envio e na recepção. */
+export interface CounterKeys {
+  bytes: string
+  keyFrames: string
+  frames: string
+  codecTime: string
+}
+
+const SEND: CounterKeys = {
+  bytes: 'bytesSent',
+  keyFrames: 'keyFramesEncoded',
+  frames: 'framesEncoded',
+  codecTime: 'totalEncodeTime'
+}
+const RECEIVE: CounterKeys = {
+  bytes: 'bytesReceived',
+  keyFrames: 'keyFramesDecoded',
+  frames: 'framesDecoded',
+  codecTime: 'totalDecodeTime'
+}
+export const NO_KEYS: CounterKeys = { bytes: '', keyFrames: '', frames: '', codecTime: '' }
+
+export function countersOf(stat: Stat, keys: CounterKeys, source?: Stat): SampleCounters {
+  const { bytes: bytesKey, keyFrames: keyFramesKey } = keys
   return {
     timestamp: n0(stat.timestamp),
     bytes: n0(stat[bytesKey]),
@@ -45,14 +79,20 @@ export function countersOf(stat: Stat, bytesKey: string, keyFramesKey: string): 
     freezeMs: Math.round(n0(stat.totalFreezesDuration) * 1000),
     dropped: n0(stat.framesDropped),
     lost: n0(stat.packetsLost),
-    received: n0(stat.packetsReceived)
+    received: n0(stat.packetsReceived),
+    frames: num(stat[keys.frames]) ?? -1,
+    framesReceived: n0(stat.framesReceived),
+    captured: n0(source?.frames),
+    codecMs: n0(stat[keys.codecTime]) * 1000,
+    concealed: 0,
+    samples: 0
   }
 }
 
-type Deltas = Record<keyof SampleCounters, number>
+export type Deltas = Record<keyof SampleCounters, number>
 
 /** Diferenças no intervalo (zeros na primeira leitura; contador que voltou = 0). */
-function deltas(now: SampleCounters, prev: SampleCounters | null): Deltas {
+export function deltas(now: SampleCounters, prev: SampleCounters | null): Deltas {
   const out = {} as Deltas
   for (const key of Object.keys(now) as (keyof SampleCounters)[]) {
     out[key] = prev ? Math.max(0, now[key] - prev[key]) : 0
@@ -60,11 +100,37 @@ function deltas(now: SampleCounters, prev: SampleCounters | null): Deltas {
   return out
 }
 
+const round1 = (value: number): number => Math.round(value * 10) / 10
+
+/** Por segundo no intervalo (null sem intervalo). */
+function perSecond(count: number, d: Deltas): number | null {
+  return d.timestamp > 0 ? round1((count * 1000) / d.timestamp) : null
+}
+
+/**
+ * Quadros por segundo no intervalo (codificados ou decodificados). Primeira
+ * leitura, contador ausente ou que voltou (troca de camada/ssrc): o do momento.
+ */
+function intervalFps(
+  stat: Stat,
+  now: SampleCounters,
+  prev: SampleCounters | null,
+  d: Deltas
+): number | null {
+  const counted = prev !== null && now.frames >= 0 && now.frames >= prev.frames
+  return (counted ? perSecond(d.frames, d) : null) ?? num(stat.framesPerSecond)
+}
+
+/** ms por quadro no codec, no intervalo. */
+function codecMsPerFrame(d: Deltas): number | null {
+  return d.frames > 0 ? round1(d.codecMs / d.frames) : null
+}
+
 function bitrateKbps(d: Deltas): number | null {
   return d.timestamp > 0 ? Math.round((d.bytes * 8) / d.timestamp) : null
 }
 
-function lossPct(d: Deltas): number | null {
+export function lossPct(d: Deltas): number | null {
   const total = d.lost + d.received
   return total > 0 ? Math.round((d.lost * 10000) / total) / 100 : null
 }
@@ -128,14 +194,32 @@ function layersOf(report: RTCStatsReport, primary: string): { layers: number; ba
   return { layers, backup }
 }
 
-function videoBase(stat: Stat, report: RTCStatsReport, d: Deltas): TelemetrySample {
+interface Reading {
+  stat: Stat
+  report: RTCStatsReport
+  now: SampleCounters
+  prev: SampleCounters | null
+  d: Deltas
+}
+
+function reading(
+  stat: Stat,
+  report: RTCStatsReport,
+  now: SampleCounters,
+  prev: SampleCounters | null
+): Reading {
+  return { stat, report, now, prev, d: deltas(now, prev) }
+}
+
+function videoBase({ stat, report, now, prev, d }: Reading): TelemetrySample {
   return {
     ...emptySample(),
     seconds: d.timestamp / 1000,
     codec: codecSubtype(report, stat) ?? '',
     width: num(stat.frameWidth),
     height: num(stat.frameHeight),
-    fps: num(stat.framesPerSecond),
+    fps: intervalFps(stat, now, prev, d),
+    codec_ms: codecMsPerFrame(d),
     bitrate_kbps: bitrateKbps(d),
     key_frames: d.keyFrames,
     pli: d.pli,
@@ -143,6 +227,18 @@ function videoBase(stat: Stat, report: RTCStatsReport, d: Deltas): TelemetrySamp
     transport: transportOf(report),
     rtt_ms: rttMs(report)
   }
+}
+
+/** A media-source (captura) do envio: quadros que a tela entregou ao codificador. */
+function mediaSource(report: RTCStatsReport, stat: Stat): Stat | undefined {
+  return typeof stat.mediaSourceId === 'string'
+    ? (report.get(stat.mediaSourceId) as Stat | undefined)
+    : undefined
+}
+
+function captureFps({ prev, d }: Reading, source: Stat | undefined): number | null {
+  if (!source) return null
+  return (prev ? perSecond(d.captured, d) : null) ?? num(source.framesPerSecond)
 }
 
 /** A minha live. `stepChanges`: trocas de degrau desde a última amostra. */
@@ -153,15 +249,17 @@ export function shareSample(
 ): SampleResult | null {
   const stat = videoRtp(input.report, 'outbound-rtp', 'bytesSent')
   if (!stat) return null
-  const counters = countersOf(stat, 'bytesSent', 'keyFramesEncoded')
-  const base = videoBase(stat, input.report, deltas(counters, prev))
+  const source = mediaSource(input.report, stat)
+  const read = reading(stat, input.report, countersOf(stat, SEND, source), prev)
+  const base = videoBase(read)
   const target = chosenTarget(input.quality?.chosen)
   return {
-    counters,
+    counters: read.now,
     sample: {
       ...base,
       ...layersOf(input.report, base.codec),
       hardware: hardwareOf(stat, 'encoderImplementation', 'powerEfficientEncoder'),
+      capture_fps: captureFps(read, source),
       target_height: target.height,
       target_fps: target.fps ?? input.requestedFps,
       limitation: text(stat.qualityLimitationReason) ?? '',
@@ -178,13 +276,14 @@ export function watchSample(
 ): SampleResult | null {
   const stat = videoRtp(input.report, 'inbound-rtp', 'bytesReceived')
   if (!stat) return null
-  const counters = countersOf(stat, 'bytesReceived', 'keyFramesDecoded')
-  const d = deltas(counters, prev)
+  const read = reading(stat, input.report, countersOf(stat, RECEIVE), prev)
+  const { d } = read
   return {
-    counters,
+    counters: read.now,
     sample: {
-      ...videoBase(stat, input.report, d),
+      ...videoBase(read),
       hardware: hardwareOf(stat, 'decoderImplementation', 'powerEfficientDecoder'),
+      recv_fps: prev ? perSecond(d.framesReceived, d) : null,
       loss_pct: lossPct(d),
       jitter_ms: ms(stat.jitter),
       freezes: d.freezes,

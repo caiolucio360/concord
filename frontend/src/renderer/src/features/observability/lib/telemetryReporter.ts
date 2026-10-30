@@ -1,12 +1,8 @@
 import type { ScreenStatsInput } from '../../call/lib/screenStats'
 import { sampleEvents } from './telemetryEvents'
 import { callSample } from './telemetryCall'
-import {
-  shareSample,
-  watchSample,
-  type SampleCounters,
-  type SampleResult
-} from './telemetrySample'
+import type { ConnectionTelemetry } from './telemetryConnection'
+import { shareSample, watchSample, type SampleCounters, type SampleResult } from './telemetrySample'
 import type {
   ClientContext,
   SessionKind,
@@ -15,7 +11,7 @@ import type {
   TelemetrySample
 } from './telemetryTypes'
 
-// Telemetria das lives e calls (docs/adr/0028): a cada leitura (20 s), uma
+// Telemetria das lives e calls (docs/adr/0029 e 0032): a cada leitura (20 s), uma
 // sessão por coisa ativa — a call, a minha live e cada live que assisto — e
 // um pedido só com todas. A voz sai a cada 3 leituras (1 min). Sessão que
 // some manda o fim. Falhas de envio são ignoradas (é só telemetria).
@@ -41,6 +37,10 @@ export interface ReporterDeps {
   context(): Promise<ClientContext>
   send(reports: TelemetryReport[]): Promise<void>
   newId(): string
+  /** Conexão da voz desde a última vez (telemetryConnection); leva e limpa. */
+  connection?(): ConnectionTelemetry
+  /** Por que a live saiu nesse codec (screenCodecChoice); leva e limpa. */
+  codecChoice?(): string | null
 }
 
 interface Wanted {
@@ -58,6 +58,8 @@ interface Session extends Wanted {
 }
 
 type Draft = Omit<TelemetryReport, 'context'>
+
+const NOTHING: ConnectionTelemetry = { connectMs: null, events: [] }
 
 /** O controlador da minha live trocou de degrau (não conta o começo nem o fim da live). */
 export function stepChanged(
@@ -127,14 +129,25 @@ export function createTelemetryReporter(deps: ReporterDeps): {
     return result
   }
 
+  /** O que vai junto da amostra: a conexão (voz) ou o motivo do codec (minha live). */
+  function extras(kind: SessionKind): ConnectionTelemetry {
+    if (kind === 'call') return deps.connection?.() ?? NOTHING
+    const choice = kind === 'transmite' ? deps.codecChoice?.() : null
+    return choice
+      ? { connectMs: null, events: [{ type: 'codec_escolhido', detail: choice }] }
+      : NOTHING
+  }
+
   async function sampleOf(s: Session): Promise<Draft | null> {
     const result = await read(s)
     s.ticks++
     if (!result) return null
-    const events = sampleEvents(s.kind, s.last, result.sample)
+    const extra = extras(s.kind)
+    const sample = { ...result.sample, connect_ms: extra.connectMs ?? result.sample.connect_ms }
+    const events = [...extra.events, ...sampleEvents(s.kind, s.last, sample)]
     s.counters = result.counters
-    s.last = result.sample
-    return draft(s, result.sample, events, false)
+    s.last = sample
+    return draft(s, sample, events, false)
   }
 
   function endGone(wanted: Wanted[]): Draft[] {
@@ -142,7 +155,7 @@ export function createTelemetryReporter(deps: ReporterDeps): {
     const ended: Draft[] = []
     for (const [key, s] of sessions) {
       if (keys.has(key)) continue
-      ended.push(draft(s, null, [], true))
+      ended.push(draft(s, null, s.kind === 'call' ? extras(s.kind).events : [], true))
       sessions.delete(key)
     }
     return ended

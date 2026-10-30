@@ -6,7 +6,7 @@ import {
   type CallSnapshot,
   type ReporterDeps
 } from './telemetryReporter'
-import type { TelemetryReport } from './telemetryTypes'
+import type { TelemetryEvent, TelemetryReport } from './telemetryTypes'
 
 const report = (stats: Record<string, Record<string, unknown>>): RTCStatsReport =>
   new Map(Object.entries(stats).map(([id, s]) => [id, { id, ...s }])) as unknown as RTCStatsReport
@@ -188,6 +188,58 @@ describe('createTelemetryReporter', () => {
     const t = setup({ callId: 'c1', sharing: false, watching })
     await t.tick()
     expect(t.sent.map((batch) => batch.length)).toEqual([8, 2])
+  })
+})
+
+describe('createTelemetryReporter: conexão e codec', () => {
+  it('a conexão vai na próxima amostra da voz: tempo para conectar e eventos', async () => {
+    const t = setup({ callId: 'c1', sharing: false, watching: [] })
+    let pending = { connectMs: null as number | null, events: [] as TelemetryEvent[] }
+    t.deps.connection = () => {
+      const out = pending
+      pending = { connectMs: null, events: [] }
+      return out
+    }
+    await t.tick()
+    pending = { connectMs: 1850, events: [{ type: 'reconectou', detail: '3 s' }] }
+    await t.tick()
+    await t.tick()
+    expect(t.sent.flat()).toHaveLength(1)
+    await t.tick()
+    const call = t.sent.flat()[1]
+    expect(call.sample?.connect_ms).toBe(1850)
+    expect(call.events).toEqual([{ type: 'reconectou', detail: '3 s' }])
+  })
+
+  it('saiu da call: os eventos de conexão vão com o fim', async () => {
+    const t = setup({ callId: 'c1', sharing: false, watching: [] })
+    await t.tick()
+    t.deps.connection = () => ({
+      connectMs: null,
+      events: [{ type: 'conexao_falhou', detail: 'entrando (mídia): x' }]
+    })
+    t.set({ callId: null, sharing: false, watching: [] })
+    await t.tick()
+    expect(t.sent[1][0]).toMatchObject({ ended: true, kind: 'call' })
+    expect(t.sent[1][0].events.map((e) => e.type)).toEqual(['conexao_falhou'])
+  })
+
+  it('a live leva o motivo do codec na amostra seguinte à escolha', async () => {
+    const t = setup({ callId: 'c1', sharing: true, watching: [] })
+    let choice: string | null = 'auto: h265 + h264'
+    t.deps.codecChoice = () => {
+      const out = choice
+      choice = null
+      return out
+    }
+    await t.tick()
+    await t.tick()
+    const shares = t.sent.flat().filter((r) => r.kind === 'transmite')
+    expect(shares[0].events).toContainEqual({
+      type: 'codec_escolhido',
+      detail: 'auto: h265 + h264'
+    })
+    expect(shares[1].events.map((e) => e.type)).not.toContain('codec_escolhido')
   })
 })
 

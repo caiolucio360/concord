@@ -16,6 +16,7 @@ vi.mock('livekit-client', () => ({
 
 import type { LocalParticipant } from 'livekit-client'
 import { ScreenSender } from './screenSender'
+import { takeScreenCodecChoice } from './screenCodecChoice'
 import { ADAPT } from './screenAdaptController'
 import { rememberScreenSource, rememberStreamQuality } from './screenShareQuality'
 import { SIMULCAST_KEY } from './screenSimulcast'
@@ -139,6 +140,16 @@ describe('ScreenSender', () => {
     expect(participant.publishTrack).toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({ videoCodec: 'h265', backupCodec: { codec: 'h264' } })
+    )
+    screen.stop()
+  })
+
+  it('anota por que saiu nesse codec (telemetria)', async () => {
+    const { screen, stream } = setup({ h265: true })
+    takeScreenCodecChoice()
+    await screen.publish(stream)
+    expect(takeScreenCodecChoice()).toBe(
+      'auto: h265 + h264 | av1 proc., h265 placa, h264 proc. | 720p extra'
     )
     screen.stop()
   })

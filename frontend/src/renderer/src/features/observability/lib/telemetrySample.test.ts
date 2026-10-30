@@ -103,6 +103,36 @@ describe('shareSample', () => {
     expect(first.sample.bitrate_kbps).toBeNull()
   })
 
+  it('onde os quadros se perdem: captura, fps codificado no intervalo e ms por quadro', () => {
+    const source = {
+      m1: { type: 'media-source', kind: 'video', frames: 1200, framesPerSecond: 58 }
+    }
+    const at = (extra: Record<string, unknown>, frames: number): ScreenStatsInput => {
+      const input = shareInput({ mediaSourceId: 'm1', ...extra })
+      const stats = new Map(input.report as unknown as Map<string, unknown>)
+      stats.set('m1', { id: 'm1', ...source.m1, frames })
+      return { ...input, report: stats as unknown as RTCStatsReport }
+    }
+    const first = shareSample(at({ framesEncoded: 1000, totalEncodeTime: 5 }, 1200), null, 0)!
+    expect(first.sample).toMatchObject({ fps: 44.6, capture_fps: 58, codec_ms: null })
+    const next = shareSample(
+      at({ timestamp: 40_000, framesEncoded: 1840, totalEncodeTime: 9.2 }, 2100),
+      first.counters,
+      0
+    )!
+    expect(next.sample).toMatchObject({ fps: 42, capture_fps: 45, codec_ms: 5 })
+  })
+
+  it('contador de quadros que voltou (troca de camada): fps do momento', () => {
+    const first = shareSample(shareInput({ framesEncoded: 5000 }), null, 0)!
+    const next = shareSample(
+      shareInput({ timestamp: 40_000, framesEncoded: 300 }),
+      first.counters,
+      0
+    )!
+    expect(next.sample.fps).toBe(44.6)
+  })
+
   it('sem o controlador: alvo pelo fps pedido, degrau vazio', () => {
     const { sample } = shareSample(
       shareInput({ powerEfficientEncoder: false, encoderImplementation: 'OpenH264' }),
@@ -197,6 +227,24 @@ describe('watchSample', () => {
       freeze_ms: 2500,
       frames_dropped: 0
     })
+  })
+
+  it('quadros que chegaram × decodificados e ms por quadro no decodificador', () => {
+    const first = watchSample(
+      watchInput({ framesReceived: 900, framesDecoded: 880, totalDecodeTime: 2 }),
+      null
+    )!
+    expect(first.sample).toMatchObject({ fps: 29.7, recv_fps: null, codec_ms: null })
+    const { sample } = watchSample(
+      watchInput({
+        timestamp: 30_000,
+        framesReceived: 1780,
+        framesDecoded: 1120,
+        totalDecodeTime: 2.6
+      }),
+      first.counters
+    )!
+    expect(sample).toMatchObject({ fps: 12, recv_fps: 44, codec_ms: 2.5 })
   })
 
   it('pausada pelo servidor', () => {
