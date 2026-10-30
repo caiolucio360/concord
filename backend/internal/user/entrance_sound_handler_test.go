@@ -30,7 +30,7 @@ func newEntranceEnv(t *testing.T, space spaceChecker) *entranceEnv {
 		meID: {ID: meID, Username: "mugis", DisplayName: "Mugis", Status: StatusOnline, Links: []ProfileLink{}},
 	}}
 	events := &fakeEvents{statuses: map[string]string{}}
-	h := NewEntranceSoundHandler(NewProfileService(repo, events), store, space)
+	h := NewEntranceSoundHandler(NewProfileService(repo, events, &fakeLinks{}), store, space)
 	h.maxBytes = 1024
 	router := gin.New()
 	fakeAuth := func(c *gin.Context) {

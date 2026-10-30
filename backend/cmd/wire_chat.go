@@ -14,6 +14,7 @@ import (
 	"gin-quickstart/backend/internal/message"
 	"gin-quickstart/backend/internal/platform/media"
 	"gin-quickstart/backend/internal/push"
+	"gin-quickstart/backend/internal/relationship"
 	"gin-quickstart/backend/internal/server"
 	"gin-quickstart/backend/internal/soundboard"
 	"gin-quickstart/backend/internal/sticker"
@@ -62,7 +63,7 @@ func (a *app) wireChat() {
 	profileMediaDir := filepath.Join(a.uploadsDir, user.ProfileMediaDir)
 	profileMedia := mustStore(profileMediaDir, "profile media dir")
 	profileStatic := mustStore(filepath.Join(profileMediaDir, "static"), "profile media dir")
-	profileService := user.NewProfileService(a.userRepository, a.hub)
+	profileService := user.NewProfileService(a.userRepository, a.hub, relationship.NewRepository(a.db))
 	a.profileHandler = user.NewProfileHandler(profileService, profileMedia, profileStatic, a.uploadSpace)
 	a.wireSavedProfiles(profileService)
 	entranceSounds := mustStore(filepath.Join(profileMediaDir, user.EntranceSoundDir), "entrance sounds dir")
