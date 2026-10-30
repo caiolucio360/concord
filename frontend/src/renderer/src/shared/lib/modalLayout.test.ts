@@ -39,6 +39,6 @@ describe('modalLayout', () => {
     const { backdrop, dialog } = modalLayout({})
     expect(backdrop).toMatch(/(^|\s)items-center(\s|$)/)
     expect(backdrop).toMatch(/(^|\s)p-4(\s|$)/)
-    expect(dialog).toMatch(/(^|\s)rounded-2xl(\s|$)/)
+    expect(dialog).toMatch(/(^|\s)rounded-xl(\s|$)/)
   })
 })

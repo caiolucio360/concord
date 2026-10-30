@@ -75,7 +75,7 @@ function Dialog({ mode }: { mode: 'background' | 'preview' }): React.JSX.Element
         tabIndex={-1}
         aria-modal="true"
         aria-labelledby="video-modal-title"
-        className="flex max-h-full w-full max-w-xl flex-col rounded-2xl border border-subtle bg-modal shadow-2xl shadow-black/70"
+        className="flex max-h-full w-full max-w-xl flex-col rounded-xl border border-subtle bg-modal shadow-2xl shadow-black/70"
       >
         <div className="flex items-center justify-between px-6 pb-3 pt-5">
           <h2 id="video-modal-title" className="w-full text-center text-xl font-bold text-strong">
@@ -120,7 +120,7 @@ function Dialog({ mode }: { mode: 'background' | 'preview' }): React.JSX.Element
           )}
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-b-2xl bg-floating px-6 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-b-xl bg-floating px-6 py-4">
           <label className="flex cursor-pointer items-center gap-2 text-ds-sm text-gray-300">
             <input
               type="checkbox"

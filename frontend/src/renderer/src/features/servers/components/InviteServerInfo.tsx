@@ -14,7 +14,7 @@ export function InviteServerIcon({
 }): React.JSX.Element {
   return (
     <div
-      className="flex shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-brand font-bold text-white shadow-lg shadow-black/30"
+      className="flex shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-brand font-bold text-white shadow-lg shadow-black/30"
       style={{ width: size, height: size, fontSize: size * 0.4 }}
     >
       {iconUrl ? (

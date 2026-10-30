@@ -31,8 +31,8 @@ export default function CardNote({
         className="absolute -left-4 -top-0.5 h-1.5 w-1.5 rounded-full border border-subtle bg-primary"
       />
       {note ? (
-        <EditableSpot spot="note" onEdit={onEdit} className="rounded-2xl">
-          <p className="relative max-w-[170px] break-words rounded-2xl border border-subtle bg-primary px-3 py-2 text-xs leading-snug text-gray-200 shadow-lg">
+        <EditableSpot spot="note" onEdit={onEdit} className="rounded-xl">
+          <p className="relative max-w-[170px] break-words rounded-xl border border-subtle bg-primary px-3 py-2 text-xs leading-snug text-gray-200 shadow-lg">
             {note}
           </p>
         </EditableSpot>
@@ -40,7 +40,7 @@ export default function CardNote({
         <button
           type="button"
           onClick={onAdd}
-          className="relative flex max-w-[170px] cursor-pointer items-center gap-1.5 rounded-2xl border border-subtle bg-primary px-3 py-2 text-left text-xs italic text-gray-400 shadow-lg transition-colors hover:text-gray-200"
+          className="relative flex max-w-[170px] cursor-pointer items-center gap-1.5 rounded-xl border border-subtle bg-primary px-3 py-2 text-left text-xs italic text-gray-400 shadow-lg transition-colors hover:text-gray-200"
         >
           <PlusIcon className="h-3.5 w-3.5 shrink-0 rounded-full bg-gray-400 p-0.5 text-[var(--bg-floating)]" />
           {placeholder}

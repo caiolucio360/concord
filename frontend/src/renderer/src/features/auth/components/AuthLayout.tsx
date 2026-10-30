@@ -18,7 +18,7 @@ function AuthLayout({ children, wide }: AuthLayoutProps): React.JSX.Element {
         <div className="grid md:grid-cols-[1fr_17rem]">
           <div className="p-6 sm:p-10">{children}</div>
           <aside className="hidden flex-col items-center justify-center gap-4 bg-gradient-to-br from-brand/40 via-brand/15 to-transparent p-8 text-center md:flex">
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-brand text-white shadow-lg shadow-brand/30">
+            <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-gradient-brand text-white shadow-lg shadow-brand/30">
               <SalinhaMarkIcon className="h-14 w-14" />
             </div>
             <p className="text-xl font-semibold text-gray-50">Salinha</p>

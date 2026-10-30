@@ -44,7 +44,7 @@ function ActivityBar(): React.JSX.Element | null {
     <div className="flex shrink-0 justify-center px-4 pb-2">
       <div
         role="status"
-        className="flex max-w-full flex-wrap items-center gap-2 rounded-2xl border border-subtle bg-secondary px-3 py-2 shadow-lg"
+        className="flex max-w-full flex-wrap items-center gap-2 rounded-xl border border-subtle bg-secondary px-3 py-2 shadow-lg"
       >
         <span
           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-input"

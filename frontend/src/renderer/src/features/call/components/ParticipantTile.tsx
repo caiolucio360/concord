@@ -139,7 +139,7 @@ function ParticipantTile({
       title={onClick && isScreen ? 'Expandir tela' : undefined}
       style={inFullscreen ? undefined : fillStyle}
       className={`group/tile relative flex items-center justify-center overflow-hidden transition-all ${
-        inFullscreen ? 'bg-black' : `rounded-2xl bg-white/[0.04] ${dims}`
+        inFullscreen ? 'bg-black' : `rounded-xl bg-white/[0.04] ${dims}`
       } ${
         inFullscreen
           ? ''
@@ -163,7 +163,7 @@ function ParticipantTile({
         <span
           key={celebration.key}
           aria-hidden="true"
-          className="level-anim pointer-events-none absolute inset-0 z-[1] rounded-2xl"
+          className="level-anim pointer-events-none absolute inset-0 z-[1] rounded-xl"
           style={{
             boxShadow: `inset 0 0 ${Math.round(24 + 32 * levelFx.glow)}px ${Math.round(4 + 8 * levelFx.glow)}px ${levelFx.tier.color}, inset 0 0 0 2px ${levelFx.tier.color}`,
             animation: 'level-tile-glow 1.6s ease-in-out 2 both'

@@ -50,7 +50,7 @@ export default function ScreenAnnotationToolbar({
       onClick={(e) => e.stopPropagation()}
       onDoubleClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => e.stopPropagation()}
-      className={`z-30 flex items-center gap-2 rounded-2xl border border-subtle bg-floating px-3 py-1.5 shadow-2xl backdrop-blur-md select-none text-strong transition-all ${className}`}
+      className={`z-30 flex items-center gap-2 rounded-xl border border-subtle bg-floating px-3 py-1.5 shadow-2xl backdrop-blur-md select-none text-strong transition-all ${className}`}
     >
       {/* Ferramentas de traço */}
       <div className="flex items-center gap-1 border-r border-subtle pr-2">

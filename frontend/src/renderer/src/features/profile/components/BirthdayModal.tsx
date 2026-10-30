@@ -67,14 +67,14 @@ function BirthdayModal(): React.JSX.Element | null {
         role="dialog"
         aria-label="Feliz aniversário"
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-warning/30 bg-floating p-6 text-center shadow-2xl"
+        className="relative w-full max-w-sm overflow-hidden rounded-xl border border-warning/30 bg-floating p-6 text-center shadow-2xl"
       >
         {/* Confete caindo */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           {Array.from({ length: 24 }, (_, i) => (
             <span
               key={i}
-              className="absolute top-0 h-2 w-1.5 rounded-sm"
+              className="absolute top-0 h-2 w-1.5 rounded"
               style={{
                 left: `${(i * 37) % 100}%`,
                 background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],

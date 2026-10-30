@@ -36,8 +36,8 @@ export function RailHomeButton({
         title="Mensagens Diretas e Amigos"
         className={`group/home relative flex h-12 w-12 items-center justify-center font-bold text-xl shadow-lg transition-all duration-200 ${
           isHome
-            ? 'rounded-2xl bg-gradient-brand text-white shadow-brand/30'
-            : 'rounded-3xl bg-surface border border-subtle text-strong hover:text-white hover:rounded-2xl hover:bg-gradient-brand hover:shadow-brand/30'
+            ? 'rounded-xl bg-gradient-brand text-white shadow-brand/30'
+            : 'rounded-[50%] bg-surface border border-subtle text-strong hover:text-white hover:rounded-xl hover:bg-gradient-brand hover:shadow-brand/30'
         }`}
       >
         <SalinhaMarkIcon className="h-8 w-8" />
@@ -69,8 +69,8 @@ export function RailNavButton({
         aria-label={label}
         className={`relative flex h-12 w-12 cursor-pointer items-center justify-center transition-all duration-200 ${
           active
-            ? 'rounded-2xl bg-brand shadow-md shadow-brand/30'
-            : 'rounded-3xl border border-subtle bg-surface hover:rounded-2xl hover:bg-brand hover:shadow-md hover:shadow-brand/30'
+            ? 'rounded-xl bg-brand shadow-md shadow-brand/30'
+            : 'rounded-[50%] border border-subtle bg-surface hover:rounded-xl hover:bg-brand hover:shadow-md hover:shadow-brand/30'
         }`}
       >
         {icon(`h-6 w-6 ${active ? 'text-white' : 'text-brand'}`)}

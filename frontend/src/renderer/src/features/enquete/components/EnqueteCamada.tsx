@@ -57,7 +57,7 @@ function EnqueteCamada({ titleId, onFechar, children }: Props): React.JSX.Elemen
         aria-modal="true"
         aria-labelledby={titleId}
         onClick={(e) => e.stopPropagation()}
-        className="enquete-card relative my-auto w-full max-w-sm rounded-2xl border border-subtle bg-primary p-6 text-center text-gray-200 shadow-2xl"
+        className="enquete-card relative my-auto w-full max-w-sm rounded-xl border border-subtle bg-primary p-6 text-center text-gray-200 shadow-2xl"
       >
         {onFechar && (
           <button

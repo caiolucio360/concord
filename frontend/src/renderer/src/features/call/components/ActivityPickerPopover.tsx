@@ -131,7 +131,7 @@ function ActivityPickerPopover({
       role="dialog"
       aria-label="Atividades"
       style={{ width, left, bottom }}
-      className="fixed z-50 flex max-h-[460px] flex-col rounded-2xl border border-subtle bg-floating p-4 shadow-2xl"
+      className="fixed z-50 flex max-h-[460px] flex-col rounded-xl border border-subtle bg-floating p-4 shadow-2xl"
     >
       <div className="mb-3">
         <p className="text-sm font-bold text-strong">Atividades</p>

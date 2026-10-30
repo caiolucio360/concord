@@ -78,7 +78,7 @@ export default function UnifiedMediaPickerPopover({
       <div
         ref={ref}
         onClick={(e) => e.stopPropagation()}
-        className="absolute bottom-14 right-2 z-40 flex h-96 w-80 flex-col rounded-2xl border border-white/10 bg-floating p-3 shadow-2xl backdrop-blur-xl"
+        className="absolute bottom-14 right-2 z-40 flex h-96 w-80 flex-col rounded-xl border border-white/10 bg-floating p-3 shadow-2xl backdrop-blur-xl"
       >
         {/* Abas Superiores estilo WhatsApp */}
         <div className="mb-2 flex items-center justify-around border-b border-white/10 pb-2 text-xs font-medium text-gray-400">

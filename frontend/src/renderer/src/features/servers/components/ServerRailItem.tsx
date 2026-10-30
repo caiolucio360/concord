@@ -59,8 +59,8 @@ function ServerRailItem({
           view.dimmed ? 'opacity-50' : ''
         } ${
           isActive
-            ? 'rounded-2xl bg-brand text-white shadow-md shadow-brand/30'
-            : 'rounded-3xl bg-surface border border-subtle text-strong hover:text-white hover:rounded-2xl hover:bg-brand hover:shadow-md hover:shadow-brand/30'
+            ? 'rounded-xl bg-brand text-white shadow-md shadow-brand/30'
+            : 'rounded-[50%] bg-surface border border-subtle text-strong hover:text-white hover:rounded-xl hover:bg-brand hover:shadow-md hover:shadow-brand/30'
         }`}
       >
         {iconUrl ? (

@@ -22,7 +22,7 @@ function HubCard({
   return (
     <Link
       to={to}
-      className="group relative flex min-h-44 flex-col gap-3 overflow-hidden rounded-2xl border border-subtle bg-surface p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-normal hover:shadow-lg focus-ring"
+      className="group relative flex min-h-44 flex-col gap-3 overflow-hidden rounded-xl border border-subtle bg-surface p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-normal hover:shadow-lg focus-ring"
     >
       <div
         aria-hidden="true"

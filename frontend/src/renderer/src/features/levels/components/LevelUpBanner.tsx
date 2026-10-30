@@ -128,7 +128,7 @@ function LevelUpBanner(): React.JSX.Element | null {
             // Borda girando: um quadrado de gradiente maior que a faixa gira
             // atrás do conteúdo e só os 2px da borda aparecem.
             <div
-              className="relative overflow-hidden rounded-2xl p-[2px]"
+              className="relative overflow-hidden rounded-xl p-[2px]"
               style={{ boxShadow: shadow }}
             >
               <span
@@ -145,7 +145,7 @@ function LevelUpBanner(): React.JSX.Element | null {
             </div>
           ) : (
             <div
-              className="relative flex items-center gap-3 overflow-hidden rounded-2xl border bg-floating px-4 py-2.5 shadow-2xl backdrop-blur-xl"
+              className="relative flex items-center gap-3 overflow-hidden rounded-xl border bg-floating px-4 py-2.5 shadow-2xl backdrop-blur-xl"
               style={{ borderColor: `${tier.color}66`, boxShadow: shadow }}
             >
               {content}

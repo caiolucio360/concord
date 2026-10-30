@@ -123,7 +123,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
         role="dialog"
         aria-modal="true"
         aria-label={preview ? `Convite para ${preview.name}` : 'Convite'}
-        className="flex max-h-full w-full max-w-[880px] overflow-hidden rounded-2xl border border-subtle bg-modal shadow-2xl shadow-black/60"
+        className="flex max-h-full w-full max-w-[880px] overflow-hidden rounded-xl border border-subtle bg-modal shadow-2xl shadow-black/60"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex min-h-[420px] w-full flex-col items-center justify-center px-8 py-10 md:w-[420px] md:shrink-0">
@@ -263,7 +263,7 @@ function InviteConfirm({ code }: { code: string }): React.JSX.Element {
           )}
           {state.status === 'loading' && (
             <div aria-hidden className="absolute inset-0 flex items-center justify-center">
-              <Skeleton className="h-40 w-40 rounded-2xl" />
+              <Skeleton className="h-40 w-40 rounded-xl" />
             </div>
           )}
         </div>

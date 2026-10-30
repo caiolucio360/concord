@@ -6,7 +6,7 @@
 const BACKDROP =
   'app-no-drag fixed inset-x-0 bottom-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm'
 const DIALOG =
-  'flex max-h-full min-h-0 w-full flex-col overflow-hidden rounded-2xl border border-subtle bg-modal shadow-2xl shadow-black/70'
+  'flex max-h-full min-h-0 w-full flex-col overflow-hidden rounded-xl border border-subtle bg-modal shadow-2xl shadow-black/70'
 
 const SHEET = {
   backdrop: 'max-sm:items-end max-sm:p-0',

@@ -71,7 +71,7 @@ function SoundboardPopover({
       role="dialog"
       aria-label="Mesa de Áudio"
       style={{ width, left, bottom }}
-      className="fixed z-50 flex max-h-[460px] gap-3 rounded-2xl border border-subtle bg-floating p-3 shadow-2xl"
+      className="fixed z-50 flex max-h-[460px] gap-3 rounded-xl border border-subtle bg-floating p-3 shadow-2xl"
     >
       <div
         role="tablist"

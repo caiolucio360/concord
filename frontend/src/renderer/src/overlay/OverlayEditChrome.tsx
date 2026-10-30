@@ -26,7 +26,7 @@ function OverlayEditChrome({
     <>
       <div
         aria-label="Redimensionar"
-        className="absolute -bottom-2 -right-2 h-4 w-4 cursor-nwse-resize rounded-sm border-2 border-brand bg-floating"
+        className="absolute -bottom-2 -right-2 h-4 w-4 cursor-nwse-resize rounded border-2 border-brand bg-floating"
         onPointerDown={onResizeStart}
       />
       <div

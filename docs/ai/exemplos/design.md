@@ -33,7 +33,7 @@ roda no `affected-tests.mjs pr` e barra o diff que piora alguma regra.
 7. **Raio:** `rounded` (4 px: botão, campo, chip de cargo), `rounded-md` (6 px:
    botão de ícone, chip), `rounded-lg` (8 px: cartão, menu, popover),
    `rounded-xl` (12 px: modal) e `rounded-full` (avatar, switch, selo).
-   `rounded-2xl`, `-3xl` e `-sm` saem.
+   `rounded-2xl`, `-3xl` e `-sm` saem. Exceção: o trilho de servidores usa `rounded-[50%]` (círculo) que anima até `rounded-xl` no hover/ativo; `rounded-full` não interpola.
 8. **Foco visível em tudo que é interativo.** A regra base de `assets/focus.css`
    já dá o anel da marca a botão, link e controle com `role`; em componente
    próprio use `focus-ring` (ou `focus-ring-inset` dentro de contêiner com

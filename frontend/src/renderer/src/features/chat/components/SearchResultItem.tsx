@@ -26,7 +26,7 @@ function ResultBody({ result, terms }: { result: SearchResult; terms: string[] }
     <>
       {highlightParts(result.content, terms).map((p, i) =>
         p.match ? (
-          <mark key={i} className="rounded-sm bg-warning/30 px-0.5 text-warning">
+          <mark key={i} className="rounded bg-warning/30 px-0.5 text-warning">
             {p.text}
           </mark>
         ) : (

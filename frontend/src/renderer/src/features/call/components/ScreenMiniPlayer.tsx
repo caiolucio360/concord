@@ -157,7 +157,7 @@ function ScreenMiniPlayer(): React.JSX.Element | null {
       aria-label={`Voltar para a chamada: transmissão de ${name}`}
       title="Voltar para a chamada (arraste para mover)"
       style={{ right: shown.right, bottom: shown.bottom }}
-      className={`on-media fixed z-40 aspect-video w-72 touch-none select-none overflow-hidden rounded-2xl bg-black shadow-xl ring-2 ring-success focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
+      className={`on-media fixed z-40 aspect-video w-72 touch-none select-none overflow-hidden rounded-xl bg-black shadow-xl ring-2 ring-success focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
         dragging ? 'cursor-grabbing' : 'cursor-pointer'
       }`}
     >

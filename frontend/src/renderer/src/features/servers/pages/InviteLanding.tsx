@@ -116,7 +116,7 @@ function InviteCard({ code }: { code: string }): React.JSX.Element {
         <InviteBackdrop iconUrl={preview?.icon_url} className="fixed inset-0" />
         <div
           role="status"
-          className="relative flex w-full max-w-[360px] flex-col items-center rounded-2xl border border-subtle bg-modal p-8 text-center shadow-2xl shadow-black/60 backdrop-blur"
+          className="relative flex w-full max-w-[360px] flex-col items-center rounded-xl border border-subtle bg-modal p-8 text-center shadow-2xl shadow-black/60 backdrop-blur"
         >
           <InviteSpinner />
           <h1 className="mt-4 text-ds-lg font-bold text-strong">Abrindo a Salinha…</h1>
@@ -134,7 +134,7 @@ function InviteCard({ code }: { code: string }): React.JSX.Element {
   return (
     <div className="fixed inset-0 z-10 flex items-center justify-center overflow-y-auto bg-tertiary p-4">
       <InviteBackdrop iconUrl={preview?.icon_url} className="fixed inset-0" />
-      <div className="relative w-full max-w-[480px] rounded-2xl border border-subtle bg-modal p-8 shadow-2xl shadow-black/60 backdrop-blur">
+      <div className="relative w-full max-w-[480px] rounded-xl border border-subtle bg-modal p-8 shadow-2xl shadow-black/60 backdrop-blur">
         {state.status === 'loading' && (
           <>
             <InvitePreviewSkeleton />

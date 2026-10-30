@@ -126,7 +126,7 @@ function Leaf({
       {renderTile(id)}
 
       {over && (
-        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-2xl bg-brand/30 ring-2 ring-brand">
+        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-xl bg-brand/30 ring-2 ring-brand">
           <span className="rounded-md bg-black/70 px-2 py-1 text-xs font-semibold text-white on-media">
             Trocar com {name}
           </span>

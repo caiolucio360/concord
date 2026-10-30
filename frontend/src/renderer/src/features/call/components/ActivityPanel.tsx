@@ -24,7 +24,7 @@ function ActivityPanel(): React.JSX.Element | null {
       role="dialog"
       aria-label={activity.name}
       aria-hidden={minimized}
-      className={`fixed inset-3 z-40 flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl md:inset-8 ${
+      className={`fixed inset-3 z-40 flex flex-col overflow-hidden rounded-xl border border-white/10 bg-black shadow-2xl md:inset-8 ${
         minimized ? 'pointer-events-none invisible' : ''
       }`}
     >

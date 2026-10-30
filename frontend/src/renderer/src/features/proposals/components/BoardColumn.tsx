@@ -38,7 +38,7 @@ function BoardColumn({
     <section
       ref={setNodeRef}
       data-column={status}
-      className={`flex min-h-0 min-w-64 flex-1 basis-64 flex-col rounded-2xl border bg-surface transition-colors ${state}`}
+      className={`flex min-h-0 min-w-64 flex-1 basis-64 flex-col rounded-xl border bg-surface transition-colors ${state}`}
     >
       <div className="shrink-0 px-3 pb-2 pt-3">
         <div className="flex items-center justify-between">

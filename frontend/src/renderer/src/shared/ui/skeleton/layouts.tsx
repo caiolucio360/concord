@@ -216,7 +216,7 @@ export function ServerRailSkeleton({ count = 4 }: { count?: number }): React.JSX
   return (
     <SkeletonRegion label="Carregando servidores…" className="flex flex-col gap-2">
       {Array.from({ length: count }, (_, i) => (
-        <Skeleton key={i} className="h-12 w-12 rounded-3xl" />
+        <Skeleton key={i} className="h-12 w-12 rounded-full" />
       ))}
     </SkeletonRegion>
   )
@@ -305,7 +305,7 @@ export function BadgeDetailSkeleton(): React.JSX.Element {
 export function InvitePreviewSkeleton(): React.JSX.Element {
   return (
     <SkeletonRegion label="Carregando convite…" className="flex flex-col items-center text-center">
-      <Skeleton className="h-16 w-16 rounded-2xl" />
+      <Skeleton className="h-16 w-16 rounded-xl" />
       <div className="mt-4 flex h-[18px] items-center">
         <Skeleton className="h-3 w-48" />
       </div>
@@ -408,7 +408,7 @@ export function ProposalBoardSkeleton({
       {columns.map((col, c) => (
         <section
           key={col.status}
-          className="flex min-h-0 min-w-64 flex-1 basis-64 flex-col rounded-2xl border border-subtle bg-surface"
+          className="flex min-h-0 min-w-64 flex-1 basis-64 flex-col rounded-xl border border-subtle bg-surface"
         >
           <div className="shrink-0 px-3 pb-2 pt-3">
             <h2 className="text-sm font-semibold text-strong">{col.title}</h2>
@@ -571,7 +571,7 @@ export function AppBootSkeleton({ notice }: { notice?: string }): React.JSX.Elem
   return (
     <SkeletonRegion label="Carregando o app…" className="relative flex h-full">
       <aside className="flex h-full w-18 shrink-0 flex-col items-center gap-2 border-r border-subtle bg-tertiary py-3">
-        <Skeleton className="h-12 w-12 rounded-3xl" />
+        <Skeleton className="h-12 w-12 rounded-full" />
         <div className="my-1 h-0.5 w-8 rounded-full bg-fg/10" />
         <ServerRailSkeleton count={5} />
       </aside>
