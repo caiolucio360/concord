@@ -26,6 +26,19 @@ vi.mock('react-dom', async (original) => ({
 import { renderToStaticMarkup } from 'react-dom/server'
 import BadgesModal from './BadgesModal'
 
+const BADGE = {
+  category: 'teste',
+  name: 'Teste',
+  description: 'Um badge de teste.',
+  unit: 'vote',
+  value: 1,
+  tier: 1,
+  tier_name: 'Teste',
+  rarity: 'epico',
+  unlocked_at: '2026-10-27T12:00:00Z',
+  tiers: [{ tier: 1, name: 'Teste', threshold: 1, rarity: 'epico', unlocked_at: '2026-10-27' }]
+}
+
 describe('BadgesModal', () => {
   beforeEach(() => {
     vi.stubGlobal('document', { body: {} })
@@ -38,6 +51,26 @@ describe('BadgesModal', () => {
     expect(html).toContain('role="dialog"')
     expect(html).toContain('Badges de Ana')
     expect(html).toContain('aria-label="Fechar"')
+    expect(html).not.toContain('✕')
+  })
+
+  it('raridade e separadores sem glifos de texto (✦ ▲ •)', () => {
+    for (const rarity of ['epico', 'mitico']) {
+      store.byUser = { u1: { badges: [{ ...BADGE, rarity }] } }
+      const html = renderToStaticMarkup(<BadgesModal />)
+      for (const glyph of ['✦', '▲', '•']) expect(html).not.toContain(glyph)
+      expect(html).toContain('>·<')
+      // O chip de raridade leva o ícone desenhado antes do nome.
+      expect(html).toMatch(/<svg[^>]*aria-hidden="true"[^>]*>(?:(?!<\/svg>).)*<\/svg>(Épico|Mítico)/)
+    }
+  })
+
+  it('é o Modal do app, sem moldura: rotulado pelo título da coluna e o X no canto', () => {
+    const html = renderToStaticMarkup(<BadgesModal />)
+    const labelledBy = html.match(/role="dialog"[^>]*aria-labelledby="([^"]+)"/)![1]
+    expect(html).toContain(`<h2 id="${labelledBy}"`)
+    expect(html).toMatch(/aria-label="Fechar"[^>]*class="[^"]*absolute/)
+    expect(html).toContain('bg-modal')
   })
 
   it('sem modal aberto não renderiza nada', () => {
@@ -143,7 +176,7 @@ describe('BadgesModal', () => {
       store.modal = { userId: 'me', name: 'Eu', avatarUrl: null }
       store.byUser = { me: { badges: [] } }
       const html = renderToStaticMarkup(<BadgesModal />)
-      expect(html).toContain('Nenhum badge ainda. Eles aparecem conforme você usa o Salinha.')
+      expect(html).toContain('Nenhum badge ainda. Eles aparecem conforme você usa a Salinha.')
     })
   })
 })

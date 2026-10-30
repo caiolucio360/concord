@@ -88,7 +88,7 @@ function MicTest(): React.JSX.Element {
       <button
         type="button"
         onClick={() => setTesting((t) => !t)}
-        className="shrink-0 cursor-pointer rounded-md bg-fg/10 px-4 py-1.5 text-sm font-medium text-strong transition-colors hover:bg-fg/15"
+        className="shrink-0 cursor-pointer rounded-md bg-fg/10 px-4 py-1.5 text-ds-sm font-medium text-strong transition-colors hover:bg-fg/15"
       >
         {testing ? 'Parar' : 'Testar'}
       </button>

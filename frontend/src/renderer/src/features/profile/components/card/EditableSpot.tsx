@@ -31,7 +31,7 @@ export default function EditableSpot({
         onClick={() => onEdit(spot)}
         aria-label={label}
         title={label}
-        className="absolute inset-0 z-10 cursor-pointer rounded-md outline-none focus-visible:ring-2 focus-visible:ring-brand"
+        className="absolute inset-0 z-10 cursor-pointer rounded-md outline-none focus-ring"
       />
       <span
         aria-hidden="true"

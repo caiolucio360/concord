@@ -110,4 +110,12 @@ describe('PermissionSwitches component', () => {
     expect(html).toContain('Desabilitado para edição pois Administrador está ativo.')
     expect(html).toContain('opacity-50')
   })
+
+  it('item bloqueado não liga pelo teclado: o switch vem disabled, não só sem clique', () => {
+    const html = renderToStaticMarkup(
+      <PermissionSwitches value={0} onChange={vi.fn()} canToggle={() => false} groups={mockGroups} />
+    )
+    expect(html).not.toContain('pointer-events-none')
+    expect(html.match(/role="switch"[^>]*disabled=""/g)).toHaveLength(3)
+  })
 })

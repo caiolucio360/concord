@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Toggle } from '../Toggle'
 import Button from '../../../../shared/ui/Button'
+import IconButton from '../../../../shared/ui/IconButton'
+import { UndoIcon, XIcon } from '../../../../shared/ui/icons'
 import { bindingFromKeyEvent, bindingFromMouseButton, bindingLabels } from '../../lib/keybinds'
 import { effectiveBindings } from '../../lib/keybindPrefs'
 import {
@@ -12,16 +14,17 @@ import {
   type ShortcutGroup
 } from '../../lib/shortcuts'
 import { useKeybindStore } from '../../store/keybindStore'
+import SectionHeader from '../../../../shared/ui/SectionHeader'
 
 const GROUP_ORDER: ShortcutGroup[] = ['navigation', 'voice', 'chat']
 const MODIFIER_KEYS = new Set(['Control', 'Shift', 'Alt', 'Meta', 'AltGraph'])
 
 function Keys({ binding }: { binding: string | null }): React.JSX.Element {
-  if (!binding) return <span className="text-xs text-gray-500">Sem atalho</span>
+  if (!binding) return <span className="text-ds-xs text-faint">Sem atalho</span>
   return (
     <span className="flex gap-1">
       {bindingLabels(binding, isMacPlatform()).map((k) => (
-        <kbd key={k} className="rounded bg-fg/10 px-1.5 py-0.5 text-xs font-semibold text-strong">
+        <kbd key={k} className="rounded bg-fg/10 px-1.5 py-0.5 text-ds-xs font-semibold text-strong">
           {k}
         </kbd>
       ))}
@@ -115,9 +118,9 @@ function BindingField({
         onError(null)
         setLocalRecording((r) => !r)
       }}
-      className={`flex min-w-[10rem] shrink-0 cursor-pointer items-center justify-center rounded-lg border px-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-violet-400 ${
+      className={`flex min-w-[10rem] shrink-0 cursor-pointer items-center justify-center rounded-lg border px-3 py-2 transition-colors focus-ring ${
         recording
-          ? 'border-brand bg-brand/15 text-xs font-semibold text-strong'
+          ? 'border-brand bg-brand/15 text-ds-xs font-semibold text-strong'
           : 'border-subtle bg-fg/10 hover:bg-fg/15'
       }`}
     >
@@ -146,35 +149,31 @@ function Row({
   return (
     <li className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-3">
-        <span className="min-w-0 text-ds-md text-gray-200">{def.label}</span>
+        <span className="min-w-0 text-ds-md text-normal">{def.label}</span>
         <div className="flex shrink-0 items-center gap-1.5">
           <BindingField def={def} onError={onError} />
-          <button
-            type="button"
+          <IconButton
+            icon={XIcon}
+            size="sm"
             title="Tirar o atalho"
-            aria-label={`Tirar o atalho de "${def.label}"`}
+            label={`Tirar o atalho de "${def.label}"`}
             disabled={!bindings[def.id]}
             onClick={() => {
               onError(null)
               setBinding(def.id, null)
             }}
-            className="h-8 w-8 cursor-pointer rounded-md text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent"
-          >
-            ✕
-          </button>
-          <button
-            type="button"
+          />
+          <IconButton
+            icon={UndoIcon}
+            size="sm"
             title="Voltar ao padrão"
-            aria-label={`Voltar ao padrão: "${def.label}"`}
+            label={`Voltar ao padrão: "${def.label}"`}
             disabled={!changed}
             onClick={() => {
               onError(null)
               resetBinding(def.id)
             }}
-            className="h-8 w-8 cursor-pointer rounded-md text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent"
-          >
-            ↺
-          </button>
+          />
         </div>
       </div>
       {canGlobal && (
@@ -186,7 +185,7 @@ function Row({
             onChange={() => setGlobal(def.id, !global[def.id])}
           />
           {global[def.id] && bindings[def.id] && globalActive[def.id] === false && (
-            <p className="mt-2 text-xs text-amber-300">
+            <p className="mt-2 text-ds-xs text-warning">
               Não foi possível ativar fora do app: o atalho está em uso por outro programa.
             </p>
           )}
@@ -208,18 +207,18 @@ export function KeybindsSection(): React.JSX.Element {
     <div className="flex flex-col gap-4">
       <div className="rounded-xl border border-subtle bg-fg/5 p-4">
         <p className="text-ds-md font-medium text-strong">Atalhos</p>
-        <p className="mt-1 text-ds-sm text-gray-400">
+        <p className="mt-1 text-ds-sm text-muted">
           Clique em um atalho e aperte a nova tecla ou um botão do mouse (meio ou laterais). Esc
           cancela.
         </p>
-        {error && <p className="mt-2 text-xs text-amber-300">{error}</p>}
+        {error && <p className="mt-2 text-ds-xs text-warning">{error}</p>}
       </div>
 
       {GROUP_ORDER.map((group) => (
         <section key={group} className="rounded-xl border border-subtle bg-fg/5 p-4">
-          <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">
+          <SectionHeader className="mb-3">
             {SHORTCUT_GROUP_LABELS[group]}
-          </h3>
+          </SectionHeader>
           <ul className="flex flex-col gap-3">
             {SHORTCUTS.filter((d) => d.group === group).map((def) => (
               <Row key={def.id} def={def} onError={setError} />

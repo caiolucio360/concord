@@ -4,11 +4,14 @@ import {
   applyPollUpdate,
   isPollClosed,
   messagePreview,
+  messagePreviewParts,
   pollDraftError,
   pollDraftToInput,
   pollPercent,
   pollTimeLeft,
+  pollHint,
   pollWinners,
+  votesLabel,
   type PollDraft
 } from './polls'
 
@@ -113,6 +116,18 @@ describe('messagePreview', () => {
   })
 })
 
+describe('messagePreviewParts (dentro do app: o ícone é desenhado)', () => {
+  it('enquete, figurinha, GIF e anexo levam o tipo; o texto vem sem emoji', () => {
+    const audio = [{ kind: 'audio' }] as Attachment[]
+    expect(messagePreviewParts({ content: '', poll: poll() })).toEqual({ icon: 'poll', text: 'Jantar?' })
+    expect(messagePreviewParts({ content: 'oi' })).toEqual({ icon: null, text: 'oi' })
+    expect(messagePreviewParts({ content: '', sticker_id: 's' })).toEqual({ icon: 'sticker', text: 'Figurinha' })
+    expect(messagePreviewParts({ content: '', gif_url: 'g' })).toEqual({ icon: 'gif', text: 'GIF' })
+    expect(messagePreviewParts({ content: '', attachments: audio })).toEqual({ icon: 'audio', text: 'Áudio' })
+    expect(messagePreviewParts({ content: '' })).toEqual({ icon: null, text: '' })
+  })
+})
+
 describe('rascunho da enquete', () => {
   const draft = (overrides: Partial<PollDraft> = {}): PollDraft => ({
     question: ' Jantar? ',
@@ -154,5 +169,19 @@ describe('rascunho da enquete', () => {
       duration_hours: 24,
       allow_multiselect: false
     })
+  })
+})
+
+describe('votesLabel / pollHint', () => {
+  it('singular e plural', () => {
+    expect(votesLabel(1)).toBe('1 voto')
+    expect(votesLabel(0)).toBe('0 votos')
+    expect(votesLabel(3)).toBe('3 votos')
+  })
+
+  it('ajuda conforme o estado', () => {
+    expect(pollHint(true, true)).toBe('Enquete encerrada')
+    expect(pollHint(false, true)).toBe('Selecione uma ou mais respostas')
+    expect(pollHint(false, false)).toBe('Selecione uma resposta')
   })
 })

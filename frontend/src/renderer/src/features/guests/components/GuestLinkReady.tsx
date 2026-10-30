@@ -6,7 +6,7 @@ import { GUEST_COPY } from '../lib/guestCopy'
 function GuestLinkReady({ link, onNew }: { link: string; onNew: () => void }): React.JSX.Element {
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-ds-sm text-gray-300">{GUEST_COPY.linkReady}</p>
+      <p className="text-ds-sm text-secondary">{GUEST_COPY.linkReady}</p>
       <input
         readOnly
         value={link}

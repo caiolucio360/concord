@@ -89,7 +89,7 @@ describe('AccountHeader', () => {
       renderToStaticMarkup(<AccountHeader user={{ ...user, banner_color: '#123456' } as never} onEditProfile={noop} />)
     ).toContain('#123456')
     expect(renderToStaticMarkup(<AccountHeader user={user as never} onEditProfile={noop} />)).toContain(
-      'linear-gradient'
+      'bg-gradient-brand'
     )
   })
 })

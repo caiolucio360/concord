@@ -19,7 +19,7 @@ function GuestInviteForm({ state }: { state: GuestInvitesState }): React.JSX.Ele
       }}
     >
       <fieldset>
-        <legend className="mb-2 text-ds-sm font-medium text-gray-300">
+        <legend className="mb-2 text-ds-sm font-medium text-secondary">
           {GUEST_COPY.durationLabel}
         </legend>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -29,7 +29,7 @@ function GuestInviteForm({ state }: { state: GuestInvitesState }): React.JSX.Ele
               className={`flex min-h-10 cursor-pointer items-center justify-center rounded-lg border px-2 text-ds-sm font-medium transition-colors focus-within:ring-2 focus-within:ring-brand ${
                 duration === opt.value
                   ? 'border-brand bg-brand/15 text-strong'
-                  : 'border-subtle text-gray-300 hover:bg-fg/5'
+                  : 'border-subtle text-secondary hover:bg-fg/5'
               }`}
             >
               <input
@@ -46,7 +46,7 @@ function GuestInviteForm({ state }: { state: GuestInvitesState }): React.JSX.Ele
         </div>
       </fieldset>
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-ds-sm font-medium text-gray-300">
+        <legend className="mb-2 text-ds-sm font-medium text-secondary">
           {GUEST_COPY.permsLabel}
         </legend>
         <div className="flex min-h-10 items-center justify-between gap-3">

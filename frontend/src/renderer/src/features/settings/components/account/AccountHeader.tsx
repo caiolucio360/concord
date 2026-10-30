@@ -3,6 +3,7 @@ import { API_BASE_URL } from '../../../../shared/lib/config'
 import { profileMediaSrc } from '../../../profile/lib/profileMedia'
 import Avatar from '../../../../shared/ui/Avatar'
 import StyledName from '../../../profile/components/StyledName'
+import Button from '../../../../shared/ui/Button'
 
 export const ACCOUNT_CARD_BG = 'var(--bg-floating)'
 
@@ -19,12 +20,8 @@ export default function AccountHeader({
   return (
     <>
       <div
-        className="h-[100px]"
-        style={
-          bannerSrc
-            ? undefined
-            : { background: user.banner_color || 'linear-gradient(135deg, #5865f2, #8b5cf6)' }
-        }
+        className={`h-[100px] ${bannerSrc || user.banner_color ? '' : 'bg-gradient-brand'}`}
+        style={bannerSrc || !user.banner_color ? undefined : { background: user.banner_color }}
       >
         {bannerSrc && <img src={bannerSrc} alt="" className="h-full w-full object-cover" />}
       </div>
@@ -41,17 +38,13 @@ export default function AccountHeader({
               cutoutColor={ACCOUNT_CARD_BG}
             />
           </div>
-          <p className="mb-2 truncate text-xl font-bold text-strong">
+          <p className="mb-2 truncate text-ds-lg font-bold text-strong">
             <StyledName name={name} userId={user.id} style={user.name_style} />
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onEditProfile}
-          className="mb-2 min-h-10 shrink-0 cursor-pointer rounded-md bg-brand px-4 text-ds-sm font-medium text-white transition-colors hover:bg-brand-hover"
-        >
+        <Button type="button" onClick={onEditProfile} className="mb-2 shrink-0">
           Editar perfil de usuário
-        </button>
+        </Button>
       </div>
     </>
   )

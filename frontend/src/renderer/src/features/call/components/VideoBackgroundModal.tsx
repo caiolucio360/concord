@@ -10,6 +10,7 @@ import BackgroundPicker from './BackgroundPicker'
 import VideoPreview from './VideoPreview'
 import { useBackgroundUpload } from '../hooks/useBackgroundUpload'
 import { useVideoPreview } from '../hooks/useVideoPreview'
+import IconButton from '../../../shared/ui/IconButton'
 
 /**
  * "Mudar fundo de vídeo" (como no Discord) e a prévia antes de ligar a câmera.
@@ -75,32 +76,25 @@ function Dialog({ mode }: { mode: 'background' | 'preview' }): React.JSX.Element
         tabIndex={-1}
         aria-modal="true"
         aria-labelledby="video-modal-title"
-        className="flex max-h-full w-full max-w-xl flex-col rounded-2xl border border-subtle bg-modal shadow-2xl shadow-black/70"
+        className="flex max-h-full w-full max-w-xl flex-col rounded-xl border border-subtle bg-modal shadow-2xl shadow-black/70"
       >
         <div className="flex items-center justify-between px-6 pb-3 pt-5">
-          <h2 id="video-modal-title" className="w-full text-center text-xl font-bold text-strong">
+          <h2 id="video-modal-title" className="w-full text-center text-ds-lg font-bold text-strong">
             {title}
           </h2>
-          <button
-            type="button"
-            onClick={close}
-            aria-label="Fechar"
-            className="-mr-2 flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-gray-400 hover:bg-fg/10 hover:text-strong"
-          >
-            <XIcon className="h-4 w-4" />
-          </button>
+          <IconButton icon={XIcon} label="Fechar" onClick={close} size="sm" className="-mr-2" />
         </div>
 
         <div className="space-y-4 overflow-y-auto px-6 pb-4">
           <VideoPreview stream={stream} loading={!error} error={error} />
           {effectFailed && (
-            <p className="text-xs text-warning">
+            <p className="text-ds-xs text-warning">
               Não foi possível aplicar o fundo neste computador. O vídeo segue normal.
             </p>
           )}
           {isBackground && (
             <div className="space-y-2">
-              <p className="text-ds-xs font-bold uppercase tracking-[0.02em] text-gray-400">
+              <p className="text-ds-xs font-bold uppercase tracking-[0.02em] text-muted">
                 Fundo do vídeo
               </p>
               <BackgroundPicker
@@ -120,8 +114,8 @@ function Dialog({ mode }: { mode: 'background' | 'preview' }): React.JSX.Element
           )}
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-b-2xl bg-floating px-6 py-4">
-          <label className="flex cursor-pointer items-center gap-2 text-ds-sm text-gray-300">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-b-xl bg-floating px-6 py-4">
+          <label className="flex cursor-pointer items-center gap-2 text-ds-sm text-secondary">
             <input
               type="checkbox"
               checked={alwaysPreview}

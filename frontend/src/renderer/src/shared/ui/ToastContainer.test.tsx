@@ -41,6 +41,11 @@ describe('ToastContainer', () => {
       expect(html).not.toMatch(/✅|❌|ℹ️/u)
     })
 
+    it('o fechar é o CloseButton padrão (foco visível e dica)', () => {
+      const html = renderToStaticMarkup(<Toast toast={aviso({})} />)
+      expect(html).toMatch(/aria-label="Fechar"[^>]*focus-ring|focus-ring[^>]*aria-label="Fechar"/)
+    })
+
     it('aviso saindo usa a animação de saída', () => {
       const html = renderToStaticMarkup(<Toast toast={aviso({ leaving: true })} />)
       expect(html).toContain('toast-out')

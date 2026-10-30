@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 import ReplyReference from './ReplyReference'
+import { textPreview } from '../lib/preview'
+
+const IMAGE_WITH_ICON = /<svg[^>]*aria-hidden="true"(?:(?!<\/svg>).)*<\/svg><span[^>]*>Imagem<\/span>/
 
 describe('ReplyReference', () => {
   it('renderiza o nome do autor com a cor do cargo primário quando fornecida', () => {
@@ -8,7 +11,7 @@ describe('ReplyReference', () => {
       <ReplyReference
         authorName="Armando"
         authorColor="#e91e63"
-        content="Olá mundo"
+        preview={textPreview('Olá mundo')}
         onJump={() => {}}
       />
     )
@@ -16,11 +19,11 @@ describe('ReplyReference', () => {
     expect(html).toContain('color:#e91e63')
   })
 
-  it('usa cor padrão (text-gray-300) quando authorColor não é definida', () => {
+  it('usa cor padrão (text-secondary) quando authorColor não é definida', () => {
     const html = renderToStaticMarkup(
-      <ReplyReference authorName="Armando" content="Olá mundo" onJump={() => {}} />
+      <ReplyReference authorName="Armando" preview={textPreview('Olá mundo')} onJump={() => {}} />
     )
-    expect(html).toContain('<span class="shrink-0 font-semibold text-gray-300">@Armando</span>')
+    expect(html).toContain('<span class="shrink-0 font-semibold text-secondary">@Armando</span>')
   })
 
   it('renderiza o avatar do autor na referência com foto ou inicial', () => {
@@ -28,29 +31,30 @@ describe('ReplyReference', () => {
       <ReplyReference
         authorName="Armando"
         authorAvatarUrl="https://example.com/avatar.png"
-        content="Olá mundo"
+        preview={textPreview('Olá mundo')}
         onJump={() => {}}
       />
     )
     expect(htmlComFoto).toContain('https://example.com/avatar.png')
 
     const htmlSemFoto = renderToStaticMarkup(
-      <ReplyReference authorName="Armando" content="Olá mundo" onJump={() => {}} />
+      <ReplyReference authorName="Armando" preview={textPreview('Olá mundo')} onJump={() => {}} />
     )
     expect(htmlSemFoto).toContain('>A</div>')
   })
 
-  it('usa emptyLabel padrão (🖼️ Imagem) quando content está vazio e nunca exibe como enquete', () => {
+  it('sem texto, mostra "Imagem" com o ícone desenhado (sem emoji) e nunca como enquete', () => {
     const html = renderToStaticMarkup(
-      <ReplyReference authorName="Armando" content="" onJump={() => {}} />
+      <ReplyReference authorName="Armando" preview={textPreview('')} onJump={() => {}} />
     )
-    expect(html).toContain('🖼️ Imagem')
+    expect(html).not.toContain('🖼')
+    expect(html).toMatch(IMAGE_WITH_ICON)
     expect(html).not.toContain('Enquete')
   })
 
   it('mostra aviso quando a mensagem original foi excluída', () => {
     const html = renderToStaticMarkup(
-      <ReplyReference authorName={null} content="" onJump={() => {}} />
+      <ReplyReference authorName={null} preview={textPreview('')} onJump={() => {}} />
     )
     expect(html).toContain('Mensagem original foi excluída')
   })

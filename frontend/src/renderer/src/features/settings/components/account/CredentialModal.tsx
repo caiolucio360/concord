@@ -103,12 +103,12 @@ export default function CredentialModal({
           />
         </Field>
         {locked && (
-          <p role="status" className="rounded-md bg-fg/5 px-3 py-2 text-xs text-strong">
+          <p role="status" className="rounded-md bg-fg/5 px-3 py-2 text-ds-xs text-strong">
             {locked}
           </p>
         )}
         {error && (
-          <p role="alert" className="text-xs text-danger">
+          <p role="alert" className="text-ds-xs text-danger">
             {error}
           </p>
         )}

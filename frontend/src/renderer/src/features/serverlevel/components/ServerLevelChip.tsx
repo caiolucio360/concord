@@ -11,7 +11,7 @@ function ServerLevelChip({ serverId }: { serverId: string }): React.JSX.Element 
     <span
       title={`Nível ${progress.level} do servidor · ${look.name}`}
       data-tier={look.name}
-      className={`shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-bold leading-none ${look.className}`}
+      className={`shrink-0 rounded-md px-1.5 py-0.5 text-ds-xxs font-bold leading-none ${look.className}`}
       style={look.style}
     >
       Nv. {progress.level}

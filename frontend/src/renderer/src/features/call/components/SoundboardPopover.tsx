@@ -69,9 +69,9 @@ function SoundboardPopover({
     <div
       ref={ref}
       role="dialog"
-      aria-label="Mesa de Áudio"
+      aria-label="Mesa de áudio"
       style={{ width, left, bottom }}
-      className="fixed z-50 flex max-h-[460px] gap-3 rounded-2xl border border-subtle bg-floating p-3 shadow-2xl"
+      className="fixed z-50 flex max-h-[460px] gap-3 rounded-xl border border-subtle bg-floating p-3 shadow-2xl"
     >
       <div
         role="tablist"
@@ -92,7 +92,7 @@ function SoundboardPopover({
               className={`relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl transition-colors ${
                 selected
                   ? 'bg-brand text-white'
-                  : 'bg-fg/[0.06] text-gray-300 hover:bg-fg/[0.12] hover:text-strong'
+                  : 'bg-fg/[0.06] text-secondary hover:bg-fg/[0.12] hover:text-strong'
               }`}
             >
               {id === 'sounds' ? (
@@ -113,8 +113,8 @@ function SoundboardPopover({
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <div className="mb-3">
-          <p className="text-sm font-bold text-strong">Mesa de Áudio · {current.label}</p>
-          <p className="text-[11px] text-gray-400">{current.subtitle}</p>
+          <p className="text-ds-sm font-bold text-strong">Mesa de áudio · {current.label}</p>
+          <p className="text-ds-xs text-muted">{current.subtitle}</p>
         </div>
         {section === 'sounds' ? (
           <SoundboardSoundsPanel serverId={serverId} onBusyChange={handleBusy} />

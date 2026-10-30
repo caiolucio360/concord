@@ -45,6 +45,10 @@ describe('UnifiedMediaPickerPopover & Media Components', () => {
     expect(html).toContain('GIFs')
     expect(html).toContain('Figurinhas')
     expect(html).toContain('Joinha')
+    // As abas usam os ícones do conjunto (carinha, GIF, figurinha), não emoji.
+    const tabs = html.slice(0, html.indexOf('Figurinhas</span>'))
+    for (const glyph of ['😊', '👾', '💟']) expect(tabs).not.toContain(glyph)
+    expect(tabs.match(/<svg/g)?.length).toBe(3)
   })
 
   it('renders MessageSticker component with name and title attributes', () => {

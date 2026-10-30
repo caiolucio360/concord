@@ -30,7 +30,7 @@ function ParticipantStrip({
           aria-expanded={!hidden}
           aria-controls={regionId}
           title={label}
-          className="flex h-7 cursor-pointer items-center gap-1.5 rounded-full border border-subtle bg-secondary px-3 text-[11px] font-semibold text-gray-300 shadow-lg transition-colors hover:bg-fg/10 hover:text-strong"
+          className="flex h-7 cursor-pointer items-center gap-1.5 rounded-full border border-subtle bg-secondary px-3 text-ds-xs font-semibold text-secondary shadow-lg transition-colors hover:bg-fg/10 hover:text-strong"
         >
           <Chevron className="h-3.5 w-3.5" />
           {label}

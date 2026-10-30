@@ -33,7 +33,7 @@ function memberNames(m: LookMember, me: LookMe | null | undefined): [string, str
  * cargo dele, como para todo mundo.
  */
 function memberTone(offline: boolean): [string, string] {
-  return offline ? ['bg-gray-600', 'text-gray-400'] : ['bg-indigo-600', 'text-gray-200']
+  return offline ? ['bg-[var(--interactive-muted)]', 'text-muted'] : ['bg-brand', 'text-normal']
 }
 
 export function memberRowLook(

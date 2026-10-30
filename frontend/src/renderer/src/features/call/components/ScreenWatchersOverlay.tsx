@@ -23,11 +23,11 @@ export default function ScreenWatchersOverlay({
     <div
       data-testid="screen-watchers-overlay"
       title={`Assistindo (${watchers.length}): ${tooltipText}`}
-      className={`on-media z-20 flex items-center gap-1.5 rounded-full bg-black/65 px-2 py-1 text-xs text-white backdrop-blur-md shadow-lg border border-white/10 select-none ${className}`}
+      className={`on-media z-20 flex items-center gap-1.5 rounded-full bg-black/65 px-2 py-1 text-ds-xs text-white backdrop-blur-md shadow-lg border border-white/10 select-none ${className}`}
     >
-      <div className="flex items-center gap-1 text-gray-300">
-        <EyeIcon className="h-3.5 w-3.5 text-emerald-400" />
-        <span className="text-[11px] font-bold text-gray-200">{watchers.length}</span>
+      <div className="flex items-center gap-1 text-secondary">
+        <EyeIcon className="h-3.5 w-3.5 text-success" />
+        <span className="text-ds-xs font-bold text-normal">{watchers.length}</span>
       </div>
 
       <div className="flex items-center -space-x-1.5 ml-0.5">
@@ -52,7 +52,7 @@ export default function ScreenWatchersOverlay({
               .slice(maxVisible)
               .map((w) => w.display_name || w.username)
               .join(', ')}`}
-            className="flex h-5 w-5 items-center justify-center rounded-full bg-fg/20 text-[10px] font-bold text-strong ring-2 ring-black/80"
+            className="flex h-5 w-5 items-center justify-center rounded-full bg-fg/20 text-ds-xxs font-bold text-strong ring-2 ring-black/80"
           >
             +{remainingCount}
           </div>

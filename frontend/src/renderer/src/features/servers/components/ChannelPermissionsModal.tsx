@@ -12,35 +12,23 @@ import {
   isPrivateChannel,
   privateOverwrite,
   targetRows,
-  triState,
   withTriState,
   type OverwriteTargetRef,
   type TriState
 } from '../lib/channelPermissions'
-import {
-  Perm,
-  canGrant,
-  everyoneRole,
-  roleColorCss,
-  type ChannelKind,
-  type ChannelOverwrite
-} from '../lib/permissions'
+import { channelPermissionsCopy, editorSelection, memberCandidates } from '../lib/overwriteEditor'
+import { Perm, everyoneRole, type ChannelOverwrite } from '../lib/permissions'
 import { channelPermissionGroups } from '../lib/permissionCatalog'
-import Button from '../../../shared/ui/Button'
-import Input from '../../../shared/ui/Input'
 import Modal from '../../../shared/ui/Modal'
 import Switch from '../../../shared/ui/Switch'
+import ChannelPermissionGroups from './ChannelPermissionGroups'
+import OverwriteEditorFooter from './OverwriteEditorFooter'
+import OverwriteTargetList from './OverwriteTargetList'
 
 interface ChannelPermissionsModalProps {
   channel: Channel | null
   onClose: () => void
 }
-
-const STATES: { id: TriState; label: string; symbol: string; active: string }[] = [
-  { id: 'deny', label: 'Negar', symbol: '✗', active: 'bg-danger-strong text-white' },
-  { id: 'inherit', label: 'Herdar do servidor', symbol: '/', active: 'bg-fg/25 text-strong' },
-  { id: 'allow', label: 'Permitir', symbol: '✓', active: 'bg-success-strong text-white' }
-]
 
 /**
  * Permissões de um canal: torna o canal privado e libera ou nega permissões
@@ -76,18 +64,17 @@ function ChannelPermissionsModal({
 
   if (!channel || !liveChannel || !serverId) return null
 
-  const kind: ChannelKind = liveChannel.type === 'voice' ? 'voice' : 'text'
+  const { kind, title, privateHint } = channelPermissionsCopy(liveChannel)
   const groups = channelPermissionGroups(kind)
   const myChannelPerms = access.channelPerms(channel.id)
   const isPrivate = isPrivateChannel(overwrites, everyone?.id)
-  const current = selected ?? (rows[0] ? { type: rows[0].type, id: rows[0].id } : null)
-  const saved = current ? findOverwrite(overwrites, current) : undefined
-  const working =
-    draft && current && draft.target_id === current.id && draft.target_type === current.type
-      ? draft
-      : saved
-  const dirty =
-    !!draft && (draft.allow !== (saved?.allow ?? 0) || draft.deny !== (saved?.deny ?? 0))
+  const { current, saved, working, dirty, allRows } = editorSelection({
+    rows,
+    overwrites,
+    selected,
+    draft,
+    memberName
+  })
 
   const run = async (action: () => Promise<unknown>, okMessage?: string): Promise<boolean> => {
     setBusy(true)
@@ -159,46 +146,19 @@ function ChannelPermissionsModal({
     setAdding('')
   }
 
-  const term = adding.trim().toLowerCase()
-  // Os cargos já estão todos na lista ao lado: a busca acha membros.
-  const candidates = term
-    ? members
-        .filter((m) => !findOverwrite(overwrites, { type: 'member', id: m.user_id }))
-        .filter((m) =>
-          [m.nickname, m.display_name, m.username].some((v) => v?.toLowerCase().includes(term))
-        )
-        .slice(0, 8)
-        .map((m) => ({
-          ref: { type: 'member' as const, id: m.user_id },
-          name: serverDisplayName(m, m)
-        }))
-    : []
-
-  const pendingRow =
-    current && !rows.some((r) => r.type === current.type && r.id === current.id)
-      ? {
-          ...current,
-          name: memberName(current.id) ?? '?',
-          color: null as number | null,
-          hasRules: false
-        }
-      : null
-  const allRows = pendingRow ? [...rows, pendingRow] : rows
+  const candidates = memberCandidates(members, overwrites, adding.trim().toLowerCase())
 
   return (
     <Modal
       open
-      title={`Permissões de ${kind === 'voice' ? '' : '#'}${liveChannel.name}`}
+      title={title}
       onClose={onClose}
       wide
     >
       <div className="mb-4 flex items-center justify-between gap-4 rounded-lg border border-subtle bg-fg/3 px-4 py-3">
         <div>
-          <p className="text-sm font-semibold text-strong">Canal privado</p>
-          <p className="text-xs text-gray-400">
-            Só os cargos e membros que você liberar abaixo conseguem ver{' '}
-            {kind === 'voice' ? 'e entrar n' : ''}este canal.
-          </p>
+          <p className="text-ds-sm font-semibold text-strong">Canal privado</p>
+          <p className="text-ds-xs text-muted">{privateHint}</p>
         </div>
         <Switch
           checked={isPrivate}
@@ -207,143 +167,40 @@ function ChannelPermissionsModal({
         />
       </div>
 
-      <div className="flex gap-4">
-        <div className="w-52 shrink-0">
-          <Input
-            placeholder="Adicionar membro"
-            aria-label="Adicionar membro"
-            value={adding}
-            onChange={(e) => setAdding(e.target.value)}
-            className="mb-2 text-xs"
-          />
-          {term && (
-            <ul className="mb-2 max-h-40 overflow-y-auto rounded-lg border border-subtle bg-input p-1">
-              {candidates.length === 0 && (
-                <li className="px-2 py-1.5 text-xs text-gray-500">Ninguém encontrado.</li>
-              )}
-              {candidates.map((c) => (
-                <li key={`${c.ref.type}:${c.ref.id}`}>
-                  <button
-                    type="button"
-                    onClick={() => addTarget(c.ref)}
-                    className="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-left text-xs text-gray-200 hover:bg-fg/10"
-                  >
-                    <span className="text-gray-500">@</span>
-                    <span className="truncate">{c.name}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          <ul className="flex max-h-80 flex-col gap-0.5 overflow-y-auto">
-            {allRows.map((row) => {
-              const active = current?.type === row.type && current.id === row.id
-              return (
-                <li key={`${row.type}:${row.id}`}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelected({ type: row.type, id: row.id })
-                      setDraft(null)
-                    }}
-                    aria-current={active ? 'true' : undefined}
-                    className={`flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm font-medium ${
-                      active ? 'bg-fg/10 text-strong' : 'text-gray-400 hover:bg-fg/5'
-                    }`}
-                  >
-                    <span
-                      aria-hidden
-                      className="shrink-0 text-xs"
-                      style={{ color: roleColorCss(row.color) ?? 'var(--text-muted)' }}
-                    >
-                      {row.type === 'role' ? '◆' : '@'}
-                    </span>
-                    <span className="truncate">{row.name}</span>
-                    {row.hasRules && (
-                      <span
-                        aria-label="Tem regras neste canal"
-                        title="Tem regras neste canal"
-                        className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-violet-400"
-                      />
-                    )}
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <OverwriteTargetList
+          adding={adding}
+          onAddingChange={setAdding}
+          candidates={candidates}
+          rows={allRows}
+          current={current}
+          onSelect={(ref) => {
+            setSelected(ref)
+            setDraft(null)
+          }}
+          onAdd={addTarget}
+        />
 
         <div className="min-w-0 flex-1">
           {current ? (
             <>
-              <div className="space-y-5">
-                {groups.map((group) => (
-                  <section key={group.title}>
-                    <h3 className="mb-2 text-ds-sm font-medium text-gray-400">{group.title}</h3>
-                    <ul className="divide-y divide-subtle rounded-lg border border-subtle bg-fg/3">
-                      {group.permissions.map((p) => {
-                        const bit = Perm[p.name]
-                        const allowed = canGrant(myChannelPerms, bit)
-                        const state = triState(working, bit)
-                        return (
-                          <li
-                            key={p.name}
-                            className={`flex items-center justify-between gap-3 px-3 py-2.5 ${
-                              allowed ? '' : 'opacity-50'
-                            }`}
-                            title={allowed ? undefined : 'Você não tem essa permissão neste canal.'}
-                          >
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-strong">{p.label}</p>
-                              <p className="text-[11px] leading-snug text-gray-400">
-                                {p.description}
-                              </p>
-                            </div>
-                            <div
-                              role="group"
-                              aria-label={p.label}
-                              className="flex shrink-0 overflow-hidden rounded-md border border-normal"
-                            >
-                              {STATES.map((s) => (
-                                <button
-                                  key={s.id}
-                                  type="button"
-                                  disabled={!allowed || busy}
-                                  aria-label={`${p.label}: ${s.label}`}
-                                  aria-pressed={state === s.id}
-                                  title={s.label}
-                                  onClick={() => setState(bit, s.id)}
-                                  className={`h-7 w-8 cursor-pointer text-sm font-bold transition-colors disabled:cursor-not-allowed ${
-                                    state === s.id ? s.active : 'text-gray-400 hover:bg-fg/10'
-                                  }`}
-                                >
-                                  {s.symbol}
-                                </button>
-                              ))}
-                            </div>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  </section>
-                ))}
-              </div>
-              <div className="mt-4 flex items-center justify-between gap-2">
-                <Button
-                  variant="ghost"
-                  className="px-3 py-1.5 text-xs"
-                  disabled={busy || !saved}
-                  onClick={() => void removeRules()}
-                >
-                  Remover regras
-                </Button>
-                <Button variant="success" disabled={busy || !dirty} onClick={() => void save()}>
-                  {busy ? 'Salvando...' : 'Salvar'}
-                </Button>
-              </div>
+              <ChannelPermissionGroups
+                groups={groups}
+                myChannelPerms={myChannelPerms}
+                working={working}
+                busy={busy}
+                onSet={setState}
+              />
+              <OverwriteEditorFooter
+                busy={busy}
+                canRemove={!!saved}
+                canSave={dirty}
+                onRemove={() => void removeRules()}
+                onSave={() => void save()}
+              />
             </>
           ) : (
-            <p className="text-sm text-gray-500">
+            <p className="text-ds-sm text-faint">
               Adicione um cargo ou membro para dar ou negar permissões só neste canal.
             </p>
           )}

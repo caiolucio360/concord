@@ -3,7 +3,7 @@ import { endedTexts, GUEST_COPY, joinButtonLabel } from './guestCopy'
 
 describe('textos do visitante', () => {
   it('botão de entrar', () => {
-    expect(joinButtonLabel(true)).toBe('Entrando...')
+    expect(joinButtonLabel(true)).toBe('Entrando…')
     expect(joinButtonLabel(false)).toBe('Entrar na call')
   })
 

@@ -7,11 +7,12 @@ import { Elapsed } from './ActivityCard'
 import GameIcon from './GameIcon'
 import MusicIcon from './MusicIcon'
 import TrackProgress from './TrackProgress'
+import SectionHeader from '../../../shared/ui/SectionHeader'
 
 function PlayingNow({ game }: { game: PresenceActivity }): React.JSX.Element {
   return (
     <div className="mt-3 rounded-lg bg-fg/5 p-2.5">
-      <p className="text-ds-xs font-bold uppercase text-gray-400">Jogando agora</p>
+      <SectionHeader as="p">Jogando agora</SectionHeader>
       <p className="mt-1 flex items-center gap-1.5 text-ds-md font-semibold text-strong">
         <GameIcon
           name={game.name}
@@ -20,7 +21,7 @@ function PlayingNow({ game }: { game: PresenceActivity }): React.JSX.Element {
           className="h-4 w-4 shrink-0"
         />
         <span className="truncate">{game.name}</span>
-        <span className="shrink-0 text-ds-xs font-normal text-gray-400">
+        <span className="shrink-0 text-ds-xs font-normal text-muted">
           <Elapsed startedAt={game.started_at} />
         </span>
       </p>
@@ -33,9 +34,9 @@ export function ListeningNow({ listening }: { listening: ListeningActivity }): R
   const accent = musicAccent(listening.app) ?? '#5865f2'
   return (
     <div className="mt-3 rounded-lg bg-fg/5 p-2.5">
-      <p className="truncate text-ds-xs font-bold uppercase text-gray-400">
+      <SectionHeader as="p" className="truncate">
         Ouvindo {listening.app}
-      </p>
+      </SectionHeader>
       <div className="mt-1.5 flex min-w-0 items-center gap-2.5">
         <span
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md"
@@ -48,12 +49,12 @@ export function ListeningNow({ listening }: { listening: ListeningActivity }): R
             {listening.title}
           </p>
           {listening.artist && (
-            <p className="truncate text-ds-sm text-gray-300" title={listening.artist}>
+            <p className="truncate text-ds-sm text-secondary" title={listening.artist}>
               {listening.artist}
             </p>
           )}
           {listening.album && (
-            <p className="truncate text-ds-xs text-gray-400" title={listening.album}>
+            <p className="truncate text-ds-xs text-muted" title={listening.album}>
               {listening.album}
             </p>
           )}

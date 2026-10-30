@@ -21,7 +21,7 @@ export function RoomLoadingGate({
 export function EmptyRoomNotice({ empty }: { empty: boolean }): React.JSX.Element | null {
   if (!empty) return null
   return (
-    <div className="flex items-center justify-center py-8 text-center text-sm text-gray-500">
+    <div className="flex items-center justify-center py-8 text-center text-ds-sm text-faint">
       Nenhuma mensagem por aqui ainda. Seja o primeiro a escrever!
     </div>
   )
@@ -50,7 +50,7 @@ export function MessageListTail({
 export function DropOverlay({ visible }: { visible: boolean }): React.JSX.Element | null {
   if (!visible) return null
   return (
-    <div className="pointer-events-none absolute inset-2 z-20 flex items-center justify-center rounded-xl border-2 border-dashed border-violet-400/70 bg-black/60 text-sm font-semibold text-white on-media">
+    <div className="pointer-events-none absolute inset-2 z-20 flex items-center justify-center rounded-xl border-2 border-dashed border-brand/70 bg-black/60 text-ds-sm font-semibold text-white on-media">
       Solte os arquivos para enviar
     </div>
   )

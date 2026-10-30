@@ -23,7 +23,7 @@ interface StickersTabProps {
 /** Aba "Figurinhas" do seletor: as figurinhas do servidor, 3 por linha, filtradas pela busca. */
 export function StickersTab({ serverId, stickers, loading, search, onSelect }: StickersTabProps) {
   if (!serverId) return <Message text="Figurinhas ficam disponíveis em canais de servidores." />
-  if (loading) return <Message text="Carregando figurinhas..." />
+  if (loading) return <Message text="Carregando figurinhas…" />
   if (stickers.length === 0) return <Message text="Nenhuma figurinha no servidor ainda." />
   const q = search.trim().toLowerCase()
   const shown = q ? stickers.filter((s) => s.name.toLowerCase().includes(q)) : stickers

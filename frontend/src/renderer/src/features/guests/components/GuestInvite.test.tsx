@@ -73,7 +73,7 @@ describe('Convidar visitante', () => {
 
   it('gerando: botão travado', () => {
     const html = renderToStaticMarkup(<GuestInviteForm state={state({ creating: true })} />)
-    expect(html).toContain('Gerando...')
+    expect(html).toContain('Gerando…')
     expect(html).toContain('disabled')
   })
 

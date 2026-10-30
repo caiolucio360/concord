@@ -22,7 +22,7 @@ describe('VideoFill', () => {
   it('live: inteira (contain) sobre fundo preto, cantos arredondados', () => {
     const html = renderToStaticMarkup(<VideoFill stream={bia} fit="contain" />)
     expect(html).toContain('object-contain')
-    expect(html).toContain('rounded-2xl')
+    expect(html).toContain('rounded-xl')
     expect(html).toContain('muted')
   })
 
@@ -30,7 +30,7 @@ describe('VideoFill', () => {
     const html = renderToStaticMarkup(<VideoFill stream={camera} fit="cover" mirror square />)
     expect(html).toContain('object-cover')
     expect(html).toContain('-scale-x-100')
-    expect(html).not.toContain('rounded-2xl')
+    expect(html).not.toContain('rounded-xl')
   })
 
   it('live (minha ou de outra pessoa) tem o ícone de estatísticas; câmera não', () => {

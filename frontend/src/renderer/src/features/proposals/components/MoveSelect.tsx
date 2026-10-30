@@ -19,7 +19,7 @@ function MoveSelect({
       onChange={(e) => {
         if (e.target.value) onMove(e.target.value as ProposalStatus)
       }}
-      className="glass-input cursor-pointer rounded-lg px-2 py-1 text-xs text-strong disabled:cursor-not-allowed disabled:opacity-50"
+      className="glass-input cursor-pointer rounded-lg px-2 py-1 text-ds-xs text-strong disabled:cursor-not-allowed disabled:opacity-50"
     >
       <option value="" disabled>
         Mover para…

@@ -109,7 +109,7 @@ describe('textRowClass', () => {
   it('comum', () => {
     const cls = textRowClass({ canOpenMenu: false, active: false, dim: false })
     expect(cls).toContain('pr-2.5')
-    expect(cls).toContain('text-gray-400')
+    expect(cls).toContain('text-muted')
     expect(cls).not.toContain('opacity-50')
   })
 })

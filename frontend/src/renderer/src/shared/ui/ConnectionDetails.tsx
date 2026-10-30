@@ -7,7 +7,7 @@ import { useServerDiagnostics } from '../hooks/useServerDiagnostics'
 import { useConnectionStore } from '../store/connectionStore'
 
 const LINK =
-  'shrink-0 cursor-pointer rounded font-semibold underline-offset-2 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-brand disabled:cursor-default disabled:opacity-60'
+  'shrink-0 cursor-pointer rounded font-semibold underline-offset-2 outline-none hover:underline focus-ring disabled:cursor-default disabled:opacity-60'
 
 export function DetailsPanel(): React.JSX.Element {
   const online = useConnectionStore((s) => s.online)
@@ -16,16 +16,16 @@ export function DetailsPanel(): React.JSX.Element {
 
   return (
     <div className="w-full basis-full rounded-lg border border-white/10 bg-black/20 p-3 text-left">
-      <p className="text-xs text-gray-400">
+      <p className="text-ds-xs text-muted">
         Copie e mande para quem cuida da Salinha: mostra onde a conexão para.
       </p>
       <pre
         data-testid="connection-details"
-        className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap break-words font-mono text-xs text-normal"
+        className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap break-words font-mono text-ds-xs text-normal"
       >
         {text}
       </pre>
-      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-ds-sm">
         <button type="button" onClick={retest} disabled={testing} className={`${LINK} text-brand`}>
           {testing ? 'Testando…' : 'Testar de novo'}
         </button>

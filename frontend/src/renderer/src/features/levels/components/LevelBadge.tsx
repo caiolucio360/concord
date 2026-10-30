@@ -93,7 +93,7 @@ function LevelBadge({
 
   const tier = levelTier(level)
   const look = levelBadgeStyle(level)
-  const text = size === 'md' ? 'text-[11px] px-1.5 py-0.5' : 'text-[9px] px-1 py-px'
+  const text = size === 'md' ? 'text-ds-xs px-1.5 py-0.5' : 'text-ds-xxs px-1 py-px'
 
   const title = `Nível ${level} · ${tier.name}`
   const wrapperProps = onClick
@@ -117,7 +117,7 @@ function LevelBadge({
       {...wrapperProps}
       className={`level-anim inline-flex shrink-0 ${
         onClick
-          ? 'cursor-pointer rounded-md transition-transform hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-fg/70'
+          ? 'cursor-pointer rounded-md transition-transform hover:scale-105 active:scale-95 focus-ring'
           : ''
       } ${className}`}
       style={
@@ -128,7 +128,7 @@ function LevelBadge({
     >
       <span
         data-badge={look.variant}
-        className={`inline-flex items-center gap-0.5 rounded-md font-extrabold leading-none tracking-wide ${text} ${look.className}`}
+        className={`inline-flex items-center gap-0.5 rounded-md font-bold leading-none tracking-wide ${text} ${look.className}`}
         style={{ ...look.style, boxShadow: badgeShadow(look, celebration !== undefined) }}
       >
         <span className={look.dimLabel ? 'opacity-70' : 'opacity-90'}>Nv</span>

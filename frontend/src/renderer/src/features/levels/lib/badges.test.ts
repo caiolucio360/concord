@@ -298,8 +298,8 @@ describe('raridade mítica (Fundador dos devs)', () => {
   })
 
   it('não tem número, nem no próprio perfil nem no de outra pessoa', () => {
-    expect(statText(dev)).toBe('Dev do Salinha')
-    expect(publicStatText({ ...dev, value: undefined, progress: undefined })).toBe('Dev do Salinha')
+    expect(statText(dev)).toBe('Dev da Salinha')
+    expect(publicStatText({ ...dev, value: undefined, progress: undefined })).toBe('Dev da Salinha')
     expect(formatThreshold('dev', 1)).toBe('Só para os devs')
     expect(remainingText(dev)).toBe('Tier máximo!')
     expect(remainingText({ ...dev, tier: 0, next_threshold: 1, value: 0 })).toBe('Só para os devs')

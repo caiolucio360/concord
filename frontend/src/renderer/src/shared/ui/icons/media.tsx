@@ -1,4 +1,5 @@
-// Chamada e mídia: microfone, fone, câmera, tela, telefone, volume, player e mesa de áudio.
+// Chamada e mídia: microfone, fone, câmera, tela, telefone, volume, player, mesa de áudio e tipos de anexo (imagem, GIF, figurinha).
+import { useId } from 'react'
 import { Icon, LineIcon, SlashedIcon, type IconProps } from './Icon'
 
 const MIC = (
@@ -183,6 +184,49 @@ export function MusicNoteIcon(props: IconProps): React.JSX.Element {
   return (
     <Icon {...props}>
       <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z" />
+    </Icon>
+  )
+}
+
+/** Imagem (anexo, figurinha a enviar): quadro com montanha e sol vazados. */
+export function ImageIcon(props: IconProps): React.JSX.Element {
+  return (
+    <Icon {...props}>
+      <path
+        fillRule="evenodd"
+        d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm3.5 3.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM5.5 18h13l-4.2-5.6a1 1 0 0 0-1.6 0l-2.7 3.6-1.4-1.75a1 1 0 0 0-1.56 0z"
+      />
+    </Icon>
+  )
+}
+
+/** GIF: etiqueta com as letras vazadas. */
+export function GifIcon(props: IconProps): React.JSX.Element {
+  const mask = useId()
+  return (
+    <Icon {...props}>
+      <mask id={mask}>
+        <rect width="24" height="24" fill="#fff" />
+        <g fill="none" stroke="#000" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9.6 9.4H7.4a1 1 0 0 0-1 1v3.2a1 1 0 0 0 1 1h2.2v-2.4H8.4" />
+          <path d="M12 9.4v5.2" />
+          <path d="M17.6 9.4h-3v5.2M14.6 12h2.4" />
+        </g>
+      </mask>
+      <rect x="2" y="5" width="20" height="14" rx="3" mask={`url(#${mask})`} />
+    </Icon>
+  )
+}
+
+/** Figurinha: papel com o canto descolando e uma carinha vazada. */
+export function StickerIcon(props: IconProps): React.JSX.Element {
+  return (
+    <Icon {...props}>
+      <path
+        fillRule="evenodd"
+        d="M5 3h9v4a3 3 0 0 0 3 3h4v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm3.5 8a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5zm5 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5zM7.4 15.6a.8.8 0 0 0-.6 1.3 5 5 0 0 0 8.4 0 .8.8 0 0 0-.6-1.3z"
+      />
+      <path d="M16 3.6 20.4 8H17a1 1 0 0 1-1-1z" />
     </Icon>
   )
 }

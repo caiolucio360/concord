@@ -36,7 +36,7 @@ describe('UserContextMenuSections', () => {
       />
     )
     expect(html).toContain('Perfil')
-    expect(html).toContain('Remover Maestro')
+    expect(html).toContain('Remover maestro')
   })
 
   it('FriendMenuItems renderiza estados de amizade (amigo, pedido enviado, bloqueado, nenhum)', () => {

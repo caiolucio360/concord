@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { EMOTE_CATEGORIES, type EmoteCategory } from '../../chat/lib/emotes'
 import { serverIconSrc } from '../../servers/lib/serverIcon'
 import { TrashIcon } from '../../../shared/ui/icons'
+import SectionHeader from '../../../shared/ui/SectionHeader'
 import { showToast } from '../../../shared/store/toastStore'
 import type { CustomEmoji as Emoji, ServerEmojis } from '../api/emojis'
 import { messageToken, reactionToken } from '../lib/emojiToken'
@@ -16,7 +17,7 @@ export type EmojiPickMode = 'message' | 'reaction'
 
 const GRID = 'grid grid-cols-6 gap-1 max-md:grid-cols-[repeat(auto-fill,minmax(2.75rem,1fr))]'
 const CELL =
-  'flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-lg transition-transform hover:scale-110 hover:bg-fg/10 focus-visible:outline-2 focus-visible:outline-brand max-md:size-11 max-md:text-2xl'
+  'flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-ds-lg transition-transform hover:scale-110 hover:bg-fg/10 focus-ring max-md:size-11 max-md:text-ds-xl'
 /** Altura de uma linha da grade (botão + espaço), para reservar o lugar das categorias fechadas. */
 const ROW_PX = 36
 /** As primeiras categorias montam na hora; as outras quando chegam perto da tela. */
@@ -44,9 +45,9 @@ function LazySection({
 
 function SectionTitle({ children }: { children: ReactNode }): React.JSX.Element {
   return (
-    <div className="mb-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+    <SectionHeader as="p" className="mb-1 flex items-center gap-1.5">
       {children}
-    </div>
+    </SectionHeader>
   )
 }
 
@@ -57,7 +58,7 @@ function ServerTitle({ group }: { group: ServerEmojis }): React.JSX.Element {
       {icon ? (
         <img src={icon} alt="" width={14} height={14} className="h-3.5 w-3.5 rounded object-cover" />
       ) : (
-        <span aria-hidden className="flex h-3.5 w-3.5 items-center justify-center rounded bg-fg/10 text-[8px]">
+        <span aria-hidden className="flex h-3.5 w-3.5 items-center justify-center rounded bg-fg/10 text-ds-xxs">
           {group.server_name.slice(0, 1)}
         </span>
       )}
@@ -86,7 +87,7 @@ function CustomEmojiCell({
           title="Excluir emoji"
           aria-label="Excluir emoji"
           onClick={() => onDelete(emoji)}
-          className="absolute -right-1 -top-1 rounded bg-black/80 p-0.5 text-red-400 opacity-80 hover:text-red-300 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-brand [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-80"
+          className="absolute -right-1 -top-1 rounded bg-black/80 p-0.5 text-danger opacity-80 hover:opacity-100 focus-visible:opacity-100 focus-ring [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-80"
         >
           <TrashIcon aria-hidden className="h-2.5 w-2.5" />
         </button>
@@ -181,7 +182,7 @@ export default function EmojiPickerGrid({
         <BaseCategory key={category.id} category={category} eager={searching || i < EAGER_SECTIONS} onPick={onPick} />
       ))}
       {customs.length === 0 && categories.length === 0 && (
-        <div className="py-4 text-center text-xs text-gray-500">Nenhum emote encontrado</div>
+        <div className="py-4 text-center text-ds-xs text-faint">Nenhum emote encontrado</div>
       )}
     </div>
   )

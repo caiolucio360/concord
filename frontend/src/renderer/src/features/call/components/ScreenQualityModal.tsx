@@ -45,14 +45,14 @@ function QualityDialog({
         tabIndex={-1}
         aria-modal="true"
         aria-labelledby="screen-quality-title"
-        className="rounded-2xl border border-subtle bg-modal shadow-2xl shadow-black/70 w-full max-w-xl p-6"
+        className="rounded-xl border border-subtle bg-modal shadow-2xl shadow-black/70 w-full max-w-xl p-6"
       >
-        <h2 id="screen-quality-title" className="text-xl font-bold text-strong">
+        <h2 id="screen-quality-title" className="text-ds-lg font-bold text-strong">
           Compartilhe sua tela
         </h2>
         <ScreenQualityControls value={quality} onChange={setQuality} />
         {portal && (
-          <p className="mt-3 text-xs text-gray-400">
+          <p className="mt-3 text-ds-xs text-muted">
             A tela é escolhida no seletor do sistema. No Linux, o som não vai junto — só o vídeo.
           </p>
         )}

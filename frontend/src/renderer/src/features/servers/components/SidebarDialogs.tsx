@@ -38,7 +38,7 @@ function DeleteChannelDialog({
   }
   return (
     <Modal open title="Deletar canal" onClose={cancelDelete}>
-      <p className="text-ds-md text-gray-300">
+      <p className="text-ds-md text-secondary">
         Tem certeza que deseja deletar o canal <b className="text-strong">#{channel.name}</b>? Esta
         ação não pode ser desfeita e apagará todas as mensagens do canal.
       </p>
@@ -47,7 +47,7 @@ function DeleteChannelDialog({
           Cancelar
         </Button>
         <Button variant="danger" disabled={busy} onClick={() => void confirm()}>
-          {busy ? 'Deletando...' : 'Deletar canal'}
+          {busy ? 'Deletando…' : 'Deletar canal'}
         </Button>
       </div>
     </Modal>
@@ -75,7 +75,7 @@ function DeleteServerDialog({ server }: { server: Server }): React.JSX.Element {
   }
   return (
     <Modal open title="Deletar servidor" onClose={closeConfirm}>
-      <p className="text-ds-md text-gray-300">
+      <p className="text-ds-md text-secondary">
         Tem certeza que deseja deletar o servidor <b className="text-strong">{server.name}</b>?
         Todos os canais e mensagens serão apagados e todos os membros serão removidos. Esta ação não
         pode ser desfeita.
@@ -85,7 +85,7 @@ function DeleteServerDialog({ server }: { server: Server }): React.JSX.Element {
           Cancelar
         </Button>
         <Button variant="danger" disabled={busy} onClick={() => void confirm()}>
-          {busy ? 'Deletando...' : 'Deletar servidor'}
+          {busy ? 'Deletando…' : 'Deletar servidor'}
         </Button>
       </div>
     </Modal>

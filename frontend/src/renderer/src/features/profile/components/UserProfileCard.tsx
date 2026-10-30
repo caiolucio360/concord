@@ -29,7 +29,7 @@ import CardInfo from './card/CardInfo'
 import LiveExtras from './card/LiveExtras'
 import { profileThemeLook, resolveProfileTheme } from '../lib/profileTheme'
 import StatusIcon from '../../../shared/ui/StatusIcon'
-import { PencilIcon } from '../../../shared/ui/icons'
+import { AtIcon, ChevronRightIcon, PencilIcon } from '../../../shared/ui/icons'
 import { useThemeStore } from '../../settings/store/themeStore'
 import { useProfileCardData } from '../hooks/useProfileCardData'
 import { useProfileCardPlacement } from '../hooks/useProfileCardPlacement'
@@ -52,9 +52,9 @@ function MenuButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2 py-2 text-left text-sm font-medium text-gray-200 transition-colors hover:bg-fg/10 hover:text-strong"
+      className="flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2 py-2 text-left text-ds-sm font-medium text-normal transition-colors hover:bg-fg/10 hover:text-strong"
     >
-      <span className="flex h-4 w-4 shrink-0 items-center justify-center text-gray-400">
+      <span className="flex h-4 w-4 shrink-0 items-center justify-center text-muted">
         {icon}
       </span>
       <span className="min-w-0 flex-1 truncate">{label}</span>
@@ -82,7 +82,7 @@ function StatusMenu({ status }: { status: PresenceStatus }): React.JSX.Element {
         icon={<StatusIcon status={status} size={12} />}
         label={STATUS_META[status].label}
         onClick={() => (open ? setOpen(false) : show())}
-        trailing={<span className="text-gray-400">›</span>}
+        trailing={<ChevronRightIcon size={16} className="text-muted" />}
       />
       {open && (
         // pl-3 em vez de margem: o mouse passa do botão para o menu sem fechar.
@@ -107,11 +107,11 @@ function StatusMenu({ status }: { status: PresenceStatus }): React.JSX.Element {
               >
                 <StatusIcon status={s} size={12} className="mt-1" />
                 <span className="min-w-0">
-                  <span className="block text-sm font-medium text-gray-100">
+                  <span className="block text-ds-sm font-medium text-strong">
                     {STATUS_META[s].label}
                   </span>
                   {STATUS_META[s].description && (
-                    <span className="block text-xs leading-snug text-gray-400">
+                    <span className="block text-ds-xs leading-snug text-muted">
                       {STATUS_META[s].description}
                     </span>
                   )}
@@ -128,7 +128,7 @@ function StatusMenu({ status }: { status: PresenceStatus }): React.JSX.Element {
 function NicknameButton({ onClick }: { onClick: () => void }): React.JSX.Element {
   return (
     <MenuButton
-      icon={<span className="text-ds-sm font-black leading-none">@</span>}
+      icon={<AtIcon size={16} />}
       label="Alterar apelido"
       onClick={onClick}
     />
@@ -294,7 +294,7 @@ function ProfileCardContent({ target }: { target: ProfileCardTarget }): React.JS
       role="dialog"
       aria-label={`Perfil de ${view.shownName}`}
       style={cardPlacementStyle(pos)}
-      className="z-[60] text-sm text-gray-200 shadow-2xl"
+      className="z-[60] text-ds-sm text-normal shadow-2xl"
     >
       <ProfileCardBody
         profile={view.card}

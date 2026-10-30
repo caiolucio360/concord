@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { roleColorCss, type Role } from '../lib/permissions'
 import { canRemoveRole } from '../lib/memberSettings'
+import CloseButton from '../../../shared/ui/CloseButton'
+import { CheckIcon } from '../../../shared/ui/icons'
 
 const DEFAULT_ROLE_COLOR = '#99aab5'
 
@@ -40,22 +42,42 @@ function OwnRoleChip({
   onRemove: () => void
 }): React.JSX.Element {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-normal bg-fg/5 py-0.5 pl-2 pr-1 text-xs text-gray-200">
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-normal bg-fg/5 py-0.5 pl-2 pr-1 text-ds-xs text-normal">
       <RoleDot color={role.color} />
       {role.name}
       {removable ? (
-        <button
-          type="button"
-          aria-label={`Tirar o cargo ${role.name} de ${name}`}
+        <CloseButton
+          label={`Tirar o cargo ${role.name} de ${name}`}
+          size="xs"
           onClick={onRemove}
-          className="flex h-4 w-4 cursor-pointer items-center justify-center rounded-full text-gray-400 hover:bg-fg/15 hover:text-strong"
-        >
-          ×
-        </button>
+        />
       ) : (
         <span className="w-1" />
       )}
     </span>
+  )
+}
+
+/** Um cargo na lista do "+": marcado quando o membro já tem. */
+export function RoleOption({
+  role,
+  has,
+  onToggle
+}: {
+  role: Role
+  has: boolean
+  onToggle: () => void
+}): React.JSX.Element {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-ds-xs font-semibold text-normal hover:bg-fg/10"
+    >
+      <RoleDot color={role.color} />
+      <span className="min-w-0 flex-1 truncate">{role.name}</span>
+      {has && <CheckIcon size={16} className="text-success" />}
+    </button>
   )
 }
 
@@ -73,7 +95,7 @@ function RolePicker({
         type="button"
         aria-label={`Dar um cargo a ${name}`}
         onClick={() => setOpen(!open)}
-        className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-dashed border-strong text-sm text-gray-300 hover:border-strong hover:text-strong"
+        className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-dashed border-strong text-ds-sm text-secondary hover:border-strong hover:text-strong"
       >
         +
       </button>
@@ -85,15 +107,7 @@ function RolePicker({
               const has = !!memberRoleIds?.includes(role.id)
               return (
                 <li key={role.id}>
-                  <button
-                    type="button"
-                    onClick={() => onToggle(role.id, has)}
-                    className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold text-gray-200 hover:bg-fg/10"
-                  >
-                    <RoleDot color={role.color} />
-                    <span className="min-w-0 flex-1 truncate">{role.name}</span>
-                    {has && <span className="text-success">✓</span>}
-                  </button>
+                  <RoleOption role={role} has={has} onToggle={() => onToggle(role.id, has)} />
                 </li>
               )
             })}

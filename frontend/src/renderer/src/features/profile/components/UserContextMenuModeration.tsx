@@ -1,5 +1,6 @@
 import { disconnectParticipant, setServerDeafen, setServerMute } from '../../call/api/calls'
 import { useModerationStore } from '../../call/store/moderationStore'
+import SectionHeader from '../../../shared/ui/SectionHeader'
 
 export interface UserContextMenuModerationProps {
   serverId?: string
@@ -49,7 +50,7 @@ export function VoiceModerationSection({
   return (
     <>
       <div className="my-1 h-px bg-fg/10" />
-      <p className="px-2 pt-0.5 text-[10px] font-bold uppercase tracking-wide text-gray-500">Voz</p>
+      <SectionHeader as="p" className="px-2 pt-0.5">Voz</SectionHeader>
       {canMuteInVoice && (
         <button
           role="menuitem"

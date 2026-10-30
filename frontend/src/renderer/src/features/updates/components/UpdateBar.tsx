@@ -36,7 +36,7 @@ function message(p: UpdateBarViewProps): string {
 export function UpdateBarView(p: UpdateBarViewProps): React.JSX.Element {
   return (
     <div role="status" className="shrink-0 border-t border-success/40 bg-success/10 px-3 py-2">
-      <p className="line-clamp-3 break-words text-xs text-gray-200" title={message(p)}>
+      <p className="line-clamp-3 break-words text-ds-xs text-normal" title={message(p)}>
         {message(p)}
       </p>
       {p.requested && (
@@ -47,13 +47,13 @@ export function UpdateBarView(p: UpdateBarViewProps): React.JSX.Element {
       {!p.requested && (
         <div className="mt-2 flex justify-end gap-2">
           {p.confirming && (
-            <Button variant="ghost" className="px-3 py-1 text-xs" onClick={p.onCancel}>
+            <Button variant="ghost" size="sm" onClick={p.onCancel}>
               Cancelar
             </Button>
           )}
           <Button
             variant="success"
-            className="px-3 py-1 text-xs"
+            size="sm"
             onClick={p.inCall && !p.confirming ? p.onConfirm : p.onInstall}
           >
             {p.confirming ? 'Atualizar mesmo assim' : 'Atualizar'}

@@ -44,7 +44,7 @@ function Drawer({ open, onClose, label, className = '', children }: DrawerProps)
             type="button"
             onClick={onClose}
             aria-label={`Fechar ${label.toLowerCase()}`}
-            className="flex size-10 cursor-pointer items-center justify-center rounded-lg text-gray-400 hover:bg-fg/10 hover:text-strong focus-visible:outline-2 focus-visible:outline-violet-400"
+            className="flex size-10 cursor-pointer items-center justify-center rounded-lg text-muted hover:bg-fg/10 hover:text-strong focus-ring"
           >
             <XIcon className="size-4" />
           </button>

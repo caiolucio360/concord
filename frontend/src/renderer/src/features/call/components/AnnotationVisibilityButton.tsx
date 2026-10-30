@@ -4,11 +4,11 @@ import { EyeIcon, EyeOffIcon, PencilIcon } from '../../../shared/ui/icons'
 /** `bar`: barra escura do tile (junto do volume). `overlay`: barra da tela cheia. */
 const VARIANTS = {
   bar: {
-    idle: 'h-6 w-6 rounded-md text-gray-100 hover:bg-fg/10',
+    idle: 'h-6 w-6 rounded-md text-strong hover:bg-fg/10',
     hidden: 'h-6 w-6 rounded-md bg-fg/20 text-white'
   },
   overlay: {
-    idle: 'h-8 w-8 rounded-lg bg-black/60 text-gray-100 hover:bg-white/15 on-media',
+    idle: 'h-8 w-8 rounded-lg bg-black/60 text-strong hover:bg-white/15 on-media',
     hidden: 'h-8 w-8 rounded-lg bg-white/25 text-white ring-1 ring-fg/30 on-media'
   }
 } as const
@@ -59,7 +59,7 @@ export function FullscreenAnnotationButtons({ sharerId }: { sharerId: string }):
         className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-colors ${
           isDrawing
             ? 'bg-success-strong text-white shadow-md ring-1 ring-fg/30'
-            : 'bg-black/60 text-gray-100 hover:bg-white/15 on-media'
+            : 'bg-black/60 text-strong hover:bg-white/15 on-media'
         }`}
       >
         <PencilIcon className="h-4 w-4" />

@@ -47,7 +47,7 @@ describe('CropControls', () => {
     expect(idle).toContain('Aplicar')
     expect(idle).not.toContain('disabled=""')
     expect(loading).toContain('disabled=""')
-    expect(busy).toContain('Aplicando...')
+    expect(busy).toContain('Aplicando…')
     expect(busy).toContain('disabled=""')
   })
 })

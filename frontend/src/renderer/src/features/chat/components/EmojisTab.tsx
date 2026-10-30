@@ -13,14 +13,14 @@ function ServerEmojiBar({ serverId, onAdd }: { serverId: string; onAdd: () => vo
   const canAdd = useServerAccess().can(Perm.ADD_EMOJIS)
   return (
     <div className="mb-2 flex items-center justify-between">
-      <span className="text-[11px] text-gray-400">
+      <span className="text-ds-xs text-muted">
         {count} / {MAX_EMOJIS_PER_SERVER} emojis
       </span>
       {canAdd && count < MAX_EMOJIS_PER_SERVER && (
         <button
           type="button"
           onClick={onAdd}
-          className="flex min-h-7 items-center gap-1 rounded-md bg-violet-600/30 px-2 py-1 text-[11px] font-medium text-violet-300 transition-colors hover:bg-violet-600/50 focus-visible:outline-2 focus-visible:outline-brand cursor-pointer max-md:min-h-9"
+          className="focus-ring flex min-h-7 items-center gap-1 rounded-md bg-brand/30 px-2 py-1 text-ds-xs font-medium text-brand transition-colors hover:bg-brand/50 cursor-pointer max-md:min-h-9"
         >
           <PlusIcon className="h-3 w-3" />
           <span>Novo emoji</span>

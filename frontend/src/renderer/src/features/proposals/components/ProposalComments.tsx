@@ -209,17 +209,17 @@ function ProposalComments({
 
   return (
     <section aria-label="Comentários" className="flex flex-col gap-3">
-      <h3 className="text-sm font-semibold text-strong">
+      <h3 className="text-ds-sm font-semibold text-strong">
         Comentários{loaded && comments.length > 0 ? ` (${comments.length})` : ''}
       </h3>
       {!loaded ? (
         failed ? (
-          <p className="text-xs text-gray-400">Não foi possível carregar os comentários.</p>
+          <p className="text-ds-xs text-muted">Não foi possível carregar os comentários.</p>
         ) : (
           <CommentListSkeleton />
         )
       ) : comments.length === 0 ? (
-        <p className="text-xs text-gray-500">Ninguém comentou ainda. Comece a conversa!</p>
+        <p className="text-ds-xs text-faint">Ninguém comentou ainda. Comece a conversa!</p>
       ) : (
         <ul className="flex flex-col gap-1">
           {comments.map((c) => (

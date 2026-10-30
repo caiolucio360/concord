@@ -69,11 +69,11 @@ func lifetime(d time.Duration) string {
 // VerifyEmail monta o e-mail de confirmação de endereço.
 func VerifyEmail(to, name, appURL, token string, ttl time.Duration) (Message, error) {
 	return render(content{
-		Subject:   "Confirme seu e-mail no Salinha",
+		Subject:   "Confirme seu e-mail na Salinha",
 		Preheader: "Falta só um passo para confirmar seu e-mail.",
 		Title:     "Confirme seu e-mail",
 		Name:      name,
-		Intro:     "Bem-vindo ao Salinha! Confirme que este endereço é seu para proteger sua conta e liberar todos os recursos.",
+		Intro:     "Bem-vindo à Salinha! Confirme que este endereço é seu para proteger sua conta e liberar todos os recursos.",
 		Button:    "Confirmar e-mail",
 		URL:       link(appURL, "/verify-email", token),
 		Expires:   "Este link expira em " + lifetime(ttl) + ".",
@@ -84,7 +84,7 @@ func VerifyEmail(to, name, appURL, token string, ttl time.Duration) (Message, er
 // ResetPassword monta o e-mail de redefinição de senha.
 func ResetPassword(to, name, appURL, token string, ttl time.Duration) (Message, error) {
 	return render(content{
-		Subject:   "Redefinir sua senha do Salinha",
+		Subject:   "Redefinir sua senha da Salinha",
 		Preheader: "Recebemos um pedido para redefinir sua senha.",
 		Title:     "Redefinir sua senha",
 		Name:      name,

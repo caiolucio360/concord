@@ -53,12 +53,12 @@ function TextChannelRow({
           dim: muted && !active && mentions === 0
         })}
       >
-        <span className="flex h-6 shrink-0 items-center text-xl leading-none text-gray-500">#</span>
+        <span className="flex h-6 shrink-0 items-center text-ds-lg leading-none text-faint">#</span>
         {/* Nome inteiro, quebrando linha; a estrela segue o texto. */}
         <span className={`min-w-0 flex-1 leading-6 ${WRAP_NAME}`}>
           {channel.name}
           {isPrivate && (
-            <span title="Canal privado" className="ml-1.5 inline-flex align-[-1px] text-gray-500">
+            <span title="Canal privado" className="ml-1.5 inline-flex align-[-1px] text-faint">
               <LockIcon className="h-3 w-3" />
               <span className="sr-only">(canal privado)</span>
             </span>
@@ -66,7 +66,7 @@ function TextChannelRow({
           {isPrimary && (
             <span
               title="Canal principal: avisos do servidor são enviados aqui"
-              className="ml-1.5 inline-flex align-[-1px] text-amber-400/90"
+              className="ml-1.5 inline-flex align-[-1px] text-warning/90"
             >
               <StarIcon className="h-3 w-3" />
               <span className="sr-only">(canal principal)</span>
@@ -77,7 +77,7 @@ function TextChannelRow({
           <span className="flex h-6 shrink-0 items-center">
             <span
               title={badge.mention ? 'Menções' : undefined}
-              className="rounded-full bg-red-500 px-1.5 py-0.2 text-[10px] font-bold text-white"
+              className="rounded-full bg-danger px-1.5 py-0.2 text-ds-xxs font-bold text-white"
             >
               {badge.label}
             </span>

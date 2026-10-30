@@ -9,7 +9,7 @@ import { useSoundboardStore } from '../store/soundboardStore'
 import { useSoundFavoritesStore } from '../store/soundFavoritesStore'
 import { soundboardSections } from '../lib/soundboardSections'
 import { showToast } from '../../../shared/store/toastStore'
-import { PlusIcon, SearchIcon } from '../../../shared/ui/icons'
+import { FavoriteStarIcon, PlusIcon, SearchIcon, type IconProps } from '../../../shared/ui/icons'
 import SoundboardUploadModal from './SoundboardUploadModal'
 import SoundPad from './SoundPad'
 import SoundSection from './SoundSection'
@@ -17,6 +17,10 @@ import SoundboardVolumeBar from './SoundboardVolumeBar'
 import SoundboardEmpty from './SoundboardEmpty'
 import { formatKeyboardShortcut } from '../hooks/useSoundboardHotkeys'
 import { SoundboardSkeleton } from '../../../shared/ui/skeleton/layouts'
+import Button from '../../../shared/ui/Button'
+
+/** Título dos Favoritos: a estrela cheia, igual à do som favoritado. */
+const FavoritesIcon = (props: IconProps): React.JSX.Element => <FavoriteStarIcon {...props} filled />
 
 const EMPTY_SOUNDS: SoundboardItem[] = []
 
@@ -143,14 +147,9 @@ function SoundboardSoundsPanel({
       <div className="flex min-h-0 flex-1 flex-col">
         {canAddSounds && (
           <div className="mb-3 flex justify-end">
-            <button
-              type="button"
-              onClick={() => setUploadOpen(true)}
-              className="flex cursor-pointer items-center gap-1 rounded-lg bg-brand px-2.5 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-brand-hover"
-            >
-              <PlusIcon className="h-3.5 w-3.5" />
+            <Button type="button" size="sm" icon={PlusIcon} onClick={() => setUploadOpen(true)}>
               Adicionar som
-            </button>
+            </Button>
           </div>
         )}
 
@@ -158,13 +157,13 @@ function SoundboardSoundsPanel({
 
         {/* Busca */}
         <div className="relative mb-3">
-          <SearchIcon className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <SearchIcon className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar som na mesa…"
-            className="w-full rounded-xl border border-subtle bg-input py-1.5 pl-8 pr-3 text-xs text-strong placeholder-gray-500 focus:border-brand focus:outline-none"
+            className="w-full rounded-xl border border-subtle bg-input py-1.5 pl-8 pr-3 text-ds-xs text-strong placeholder:text-faint focus:border-brand focus:outline-none"
           />
         </div>
 
@@ -179,7 +178,7 @@ function SoundboardSoundsPanel({
             />
           ) : (
             <>
-              <SoundSection title="★ Favoritos">{sections.favorites.map(renderPad)}</SoundSection>
+              <SoundSection title="Favoritos" icon={FavoritesIcon}>{sections.favorites.map(renderPad)}</SoundSection>
               <SoundSection title={sections.favorites.length > 0 ? 'Sons do servidor' : undefined}>
                 {sections.server.map(renderPad)}
               </SoundSection>

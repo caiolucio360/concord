@@ -1,4 +1,4 @@
-import { XIcon } from './icons'
+import CloseButton from './CloseButton'
 import { useToastStore, type ToastMessage, type ToastType } from '../store/toastStore'
 
 const ESTILO: Record<ToastType, { borda: string; fundo: string; icone: string; rotulo: string }> = {
@@ -48,7 +48,7 @@ export function Toast({ toast }: { toast: ToastMessage }): React.JSX.Element {
       >
         <Icone type={toast.type} />
       </span>
-      <p className="min-w-0 flex-1 break-words text-sm font-medium leading-snug text-strong">{toast.message}</p>
+      <p className="min-w-0 flex-1 break-words text-ds-sm font-medium leading-snug text-strong">{toast.message}</p>
 
       {toast.action && (
         <button
@@ -57,20 +57,12 @@ export function Toast({ toast }: { toast: ToastMessage }): React.JSX.Element {
             toast.action?.run()
             removeToast(toast.id)
           }}
-          className="shrink-0 cursor-pointer rounded-md border border-normal px-2 py-1 text-xs font-semibold text-strong transition-colors hover:bg-fg/10"
+          className="shrink-0 cursor-pointer rounded-md border border-normal px-2 py-1 text-ds-xs font-semibold text-strong transition-colors hover:bg-fg/10"
         >
           {toast.action.label}
         </button>
       )}
-      <button
-        type="button"
-        onClick={() => removeToast(toast.id)}
-        className="flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-fg/10 hover:text-strong"
-        title="Fechar"
-        aria-label="Fechar"
-      >
-        <XIcon size={16} className="size-3.5" />
-      </button>
+      <CloseButton size="sm" onClick={() => removeToast(toast.id)} />
     </div>
   )
 }

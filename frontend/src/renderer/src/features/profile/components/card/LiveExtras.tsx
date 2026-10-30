@@ -55,7 +55,7 @@ function LiveExtras({
             close()
             void joinActivity()
           }}
-          className="mt-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-success-strong px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-success-strong-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          className="mt-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-success-strong px-3 py-2 text-ds-sm font-semibold text-white transition-colors hover:bg-success-strong-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
           <ActivityGlyph activity={joinableActivity} className="h-4 w-4" />
           Juntar-se à atividade

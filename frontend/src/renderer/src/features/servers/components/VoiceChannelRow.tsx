@@ -43,7 +43,7 @@ function VoiceChannelMeta({
         <span className={`flex h-6 shrink-0 items-center ${FADE_ON_HOVER}`}>
           <span
             title={badge.mention ? 'Menções no chat' : 'Mensagens não lidas no chat'}
-            className="rounded-full bg-red-500 px-1.5 py-0.2 text-[10px] font-bold text-white"
+            className="rounded-full bg-danger px-1.5 py-0.2 text-ds-xxs font-bold text-white"
           >
             {badge.label}
           </span>
@@ -56,7 +56,7 @@ function VoiceChannelMeta({
       )}
       {people > 0 && (
         <span className={`flex h-6 shrink-0 items-center ${FADE_ON_HOVER}`}>
-          <span className="rounded-full bg-fg/10 px-1.5 py-0.2 text-[10px] font-bold text-gray-300">
+          <span className="rounded-full bg-fg/10 px-1.5 py-0.2 text-ds-xxs font-bold text-secondary">
             {people}
           </span>
         </span>
@@ -115,7 +115,7 @@ function VoiceChannelButton({
       {/* Verde só nos canais com gente (pode ser em vários ao mesmo tempo). */}
       <span className="flex h-6 shrink-0 items-center">
         <VolumeIcon
-          className={`h-5 w-5 transition-colors ${people > 0 ? 'text-success' : 'text-gray-500'}`}
+          className={`h-5 w-5 transition-colors ${people > 0 ? 'text-success' : 'text-faint'}`}
         />
       </span>
       {/* Nome inteiro, quebrando linha; tempo e contagem ficam na altura da
@@ -123,7 +123,7 @@ function VoiceChannelButton({
       <span title={channel.name} className={`min-w-0 flex-1 leading-6 ${WRAP_NAME}`}>
         {channel.name}
         {locked && (
-          <span title="Sala trancada" className="ml-1.5 inline-flex align-[-1px] text-amber-500/90">
+          <span title="Sala trancada" className="ml-1.5 inline-flex align-[-1px] text-warning/90">
             <LockIcon className="h-3 w-3" />
             <span className="sr-only">(trancada)</span>
           </span>
@@ -131,7 +131,7 @@ function VoiceChannelButton({
         {(isPrivate || !canConnect) && (
           <span
             title={isPrivate ? 'Canal privado' : 'Sem permissão para entrar'}
-            className="ml-1.5 inline-flex align-[-1px] text-gray-500"
+            className="ml-1.5 inline-flex align-[-1px] text-faint"
           >
             <LockIcon className="h-3 w-3" />
             <span className="sr-only">(restrito)</span>

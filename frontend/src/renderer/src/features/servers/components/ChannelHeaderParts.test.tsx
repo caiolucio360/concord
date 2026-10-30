@@ -71,7 +71,7 @@ describe('ChannelTitle', () => {
 describe('ChannelActions', () => {
   it('canal de texto: fixadas e Convidar', () => {
     const html = actions()
-    expect(html).toContain('title="Mensagens Fixadas"')
+    expect(html).toContain('title="Mensagens fixadas"')
     expect(html).toContain('Convidar')
     expect(html).not.toContain('data-fixadas')
   })
@@ -79,12 +79,12 @@ describe('ChannelActions', () => {
   it('sem permissão de convidar, sem o botão; canal de voz, sem fixadas', () => {
     const html = actions({ canInvite: false, isVoice: true })
     expect(html).not.toContain('Convidar')
-    expect(html).not.toContain('Mensagens Fixadas')
+    expect(html).not.toContain('Mensagens fixadas')
   })
 
   it('fixadas abertas: botão aceso e o popover do canal', () => {
     const html = actions({ pinsOpen: true, canModerate: true })
-    expect(html).toContain('border-amber-500/50')
+    expect(html).toContain('border-warning/50')
     expect(html).toContain('data-fixadas="c1" data-modera="true"')
   })
 })

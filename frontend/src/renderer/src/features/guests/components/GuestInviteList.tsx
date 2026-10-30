@@ -40,14 +40,14 @@ function InviteRow({
         </Button>
       </div>
       {invite.guests.length === 0 ? (
-        <p className="text-ds-sm text-gray-400">{GUEST_COPY.nobodyYet}</p>
+        <p className="text-ds-sm text-muted">{GUEST_COPY.nobodyYet}</p>
       ) : (
         <ul className="flex flex-col gap-1">
           {invite.guests.map((g) => (
             <li key={g.user_id} className="flex min-h-10 items-center justify-between gap-2">
-              <span className="min-w-0 truncate text-ds-sm text-gray-200">{g.display_name}</span>
+              <span className="min-w-0 truncate text-ds-sm text-normal">{g.display_name}</span>
               {g.ended_at ? (
-                <span className="text-ds-xs text-gray-500">{GUEST_COPY.removed}</span>
+                <span className="text-ds-xs text-faint">{GUEST_COPY.removed}</span>
               ) : (
                 <Button
                   variant="secondary"
@@ -70,9 +70,9 @@ function GuestInviteList({ state }: { state: GuestInvitesState }): React.JSX.Ele
   const now = useMinuteClock()
   return (
     <section aria-label={GUEST_COPY.activeTitle} className="flex flex-col gap-2">
-      <h3 className="text-ds-sm font-semibold text-gray-300">{GUEST_COPY.activeTitle}</h3>
+      <h3 className="text-ds-sm font-semibold text-secondary">{GUEST_COPY.activeTitle}</h3>
       {state.invites.length === 0 ? (
-        <p className="text-ds-sm text-gray-400">{GUEST_COPY.noActive}</p>
+        <p className="text-ds-sm text-muted">{GUEST_COPY.noActive}</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {state.invites.map((inv) => (

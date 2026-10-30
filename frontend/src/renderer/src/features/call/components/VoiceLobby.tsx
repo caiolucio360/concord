@@ -48,8 +48,8 @@ function VoiceLobby({
           <VolumeIcon className="h-9 w-9" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-strong">Ninguém aqui ainda</h2>
-          <p className="mt-1 text-sm text-gray-400">
+          <h2 className="text-ds-lg font-bold text-strong">Ninguém aqui ainda</h2>
+          <p className="mt-1 text-ds-sm text-muted">
             Entre na voz para conversar com os membros do servidor.
           </p>
         </div>

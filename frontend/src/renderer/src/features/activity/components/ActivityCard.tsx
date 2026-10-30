@@ -42,11 +42,11 @@ export function ActivityCard({
     >
       <Avatar userId={user.id} name={look.name} avatarUrl={look.avatarUrl} size={32} />
       <div className="min-w-0 flex-1">
-        <p className="truncate text-ds-sm font-medium text-gray-400">
+        <p className="truncate text-ds-sm font-medium text-muted">
           <StyledName name={look.name} userId={user.id} style={user.name_style} />
         </p>
         <p className="truncate text-ds-md font-bold text-strong">{activity.name}</p>
-        <p className="truncate text-ds-xs text-gray-400">
+        <p className="truncate text-ds-xs text-muted">
           <Elapsed startedAt={activity.started_at} />
         </p>
       </div>

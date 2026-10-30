@@ -96,7 +96,7 @@ describe('MessageItem', () => {
     expect(render(msg({ reply_to_id: 'x' }))).toContain('Mensagem original foi excluída')
   })
 
-  it('resposta a mensagem com imagem mostra avatar, nome e 🖼️ Imagem (nunca enquete)', () => {
+  it('resposta a mensagem com imagem mostra avatar, nome e Imagem com ícone (nunca enquete)', () => {
     useChatStore.setState({
       messagesByRoom: {
         'channel:c1': [
@@ -120,11 +120,12 @@ describe('MessageItem', () => {
     )
     expect(html).toContain('@Jamal')
     expect(html).toContain('https://example.com/jamal.png')
-    expect(html).toContain('🖼️ Imagem')
+    expect(html).not.toContain('🖼')
+    expect(html).toMatch(/<svg[^>]*aria-hidden="true"(?:(?!<\/svg>).)*<\/svg><span[^>]*>Imagem<\/span>/)
     expect(html).not.toContain('Enquete')
   })
 
-  it('resposta a mensagem só com imagem sem cache usa 🖼️ Imagem como fallback', () => {
+  it('resposta a mensagem só com imagem sem cache usa Imagem com ícone como fallback', () => {
     useChatStore.setState({ messagesByRoom: {} })
     const html = render(
       msg({
@@ -139,7 +140,8 @@ describe('MessageItem', () => {
       })
     )
     expect(html).toContain('@Jamal')
-    expect(html).toContain('🖼️ Imagem')
+    expect(html).not.toContain('🖼')
+    expect(html).toMatch(/<svg[^>]*aria-hidden="true"(?:(?!<\/svg>).)*<\/svg><span[^>]*>Imagem<\/span>/)
     expect(html).not.toContain('Enquete')
   })
 

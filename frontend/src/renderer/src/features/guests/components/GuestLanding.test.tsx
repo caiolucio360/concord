@@ -183,7 +183,7 @@ describe('página do link de visitante', () => {
     const html = render()
     expect(html).toContain('Seu acesso terminou')
     expect(html).toContain('O link de convite foi revogado.')
-    expect(html).toContain('Criar conta no Salinha')
+    expect(html).toContain('Criar conta na Salinha')
     expect(html).toMatch(/>Entrar<\/button>/)
   })
 
@@ -193,7 +193,7 @@ describe('página do link de visitante', () => {
     const html = render()
     expect(html).toContain('Você saiu da call')
     expect(html).toContain('Seu acesso de visitante foi encerrado neste navegador.')
-    expect(html).toContain('Criar conta no Salinha')
+    expect(html).toContain('Criar conta na Salinha')
     expect(html).not.toContain('Voltar para a call')
   })
 

@@ -5,7 +5,7 @@
 | Quando | Comando | O que roda |
 |---|---|---|
 | a cada ciclo TDD | `node scripts/affected-tests.mjs loop` | só os testes afetados pelo diff (pacotes Go alterados e quem importa deles; `vitest related`; `.test.mjs` vizinhos) |
-| antes do PR | `node scripts/affected-tests.mjs pr` | afetados + `go vet`/`typecheck` + estrutura + CRAP. Vira `full` se o diff toca código compartilhado (`cmd/`, `internal/platform/`, `internal/permission/`, `shared/`, `preload/`, `go.mod`, `package.json`) |
+| antes do PR | `node scripts/affected-tests.mjs pr` | afetados + `go vet`/`typecheck` + estrutura + design + CRAP. Vira `full` se o diff toca código compartilhado (`cmd/`, `internal/platform/`, `internal/permission/`, `shared/`, `preload/`, `go.mod`, `package.json`) |
 | mexeu em algo central, ou a pedido | `node scripts/affected-tests.mjs full` | suíte inteira |
 
 Um teste isolado: `cd backend && go test ./internal/call -run TestAccept` ou

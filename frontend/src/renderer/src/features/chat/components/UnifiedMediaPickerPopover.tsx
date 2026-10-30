@@ -7,15 +7,21 @@ import StickerUploadModal from './StickerUploadModal'
 import StickersTab from './StickersTab'
 import EmojisTab from './EmojisTab'
 import GifsTab from './GifsTab'
+import { GifIcon, SmileyIcon, StickerIcon, type IconProps } from '../../../shared/ui/icons'
 import EmojiUploadModal from '../../emojis/components/EmojiUploadModal'
 import { useMediaPickerDismiss } from '../hooks/useMediaPickerDismiss'
 
 type TabType = 'emojis' | 'gifs' | 'stickers'
 
-const TABS: { id: TabType; icon: string; label: string; placeholder: string }[] = [
-  { id: 'emojis', icon: '😊', label: 'Emojis', placeholder: 'Buscar emoji...' },
-  { id: 'gifs', icon: '👾', label: 'GIFs', placeholder: 'Buscar GIFs no GIPHY...' },
-  { id: 'stickers', icon: '💟', label: 'Figurinhas', placeholder: 'Filtrar figurinhas...' }
+const TABS: {
+  id: TabType
+  icon: React.ComponentType<IconProps>
+  label: string
+  placeholder: string
+}[] = [
+  { id: 'emojis', icon: SmileyIcon, label: 'Emojis', placeholder: 'Buscar emoji…' },
+  { id: 'gifs', icon: GifIcon, label: 'GIFs', placeholder: 'Buscar GIFs no GIPHY…' },
+  { id: 'stickers', icon: StickerIcon, label: 'Figurinhas', placeholder: 'Filtrar figurinhas…' }
 ]
 
 interface UnifiedMediaPickerPopoverProps {
@@ -59,10 +65,10 @@ export default function UnifiedMediaPickerPopover({
       <div
         ref={ref}
         onClick={(e) => e.stopPropagation()}
-        className="absolute bottom-14 right-2 z-40 flex h-96 w-80 flex-col rounded-2xl border border-white/10 bg-[#14161a] p-3 shadow-2xl backdrop-blur-xl"
+        className="absolute bottom-14 right-2 z-40 flex h-96 w-80 flex-col rounded-xl border border-white/10 bg-floating p-3 shadow-2xl backdrop-blur-xl"
       >
         {/* Abas Superiores estilo WhatsApp */}
-        <div className="mb-2 flex items-center justify-around border-b border-white/10 pb-2 text-xs font-medium text-gray-400">
+        <div className="mb-2 flex items-center justify-around border-b border-white/10 pb-2 text-ds-xs font-medium text-muted">
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -77,7 +83,7 @@ export default function UnifiedMediaPickerPopover({
                   : 'hover:text-white hover:bg-white/5'
               }`}
             >
-              <span>{t.icon}</span>
+              <t.icon size={16} />
               <span>{t.label}</span>
             </button>
           ))}
@@ -90,7 +96,7 @@ export default function UnifiedMediaPickerPopover({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={TABS.find((t) => t.id === tab)?.placeholder}
-            className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-white placeholder:text-gray-500 outline-none focus:border-violet-500/50"
+            className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-ds-xs text-white placeholder:text-faint outline-none focus:border-brand/50"
           />
         </div>
 
@@ -136,7 +142,7 @@ export default function UnifiedMediaPickerPopover({
 
         {/* Rodapé Giphy se na aba de GIFs */}
         {tab === 'gifs' && (
-          <div className="mt-2 flex items-center justify-center border-t border-white/5 pt-1.5 text-[10px] text-gray-500 tracking-wider">
+          <div className="mt-2 flex items-center justify-center border-t border-white/5 pt-1.5 text-ds-xxs text-faint tracking-wider">
             Powered by GIPHY
           </div>
         )}

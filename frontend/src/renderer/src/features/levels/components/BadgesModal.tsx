@@ -1,5 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
+import { useId, useState } from 'react'
 import type { Badge, BadgeStreak as Streak } from '../api/badges'
 import type { BadgesModalTarget } from '../store/badgeStore'
 import { useAuthStore } from '../../auth/store/authStore'
@@ -13,7 +12,8 @@ import {
   statText,
   visibleBadges
 } from '../lib/badges'
-import { trapTab } from '../../../shared/lib/focusTrap'
+import Modal from '../../../shared/ui/Modal'
+import { ChevronUpIcon, SparkleIcon } from '../../../shared/ui/icons'
 import BadgeIcon from './BadgeIcon'
 import BadgesAside from './BadgesAside'
 import BadgeProgress from './BadgeProgress'
@@ -25,22 +25,22 @@ function RarityChip({ badge }: { badge: Badge }): React.JSX.Element {
   const meta = rarityMeta(badge.rarity)
   if (isMythic(badge.rarity)) {
     return (
-      <span className="mythic-chip inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-black uppercase tracking-wide">
-        <span aria-hidden="true">✦</span>
+      <span className="mythic-chip inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-ds-xs font-bold uppercase tracking-wide">
+        <SparkleIcon size={12} />
         {meta.label}
       </span>
     )
   }
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide"
+      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-ds-xs font-bold uppercase tracking-wide"
       style={{
         color: meta.color,
         background: meta.bg,
         boxShadow: `inset 0 0 0 1px ${meta.color}55`
       }}
     >
-      <span aria-hidden="true">▲</span>
+      <ChevronUpIcon size={12} />
       {meta.label}
     </span>
   )
@@ -83,25 +83,25 @@ function Detail({
         />
       </div>
 
-      {title !== badge.name && <p className="mt-2 text-sm text-gray-300">{badge.name}</p>}
+      {title !== badge.name && <p className="mt-2 text-ds-sm text-secondary">{badge.name}</p>}
       <h3
-        className={`${title !== badge.name ? 'mt-0.5' : 'mt-2'} text-center text-3xl font-black uppercase tracking-wide ${
+        className={`${title !== badge.name ? 'mt-0.5' : 'mt-2'} text-center text-ds-xxl font-bold uppercase tracking-wide ${
           mythic ? 'mythic-text' : 'text-strong'
         }`}
       >
         {title}
       </h3>
-      <p className="mt-1.5 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-xs text-gray-400">
+      <p className="mt-1.5 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-ds-xs text-muted">
         {/* Perfil de outra pessoa: só o limite do tier, nunca o número exato. */}
         <span>{isMe ? statText(badge) : publicStatText(badge)}</span>
         {unlocked && (
           <>
-            <span aria-hidden="true">•</span>
+            <span aria-hidden="true">·</span>
             <span>Desbloqueado em {unlocked}</span>
           </>
         )}
         <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-          <span aria-hidden="true">•</span>
+          <span aria-hidden="true">·</span>
           <RarityChip badge={badge} />
         </span>
       </p>
@@ -110,10 +110,10 @@ function Detail({
         {badge.category === 'sequencia' && <BadgeStreak streak={streak} isMe={isMe} />}
         {isMe && <BadgeProgress badge={badge} mythic={mythic} />}
 
-        <p className="text-sm leading-snug text-gray-200">{badge.description}</p>
+        <p className="text-ds-sm leading-snug text-normal">{badge.description}</p>
 
         <div className="my-4 h-px bg-fg/10" />
-        <p className="text-sm font-semibold text-strong">
+        <p className="text-ds-sm font-semibold text-strong">
           {isMe ? 'Tiers' : `Progresso de ${ownerName}`}
         </p>
         <BadgeTierLadder badge={badge} />
@@ -141,37 +141,7 @@ function BadgesModal(): React.JSX.Element | null {
   const streak = useBadgeStore((s) => (target ? s.byUser[target.userId]?.streak : undefined))
   // Escolha vale só para esta abertura do modal (target novo = escolha nova).
   const [picked, setPicked] = useState<{ target: BadgesModalTarget; category: string } | null>(null)
-
-  const dialogRef = useRef<HTMLDivElement | null>(null)
-  const closeRef = useRef<HTMLButtonElement | null>(null)
   const titleId = useId()
-  const open = Boolean(target)
-
-  // Ao abrir: foco no Fechar. Ao fechar: o foco volta para onde estava.
-  useEffect(() => {
-    if (!open) return
-    const previous = document.activeElement as HTMLElement | null
-    closeRef.current?.focus()
-    return () => {
-      if (previous?.isConnected) previous.focus()
-    }
-  }, [open])
-
-  // Captura na janela: Esc fecha só este modal (não chega nos outros
-  // atalhos) e o Tab fica preso dentro dele.
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') {
-        e.stopPropagation()
-        close()
-        return
-      }
-      trapTab(e, dialogRef.current)
-    }
-    window.addEventListener('keydown', onKey, true)
-    return () => window.removeEventListener('keydown', onKey, true)
-  }, [open, close])
 
   if (!target) return null
 
@@ -189,20 +159,10 @@ function BadgesModal(): React.JSX.Element | null {
     })
   }
 
-  return createPortal(
-    <div
-      className="app-no-drag fixed inset-x-0 bottom-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-      style={{ top: 'var(--titlebar-height, 0px)' }}
-      onClick={close}
-    >
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        onClick={(e) => e.stopPropagation()}
-        className="flex h-[min(600px,100%)] w-full max-w-[760px] flex-col overflow-hidden rounded-2xl border border-subtle text-gray-200 shadow-2xl md:flex-row"
-      >
+  // Foco preso, Esc e o X vêm do Modal (sem moldura: a coluna e o detalhe são o layout).
+  return (
+    <Modal open bare wide labelledBy={titleId} onClose={close}>
+      <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden text-normal md:h-[600px] md:flex-auto md:flex-row">
         <BadgesAside
           target={target}
           isMe={isMe}
@@ -217,28 +177,18 @@ function BadgesModal(): React.JSX.Element | null {
         />
 
         <section className="relative min-h-0 min-w-0 flex-1 overflow-y-auto bg-primary p-6">
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={close}
-            aria-label="Fechar"
-            className="absolute right-4 top-4 flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-strong/60 transition-colors hover:bg-fg/10 hover:text-strong"
-          >
-            ✕
-          </button>
           {selected ? (
             <Detail badge={selected} isMe={isMe} ownerName={target.name} streak={streak} />
           ) : !badges ? (
             <BadgeDetailSkeleton />
           ) : (
-            <div className="flex h-full items-center justify-center text-sm text-gray-500">
+            <div className="flex h-full items-center justify-center text-ds-sm text-faint">
               Nada por aqui ainda.
             </div>
           )}
         </section>
       </div>
-    </div>,
-    document.body
+    </Modal>
   )
 }
 

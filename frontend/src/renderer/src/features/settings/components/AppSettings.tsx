@@ -68,7 +68,7 @@ function BrowserPermission(): React.JSX.Element {
 
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg bg-input px-3 py-2">
-      <span className="text-xs text-gray-400">{view.status}</span>
+      <span className="text-ds-xs text-muted">{view.status}</span>
       {view.canRequest && (
         <button
           type="button"

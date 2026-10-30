@@ -11,7 +11,7 @@ function VolumeSlider({
   const percent = Math.round(value * 100)
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="flex items-center justify-between text-ds-sm font-medium text-gray-400">
+      <span className="flex items-center justify-between text-ds-sm font-medium text-muted">
         {label}
         <span className={percent > 100 ? 'text-warning' : 'text-strong'}>{percent}%</span>
       </span>

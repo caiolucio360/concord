@@ -7,6 +7,7 @@ import { actionErrorMessage } from '../lib/permissionErrors'
 import Button from '../../../shared/ui/Button'
 import { Skeleton } from '../../../shared/ui/skeleton/Skeleton'
 import ConfirmModal from '../../friends/components/ConfirmModal'
+import { ChevronRightIcon } from '../../../shared/ui/icons'
 
 /** Link de convite do servidor para mandar aos amigos (entram sozinhos com ele). */
 function InviteCodeBox({ serverId }: { serverId: string }): React.JSX.Element {
@@ -46,7 +47,7 @@ function InviteCodeBox({ serverId }: { serverId: string }): React.JSX.Element {
 
   return (
     <div className="space-y-2 rounded-xl border border-subtle bg-fg/5 p-4">
-      <p className="text-ds-sm font-medium text-gray-400">Link de convite</p>
+      <p className="text-ds-sm font-medium text-muted">Link de convite</p>
       <div className="flex items-center gap-2">
         {link ? (
           <input
@@ -54,7 +55,7 @@ function InviteCodeBox({ serverId }: { serverId: string }): React.JSX.Element {
             aria-label="Link de convite"
             value={link}
             onFocus={(e) => e.currentTarget.select()}
-            className="min-w-0 flex-1 truncate rounded-lg bg-input px-3 py-2 font-mono text-ds-sm text-strong outline-none focus:ring-2 focus:ring-violet-500/50"
+            className="min-w-0 flex-1 truncate rounded-lg bg-input px-3 py-2 font-mono text-ds-sm text-strong outline-none focus:ring-2 focus:ring-brand/50"
           />
         ) : (
           // Mesma caixa do campo (py-2 + linha de 18px = 34px) enquanto o link chega.
@@ -70,16 +71,17 @@ function InviteCodeBox({ serverId }: { serverId: string }): React.JSX.Element {
           Copiar
         </Button>
       </div>
-      <p className="text-ds-xs text-gray-400">
+      <p className="text-ds-xs text-muted">
         Mande para seus amigos: o link abre no navegador ou no app. Também dá para colar o link (ou
-        o código <code className="font-mono text-gray-300">{code ?? '········'}</code>) em{' '}
-        <strong>+</strong> → <strong>Entrar com código</strong>.
+        o código <code className="font-mono text-secondary">{code ?? '········'}</code>) em{' '}
+        <strong>+</strong> <ChevronRightIcon size={12} className="inline align-[-1px]" />{' '}
+        <strong>Entrar com código</strong>.
       </p>
       <button
         type="button"
         onClick={() => setConfirmReset(true)}
         disabled={!code}
-        className="cursor-pointer text-ds-xs font-medium text-violet-300 hover:text-strong hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+        className="cursor-pointer text-ds-xs font-medium text-brand hover:text-strong hover:underline disabled:cursor-not-allowed disabled:opacity-50"
       >
         Gerar novo link
       </button>

@@ -3,7 +3,10 @@ import MessageAttachments from '../../chat/components/MessageAttachments'
 import MessageText from '../../chat/components/MessageText'
 import ReplyReference from '../../chat/components/ReplyReference'
 import { commentPreview } from '../lib/proposals'
+import { textPreview, type Preview } from '../../chat/lib/preview'
 import CommentEditForm from './CommentEditForm'
+
+const ATTACHMENT: Preview = { icon: 'attachment', text: 'Anexo' }
 
 const formatTime = (iso: string): string =>
   new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
@@ -21,8 +24,8 @@ export function CommentReply({
   return (
     <ReplyReference
       authorName={original ? original.author_name : null}
-      content={original ? commentPreview(original) : ''}
-      emptyLabel="📎 Anexo"
+      preview={original ? commentPreview(original) : textPreview('')}
+      empty={ATTACHMENT}
       onJump={() => original && onJump(original.id)}
     />
   )
@@ -31,10 +34,10 @@ export function CommentReply({
 /** Autor, hora e o "(editado)". */
 export function CommentMeta({ comment }: { comment: ProposalComment }): React.JSX.Element {
   return (
-    <div className="flex flex-wrap items-baseline gap-x-2 text-xs">
+    <div className="flex flex-wrap items-baseline gap-x-2 text-ds-xs">
       <span className="font-semibold text-strong">{comment.author_name}</span>
-      <span className="text-gray-500">{formatTime(comment.created_at)}</span>
-      {comment.edited_at && <span className="text-gray-500">(editado)</span>}
+      <span className="text-faint">{formatTime(comment.created_at)}</span>
+      {comment.edited_at && <span className="text-faint">(editado)</span>}
     </div>
   )
 }
