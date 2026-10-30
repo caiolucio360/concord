@@ -29,15 +29,31 @@ jest.mock('livekit-client', () => ({
 // O Skia é módulo nativo: no Jest vem de um mock que grava as chamadas (tests/mocks/skia.ts).
 jest.mock('@shopify/react-native-skia', () => require('./tests/mocks/skia'))
 
-// O Reanimated é módulo nativo: no Jest só o useSharedValue é usado (o efeito do perfil grava a picture nele).
-jest.mock('react-native-reanimated', () => ({
-  useSharedValue: (initial) => {
-    const { useRef } = require('react')
-    const ref = useRef(null)
-    if (ref.current === null) ref.current = { value: initial }
-    return ref.current
+// O Reanimated é módulo nativo: no Jest as shared values são objetos comuns, o estilo animado é
+// calculado uma vez e as animações vão direto ao valor final (efeito do perfil, zoom do lightbox).
+jest.mock('react-native-reanimated', () => {
+  const { useRef } = require('react')
+  const { View } = require('react-native')
+  return {
+    __esModule: true,
+    default: { View, createAnimatedComponent: (component) => component },
+    useSharedValue: (initial) => {
+      const ref = useRef(null)
+      if (ref.current === null) ref.current = { value: initial }
+      return ref.current
+    },
+    useAnimatedStyle: (style) => style(),
+    withTiming: (value) => value,
+    // Usados por dentro do gesture-handler (detector e eventos dos gestos).
+    isSharedValue: () => false,
+    useEvent: () => () => {},
+    useHandler: () => ({ context: {}, doDependenciesDiffer: false }),
+    useComposedEventHandler: () => () => {},
+    setGestureState: () => {}
   }
-}))
+})
+jest.mock('react-native-worklets', () => ({ scheduleOnRN: (fn, ...args) => fn(...args) }))
+
 
 // Áudio nativo não existe no Jest; o player de sons é testado com uma porta falsa (soundPlayer.test.ts).
 jest.mock('expo-audio', () => ({ createAudioPlayer: jest.fn(() => ({ seekTo: jest.fn(), play: jest.fn() })) }))
