@@ -4,6 +4,7 @@ import { useAuthStore } from '../../auth/store/authStore'
 import { useServerStore } from '../../servers/store/serverStore'
 import { useServerAccess } from '../../servers/hooks/useServerAccess'
 import { Perm } from '../../servers/lib/permissions'
+import { useVisit } from '../../guests/hooks/useGuestVisits'
 import { useSoundboardStore } from '../store/soundboardStore'
 import { useSoundFavoritesStore } from '../store/soundFavoritesStore'
 import { soundboardSections } from '../lib/soundboardSections'
@@ -31,6 +32,7 @@ function SoundboardSoundsPanel({
   // Só dá para conferir cargos do servidor aberto; em outro, o servidor decide.
   const viewingCallServer = useServerStore((s) => s.currentServer?.id === serverId)
   const access = useServerAccess()
+  const visiting = useVisit(serverId) !== null
 
   const sounds = useSoundboardStore((s) => s.soundsByServer[serverId] ?? EMPTY_SOUNDS)
   const loading = useSoundboardStore((s) => Boolean(s.loadingByServer[serverId]))
@@ -88,8 +90,8 @@ function SoundboardSoundsPanel({
 
   // Apagar áudio de outras pessoas: MANAGE_EXPRESSIONS (dono e administrador incluídos).
   const isModeratorOrOwner = viewingCallServer && access.can(Perm.MANAGE_EXPRESSIONS)
-  // Enviar som: ADD_SOUNDS no servidor da chamada.
-  const canAddSounds = !viewingCallServer || access.can(Perm.ADD_SOUNDS)
+  // Enviar som: ADD_SOUNDS no servidor da chamada (visitante não envia).
+  const canAddSounds = !visiting && (!viewingCallServer || access.can(Perm.ADD_SOUNDS))
 
   const playingSoundIds = useMemo(
     () => new Set(Object.values(activePlays).map((p) => p.soundId)),

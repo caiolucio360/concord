@@ -25,15 +25,27 @@ vi.mock('../../../shared/hooks/useResizableWidth', () => ({
 vi.mock('../../../shared/ui/ResizeHandle', () => ({ default: () => null }))
 // Render estático lê o estado inicial do zustand: as visitas são um fake.
 const { visitsState } = vi.hoisted(() => ({
-  visitsState: { visits: [] as Array<Record<string, unknown>>, loaded: false }
+  visitsState: {
+    visits: [] as Array<Record<string, unknown>>,
+    loaded: false,
+    joined: {} as Record<string, string>
+  }
 }))
 vi.mock('../store/guestVisitsStore', () => ({
   useGuestVisitsStore: Object.assign((sel: (s: unknown) => unknown) => sel(visitsState), {
     getState: () => ({
-      reset: () => Object.assign(visitsState, { visits: [], loaded: false }),
+      reset: () => Object.assign(visitsState, { visits: [], loaded: false, joined: {} }),
       set: (visits: Array<Record<string, unknown>>) =>
         Object.assign(visitsState, { visits, loaded: true })
     })
+  })
+}))
+const { serversState } = vi.hoisted(() => ({
+  serversState: { servers: [] as Array<{ id: string; name: string }> }
+}))
+vi.mock('../../servers/store/serverStore', () => ({
+  useServerStore: Object.assign((sel: (s: unknown) => unknown) => sel(serversState), {
+    getState: () => serversState
   })
 }))
 vi.mock('../hooks/useGuestVisits', async () => {
@@ -82,6 +94,28 @@ describe('visita de quem tem conta, dentro do app', () => {
     useGuestVisitsStore.getState().reset()
     Object.assign(callState, { status: 'idle', type: null, channelId: null, serverId: null })
     join.error = null
+    serversState.servers = []
+  })
+
+  // Regressão: quem entrou como visitante e virou membro ficava com dois ícones.
+  it('virou membro: o trilho não repete o servidor como visita', () => {
+    useGuestVisitsStore.getState().set([visit, { ...visit, server_id: 'x', server_name: 'Outro' }])
+    serversState.servers = [{ id: 's', name: 'BH RX' }]
+    const html = renderToStaticMarkup(<MemoryRouter><GuestVisitsRail /></MemoryRouter>)
+    expect(html).not.toContain('BH RX (visitante)')
+    expect(html).toContain('aria-label="Outro (visitante)"')
+  })
+
+  it('virou membro: /visitas/<servidor> sai da visita (vai para o servidor)', () => {
+    const routes = <Route path="/visitas/:serverId" element={<GuestVisitPage />} />
+    useGuestVisitsStore.getState().set([visit])
+    serversState.servers = [{ id: 's', name: 'BH RX' }]
+    // <Navigate> para /servers/s/channels/c (no render estático, nada na tela).
+    expect(at('/visitas/s', routes)).toBe('')
+    serversState.servers = []
+    useGuestVisitsStore.getState().set([])
+    visitsState.joined = { s: 'c' }
+    expect(at('/visitas/s', routes)).toBe('')
   })
 
   it('o trilho mostra cada visita ativa com o selo; sem visita, nada', () => {

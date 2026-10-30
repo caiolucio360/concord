@@ -49,6 +49,7 @@ func (a *app) wireChat() {
 	soundboardUploads := mustStore(filepath.Join(a.uploadsDir, "soundboard"), "soundboard uploads dir")
 	a.soundboardRepository = soundboard.NewRepository(a.db)
 	soundboardHandler := soundboard.NewHandler(a.soundboardRepository, soundboardUploads, a.uploadSpace, a.serverService, a.permissionService, a.authService, a.hub)
+	soundboardHandler.SetVisitors(appVisitors{a})
 
 	// Figurinhas (Stickers) compartilhadas por servidor
 	stickersUploads := mustStore(filepath.Join(a.uploadsDir, "stickers"), "stickers uploads dir")

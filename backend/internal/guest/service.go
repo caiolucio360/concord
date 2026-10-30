@@ -49,6 +49,8 @@ type Directory interface {
 type Calls interface {
 	VoiceLocationOf(userID string) (call.VoiceLocation, bool)
 	RemoveFromServerCalls(ctx context.Context, serverID, userID string)
+	// GuestBecameMember: o visitante virou membro e segue na call como membro.
+	GuestBecameMember(ctx context.Context, serverID, userID string)
 }
 
 // Notifier manda um evento só para o usuário (websocket.Hub).
@@ -105,6 +107,13 @@ func (s *Service) GuestOf(userID string) string {
 	return p.ServerID
 }
 
+// HasGuestPass: o usuário tem acesso de visitante ativo no servidor (a mesa de
+// áudio da call mostra os sons de lá).
+func (s *Service) HasGuestPass(serverID, userID string) bool {
+	_, ok := s.active.inServer(userID, serverID, s.now())
+	return ok
+}
+
 // MoveGuest: um moderador moveu o visitante; o canal de destino passa a ser o
 // permitido (o anterior deixa de valer).
 func (s *Service) MoveGuest(ctx context.Context, userID, serverID, channelID string) bool {
@@ -122,24 +131,11 @@ func (s *Service) MoveGuest(ctx context.Context, userID, serverID, channelID str
 	return true
 }
 
-// inGuestCall: o usuário está agora numa call em que é visitante.
-func (s *Service) inGuestCall(userID string) bool {
-	loc, ok := s.calls.VoiceLocationOf(userID)
-	if !ok {
-		return false
-	}
-	_, guest := s.active.inChannel(userID, loc.ChannelID, s.now())
-	return guest
-}
-
 // --- fim do acesso ---
 
 // end encerra o acesso: grava, tira das calls do servidor e avisa o visitante.
 func (s *Service) end(ctx context.Context, p Pass, reason string) {
-	if err := s.store.EndPass(ctx, p.ID, s.now()); err != nil {
-		log.Printf("[guest] encerrar acesso %s falhou: %v", p.ID, err)
-	}
-	s.active.remove(p)
+	s.close(ctx, p)
 	s.calls.RemoveFromServerCalls(ctx, p.ServerID, p.UserID)
 	s.notify.SendToUser(p.UserID, endedEvent(p.ServerID, reason))
 }
