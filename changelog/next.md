@@ -72,3 +72,4 @@
 - Avisos: os avisos (toasts) agora aparecem na frente das janelas abertas, em vez de ficarem escondidos atrás do fundo desfocado.
 - Grupos de DM: em janela estreita a lista de membros começa escondida e, ao abrir, aparece por cima do chat em vez de espremê-lo.
 - Perfil: em Configurações → Perfis, agora dá para salvar o perfil inteiro (avatar, banner, nome, tema, bio e o resto) com um nome e trocar entre até 10 perfis salvos com um toque. Quem está com você vê a troca na hora.
+- Badges: o badge Sequência agora mostra a sua sequência atual de dias seguidos (com a chama), o recorde e um aviso quando hoje ainda não contou; nos perfis dos outros aparece só a sequência atual.
