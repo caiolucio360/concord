@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useBadgeStore } from '../store/badgeStore'
-import { badgeLabel, isMythic, profileBadgeRow, rarityMeta } from '../lib/badges'
-import BadgeIcon from './BadgeIcon'
+import { profileBadgeRow } from '../lib/badges'
+import BadgeRowItem from './BadgeRowItem'
 import { BadgeRowSkeleton } from '../../../shared/ui/skeleton/layouts'
 
 interface BadgeRowProps {
@@ -26,6 +26,7 @@ function BadgeRow({
   max = 6
 }: BadgeRowProps): React.JSX.Element | null {
   const badges = useBadgeStore((s) => s.byUser[userId]?.badges)
+  const streak = useBadgeStore((s) => s.byUser[userId]?.streak)
   const ensureBadges = useBadgeStore((s) => s.ensureBadges)
   const openModal = useBadgeStore((s) => s.openModal)
 
@@ -57,33 +58,7 @@ function BadgeRow({
       aria-label="Badges"
     >
       {shown.map((b) => (
-        <button
-          key={b.category}
-          type="button"
-          onClick={() => open(b.category)}
-          aria-label={badgeLabel(b)}
-          className="group relative flex h-[22px] w-[22px] cursor-pointer items-center justify-center rounded transition-transform hover:scale-110"
-        >
-          <BadgeIcon category={b.category} tier={b.tier} rarity={b.rarity} size={20} />
-          <span
-            role="tooltip"
-            className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-1.5 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-subtle bg-floating px-2 py-1 text-center shadow-xl group-hover:block group-focus-visible:block"
-          >
-            {isMythic(b.rarity) ? (
-              <span className="mythic-text block text-xs font-black">{b.tier_name}</span>
-            ) : (
-              <span
-                className="block text-xs font-bold"
-                style={{ color: rarityMeta(b.rarity).color }}
-              >
-                {b.tier_name}
-              </span>
-            )}
-            {b.tier_name !== b.name && (
-              <span className="block text-[10px] text-gray-400">{b.name}</span>
-            )}
-          </span>
-        </button>
+        <BadgeRowItem key={b.category} badge={b} streak={streak} onOpen={() => open(b.category)} />
       ))}
       {overflow > 0 && (
         <button
