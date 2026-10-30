@@ -6,7 +6,7 @@ describe('streakLines (modal do badge Sequência)', () => {
     expect(streakLines({ current: 5, longest: 9, at_risk: true }, true)).toEqual({
       main: '5 dias seguidos',
       record: 'Recorde: 9 dias',
-      warning: 'Use o Salinha hoje para manter a sequência'
+      warning: 'Use a Salinha hoje para manter a sequência'
     })
   })
 

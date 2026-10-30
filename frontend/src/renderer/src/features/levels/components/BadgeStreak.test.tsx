@@ -9,7 +9,7 @@ describe('BadgeStreak', () => {
     )
     expect(html).toContain('5 dias seguidos')
     expect(html).toContain('Recorde: 9 dias')
-    expect(html).toContain('Use o Salinha hoje para manter a sequência')
+    expect(html).toContain('Use a Salinha hoje para manter a sequência')
     expect(html).toContain('<svg')
   })
 

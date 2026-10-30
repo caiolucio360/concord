@@ -23,7 +23,7 @@ export function streakLines(streak: BadgeStreak | undefined, isMe: boolean): Str
   return {
     main,
     record: `Recorde: ${dias(streak.longest ?? 0, 'dia', 'dias')}`,
-    warning: streak.at_risk ? 'Use o Salinha hoje para manter a sequência' : null
+    warning: streak.at_risk ? 'Use a Salinha hoje para manter a sequência' : null
   }
 }
 
