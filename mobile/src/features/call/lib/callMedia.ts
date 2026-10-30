@@ -17,6 +17,8 @@ export interface CallMedia {
   onScreens(listener: (userIds: string[]) => void): () => void
   /** Começa ou para de receber a transmissão de alguém (só o que se assiste consome rede). */
   watchScreen(userId: string, on: boolean): void
+  /** Quem está na sala de mídia agora: identidade -> nome (o Maestro só aparece aqui). */
+  onPeers(listener: (peers: Record<string, string>) => void): () => void
   onSpeakers(listener: (userIds: string[]) => void): () => void
   onConnection(listener: (state: MediaConnection) => void): () => void
 }

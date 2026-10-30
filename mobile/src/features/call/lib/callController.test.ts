@@ -19,6 +19,7 @@ function rig(over: Partial<ControllerDeps> = {}) {
   let connection: (s: MediaConnection) => void = () => {}
   let speakers: (ids: string[]) => void = () => {}
   let screens: (ids: string[]) => void = () => {}
+  let peers: (p: Record<string, string>) => void = () => {}
   const media: jest.Mocked<CallMedia> = {
     connect: jest.fn().mockResolvedValue(undefined),
     disconnect: jest.fn().mockResolvedValue(undefined),
@@ -28,6 +29,10 @@ function rig(over: Partial<ControllerDeps> = {}) {
     watchScreen: jest.fn(),
     onScreens: jest.fn((l) => {
       screens = l
+      return () => {}
+    }),
+    onPeers: jest.fn((l) => {
+      peers = l
       return () => {}
     }),
     onSpeakers: jest.fn((l) => {
@@ -53,7 +58,7 @@ function rig(over: Partial<ControllerDeps> = {}) {
     ensureMicPermission: jest.fn().mockResolvedValue(true),
     ...over
   }
-  return { deps, media, controller: createCallController(deps), emitConnection: (s: MediaConnection) => connection(s), emitSpeakers: (ids: string[]) => speakers(ids), emitScreens: (ids: string[]) => screens(ids) }
+  return { deps, media, controller: createCallController(deps), emitConnection: (s: MediaConnection) => connection(s), emitSpeakers: (ids: string[]) => speakers(ids), emitScreens: (ids: string[]) => screens(ids), emitPeers: (p: Record<string, string>) => peers(p) }
 }
 
 beforeEach(() => {
@@ -265,6 +270,23 @@ describe('applyAudio', () => {
     const { controller, media } = rig()
     await controller.applyAudio()
     expect(media.setMicEnabled).not.toHaveBeenCalled()
+  })
+})
+
+describe('quem está na sala de mídia', () => {
+  it('o Maestro (só existe na mídia) aparece na chamada e some quando sai (bug: o app só mostrava o que vinha do backend)', async () => {
+    const { controller, emitPeers } = rig({ meId: () => 'me' })
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    emitPeers({ me: 'Eu', 'bot-music:ch1': 'Maestro' })
+    expect(useParticipantsStore.getState().people).toEqual([{ id: 'bot-music:ch1', username: '', display_name: 'Maestro', avatar_url: null, is_bot: true }])
+    emitPeers({ me: 'Eu' })
+    expect(useParticipantsStore.getState().people).toEqual([])
+  })
+
+  it('sem chamada (ocioso) o que chega da mídia é ignorado', () => {
+    const { emitPeers } = rig({ meId: () => 'me' })
+    emitPeers({ u9: 'Fantasma' })
+    expect(useParticipantsStore.getState().people).toEqual([])
   })
 })
 

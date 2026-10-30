@@ -7,6 +7,7 @@ import { useScreenShareStore } from '../store/screenShareStore'
 import { useSpeakingStore } from '../store/speakingStore'
 import { callErrorMessage } from './callErrors'
 import { resyncCall } from './callResync'
+import { mergeMediaPeers } from './mediaPeers'
 import { playSound } from './sounds/soundPlayer'
 import type { CallMedia, MediaConnection } from './callMedia'
 import { effectiveAudio, type LocalControls } from './voiceState'
@@ -52,8 +53,17 @@ export function createCallController(deps: ControllerDeps) {
   deps.media.onSpeakers((ids) => useSpeakingStore.getState().set(ids))
   deps.media.onConnection((state) => onMediaConnection(state))
   deps.media.onScreens((ids) => onScreens(ids))
+  deps.media.onPeers((peers) => onPeers(peers))
 
   /** Muda a lista de quem transmite: toca o som de quando alguém abre ou encerra uma transmissão. */
+  /** A sala de mídia manda quem está nela: o Maestro entra e sai da lista por aqui. */
+  function onPeers(peers: Record<string, string>): void {
+    if (session().phase === 'idle') return
+    const store = useParticipantsStore.getState()
+    const merged = mergeMediaPeers(store.people, peers, deps.meId?.() ?? null)
+    if (merged !== store.people) store.replace(merged, store.voice)
+  }
+
   function onScreens(ids: string[]): void {
     const before = useScreenShareStore.getState().sharers
     const me = deps.meId?.() ?? null

@@ -48,6 +48,7 @@ export function createLiveKitMedia(): CallMedia {
   const speakerListeners = new Set<(ids: string[]) => void>()
   const connectionListeners = new Set<(state: MediaConnection) => void>()
   const screenListeners = new Set<(ids: string[]) => void>()
+  const peerListeners = new Set<(peers: Record<string, string>) => void>()
 
   const emitConnection = (state: MediaConnection): void => connectionListeners.forEach((l) => l(state))
 
@@ -58,6 +59,12 @@ export function createLiveKitMedia(): CallMedia {
     screenListeners.forEach((l) => l(ids))
   }
 
+  /** Quem está na sala (sem mim): identidade -> nome do token. */
+  function emitPeers(current: Room): void {
+    const peers = Object.fromEntries([...current.remoteParticipants.values()].map((p) => [p.identity, p.name || '']))
+    peerListeners.forEach((l) => l(peers))
+  }
+
   function watch(next: Room): void {
     next.on(RoomEvent.ActiveSpeakersChanged, (speakers) => {
       const ids = speakers.map((s) => s.identity)
@@ -66,7 +73,11 @@ export function createLiveKitMedia(): CallMedia {
     next.on(RoomEvent.Reconnecting, () => emitConnection('reconnecting'))
     next.on(RoomEvent.Reconnected, () => emitConnection('connected'))
     next.on(RoomEvent.Disconnected, () => emitConnection('disconnected'))
-    next.on(RoomEvent.ParticipantConnected, () => setRemoteVolume(next, listening))
+    next.on(RoomEvent.ParticipantConnected, () => {
+      setRemoteVolume(next, listening)
+      emitPeers(next)
+    })
+    next.on(RoomEvent.ParticipantDisconnected, () => emitPeers(next))
     // Ver a tela dos outros só quando se pede: o vídeo não desce sozinho.
     next.on(RoomEvent.TrackPublished, (pub) => {
       if (pub.source === Track.Source.ScreenShare) {
@@ -100,6 +111,7 @@ export function createLiveKitMedia(): CallMedia {
       // Quem já transmitia antes de eu entrar.
       next.remoteParticipants.forEach((p) => screenOf(p)?.setSubscribed(false))
       emitScreens(next)
+      emitPeers(next)
     },
     async disconnect() {
       const current = room
@@ -126,6 +138,10 @@ export function createLiveKitMedia(): CallMedia {
     onSpeakers(listener) {
       speakerListeners.add(listener)
       return () => speakerListeners.delete(listener)
+    },
+    onPeers(listener) {
+      peerListeners.add(listener)
+      return () => peerListeners.delete(listener)
     },
     onScreens(listener) {
       screenListeners.add(listener)

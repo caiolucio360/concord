@@ -4,6 +4,9 @@ import type { MusicItem } from '../api/music'
 export const MAESTRO_USER_ID = '4d414553-5452-4f00-8000-000000000001'
 export const MAESTRO_NAME = 'Maestro'
 
+/** O Maestro entra na sala de mídia com a identidade `bot-music:<canal>` (bot.Identity no backend). */
+export const isMaestroIdentity = (id: string): boolean => id.startsWith('bot-music:')
+
 /** Mensagem do Maestro ("music") ou a lista de comandos fixada ("music_commands"). */
 export const isMaestroMessageKind = (kind: string | null | undefined): boolean => kind === 'music' || kind === 'music_commands'
 

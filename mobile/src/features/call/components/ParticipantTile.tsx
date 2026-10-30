@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native'
 import { colors, fontSize, radius, spacing } from '../../../shared/theme/tokens'
 import { Avatar } from '../../../shared/ui/Avatar'
+import { MaestroAvatar } from '../../music/components/MaestroAvatar'
 import { callAvatarAnimate } from '../lib/callAvatarMotion'
 import type { CallUser, VoiceState } from '../lib/callTypes'
 
@@ -50,7 +51,7 @@ export function ParticipantTile({ user, speaking, voice, live = false, onWatch, 
   return (
     <View accessible accessibilityLabel={state ? `${user.display_name}, ${state}` : user.display_name} style={[styles.tile, height ? { height } : styles.compact]}>
       <SpeakingRing active={talking} />
-      <Avatar name={user.display_name} uri={user.avatar_url} size={avatarSize} animated={callAvatarAnimate({ speaking: talking })} />
+      {user.is_bot ? <MaestroAvatar size={avatarSize} /> : <Avatar name={user.display_name} uri={user.avatar_url} size={avatarSize} animated={callAvatarAnimate({ speaking: talking })} />}
       <View style={styles.nameBadge}>
         {off ? <Ionicons name={state === 'mudo' ? 'mic-off' : 'volume-mute'} size={14} color={colors.textDanger} /> : null}
         <Text style={styles.name} numberOfLines={1}>

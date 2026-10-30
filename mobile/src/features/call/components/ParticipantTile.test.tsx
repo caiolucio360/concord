@@ -43,4 +43,11 @@ describe('ParticipantTile', () => {
     await render(<ParticipantTile user={ana} speaking={false} voice={NO_VOICE} height={300} avatarSize={96} />)
     expect(screen.getByLabelText('Ana').props.style).toEqual(expect.arrayContaining([expect.objectContaining({ height: 300 })]))
   })
+
+  it('o Maestro (bot) mostra o avatar dele e o nome, sem botão de assistir', async () => {
+    await render(<ParticipantTile user={{ id: 'bot-music:ch1', username: '', display_name: 'Maestro', avatar_url: null, is_bot: true }} speaking={false} voice={NO_VOICE} />)
+    expect(screen.getByText('Maestro')).toBeOnTheScreen()
+    expect(screen.getByTestId('maestro-avatar')).toBeOnTheScreen()
+    expect(screen.queryByRole('button')).toBeNull()
+  })
 })
