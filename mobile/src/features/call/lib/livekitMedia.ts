@@ -1,5 +1,5 @@
 import { AudioSession } from '@livekit/react-native'
-import { ConnectionState, Room, RoomEvent, Track, type LocalVideoTrack, type RemoteParticipant, type RemoteTrackPublication, type VideoTrack } from 'livekit-client'
+import { ConnectionState, DisconnectReason, Room, RoomEvent, Track, type LocalVideoTrack, type RemoteParticipant, type RemoteTrackPublication, type VideoTrack } from 'livekit-client'
 import type { CallMedia, MediaConnection } from './callMedia'
 import { clearCameraTracks, setCameraTrack } from './livekitCamera'
 import { releaseNativeTrack } from './releaseNativeTrack'
@@ -96,7 +96,7 @@ export function createLiveKitMedia(): CallMedia {
     })
     next.on(RoomEvent.Reconnecting, () => emitConnection('reconnecting'))
     next.on(RoomEvent.Reconnected, () => emitConnection('connected'))
-    next.on(RoomEvent.Disconnected, () => emitConnection('disconnected'))
+    next.on(RoomEvent.Disconnected, (reason) => emitConnection(reason === DisconnectReason.DUPLICATE_IDENTITY ? 'replaced' : 'disconnected'))
     next.on(RoomEvent.ParticipantConnected, () => {
       setRemoteVolume(next, listening)
       emitPeers(next)

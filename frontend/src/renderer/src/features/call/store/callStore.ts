@@ -66,6 +66,7 @@ import {
   callConnectionReducer,
   describeDisconnect,
   describeJoinError,
+  LK_DISCONNECT,
   describeTokenError,
   IDLE_CALL_CONNECTION,
   type CallConnection,
@@ -671,6 +672,13 @@ export const useCallStore = create<CallState>()((set, get) => {
     }, CALL_FAILED_AUTO_LEAVE_MS)
   }
 
+  /** A mesma conta entrou na chamada em outro aparelho: sai só daqui, sem call:leave (senão o servidor tira os dois). */
+  const replacedByOtherDevice = (): void => {
+    showToast.info(describeDisconnect(LK_DISCONNECT.DUPLICATE_IDENTITY, true))
+    cleanup()
+    bumpList()
+  }
+
   /** Reações da sala de mídia; só valem enquanto `self` ainda é a conexão da chamada. */
   const mediaHandlers = (self: () => CallMedia): CallMediaHandlers => {
     const live = (): boolean => media === self()
@@ -680,6 +688,7 @@ export const useCallStore = create<CallState>()((set, get) => {
       },
       onConnectionLost: (reason) => {
         if (!live()) return
+        if (reason === LK_DISCONNECT.DUPLICATE_IDENTITY) return replacedByOtherDevice()
         failMedia(self(), describeDisconnect(reason, browserOnline()))
       },
       onReconnecting: () => {

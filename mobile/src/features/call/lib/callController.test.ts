@@ -256,6 +256,20 @@ describe('leave e mídia', () => {
     expect(useCallNoticeStore.getState().message).toBe('A conexão com a chamada caiu.')
   })
 
+  // Regressão (mesma conta no celular e no desktop): o aparelho substituído chamava leave() e mandava call:leave, que
+  // tirava da chamada a conta inteira, inclusive o aparelho que acabou de entrar; os dois ficavam se derrubando.
+  it('substituído por outro aparelho da mesma conta: sai sem avisar o servidor e explica', async () => {
+    const { controller, emitConnection, deps, media } = rig()
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    jest.mocked(deps.ws.send).mockClear()
+    emitConnection('replaced')
+    await Promise.resolve()
+    expect(session().phase).toBe('idle')
+    expect(deps.ws.send).not.toHaveBeenCalledWith('call:leave', expect.anything())
+    expect(media.disconnect).toHaveBeenCalled()
+    expect(useCallNoticeStore.getState().message).toBe('Você entrou nesta chamada em outro aparelho.')
+  })
+
   it('quem fala vai para a store', async () => {
     const { controller, emitSpeakers } = rig()
     await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })

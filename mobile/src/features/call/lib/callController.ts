@@ -80,7 +80,11 @@ export function createCallController(deps: ControllerDeps) {
     const { phase } = session()
     if (state === 'reconnecting' && phase === 'active') session().setPhase('reconnecting')
     else if (state === 'connected' && phase === 'reconnecting') session().setPhase('active')
-    else if (state === 'disconnected' && isInCall({ phase }) && phase !== 'outgoing') {
+    else if (state === 'replaced' && isInCall({ phase })) {
+      // A conta continua na chamada pelo outro aparelho: sair sem call:leave, senão o servidor tira os dois.
+      notice('Você entrou nesta chamada em outro aparelho.')
+      void leave(false)
+    } else if (state === 'disconnected' && isInCall({ phase }) && phase !== 'outgoing') {
       notice('A conexão com a chamada caiu.')
       void leave()
     }

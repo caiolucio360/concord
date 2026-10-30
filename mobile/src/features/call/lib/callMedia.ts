@@ -1,4 +1,5 @@
-export type MediaConnection = 'connected' | 'reconnecting' | 'disconnected'
+/** `replaced`: a mesma conta entrou na chamada em outro aparelho e o LiveKit tirou este (DUPLICATE_IDENTITY). */
+export type MediaConnection = 'connected' | 'reconnecting' | 'disconnected' | 'replaced'
 
 /**
  * A mídia da chamada (LiveKit). Porta: só `livekitMedia.ts` fala com o SDK; o resto do app e os testes usam esta
