@@ -111,6 +111,23 @@ describe('readScreenStatsInput', () => {
     })
   })
 
+  it('live da bia pelo helper nativo (bia:screen): lê a recepção dele', async () => {
+    const input = await readScreenStatsInput(
+      room({
+        remote: {
+          bia: undefined,
+          'bia:screen': {
+            isEnabled: true,
+            track: { getRTCStatsReport: async () => report, streamState: 'active' }
+          }
+        }
+      }),
+      'bia',
+      false
+    )
+    expect(input).toMatchObject({ local: false, report, enabled: true })
+  })
+
   it('ainda não assinada: relatório vazio', async () => {
     const input = await readScreenStatsInput(
       room({ remote: { bia: { isEnabled: true } } }),
