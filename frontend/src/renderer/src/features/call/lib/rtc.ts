@@ -17,7 +17,8 @@ import {
   rememberScreenSource,
   rememberStreamQuality,
   screenMotion,
-  screenVideoConstraints
+  screenVideoConstraints,
+  type ScreenShareQuality
 } from './screenShareQuality'
 
 /** Microfone local (com RNNoise). `deviceId` vazio = padrão do sistema. */
@@ -32,18 +33,27 @@ export function getAudioStream(deviceId = ''): Promise<MicHandle> {
 // quando o usuário cancela.
 // Linux/Wayland: o seletor é o do sistema (xdg-desktop-portal), como na web;
 // o som não vai junto (o Electron só captura o som do sistema no Windows).
-export async function getDisplayStream(): Promise<MediaStream> {
-  resetPickerCancel()
-  const portal = window.api?.screenShare?.flow === 'portal'
-  if (portal) {
+/**
+ * Seletor do sistema (portal no Linux, ou o navegador): confere o portal e
+ * pergunta a qualidade antes, num modal do app. null = o seletor é o modal
+ * do app, que escolhe a qualidade junto com a fonte.
+ */
+export async function askScreenQuality(): Promise<ScreenShareQuality | null> {
+  const flow = window.api?.screenShare?.flow
+  if (flow === 'portal') {
     const { status, message } = await window.api!.screenShare!.portalStatus()
     if (status === 'missing') throw new ScreenShareSetupError(message)
   }
-  // Seletor do sistema: confirmar o modal de qualidade vem antes. Modal do
-  // app: a qualidade é escolhida nele, que atende ao pedido já pendente.
-  const requestedQuality = usesNativePicker(IS_WEB, window.api?.screenShare?.flow)
-    ? await requestScreenQuality()
-    : null
+  return usesNativePicker(IS_WEB, flow) ? requestScreenQuality() : null
+}
+
+/** `asked`: a qualidade já perguntada por askScreenQuality (undefined = pergunta aqui). */
+export async function getDisplayStream(
+  asked?: ScreenShareQuality | null
+): Promise<MediaStream> {
+  resetPickerCancel()
+  const portal = window.api?.screenShare?.flow === 'portal'
+  const requestedQuality = asked === undefined ? await askScreenQuality() : asked
   const capture = (audio: boolean): Promise<MediaStream> =>
     navigator.mediaDevices.getDisplayMedia(
       displayMediaOptions(IS_WEB, {

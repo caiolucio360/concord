@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useScreenQualityStore } from '../store/screenQualityStore'
 import { loadScreenQuality, saveScreenQuality } from '../lib/screenShareQuality'
 import ScreenQualityControls from './ScreenQualityControls'
+import NativeLiveToggle from './NativeLiveToggle'
 import Button from '../../../shared/ui/Button'
 import { trapTab } from '../../../shared/lib/focusTrap'
 
@@ -51,6 +52,7 @@ function QualityDialog({
           Compartilhe sua tela
         </h2>
         <ScreenQualityControls value={quality} onChange={setQuality} />
+        {portal && <NativeLiveToggle />}
         {portal && (
           <p className="mt-3 text-ds-xs text-muted">
             A tela é escolhida no seletor do sistema. No Linux, o som não vai junto — só o vídeo.
