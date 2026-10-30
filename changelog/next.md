@@ -1,5 +1,6 @@
 ## Novidades
 
+- Emojis personalizados: cada servidor pode ter até 50 emojis próprios, enviados pela aba Emojis, e você usa os emojis dos seus servidores em qualquer conversa. O seletor também ganhou o pacote completo de emojis.
 - Calls e lives: o app manda ao servidor números técnicos da conexão e do vídeo (qualidade, codec, perda, placa de vídeo) para a gente achar onde as lives travam. Nada do que você fala ou mostra é enviado; os números ficam 14 dias (Configurações → Privacidade).
 - Visitante: agora pode trancar a sala, usar a mesa de áudio (sons do servidor e os seus favoritos) e abrir atividades na call do convite. Se o visitante entrar no servidor por convite, continua na call já como membro e o servidor aparece uma vez só na barra lateral.
 - Lives: passe o mouse no selo LIVE de alguém na lista do canal de voz (no celular, toque nele) para ver a prévia da transmissão, quantos estão assistindo e o botão "Assistir".

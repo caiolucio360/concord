@@ -7,7 +7,9 @@ import { useProfileStore } from '../../profile/store/profileStore'
 import { useServerStore } from '../../servers/store/serverStore'
 import { useServerNicknames } from '../../servers/hooks/useServerNames'
 import { resolveReactionPeople } from '../lib/reactionPeople'
+import { insideElement } from '../lib/insideElement'
 import Avatar from '../../../shared/ui/Avatar'
+import ReactionEmoji, { useReactionLabel } from '../../emojis/components/ReactionEmoji'
 
 const WIDTH = 240
 const GAP = 6
@@ -51,6 +53,7 @@ function ReactionTooltip({
   const conversations = useChatStore((s) => s.conversations)
   const me = useAuthStore((s) => s.user)
   const nicknames = useServerNicknames(serverId)
+  const label = useReactionLabel(emoji)
 
   const conversationMembers = useMemo(
     () => conversations.flatMap((conversation) => conversation.members ?? []),
@@ -83,8 +86,7 @@ function ReactionTooltip({
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const onScroll = (e: Event): void => {
-      if (ref.current && e.target instanceof Node && ref.current.contains(e.target)) return
-      onClose()
+      if (!insideElement(ref.current, e.target)) onClose()
     }
     const close = (): void => onClose()
     const onKeyDown = (e: KeyboardEvent): void => {
@@ -118,14 +120,16 @@ function ReactionTooltip({
     <div
       ref={ref}
       role="tooltip"
-      aria-label={`Quem reagiu com ${emoji}`}
+      aria-label={`Quem reagiu com ${label}`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       style={{ ...position, width: WIDTH, maxHeight }}
       className="fixed z-40 flex flex-col rounded-lg border border-subtle bg-floating p-1.5 shadow-2xl shadow-black/60"
     >
       <div className="flex shrink-0 items-center gap-1.5 px-1 pb-1 text-ds-xs text-gray-400">
-        <span className="text-sm leading-none">{emoji}</span>
+        <span className="text-sm leading-none">
+          <ReactionEmoji emoji={emoji} />
+        </span>
         <span>
           {userIds.length} {userIds.length === 1 ? 'reação' : 'reações'}
         </span>
