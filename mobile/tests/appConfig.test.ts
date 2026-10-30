@@ -12,7 +12,7 @@ describe('app.config (voz)', () => {
     )
   })
 
-  it('declara o serviço de captura de tela (transmitir a tela, ADR 0027), mas ainda não pede a câmera da chamada', () => {
+  it('declara o serviço de captura de tela (ADR 0027); a câmera (da chamada e das fotos) vem do plugin do seletor de imagens', () => {
     const permissions = config.android?.permissions ?? []
     expect(permissions).toContain('android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION')
     expect(permissions).not.toContain('android.permission.CAMERA')
@@ -36,5 +36,10 @@ describe('app.config (voz)', () => {
   it('aplica as regras do R8 que o build de release exige (LiveKit)', () => {
     const mods = (config as { mods?: { android?: { dangerous?: unknown } } }).mods
     expect(mods?.android?.dangerous).toBeDefined()
+  })
+
+  it('aplica o serviço em primeiro plano da chamada (ADR 0030): sem ele a chamada cai ao ir para outra tela', () => {
+    const mods = (config as { mods?: { android?: { manifest?: unknown } } }).mods
+    expect(mods?.android?.manifest).toBeDefined()
   })
 })

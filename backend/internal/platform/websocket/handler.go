@@ -3,6 +3,7 @@ package websocket
 import (
 	"context"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"gin-quickstart/backend/internal/auth"
@@ -27,6 +28,8 @@ type Handler struct {
 	conversationService *conversation.Service
 	callRouter          CallRouter
 	typing              TypingRouter
+	// Conexões do app do celular (?client=mobile): o push usa para saber se o app está aberto.
+	mobile *MobileApps
 }
 
 func WsHandler(hub *Hub, authService *auth.Service, perms ChannelPermissions, serverService *server.Service, conversationService *conversation.Service, callRouter CallRouter, typing TypingRouter) *Handler {
@@ -105,7 +108,22 @@ func (h *Handler) ServeWS(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	defer h.trackMobile(c.Request.URL.Query(), userID)()
 	h.serve(c.Request.Context(), conn, userID)
+}
+
+// trackMobile conta a conexão se ela é do app do celular (?client=mobile) e devolve o "fechou".
+func (h *Handler) trackMobile(q url.Values, userID string) func() {
+	if !isMobileClient(q) {
+		return func() {}
+	}
+	return h.mobile.Track(userID)
+}
+
+// WithMobileApps liga o contador de conexões do app do celular.
+func (h *Handler) WithMobileApps(m *MobileApps) *Handler {
+	h.mobile = m
+	return h
 }
 
 // serve registra a conexão no hub e fica lendo até ela fechar.

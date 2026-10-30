@@ -15,7 +15,8 @@ import (
 
 // Interfaces pequenas, declaradas aqui (quem consome): o Hub, o notifysettings, o banco e o FCM entram por elas.
 type Presence interface {
-	IsOnline(userID string) bool
+	// IsAppOpen: o app do celular está aberto (aí não precisa de push; o desktop não conta).
+	IsAppOpen(userID string) bool
 	EffectiveStatus(userID string) string
 }
 
@@ -275,9 +276,9 @@ func allowed(all notifysettings.All, serverID, channelID string, direct bool, no
 	return direct || !server.SuppressEveryone
 }
 
-// deliver manda para todos os aparelhos da pessoa, se ela não está com o app aberto nem em Não perturbar.
+// deliver manda para todos os aparelhos da pessoa, se ela não está com o app do celular aberto nem em Não perturbar.
 func (n *Notifier) deliver(ctx context.Context, userID string, m fcm.Message) {
-	if n.Presence.IsOnline(userID) || n.Presence.EffectiveStatus(userID) == "dnd" {
+	if n.Presence.IsAppOpen(userID) || n.Presence.EffectiveStatus(userID) == "dnd" {
 		return
 	}
 	tokens, err := n.Tokens.TokensForUser(ctx, userID)

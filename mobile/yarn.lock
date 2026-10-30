@@ -1666,6 +1666,11 @@
   dependencies:
     "@tybys/wasm-util" "^0.10.3"
 
+"@notifee/react-native@^9":
+  version "9.1.8"
+  resolved "https://registry.yarnpkg.com/@notifee/react-native/-/react-native-9.1.8.tgz#3d55cb3fbcc21f9e35931e366afdf64b294da891"
+  integrity sha512-Az/dueoPerJsbbjRxu8a558wKY+gONUrfoy3Hs++5OqbeMsR0dYe6P+4oN6twrLFyzAhEA1tEoZRvQTFDRmvQg==
+
 "@noxcturnal/noxcturnal-darwin-arm64@0.1.10":
   version "0.1.10"
   resolved "https://registry.yarnpkg.com/@noxcturnal/noxcturnal-darwin-arm64/-/noxcturnal-darwin-arm64-0.1.10.tgz#dd6c086c59283f9bf3b742bd779e4dfc242bdfa2"
