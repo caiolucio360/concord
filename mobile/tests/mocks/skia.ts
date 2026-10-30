@@ -178,5 +178,7 @@ export const matchFont = jest.fn((style: { fontFamily?: string; fontSize?: numbe
 export const Canvas = component('canvas')
 export const Picture = component('picture')
 export const RoundedRect = component('RoundedRect')
+export const Group = component('Group')
+export const Path = component('Path')
 export const LinearGradient = component('LinearGradient')
 export const vec = (x: number, y: number) => ({ x, y })
