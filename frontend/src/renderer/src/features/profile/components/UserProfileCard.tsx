@@ -5,10 +5,9 @@ import { useCallStore } from '../../call/store/callStore'
 import { useActivityStore } from '../../activity/store/activityStore'
 import { activityOfPlayer, canJoinFromProfile } from '../../activity/lib/activityState'
 import { useChatStore } from '../../chat/store/chatStore'
-import { useFriendStore, useRelationship } from '../../friends/store/friendStore'
+import { useRelationship } from '../../friends/store/friendStore'
 import { useUserMenuStore } from '../store/userMenuStore'
 import { getRelationship, type Relationship } from '../../friends/api/friends'
-import { friendRequestError } from '../lib/relationship'
 import { useLevelStore } from '../../levels/store/levelStore'
 import { useBadgeStore } from '../../levels/store/badgeStore'
 import { useProfileCardStore } from '../store/profileCardStore'
@@ -16,7 +15,6 @@ import { useProfileStore } from '../store/profileStore'
 import { useServerStore } from '../../servers/store/serverStore'
 import { useSettingsStore } from '../../settings/store/settingsStore'
 import { changeMyStatus } from '../store/meActions'
-import { showToast } from '../../../shared/store/toastStore'
 import { formatMemberSince, placeProfileCard } from '../lib/profileCard'
 import { serverIdFromPath } from '../../servers/lib/serverNames'
 import { useServerAccess } from '../../servers/hooks/useServerAccess'
@@ -33,12 +31,13 @@ import BadgeRow from '../../levels/components/BadgeRow'
 import ProfileCardBody, { CARD_BG, type CardProfile } from './ProfileCardBody'
 import { ProfileInfoSkeleton } from '../../../shared/ui/skeleton/layouts'
 import ProfileCardFrame from './ProfileCardFrame'
+import CardActions from './card/CardActions'
 import ProfileRoleChips, { TierName } from './ProfileRoleChips'
 import { profileThemeLook, resolveProfileTheme } from '../lib/profileTheme'
 import LiveStreamPreview from './LiveStreamPreview'
 import LiveBadge from '../../call/components/LiveBadge'
 import StatusIcon from '../../../shared/ui/StatusIcon'
-import { DotsIcon, PencilIcon, VolumeIcon } from '../../../shared/ui/icons'
+import { PencilIcon, VolumeIcon } from '../../../shared/ui/icons'
 import Avatar from '../../../shared/ui/Avatar'
 import { useThemeStore } from '../../settings/store/themeStore'
 import { ActivityGlyph } from '../../call/components/ActivityPickerPopover'
@@ -172,8 +171,6 @@ function UserProfileCard(): React.JSX.Element | null {
   const ensureLevels = useLevelStore((s) => s.ensureLevels)
   const replayLevelUp = useLevelStore((s) => s.replayLevelUp)
   const relationship = useRelationship(target?.userId)
-  const sendRequest = useFriendStore((s) => s.sendRequest)
-  const accept = useFriendStore((s) => s.accept)
   const profile = useProfileStore((s) => (target ? s.profiles[target.userId] : undefined))
   const fetchProfile = useProfileStore((s) => s.fetchProfile)
   const openSettings = useSettingsStore((s) => s.openSettings)
@@ -190,7 +187,6 @@ function UserProfileCard(): React.JSX.Element | null {
   const joinActivity = useActivityStore((s) => s.join)
   const ref = useRef<HTMLDivElement | null>(null)
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null)
-  const [sending, setSending] = useState(false)
   // Amigos e servidores em comum (só no cartão de outra pessoa).
   const [loadedMutual, setMutual] = useState<{ userId: string; rel: Relationship } | null>(null)
   const mutual = loadedMutual && loadedMutual.userId === target?.userId ? loadedMutual.rel : null
@@ -392,32 +388,6 @@ function UserProfileCard(): React.JSX.Element | null {
     />
   )
 
-  const sendMessage = (): void => {
-    close()
-    void router.navigate(`/dm/${target.userId}`)
-  }
-
-  const addFriend = async (): Promise<void> => {
-    if (!card.username) return
-    setSending(true)
-    try {
-      if (relationship === 'incoming') {
-        await accept(card.username)
-      } else {
-        const result = await sendRequest(card.username)
-        showToast.success(
-          result === 'accepted'
-            ? `Você e ${card.display_name} agora são amigos.`
-            : `Pedido de amizade enviado para ${card.display_name}.`
-        )
-      }
-    } catch (err) {
-      showToast.error(friendRequestError(err))
-    } finally {
-      setSending(false)
-    }
-  }
-
   // Primeira carga de cada parte: o cartão abre na hora com o que já se sabe.
   const profileLoading = !isMe && !profile && profileSettled !== target.userId
   const mutualLoading = !isMe && !mutual && mutualSettled !== target.userId
@@ -441,23 +411,6 @@ function UserProfileCard(): React.JSX.Element | null {
       target: stream,
       channelName:
         stream.kind === 'join' ? channels.find((c) => c.id === stream.channelId)?.name : undefined
-    })
-  }
-
-  const openMore = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    const currentMenu = useUserMenuStore.getState().target
-    if (currentMenu && currentMenu.userId === target.userId) {
-      useUserMenuStore.getState().close()
-      return
-    }
-    const r = e.currentTarget.getBoundingClientRect()
-    useUserMenuStore.getState().open({
-      userId: target.userId,
-      name: nickname || card.display_name,
-      username: card.username,
-      x: r.left,
-      y: r.bottom + 4,
-      anchorEl: e.currentTarget
     })
   }
 
@@ -639,42 +592,13 @@ function UserProfileCard(): React.JSX.Element | null {
             </div>
           </>
         ) : isBot ? null : (
-          <div className="mt-3 flex gap-2">
-            <button
-              type="button"
-              onClick={sendMessage}
-              className="flex-1 cursor-pointer rounded-lg bg-brand px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-hover"
-            >
-              Enviar mensagem
-            </button>
-            {card.username && relationship !== 'friend' && relationship !== 'blocked' && (
-              <button
-                type="button"
-                disabled={sending || relationship === 'outgoing'}
-                onClick={() => void addFriend()}
-                className={`cursor-pointer rounded-lg px-3 py-2 text-xs font-semibold transition-colors disabled:cursor-default disabled:opacity-60 ${
-                  relationship === 'incoming'
-                    ? 'bg-success-strong text-white hover:bg-success-strong-hover'
-                    : 'bg-fg/10 text-strong hover:bg-fg/15'
-                }`}
-              >
-                {relationship === 'outgoing'
-                  ? 'Pedido enviado'
-                  : relationship === 'incoming'
-                    ? 'Aceitar pedido'
-                    : 'Adicionar amigo'}
-              </button>
-            )}
-            <button
-              type="button"
-              aria-label="Mais"
-              title="Mais"
-              onClick={openMore}
-              className="flex cursor-pointer items-center justify-center rounded-lg bg-fg/10 px-2.5 text-gray-200 transition-colors hover:bg-fg/15"
-            >
-              <DotsIcon className="h-4 w-4" />
-            </button>
-          </div>
+          <CardActions
+            userId={target.userId}
+            name={nickname || card.display_name}
+            displayName={card.display_name}
+            username={card.username}
+            onClose={close}
+          />
         )}
         {!isMe && nicknameButton && (
           <div className="mt-2 rounded-lg bg-input p-1.5">{nicknameButton}</div>
