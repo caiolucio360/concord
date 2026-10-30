@@ -82,7 +82,7 @@ describe('ImprovementsHub', () => {
   it('card do Rank global com a sua posição, e abre o ranking', async () => {
     seed({ ranking: ranking(3) })
     const onOpenRanking = jest.fn()
-    await render(<ImprovementsHub onBack={jest.fn()} onOpenRanking={onOpenRanking} />)
+    await render(<ImprovementsHub onBack={jest.fn()} onOpenRanking={onOpenRanking} onOpenChangelog={jest.fn()} />)
     expect(screen.getByText('Sua posição: #2')).toBeOnTheScreen()
     await fireEvent.press(screen.getByRole('button', { name: 'Rank global' }))
     expect(onOpenRanking).toHaveBeenCalled()
@@ -90,7 +90,23 @@ describe('ImprovementsHub', () => {
 
   it('antes do ranking carregar não mostra a posição', async () => {
     seed({ ranking: null })
-    await render(<ImprovementsHub onBack={jest.fn()} onOpenRanking={jest.fn()} />)
+    await render(<ImprovementsHub onBack={jest.fn()} onOpenRanking={jest.fn()} onOpenChangelog={jest.fn()} />)
     expect(screen.queryByText(/Sua posição/)).toBeNull()
+  })
+
+  it('card Novidades abre o changelog', async () => {
+    seed({ ranking: null })
+    const onOpenChangelog = jest.fn()
+    await render(<ImprovementsHub onBack={jest.fn()} onOpenRanking={jest.fn()} onOpenChangelog={onOpenChangelog} />)
+    await fireEvent.press(screen.getByRole('button', { name: 'Novidades' }))
+    expect(onOpenChangelog).toHaveBeenCalled()
+  })
+
+  it('textos dos cards iguais aos da web', async () => {
+    seed({ ranking: null })
+    await render(<ImprovementsHub onBack={jest.fn()} onOpenRanking={jest.fn()} onOpenChangelog={jest.fn()} />)
+    expect(screen.getByText('O que mudou em cada versão do Salinha.')).toBeOnTheScreen()
+    expect(screen.getByText('Os 100 maiores níveis do Salinha.')).toBeOnTheScreen()
+    expect(screen.getByText('Ajude a decidir o que vem por aí, veja o que mudou e confira quem manda nas calls.')).toBeOnTheScreen()
   })
 })
