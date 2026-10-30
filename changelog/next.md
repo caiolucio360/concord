@@ -52,6 +52,7 @@
 - Badges: novo badge Aniversariante, ganho no dia do seu aniversário e seu para sempre. Vale para quem tem a data cadastrada e deixa ligado "Anunciar meu aniversário nos servidores".
 - Badges: novo badge exclusivo Primeira mensagem, de quem mandou a primeira mensagem de um servidor (Quebra-gelo, Desbravador e Big Bang, em 1, 3 e 10 servidores). Nos servidores que já existem, vale a mensagem mais antiga que ainda está lá.
 - A atualização agora baixa sozinha em segundo plano; o botão Atualizar instala na hora.
+- Chat: agora dá para dar zoom nas imagens abertas em tela cheia, com a roda do mouse, pinça, arrastando, com duplo clique ou toque e pelos botões − e +. Vale no computador, no navegador e no app Android.
 
 ## Correções
 - Badges e nível do servidor: conta real agora é quem confirmou o e-mail, sem prazo de idade da conta (antes eram 7 dias, e ninguém chegava lá). O nível dos servidores volta a subir daqui para a frente, o Festeiro volta a contar, e o badge Amigos devolve os tiers que tinham sumido, sem aviso de desbloqueio.
