@@ -378,6 +378,24 @@ describe('transmissão de tela', () => {
     expect(useScreenShareStore.getState().sharing).toBe(false)
   })
 
+  // Regressão: o app transmitia sem avisar o servidor; quem clicava em "Assistir transmissão" recebia call:error e caía.
+  it('avisa o servidor (call:screen) ao começar e ao parar de transmitir, como o desktop', async () => {
+    const { controller, deps } = rig()
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    await controller.toggleScreenShare()
+    expect(deps.ws.send).toHaveBeenCalledWith('call:screen', { call_id: 'c1', active: true })
+    await controller.toggleScreenShare()
+    expect(deps.ws.send).toHaveBeenLastCalledWith('call:screen', { call_id: 'c1', active: false })
+  })
+
+  it('transmissão que falhou não é anunciada ao servidor', async () => {
+    const { controller, deps, media } = rig()
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    media.setScreenShareEnabled.mockRejectedValueOnce(new Error('NotAllowedError'))
+    await controller.toggleScreenShare()
+    expect(deps.ws.send).not.toHaveBeenCalledWith('call:screen', { call_id: 'c1', active: true })
+  })
+
   it('captura de tela negada: avisa e fica desligada', async () => {
     const { controller, media } = rig()
     media.setScreenShareEnabled.mockRejectedValue(new Error('NotAllowedError'))

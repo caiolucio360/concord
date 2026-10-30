@@ -228,6 +228,9 @@ export function createCallController(deps: ControllerDeps) {
     try {
       await deps.media.setScreenShareEnabled(next)
       store.setSharing(next)
+      // O servidor precisa saber (como no desktop): sem isso, quem clica em Assistir recebe erro e cai da chamada.
+      const callId = session().callId
+      if (callId) deps.ws.send('call:screen', { call_id: callId, active: next })
       if (next) playSound('liveStart')
     } catch {
       store.setSharing(false)
@@ -237,7 +240,6 @@ export function createCallController(deps: ControllerDeps) {
     }
   }
 
-  /** Assiste à transmissão de alguém (null para de assistir). Uma de cada vez. */
   /** Liga ou desliga a minha câmera; sem permissão ou com a câmera ocupada, avisa e fica desligada. */
   async function toggleCamera(): Promise<void> {
     const store = useCameraStore.getState()
@@ -257,6 +259,7 @@ export function createCallController(deps: ControllerDeps) {
     await deps.media.flipCamera().catch(() => notice('Não foi possível trocar de câmera.'))
   }
 
+  /** Assiste à transmissão de alguém (null para de assistir). Uma de cada vez. */
   function watchScreen(userId: string | null): void {
     const store = useScreenShareStore.getState()
     if (store.watching && store.watching !== userId) deps.media.watchScreen(store.watching, false)

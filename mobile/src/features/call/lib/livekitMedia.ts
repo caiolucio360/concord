@@ -3,6 +3,7 @@ import { ConnectionState, DisconnectReason, Room, RoomEvent, Track, type LocalVi
 import type { CallMedia, MediaConnection } from './callMedia'
 import { clearCameraTracks, setCameraTrack } from './livekitCamera'
 import { releaseNativeTrack } from './releaseNativeTrack'
+import { disableVideoStartBitrate } from './startBitrate'
 
 // Os dois únicos arquivos do app que falam com o SDK do LiveKit (ADR 0023): este e livekitScreen.tsx (que só
 // desenha a transmissão). Ficam fora da cobertura do Jest (módulo nativo): a lógica toda está no callController,
@@ -144,6 +145,8 @@ export function createLiveKitMedia(): CallMedia {
       watch(next)
       room = next
       await next.connect(url, token)
+      // Antes de publicar vídeo: sem isso a segunda faixa de vídeo derruba a transmissão (startBitrate.ts).
+      if (!disableVideoStartBitrate(next as never)) console.warn('[call] livekit-client mudou: start bitrate não desligado')
       setRemoteVolume(next, listening)
       // Quem já transmitia antes de eu entrar.
       next.remoteParticipants.forEach((p) => screenOf(p)?.setSubscribed(false))
