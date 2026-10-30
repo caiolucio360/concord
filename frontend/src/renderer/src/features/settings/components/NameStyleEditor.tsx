@@ -3,7 +3,7 @@ import { withEffect } from '../../profile/lib/nameStylePicker'
 import StyledName from '../../profile/components/StyledName'
 
 const optionClass = (active: boolean): string =>
-  `min-h-10 min-w-0 cursor-pointer truncate rounded-lg border px-2.5 py-1.5 text-left text-ds-sm text-strong transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+  `min-h-10 min-w-0 cursor-pointer truncate rounded-lg border px-2.5 py-1.5 text-left text-ds-sm text-strong transition-colors focus-ring ${
     active ? 'border-brand bg-brand/15' : 'border-subtle bg-fg/5 hover:bg-fg/10'
   }`
 

@@ -40,7 +40,7 @@ function ControlButton({
       aria-pressed={danger ? undefined : active}
       disabled={disabled}
       onClick={onClick}
-      className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-subtle shadow-lg transition-colors focus-visible:ring-2 focus-visible:ring-brand disabled:cursor-not-allowed disabled:opacity-40 ${tone}`}
+      className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-subtle shadow-lg transition-colors focus-ring disabled:cursor-not-allowed disabled:opacity-40 ${tone}`}
     >
       {children}
     </button>

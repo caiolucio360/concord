@@ -7,7 +7,7 @@ import { useServerDiagnostics } from '../hooks/useServerDiagnostics'
 import { useConnectionStore } from '../store/connectionStore'
 
 const LINK =
-  'shrink-0 cursor-pointer rounded font-semibold underline-offset-2 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-brand disabled:cursor-default disabled:opacity-60'
+  'shrink-0 cursor-pointer rounded font-semibold underline-offset-2 outline-none hover:underline focus-ring disabled:cursor-default disabled:opacity-60'
 
 export function DetailsPanel(): React.JSX.Element {
   const online = useConnectionStore((s) => s.online)

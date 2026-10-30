@@ -4,7 +4,7 @@ import { useEnqueteStore } from '../store/enqueteStore'
 import EnqueteCamada from './EnqueteCamada'
 
 const BOTAO =
-  'flex min-h-11 w-full cursor-pointer touch-manipulation items-center justify-center rounded-xl px-4 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400 disabled:cursor-not-allowed disabled:opacity-60'
+  'flex min-h-11 w-full cursor-pointer touch-manipulation items-center justify-center rounded-xl px-4 text-sm font-bold transition-colors focus-ring disabled:cursor-not-allowed disabled:opacity-60'
 
 /** A pergunta: opções iguais (rádios) e "Continuar" só com uma marcada. */
 function EnquetePergunta({ enquete }: { enquete: Enquete }): React.JSX.Element {

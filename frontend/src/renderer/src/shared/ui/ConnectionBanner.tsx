@@ -76,7 +76,7 @@ function BannerActions({ kind }: { kind: Banner['kind'] }): React.JSX.Element {
         <button
           type="button"
           onClick={() => useChatStore.getState().retryWsNow()}
-          className={`shrink-0 cursor-pointer rounded font-semibold underline-offset-2 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-brand ${ACCENT[kind]}`}
+          className={`shrink-0 cursor-pointer rounded font-semibold underline-offset-2 outline-none hover:underline focus-ring ${ACCENT[kind]}`}
         >
           Tentar agora
         </button>

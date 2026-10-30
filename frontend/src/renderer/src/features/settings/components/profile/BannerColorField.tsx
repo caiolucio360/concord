@@ -36,7 +36,7 @@ export default function BannerColorField({
             aria-pressed={value === c}
             title={name}
             onClick={() => onChange(c)}
-            className={`aspect-square min-h-10 cursor-pointer rounded-lg border transition-transform hover:scale-105 motion-reduce:transition-none motion-reduce:hover:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+            className={`aspect-square min-h-10 cursor-pointer rounded-lg border transition-transform hover:scale-105 motion-reduce:transition-none motion-reduce:hover:scale-100 focus-ring ${
               value === c ? 'border-white ring-2 ring-brand' : 'border-subtle'
             }`}
             style={{ background: c }}
@@ -49,7 +49,7 @@ export default function BannerColorField({
           <button
             type="button"
             onClick={() => onChange(null)}
-            className="min-h-10 cursor-pointer rounded-md px-2 text-xs text-link hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+            className="min-h-10 cursor-pointer rounded-md px-2 text-xs text-link hover:underline focus-ring"
           >
             Usar a cor padrão
           </button>

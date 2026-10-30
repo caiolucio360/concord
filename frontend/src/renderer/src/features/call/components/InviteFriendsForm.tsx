@@ -49,7 +49,7 @@ function InviteFriendsForm({ callId }: { callId: string }): React.JSX.Element {
         placeholder={INVITE_COPY.searchPlaceholder}
         autoComplete="off"
         spellCheck={false}
-        className="min-h-10 w-full rounded-lg border border-subtle bg-fg/5 px-3 text-sm text-strong placeholder:text-gray-500 focus-visible:outline-2 focus-visible:outline-violet-400"
+        className="min-h-10 w-full rounded-lg border border-subtle bg-fg/5 px-3 text-sm text-strong placeholder:text-gray-500 focus-ring"
       />
       <FriendPickList
         loaded={loaded}

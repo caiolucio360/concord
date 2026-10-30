@@ -94,15 +94,14 @@ function PermissionSwitches({
                     <p className="text-sm font-semibold text-strong">{p.label}</p>
                     <p className="text-xs leading-snug text-gray-400">{p.description}</p>
                   </div>
-                  <div className={allowed ? '' : 'pointer-events-none'}>
-                    <Switch
-                      checked={checked}
-                      label={p.label}
-                      onChange={(on) =>
-                        onChange(nextPermissionsValue(value, bit, isCurrentAdmin, on))
-                      }
-                    />
-                  </div>
+                  <Switch
+                    checked={checked}
+                    label={p.label}
+                    disabled={!allowed}
+                    onChange={(on) =>
+                      onChange(nextPermissionsValue(value, bit, isCurrentAdmin, on))
+                    }
+                  />
                 </li>
               )
             })}

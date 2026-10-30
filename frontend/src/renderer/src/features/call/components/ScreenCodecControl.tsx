@@ -55,7 +55,7 @@ export function ScreenCodecOptions({
   }
   return (
     <details className={compact ? 'mt-3' : 'mt-4'}>
-      <summary className="cursor-pointer rounded text-xs font-semibold text-gray-400 hover:text-gray-200 focus-visible:outline-2 focus-visible:outline-brand">
+      <summary className="cursor-pointer rounded text-xs font-semibold text-gray-400 hover:text-gray-200 focus-ring">
         Avançado
       </summary>
       <div role="group" aria-label="Codec" className="mt-2">

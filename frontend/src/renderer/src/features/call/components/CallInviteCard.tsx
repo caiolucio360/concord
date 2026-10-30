@@ -87,7 +87,7 @@ function CallInviteCard({ message }: { message: Message }): React.JSX.Element | 
           type="button"
           disabled={view.button === 'loading' || busy}
           onClick={open}
-          className="min-h-10 w-full cursor-pointer rounded-lg bg-success-strong px-3 text-sm font-medium text-white transition-colors hover:bg-success-strong-hover disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-violet-400"
+          className="min-h-10 w-full cursor-pointer rounded-lg bg-success-strong px-3 text-sm font-medium text-white transition-colors hover:bg-success-strong-hover disabled:cursor-not-allowed disabled:opacity-50 focus-ring"
         >
           {INVITE_COPY.cardOpen}
         </button>

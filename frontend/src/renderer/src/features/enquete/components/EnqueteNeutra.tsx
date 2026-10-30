@@ -18,7 +18,7 @@ function EnqueteNeutra(): React.JSX.Element {
       <button
         type="button"
         onClick={fechar}
-        className="mt-5 flex min-h-11 w-full cursor-pointer touch-manipulation items-center justify-center rounded-xl border border-subtle bg-surface px-4 text-sm font-bold text-gray-200 transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-violet-400"
+        className="mt-5 flex min-h-11 w-full cursor-pointer touch-manipulation items-center justify-center rounded-xl border border-subtle bg-surface px-4 text-sm font-bold text-gray-200 transition-colors hover:bg-white/10 focus-ring"
       >
         Fechar
       </button>

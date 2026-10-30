@@ -28,7 +28,7 @@ export default function JumpToPresentButton({
       onClick={onClick}
       aria-label={jumpLabel(newCount)}
       title="Voltar às mensagens recentes"
-      className={`absolute bottom-full right-4 z-30 mb-3 flex size-10 cursor-pointer items-center justify-center rounded-full border border-subtle bg-floating text-strong shadow-lg outline-none transition-[opacity,transform,visibility,background-color] duration-200 hover:bg-brand hover:text-white focus-visible:ring-2 focus-visible:ring-brand motion-reduce:transition-none ${
+      className={`absolute bottom-full right-4 z-30 mb-3 flex size-10 cursor-pointer items-center justify-center rounded-full border border-subtle bg-floating text-strong shadow-lg outline-none transition-[opacity,transform,visibility,background-color] duration-200 hover:bg-brand hover:text-white focus-ring motion-reduce:transition-none ${
         visible
           ? 'visible translate-y-0 opacity-100'
           : 'invisible pointer-events-none translate-y-2 opacity-0'

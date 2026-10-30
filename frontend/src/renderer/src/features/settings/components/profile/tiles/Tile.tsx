@@ -27,7 +27,7 @@ export function TileSection({
 }
 
 const TILE =
-  'group/tile relative flex min-h-10 min-w-0 cursor-pointer items-center overflow-hidden rounded-xl border border-subtle bg-fg/5 text-left transition-colors hover:border-normal hover:bg-fg/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:cursor-wait disabled:opacity-60'
+  'group/tile relative flex min-h-10 min-w-0 cursor-pointer items-center overflow-hidden rounded-xl border border-subtle bg-fg/5 text-left transition-colors hover:border-normal hover:bg-fg/10 focus-ring disabled:cursor-wait disabled:opacity-60'
 
 /** O lápis do canto: sempre à mostra no toque; com mouse, no hover e no foco. */
 function TilePencil(): React.JSX.Element {
@@ -115,7 +115,7 @@ export function TileAction({
       aria-label={label}
       onClick={onClick}
       disabled={disabled}
-      className="-my-2 min-h-10 cursor-pointer rounded-md px-2 text-xs font-medium text-link hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:cursor-wait disabled:opacity-60"
+      className="-my-2 min-h-10 cursor-pointer rounded-md px-2 text-xs font-medium text-link hover:underline focus-ring disabled:cursor-wait disabled:opacity-60"
     >
       {children}
     </button>

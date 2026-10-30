@@ -17,7 +17,7 @@ function GuestInviteButton({ channelId }: { channelId: string }): React.JSX.Elem
         aria-haspopup="dialog"
         aria-label={GUEST_COPY.button}
         title={GUEST_COPY.button}
-        className="flex h-10 min-w-10 cursor-pointer items-center justify-center gap-2 rounded-full border border-subtle bg-secondary px-3 text-ds-sm font-semibold text-gray-200 shadow-lg transition-colors hover:bg-fg/10 hover:text-strong focus-visible:ring-2 focus-visible:ring-brand"
+        className="flex h-10 min-w-10 cursor-pointer items-center justify-center gap-2 rounded-full border border-subtle bg-secondary px-3 text-ds-sm font-semibold text-gray-200 shadow-lg transition-colors hover:bg-fg/10 hover:text-strong focus-ring"
       >
         <UserPlusIcon className="h-4 w-4" />
         <span className="hidden sm:inline">{GUEST_COPY.button}</span>

@@ -70,7 +70,7 @@ function RoleMembers({
                   </span>
                   <Button
                     variant="secondary"
-                    className="px-3 py-1 text-xs"
+                    size="sm"
                     onClick={() => void run(() => addMemberRole(serverId, m.user_id, role.id))}
                   >
                     Adicionar

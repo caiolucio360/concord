@@ -20,7 +20,7 @@ function HubBackFrame({ children }: { children: React.ReactNode }): React.JSX.El
         to={HUB_PATH}
         aria-label="Voltar para Melhorias"
         title="Voltar para Melhorias"
-        className="absolute left-4 top-2 z-10 flex size-10 items-center justify-center rounded-lg text-gray-300 transition-colors hover:bg-fg/10 hover:text-strong focus-visible:outline-2 focus-visible:outline-violet-400"
+        className="absolute left-4 top-2 z-10 flex size-10 items-center justify-center rounded-lg text-gray-300 transition-colors hover:bg-fg/10 hover:text-strong focus-ring"
       >
         <ArrowLeftIcon className="size-5" />
       </Link>

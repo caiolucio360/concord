@@ -61,19 +61,19 @@ function MemberModeration({
       {access.nickname && (
         <Button
           variant="ghost"
-          className="px-3 py-1 text-ds-xs"
+          size="sm"
           onClick={() => askNickname({ ...target, ...nicknameNames(member, name), self: isMe })}
         >
           Apelido
         </Button>
       )}
       {access.kick && (
-        <Button variant="ghost" className="px-3 py-1 text-xs" onClick={() => askKick(target)}>
+        <Button variant="ghost" size="sm" onClick={() => askKick(target)}>
           Expulsar
         </Button>
       )}
       {access.ban && (
-        <Button variant="danger" className="px-3 py-1 text-xs" onClick={() => askBan(target)}>
+        <Button variant="danger" size="sm" onClick={() => askBan(target)}>
           Banir
         </Button>
       )}

@@ -5,7 +5,7 @@ import type { IconProps } from '../../../../shared/ui/icons'
 // de cor, régua curta e o bloco de seção. Alvo de toque ≥ 40 px.
 
 const chipClass = (active: boolean): string =>
-  `flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+  `flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-colors focus-ring ${
     active
       ? 'border-brand bg-brand/15 text-strong'
       : 'border-subtle bg-fg/5 text-gray-300 hover:bg-fg/10 hover:text-strong'

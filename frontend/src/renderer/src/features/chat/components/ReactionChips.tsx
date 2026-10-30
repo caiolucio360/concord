@@ -53,7 +53,7 @@ function ReactionChip({
       }}
       onMouseEnter={(e) => onMouseEnter(e.currentTarget)}
       onMouseLeave={onMouseLeave}
-      className={`inline-flex h-7 items-center gap-1.5 rounded-lg border px-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-brand ${
+      className={`inline-flex h-7 items-center gap-1.5 rounded-lg border px-1.5 transition-colors focus-ring ${
         locked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
       } ${
         meReacted
@@ -92,7 +92,7 @@ function AddReactionChip({
       onClick={(e) => onClick(e.currentTarget)}
       title="Adicionar reação"
       aria-label="Adicionar reação"
-      className="inline-flex h-7 w-9 cursor-pointer items-center justify-center rounded-lg border border-transparent bg-fg/5 text-gray-400 transition-colors hover:border-strong hover:bg-fg/10 hover:text-strong focus-visible:outline-2 focus-visible:outline-brand [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-within:opacity-100 [@media(hover:hover)]:focus-visible:opacity-100"
+      className="inline-flex h-7 w-9 cursor-pointer items-center justify-center rounded-lg border border-transparent bg-fg/5 text-gray-400 transition-colors hover:border-strong hover:bg-fg/10 hover:text-strong focus-ring [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-within:opacity-100 [@media(hover:hover)]:focus-visible:opacity-100"
     >
       <AddReactionIcon className="h-5 w-5" />
     </button>

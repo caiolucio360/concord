@@ -56,7 +56,7 @@ function Modal({
           {onClose && (
             <button
               type="button"
-              className="app-no-drag ml-auto flex size-10 shrink-0 cursor-pointer sm:size-8 items-center justify-center rounded-md text-strong/60 transition-colors hover:bg-fg/10 hover:text-strong focus-visible:outline-2 focus-visible:outline-violet-400"
+              className="app-no-drag ml-auto flex size-10 shrink-0 cursor-pointer sm:size-8 items-center justify-center rounded-md text-strong/60 transition-colors hover:bg-fg/10 hover:text-strong focus-ring"
               onClick={onClose}
               aria-label="Fechar"
             >

@@ -115,7 +115,7 @@ function BindingField({
         onError(null)
         setLocalRecording((r) => !r)
       }}
-      className={`flex min-w-[10rem] shrink-0 cursor-pointer items-center justify-center rounded-lg border px-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-violet-400 ${
+      className={`flex min-w-[10rem] shrink-0 cursor-pointer items-center justify-center rounded-lg border px-3 py-2 transition-colors focus-ring ${
         recording
           ? 'border-brand bg-brand/15 text-xs font-semibold text-strong'
           : 'border-subtle bg-fg/10 hover:bg-fg/15'

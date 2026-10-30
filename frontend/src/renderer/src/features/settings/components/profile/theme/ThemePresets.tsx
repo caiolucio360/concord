@@ -34,7 +34,7 @@ export default function ThemePresets({
             aria-pressed={active}
             title={preset.label}
             onClick={() => onPick(preset.theme)}
-            className={`min-w-0 cursor-pointer rounded-lg p-1 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+            className={`min-w-0 cursor-pointer rounded-lg p-1 text-center transition-colors focus-ring ${
               active ? 'bg-brand/15 ring-2 ring-brand' : 'hover:bg-fg/5'
             }`}
           >

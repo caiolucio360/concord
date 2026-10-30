@@ -20,7 +20,7 @@ function PodiumCard({ slot }: { slot: PodiumSlot }): React.JSX.Element {
       <button
         type="button"
         onClick={profileCardHandler(entry.user_id, name, entry.username, 'top')}
-        className="flex w-full min-w-0 cursor-pointer flex-col items-center gap-1 rounded-xl px-1 py-2 transition-colors hover:bg-fg/5 focus-visible:outline-2 focus-visible:outline-violet-400"
+        className="flex w-full min-w-0 cursor-pointer flex-col items-center gap-1 rounded-xl px-1 py-2 transition-colors hover:bg-fg/5 focus-ring"
       >
         <span className={`rounded-full ring-2 ring-offset-2 ring-offset-transparent ${look.ring}`}>
           <Avatar

@@ -115,7 +115,7 @@ function ServerInviteModal({ server }: { server: Server }): React.JSX.Element {
                   ) : (
                     <Button
                       variant="success"
-                      className="px-3 py-1 text-xs"
+                      size="sm"
                       disabled={isInviting}
                       onClick={() => handleInvite(f.id, f.username)}
                     >

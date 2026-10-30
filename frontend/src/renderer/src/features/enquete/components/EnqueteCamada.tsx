@@ -64,7 +64,7 @@ function EnqueteCamada({ titleId, onFechar, children }: Props): React.JSX.Elemen
             type="button"
             onClick={onFechar}
             aria-label="Fechar"
-            className="absolute right-1 top-1 flex h-11 w-11 cursor-pointer touch-manipulation items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-violet-400"
+            className="absolute right-1 top-1 flex h-11 w-11 cursor-pointer touch-manipulation items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-white/10 hover:text-white focus-ring"
           >
             <XIcon className="h-5 w-5" />
           </button>

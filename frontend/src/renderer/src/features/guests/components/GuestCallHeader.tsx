@@ -33,7 +33,7 @@ function GuestCallHeader({
           onClick={onClose}
           aria-label={GUEST_COPY.closeLabel}
           title={GUEST_COPY.closeLabel}
-          className="-mr-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-md text-gray-300 transition-colors hover:bg-fg/10 hover:text-strong focus-visible:ring-2 focus-visible:ring-brand sm:size-8"
+          className="-mr-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-md text-gray-300 transition-colors hover:bg-fg/10 hover:text-strong focus-ring sm:size-8"
         >
           <XIcon className="h-5 w-5" />
         </button>

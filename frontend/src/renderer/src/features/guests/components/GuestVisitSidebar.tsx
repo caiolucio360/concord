@@ -21,7 +21,7 @@ function VisitChannelRow({ visit }: { visit: GuestPass }): React.JSX.Element {
       type="button"
       onClick={() => navigate(visitPath(visit.server_id))}
       aria-current="page"
-      className="flex min-h-10 w-full cursor-pointer items-center gap-2 rounded-md bg-fg/10 px-2 py-1.5 text-left text-ds-md font-medium text-strong transition-colors hover:bg-fg/15 focus-visible:ring-2 focus-visible:ring-brand"
+      className="flex min-h-10 w-full cursor-pointer items-center gap-2 rounded-md bg-fg/10 px-2 py-1.5 text-left text-ds-md font-medium text-strong transition-colors hover:bg-fg/15 focus-ring"
     >
       <VolumeIcon className={`h-5 w-5 shrink-0 ${connected ? 'text-success' : 'text-gray-400'}`} />
       <span className="min-w-0 flex-1 truncate">{visit.channel_name}</span>
