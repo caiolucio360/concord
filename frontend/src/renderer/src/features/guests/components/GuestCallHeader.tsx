@@ -4,6 +4,7 @@ import { GUEST_COPY } from '../lib/guestCopy'
 import { timeLeftLabel } from '../lib/guestTime'
 import type { GuestPass } from '../api/guestInvites'
 import GuestBadge from './GuestBadge'
+import IconButton from '../../../shared/ui/IconButton'
 
 /**
  * O topo da call de visitante: canal, servidor, selo e quanto falta do acesso.
@@ -28,15 +29,7 @@ function GuestCallHeader({
         {GUEST_COPY.timeLeft(timeLeftLabel(pass.expires_at, now))}
       </span>
       {onClose && (
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label={GUEST_COPY.closeLabel}
-          title={GUEST_COPY.closeLabel}
-          className="-mr-1 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-md text-secondary transition-colors hover:bg-fg/10 hover:text-strong focus-ring sm:size-8"
-        >
-          <XIcon className="h-5 w-5" />
-        </button>
+        <IconButton icon={XIcon} label={GUEST_COPY.closeLabel} onClick={onClose} size="sm" className="-mr-1" />
       )}
     </header>
   )

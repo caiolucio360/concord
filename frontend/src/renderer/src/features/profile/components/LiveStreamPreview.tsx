@@ -9,6 +9,7 @@ import {
 } from '../../call/lib/screenPreview'
 import LiveBadge from '../../call/components/LiveBadge'
 import { Skeleton } from '../../../shared/ui/skeleton/Skeleton'
+import Button from '../../../shared/ui/Button'
 
 /**
  * Busca a foto da transmissão enquanto o cartão está aberto: rápido até a
@@ -93,14 +94,9 @@ function LiveStreamPreview({
         </span>
       </div>
       <div className="p-2">
-        <button
-          type="button"
-          onClick={onWatch}
-          disabled={ended}
-          className="w-full cursor-pointer rounded-md bg-success-strong px-3 py-2 text-ds-xs font-semibold text-white transition-colors hover:bg-success-strong-hover disabled:cursor-default disabled:opacity-60"
-        >
+        <Button type="button" variant="success" size="sm" onClick={onWatch} disabled={ended} className="w-full">
           Entrar na transmissão
-        </button>
+        </Button>
       </div>
     </div>
   )

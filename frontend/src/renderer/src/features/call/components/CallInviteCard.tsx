@@ -7,6 +7,7 @@ import { useOpenCallInvite } from '../hooks/useOpenCallInvite'
 import { cardView } from '../lib/callInviteCard'
 import { INVITE_COPY } from '../lib/callInviteCopy'
 import { useInviteValidity, useInviteValidityStore } from '../store/inviteValidityStore'
+import Button from '../../../shared/ui/Button'
 
 const CARD = 'mt-1 w-full max-w-sm rounded-xl border border-subtle bg-secondary p-3'
 
@@ -83,14 +84,15 @@ function CallInviteCard({ message }: { message: Message }): React.JSX.Element | 
         />
       </div>
       {view.button !== 'none' && (
-        <button
+        <Button
           type="button"
+          variant="success"
           disabled={view.button === 'loading' || busy}
           onClick={open}
-          className="min-h-10 w-full cursor-pointer rounded-lg bg-success-strong px-3 text-ds-sm font-medium text-white transition-colors hover:bg-success-strong-hover disabled:cursor-not-allowed disabled:opacity-50 focus-ring"
+          className="w-full"
         >
           {INVITE_COPY.cardOpen}
-        </button>
+        </Button>
       )}
     </div>
   )

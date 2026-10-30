@@ -3,6 +3,7 @@ import { useScreenStatsStore } from '../store/screenStatsStore'
 import { XIcon } from '../../../shared/ui/icons'
 import { closesStatsPanel, type LiveOwner } from '../lib/liveVideo'
 import type { ScreenStatsView } from '../lib/screenStats'
+import IconButton from '../../../shared/ui/IconButton'
 
 /** Gráfico de barras (estatísticas). */
 function StatsIcon({ className = '' }: { className?: string }): React.JSX.Element {
@@ -45,14 +46,7 @@ export function ScreenStatsCard({
     >
       <div className="mb-1.5 flex items-center justify-between gap-2">
         <p className="font-bold text-white">{local ? 'Sua transmissão' : 'Recebendo'}</p>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Fechar estatísticas"
-          className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-md text-secondary hover:bg-fg/10 hover:text-white"
-        >
-          <XIcon className="h-3.5 w-3.5" />
-        </button>
+        <IconButton icon={XIcon} label="Fechar estatísticas" onClick={onClose} />
       </div>
       {view === null && <p className="text-secondary">Medindo…</p>}
       {view?.status && <p className="mb-1.5 font-semibold text-warning">{view.status}</p>}

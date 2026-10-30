@@ -9,6 +9,7 @@ import { useActivityStore } from '../../activity/store/activityStore'
 import { useCallStore } from '../store/callStore'
 import { IS_WEB } from '../../../shared/lib/config'
 import { CrosshairIcon } from '../../../shared/ui/icons'
+import Button from '../../../shared/ui/Button'
 
 const POPOVER_WIDTH = 360
 const GAP = 10
@@ -196,13 +197,9 @@ function ActivityPickerPopover({
                 : `${selected.roomHint} Sem link, quem entrar abre a página inicial.`}
             </p>
           )}
-          <button
-            type="submit"
-            disabled={!callId || busy}
-            className="w-full cursor-pointer rounded-xl bg-brand py-2 text-ds-xs font-semibold text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          <Button type="submit" size="sm" disabled={!callId || busy} className="w-full">
             {busy ? 'Abrindo…' : `Abrir ${selected.name}`}
-          </button>
+          </Button>
         </form>
       )}
     </div>,

@@ -29,6 +29,7 @@ import {
 import { conversationTitle, otherMembers, removeMemberTitle } from '../lib/conversations'
 import { initialShowMembers } from '../lib/groupLayout'
 import { imageFileError } from '../../profile/lib/profileValidation'
+import IconButton from '../../../shared/ui/IconButton'
 
 const MAIN_BG = 'var(--bg-primary)'
 
@@ -131,16 +132,7 @@ function GroupChat(): React.JSX.Element {
           className="min-w-0 max-w-xs flex-1 rounded-md border border-transparent bg-transparent px-1.5 py-1 text-ds-md font-semibold text-strong outline-none placeholder:text-strong hover:border-black/40 focus:border-brand focus:bg-floating"
         />
         <div className="ml-auto flex shrink-0 items-center gap-1 text-muted sm:gap-3">
-          <button
-            type="button"
-            title="Adicionar amigos ao grupo"
-            aria-label="Adicionar amigos ao grupo"
-            disabled={conv.members.length >= MAX_GROUP_MEMBERS}
-            onClick={() => setAdding(true)}
-            className="flex size-10 cursor-pointer items-center justify-center hover:text-strong disabled:cursor-not-allowed disabled:opacity-40 md:size-auto"
-          >
-            <UserPlusIcon className="h-5 w-5" />
-          </button>
+          <IconButton icon={UserPlusIcon} label="Adicionar amigos ao grupo" onClick={() => setAdding(true)} disabled={conv.members.length >= MAX_GROUP_MEMBERS} className="md:size-auto" />
           <MembersToggleButton shown={showMembers} onToggle={() => setShowMembers((v) => !v)} />
           <button
             type="button"

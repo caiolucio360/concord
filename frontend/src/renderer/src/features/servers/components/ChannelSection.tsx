@@ -1,6 +1,7 @@
 import type { DropLineSide } from '../lib/channelDrop'
 import { ChannelListSkeleton } from '../../../shared/ui/skeleton/layouts'
 import { PlusIcon } from '../../../shared/ui/icons'
+import IconButton from '../../../shared/ui/IconButton'
 
 /** Linha de soltar (reordenar canais) acima ou abaixo do bloco do canal. */
 export function ChannelDropLine({ side }: { side: DropLineSide }): React.JSX.Element | null {
@@ -46,14 +47,7 @@ function ChannelSection({
       <div className="flex items-center justify-between px-2">
         <p className="text-ds-sm font-medium text-muted">{title}</p>
         {onAdd && (
-          <button
-            onClick={onAdd}
-            title={addLabel}
-            aria-label={addLabel}
-            className="cursor-pointer rounded-md p-0.5 text-muted transition-colors hover:bg-fg/10 hover:text-strong [@media(pointer:coarse)]:-my-2 [@media(pointer:coarse)]:p-2.5"
-          >
-            <PlusIcon className="h-4 w-4" />
-          </button>
+          <IconButton icon={PlusIcon} label={addLabel} onClick={onAdd} size="sm" className="[@media(pointer:coarse)]:-my-2 [@media(pointer:coarse)]:p-2.5" />
         )}
       </div>
       <div className="mt-1 flex flex-col gap-0.5" onDragLeave={onDragLeave}>

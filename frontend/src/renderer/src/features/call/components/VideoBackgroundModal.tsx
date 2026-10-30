@@ -10,6 +10,7 @@ import BackgroundPicker from './BackgroundPicker'
 import VideoPreview from './VideoPreview'
 import { useBackgroundUpload } from '../hooks/useBackgroundUpload'
 import { useVideoPreview } from '../hooks/useVideoPreview'
+import IconButton from '../../../shared/ui/IconButton'
 
 /**
  * "Mudar fundo de vídeo" (como no Discord) e a prévia antes de ligar a câmera.
@@ -81,14 +82,7 @@ function Dialog({ mode }: { mode: 'background' | 'preview' }): React.JSX.Element
           <h2 id="video-modal-title" className="w-full text-center text-ds-lg font-bold text-strong">
             {title}
           </h2>
-          <button
-            type="button"
-            onClick={close}
-            aria-label="Fechar"
-            className="-mr-2 flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full text-muted hover:bg-fg/10 hover:text-strong"
-          >
-            <XIcon className="h-4 w-4" />
-          </button>
+          <IconButton icon={XIcon} label="Fechar" onClick={close} size="sm" className="-mr-2" />
         </div>
 
         <div className="space-y-4 overflow-y-auto px-6 pb-4">

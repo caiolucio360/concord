@@ -10,6 +10,7 @@ import VideoPreview from '../../../call/components/VideoPreview'
 import { useBackgroundUpload } from '../../../call/hooks/useBackgroundUpload'
 import { useVideoPreview } from '../../../call/hooks/useVideoPreview'
 import SectionHeader from '../../../../shared/ui/SectionHeader'
+import Button from '../../../../shared/ui/Button'
 
 /** Configurações → Vídeo: câmera, prévia ao vivo e fundo (como no Discord). */
 export function VideoSection(): React.JSX.Element {
@@ -65,13 +66,9 @@ export function VideoSection(): React.JSX.Element {
             Não foi possível aplicar o fundo neste computador. O vídeo segue normal.
           </p>
         )}
-        <button
-          type="button"
-          onClick={() => setTesting((v) => !v)}
-          className="cursor-pointer rounded-lg bg-brand px-4 py-2 text-ds-sm font-medium text-white transition-colors hover:bg-brand-hover"
-        >
+        <Button type="button" onClick={() => setTesting((v) => !v)}>
           {testing ? 'Parar teste' : 'Testar vídeo'}
-        </button>
+        </Button>
       </div>
 
       <div className="flex items-center justify-between gap-3 border-t border-subtle pt-4">

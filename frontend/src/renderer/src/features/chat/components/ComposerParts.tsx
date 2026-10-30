@@ -12,6 +12,7 @@ import CloseButton from '../../../shared/ui/CloseButton'
 import { messagePreviewParts } from '../lib/polls'
 import PreviewText from './PreviewText'
 import { submitLabel } from '../lib/chatPaneView'
+import IconButton from '../../../shared/ui/IconButton'
 
 // Peças do campo de mensagem do ChatPane: cada uma decide sozinha se aparece.
 
@@ -123,45 +124,21 @@ export function AttachButton({
 }): React.JSX.Element | null {
   if (!show) return null
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      title="Anexar arquivo"
-      aria-label="Anexar arquivo"
-      className="shrink-0 cursor-pointer rounded-md p-1 text-muted transition-colors hover:bg-fg/10 hover:text-strong max-md:p-2"
-    >
-      <PaperclipIcon className="h-5 w-5" />
-    </button>
+    <IconButton icon={PaperclipIcon} label="Anexar arquivo" onClick={onClick} className="max-md:p-2" />
   )
 }
 
 /** Abre o modal de criar enquete. */
 export function PollButton({ onClick }: { onClick: () => void }): React.JSX.Element {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      title="Criar enquete"
-      aria-label="Criar enquete"
-      className="shrink-0 cursor-pointer rounded-md p-1 text-muted transition-colors hover:bg-fg/10 hover:text-strong max-md:p-2"
-    >
-      <PollIcon className="h-5 w-5" />
-    </button>
+    <IconButton icon={PollIcon} label="Criar enquete" onClick={onClick} className="max-md:p-2" />
   )
 }
 
 /** Abre e fecha o seletor de emojis, GIFs e figurinhas. */
 export function MediaPickerButton({ onClick }: { onClick: () => void }): React.JSX.Element {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      title="Emojis, GIFs e Figurinhas"
-      aria-label="Emojis, GIFs e Figurinhas"
-      className="shrink-0 cursor-pointer rounded-md p-1 text-muted transition-colors hover:bg-white/10 hover:text-white max-md:p-2"
-    >
-      <SmileyIcon className="h-5 w-5" />
-    </button>
+    <IconButton icon={SmileyIcon} label="Emojis, GIFs e Figurinhas" onClick={onClick} className="max-md:p-2" />
   )
 }
 

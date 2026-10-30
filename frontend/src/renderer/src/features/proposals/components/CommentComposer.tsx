@@ -24,6 +24,7 @@ import VoiceRecordButton from '../../chat/components/VoiceRecordButton'
 import { PaperclipIcon } from '../../../shared/ui/icons'
 import CommentReplyBar from './CommentReplyBar'
 import MentionSuggestionList from './MentionSuggestionList'
+import IconButton from '../../../shared/ui/IconButton'
 
 const SEARCH_DELAY_MS = 200
 
@@ -267,15 +268,7 @@ function CommentComposer({
       />
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-1">
-          <button
-            type="button"
-            onClick={() => fileInput.current?.click()}
-            title="Anexar arquivo"
-            aria-label="Anexar arquivo"
-            className="shrink-0 cursor-pointer rounded-md p-1 text-muted transition-colors hover:bg-fg/10 hover:text-strong"
-          >
-            <PaperclipIcon className="h-5 w-5" />
-          </button>
+          <IconButton icon={PaperclipIcon} label="Anexar arquivo" onClick={() => fileInput.current?.click()} />
           <VoiceRecordButton key={proposalId} disabled={sendingVoice} onRecorded={handleRecorded} />
           <span className="ml-1 truncate text-ds-xs text-faint">
             {text.length}/{MAX_COMMENT} · Enter envia, Shift+Enter quebra a linha

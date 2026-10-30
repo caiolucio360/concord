@@ -2,6 +2,7 @@ import { MAX_LINKS, detectProvider, normalizeLink } from '../../../profile/lib/p
 import LinkIcon from '../../../profile/components/LinkIcon'
 import { PlusIcon, XIcon } from '../../../../shared/ui/icons'
 import { Field, SecondaryButton, inputClass } from './ProfileField'
+import IconButton from '../../../../shared/ui/IconButton'
 
 function LinkRow({
   link,
@@ -33,14 +34,7 @@ function LinkRow({
           className={inputClass}
           aria-label={`Link ${index + 1}`}
         />
-        <button
-          type="button"
-          onClick={onRemove}
-          aria-label={`Remover link ${index + 1}`}
-          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-fg/10 hover:text-strong"
-        >
-          <XIcon className="h-4 w-4" />
-        </button>
+        <IconButton icon={XIcon} label={`Remover link ${index + 1}`} onClick={onRemove} size="sm" />
       </div>
       {error && <p className="ml-11 mt-1 text-ds-xs text-danger">{error}</p>}
     </div>

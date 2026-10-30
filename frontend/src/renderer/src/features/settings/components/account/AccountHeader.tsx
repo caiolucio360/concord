@@ -3,6 +3,7 @@ import { API_BASE_URL } from '../../../../shared/lib/config'
 import { profileMediaSrc } from '../../../profile/lib/profileMedia'
 import Avatar from '../../../../shared/ui/Avatar'
 import StyledName from '../../../profile/components/StyledName'
+import Button from '../../../../shared/ui/Button'
 
 export const ACCOUNT_CARD_BG = 'var(--bg-floating)'
 
@@ -41,13 +42,9 @@ export default function AccountHeader({
             <StyledName name={name} userId={user.id} style={user.name_style} />
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onEditProfile}
-          className="mb-2 min-h-10 shrink-0 cursor-pointer rounded-md bg-brand px-4 text-ds-sm font-medium text-white transition-colors hover:bg-brand-hover"
-        >
+        <Button type="button" onClick={onEditProfile} className="mb-2 shrink-0">
           Editar perfil de usuário
-        </button>
+        </Button>
       </div>
     </>
   )

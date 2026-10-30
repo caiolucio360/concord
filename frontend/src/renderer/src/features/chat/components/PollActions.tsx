@@ -1,3 +1,5 @@
+import Button from '../../../shared/ui/Button'
+
 interface PollActionsProps {
   closed: boolean
   hasVoted: boolean
@@ -41,14 +43,9 @@ function PollActions(p: PollActionsProps): React.JSX.Element {
         </button>
       )}
       {!p.showResults && (
-        <button
-          type="button"
-          disabled={p.busy || !p.canVote}
-          onClick={p.onVote}
-          className="cursor-pointer rounded-lg bg-brand px-4 py-1.5 text-ds-xs font-semibold text-white transition-all hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-40"
-        >
+        <Button type="button" size="sm" disabled={p.busy || !p.canVote} onClick={p.onVote}>
           Votar
-        </button>
+        </Button>
       )}
     </div>
   )

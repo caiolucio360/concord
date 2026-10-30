@@ -16,6 +16,7 @@ import SoundboardVolumeBar from './SoundboardVolumeBar'
 import SoundboardEmpty from './SoundboardEmpty'
 import { formatKeyboardShortcut } from '../hooks/useSoundboardHotkeys'
 import { SoundboardSkeleton } from '../../../shared/ui/skeleton/layouts'
+import Button from '../../../shared/ui/Button'
 
 /** Título dos Favoritos: a estrela cheia, igual à do som favoritado. */
 const FavoritesIcon = (props: IconProps): React.JSX.Element => <FavoriteStarIcon {...props} filled />
@@ -144,14 +145,9 @@ function SoundboardSoundsPanel({
       <div className="flex min-h-0 flex-1 flex-col">
         {canAddSounds && (
           <div className="mb-3 flex justify-end">
-            <button
-              type="button"
-              onClick={() => setUploadOpen(true)}
-              className="flex cursor-pointer items-center gap-1 rounded-lg bg-brand px-2.5 py-1.5 text-ds-xs font-semibold text-white transition-colors hover:bg-brand-hover"
-            >
-              <PlusIcon className="h-3.5 w-3.5" />
+            <Button type="button" size="sm" icon={PlusIcon} onClick={() => setUploadOpen(true)}>
               Adicionar som
-            </button>
+            </Button>
           </div>
         )}
 

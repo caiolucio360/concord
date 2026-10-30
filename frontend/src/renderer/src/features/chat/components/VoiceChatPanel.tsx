@@ -7,6 +7,7 @@ import { useServerAccess } from '../../servers/hooks/useServerAccess'
 import { useServerMentionable } from '../../servers/hooks/useServerMentionable'
 import { useMediaQuery } from '../../../shared/hooks/useMediaQuery'
 import { ChatBubbleIcon, XIcon } from '../../../shared/ui/icons'
+import IconButton from '../../../shared/ui/IconButton'
 
 /** Do md em diante o chat vira a coluna da direita da tela; antes, tela cheia. */
 export const VOICE_CHAT_WIDE_QUERY = '(min-width: 768px)'
@@ -40,15 +41,7 @@ function VoiceChatPanel({ channelId }: { channelId: string }): React.JSX.Element
         <h2 title={name} className="min-w-0 flex-1 truncate text-ds-md font-semibold text-strong">
           {name}
         </h2>
-        <button
-          type="button"
-          onClick={close}
-          aria-label="Fechar chat"
-          title="Fechar chat"
-          className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg text-muted transition-colors hover:bg-fg/10 hover:text-strong"
-        >
-          <XIcon className="h-4 w-4" />
-        </button>
+        <IconButton icon={XIcon} label="Fechar chat" onClick={close} size="sm" />
       </header>
       <ChatPane
         room={`channel:${channelId}`}

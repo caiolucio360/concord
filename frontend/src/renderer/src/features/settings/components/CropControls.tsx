@@ -1,4 +1,5 @@
 import { MAX_ZOOM, MIN_ZOOM } from '../../profile/lib/imageCrop'
+import Button from '../../../shared/ui/Button'
 
 export function ZoomSlider({
   zoom,
@@ -54,14 +55,9 @@ export function CropFooter({
       >
         Cancelar
       </button>
-      <button
-        type="button"
-        onClick={onApply}
-        disabled={busy || !canApply}
-        className="cursor-pointer rounded-md bg-brand px-5 py-2 text-ds-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
-      >
+      <Button type="button" onClick={onApply} disabled={busy || !canApply}>
         {busy ? 'Aplicando…' : 'Aplicar'}
-      </button>
+      </Button>
     </div>
   )
 }
