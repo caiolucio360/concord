@@ -21,52 +21,35 @@ func NewRepository(db *pgxpool.Pool) *Repository {
 	return &Repository{db: db}
 }
 
-// Create grava o emoji respeitando o limite do servidor: numa transação com
-// um lock por servidor, conta e insere, então envios ao mesmo tempo não passam
-// de MaxEmojisPerServer.
+// Create grava o emoji respeitando o limite do servidor: numa transação, um
+// lock por servidor e depois o INSERT que só acontece se ainda há vaga (o
+// INSERT vem depois do lock, então já conta os emojis de quem enviou junto).
 func (r *Repository) Create(ctx context.Context, e *Emoji) error {
-	tx, err := r.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer func() { _ = tx.Rollback(ctx) }()
-	if err := lockServerAndCheckRoom(ctx, tx, e.ServerID); err != nil {
-		return err
-	}
-	err = tx.QueryRow(ctx, `
-		INSERT INTO server_emojis (id, server_id, uploader_id, name, content_type, size_bytes)
-		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING created_at`,
-		e.ID, e.ServerID, e.UploaderID, e.Name, e.ContentType, e.SizeBytes,
-	).Scan(&e.CreatedAt)
-	if err != nil {
-		return nameTaken(err)
-	}
-	return tx.Commit(ctx)
+	return pgx.BeginFunc(ctx, r.db, func(tx pgx.Tx) error {
+		if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended('server_emojis:' || $1, 0))`, e.ServerID); err != nil {
+			return err
+		}
+		return insertError(tx.QueryRow(ctx, `
+			INSERT INTO server_emojis (id, server_id, uploader_id, name, content_type, size_bytes)
+			SELECT $1, $2, $3, $4, $5, $6
+			WHERE (SELECT COUNT(*) FROM server_emojis WHERE server_id = $2) < $7
+			RETURNING created_at`,
+			e.ID, e.ServerID, e.UploaderID, e.Name, e.ContentType, e.SizeBytes, MaxEmojisPerServer,
+		).Scan(&e.CreatedAt))
+	})
 }
 
-// lockServerAndCheckRoom: lock da transação por servidor e a contagem dentro dele.
-func lockServerAndCheckRoom(ctx context.Context, tx pgx.Tx, serverID string) error {
-	if _, err := tx.Exec(ctx, `SELECT pg_advisory_xact_lock(hashtextextended('server_emojis:' || $1, 0))`, serverID); err != nil {
-		return err
-	}
-	var count int
-	if err := tx.QueryRow(ctx, `SELECT COUNT(*) FROM server_emojis WHERE server_id = $1`, serverID).Scan(&count); err != nil {
-		return err
-	}
-	if count >= MaxEmojisPerServer {
-		return ErrServerFull
-	}
-	return nil
-}
-
-// nameTaken troca a violação do índice único (o nome) pelo erro do domínio.
-func nameTaken(err error) error {
+// insertError: sem linha inserida = servidor cheio; índice único = nome repetido.
+func insertError(err error) error {
 	var pgErr *pgconn.PgError
-	if errors.As(err, &pgErr) && pgErr.Code == uniqueViolation {
+	switch {
+	case errors.Is(err, pgx.ErrNoRows):
+		return ErrServerFull
+	case errors.As(err, &pgErr) && pgErr.Code == uniqueViolation:
 		return ErrNameTaken
+	default:
+		return err
 	}
-	return err
 }
 
 // ListForUser: numa consulta só, os emojis de todos os servidores de que a

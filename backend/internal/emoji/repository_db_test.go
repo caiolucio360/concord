@@ -11,6 +11,8 @@ import (
 	"gin-quickstart/backend/internal/platform/database"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -138,6 +140,19 @@ func TestRepositoryIdsInvalidos(t *testing.T) {
 	}
 	if err := repo.Delete(ctx, "nao-uuid"); !errors.Is(err, ErrEmojiNotFound) {
 		t.Fatalf("delete: %v", err)
+	}
+}
+
+func TestInsertError(t *testing.T) {
+	if !errors.Is(insertError(pgx.ErrNoRows), ErrServerFull) {
+		t.Fatal("sem linha = servidor cheio")
+	}
+	if !errors.Is(insertError(&pgconn.PgError{Code: uniqueViolation}), ErrNameTaken) {
+		t.Fatal("índice único = nome repetido")
+	}
+	other := errors.New("x")
+	if insertError(nil) != nil || insertError(other) != other {
+		t.Fatal("o resto passa como veio")
 	}
 }
 
