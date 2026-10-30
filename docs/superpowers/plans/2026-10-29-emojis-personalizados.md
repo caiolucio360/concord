@@ -42,7 +42,7 @@
 | Modal, nome inválido | `O nome precisa ter de 2 a 32 letras, números ou _.` |
 | Excluir (title) | `Excluir emoji` |
 | Toast ao falhar exclusão | `Não foi possível excluir o emoji.` |
-| Modal, erro técnico no envio | `Não foi possível enviar o emoji.` (pendente de aprovação) |
+| Modal, erro técnico no envio | `Não foi possível enviar o emoji.` (aprovado depois da revisão) |
 | Erro: nome repetido (409) | `Já existe um emoji com esse nome neste servidor.` |
 | Erro: limite (409) | `Este servidor já tem 50 emojis.` |
 | Erro: permissão (403) | `Você não tem permissão para adicionar emojis neste servidor.` |
