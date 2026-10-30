@@ -42,4 +42,13 @@ describe('ChannelHeader', () => {
     await render(<ChannelHeader name="geral" onBack={() => {}} />)
     expect(screen.queryByRole('button', { name: 'geral' })).toBeNull()
   })
+
+  it('com onOpenMembers, o ícone de membros no canto direito (como no Discord); sem ele, não aparece', async () => {
+    const onOpenMembers = jest.fn()
+    const { rerender } = await render(<ChannelHeader name="geral" onBack={() => {}} onOpenMembers={onOpenMembers} />)
+    await fireEvent.press(screen.getByRole('button', { name: 'Membros' }))
+    expect(onOpenMembers).toHaveBeenCalled()
+    await rerender(<ChannelHeader name="geral" onBack={() => {}} />)
+    expect(screen.queryByRole('button', { name: 'Membros' })).toBeNull()
+  })
 })

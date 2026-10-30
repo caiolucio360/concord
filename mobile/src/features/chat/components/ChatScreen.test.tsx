@@ -27,6 +27,11 @@ jest.mock('../hooks/useRoomMessages', () => ({
   }
 }))
 
+jest.mock('../../servers/api/members', () => ({
+  getServerDetail: jest.fn().mockResolvedValue({ server: { id: 's1', name: 'Sala', owner_id: 'u1' }, roles: [], members: [{ user_id: 'u1', username: 'ana', display_name: 'Ana' }] })
+}))
+jest.mock('../../friends/api/presence', () => ({ fetchPresence: jest.fn().mockResolvedValue({ u1: 'online' }) }))
+
 describe('ChatScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -104,5 +109,18 @@ describe('ChatScreen', () => {
   it('canal e grupo: o nome do cabeçalho não abre perfil (não é uma pessoa só)', async () => {
     await render(<ChatScreen variant="group" id="g1" title="DEVS" onOpenProfile={jest.fn()} onBack={() => {}} />)
     expect(screen.queryByRole('button', { name: 'DEVS' })).toBeNull()
+  })
+
+  it('canal de servidor: o ícone de membros abre a lista; tocar numa pessoa abre o perfil', async () => {
+    const onOpenProfile = jest.fn()
+    await render(<ChatScreen variant="channel" id="c1" serverId="s1" title="geral" onOpenProfile={onOpenProfile} onBack={() => {}} />)
+    await fireEvent.press(screen.getByRole('button', { name: 'Membros' }))
+    await fireEvent.press(await screen.findByRole('button', { name: 'Ana, @ana' }))
+    expect(onOpenProfile).toHaveBeenCalledWith('u1')
+  })
+
+  it('DM não tem o ícone de membros', async () => {
+    await render(<ChatScreen variant="dm" id="d1" title="Paulo" onBack={() => {}} />)
+    expect(screen.queryByRole('button', { name: 'Membros' })).toBeNull()
   })
 })
