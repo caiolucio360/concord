@@ -23,11 +23,18 @@ type Get = StoreApi<ServerState>['getState']
 
 const currentUserId = (): string | undefined => useAuthStore.getState().user?.id
 
+/**
+ * De quem é a tela aberta: a conta que a carregou. Sessão encerrada à força
+ * (sem reset do store) deixa a tela da conta anterior aberta; ela não pode ir
+ * para o cache da conta nova.
+ */
+let viewOwner: string | undefined
+
 /** Guarda a tela do servidor aberto (já com o que os eventos mudaram) antes de sair dele. */
 export function stashCurrentView(get: Get): void {
   const { currentServer, currentMembers, roles, channels, channelsLoadedFor } = get()
-  if (!currentServer) return
-  serverViewCache.remember(currentUserId(), {
+  if (!currentServer || !viewOwner || viewOwner !== currentUserId()) return
+  serverViewCache.remember(viewOwner, {
     server: currentServer,
     members: currentMembers,
     roles,
@@ -39,13 +46,23 @@ export function stashCurrentView(get: Get): void {
 function showCachedView(id: string, set: Set): boolean {
   const view = serverViewCache.recall(currentUserId(), id)
   if (!view) return false
+  viewOwner = currentUserId()
   set({
     currentServer: view.server,
     currentMembers: view.members,
     roles: view.roles,
-    ...(view.channels.length > 0 ? { channels: view.channels, channelsLoadedFor: id } : {})
+    channels: view.channels,
+    channelsLoadedFor: view.channels.length > 0 ? id : null,
+    // Um servidor aberto antes, ainda sem resposta, deixou o "carregando".
+    loading: false
   })
   return true
+}
+
+/** Leitura nova de id chegou para a conta atual. */
+function loadedFresh(id: string): void {
+  viewOwner = currentUserId()
+  serverViewCache.markFresh(id)
 }
 
 export function serverViewActions(
@@ -67,6 +84,7 @@ export function serverViewActions(
       try {
         const res = await getServer(id)
         if (!isSameSession(token) || seq !== selectSeq) return
+        loadedFresh(id)
         set({
           currentServer: res.server,
           currentMembers: res.members,
@@ -87,6 +105,7 @@ export function serverViewActions(
       try {
         const [res, channels] = await Promise.all([getServer(serverId), apiListChannels(serverId)])
         if (!isSameSession(token) || get().currentServer?.id !== serverId) return
+        loadedFresh(serverId)
         set({
           currentServer: res.server,
           currentMembers: res.members,

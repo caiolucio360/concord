@@ -410,7 +410,8 @@ export const useServerStore = create<ServerState>()((set, get) => ({
       channelsLoadedFor: null
     })
   },
-  reset: () =>
+  reset: () => {
+    serverViewCache.clear()
     set({
       servers: [],
       currentServer: null,
@@ -423,4 +424,5 @@ export const useServerStore = create<ServerState>()((set, get) => ({
       serversLoaded: false,
       channelsLoadedFor: null
     })
+  }
 }))

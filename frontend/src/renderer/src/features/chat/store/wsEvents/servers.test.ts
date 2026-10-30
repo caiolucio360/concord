@@ -18,6 +18,10 @@ vi.mock('../../../servers/store/serverStore', () => ({
 }))
 vi.mock('../../../../shared/store/toastStore', () => ({ showToast: toast }))
 vi.mock('../../../../app/router', () => ({ router: nav }))
+const auth = vi.hoisted(() => ({ userId: 'ana' as string | null }))
+vi.mock('../../../auth/store/authStore', () => ({
+  useAuthStore: { getState: () => ({ user: auth.userId ? { id: auth.userId } : null }) }
+}))
 
 const { SERVER_HANDLERS, handleRoleEvent, lostChannelRoom, reconcileAfterPermissionChange } =
   await import('./servers')
@@ -113,6 +117,20 @@ describe('handleRoleEvent', () => {
       await vi.advanceTimersByTimeAsync(1500)
       expect(state().fetchChannelsForServers).toHaveBeenCalledWith(['s1'])
     } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('server:permissions:invalidate: saiu da conta antes da releitura, ela não sai', async () => {
+    vi.useFakeTimers()
+    try {
+      const { ctx, state } = fakeCtx({})
+      handleRoleEvent({ type: 'server:permissions:invalidate', payload: { server_id: 's7' } }, ctx)
+      auth.userId = 'bia' // outra conta entrou na mesma janela
+      await vi.advanceTimersByTimeAsync(1500)
+      expect(state().fetchChannelsForServers).not.toHaveBeenCalled()
+    } finally {
+      auth.userId = 'ana'
       vi.useRealTimers()
     }
   })

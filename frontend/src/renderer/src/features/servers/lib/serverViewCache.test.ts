@@ -37,6 +37,30 @@ describe('serverViewCache', () => {
     expect(cache.recall('ana', 's2')).not.toBeNull()
   })
 
+  it('invalidate esquece e recusa a tela do servidor até markFresh', () => {
+    const cache = createServerViewCache()
+    cache.remember('ana', view('s1'))
+
+    cache.invalidate('s1')
+    expect(cache.recall('ana', 's1')).toBeNull()
+    cache.remember('ana', view('s1')) // tela de antes da mudança: recusada
+    expect(cache.recall('ana', 's1')).toBeNull()
+
+    cache.markFresh('s1')
+    cache.remember('ana', view('s1'))
+    expect(cache.recall('ana', 's1')).not.toBeNull()
+  })
+
+  it('clear esquece tudo (saiu da conta)', () => {
+    const cache = createServerViewCache()
+    cache.remember('ana', view('s1'))
+    cache.invalidate('s2')
+    cache.clear()
+    expect(cache.recall('ana', 's1')).toBeNull()
+    cache.remember('ana', view('s2')) // s2 não está mais marcado
+    expect(cache.recall('ana', 's2')).not.toBeNull()
+  })
+
   it('guarda no máximo max telas, esquecendo a usada há mais tempo', () => {
     const cache = createServerViewCache(2)
     cache.remember('ana', view('s1'))

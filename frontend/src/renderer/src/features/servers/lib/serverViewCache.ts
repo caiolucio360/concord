@@ -13,8 +13,17 @@ export interface ServerView {
 export interface ServerViewCache {
   remember: (userId: string | null | undefined, view: ServerView) => void
   recall: (userId: string | null | undefined, serverId: string) => ServerView | null
-  /** Saiu, foi expulso, banido, o servidor sumiu ou as permissões mudaram. */
+  /** Saiu, foi expulso, banido ou o servidor sumiu. */
   forget: (serverId: string) => void
+  /**
+   * As permissões mudaram: esquece e não aceita tela desse servidor até
+   * markFresh (a tela aberta ainda é a de antes da mudança).
+   */
+  invalidate: (serverId: string) => void
+  /** Chegou uma leitura nova do servidor: volta a aceitar a tela dele. */
+  markFresh: (serverId: string) => void
+  /** Saiu da conta: esquece tudo. */
+  clear: () => void
 }
 
 const keyOf = (userId: string, serverId: string): string => `${userId}\u0000${serverId}`
@@ -24,12 +33,23 @@ const keyOf = (userId: string, serverId: string): string => `${userId}\u0000${se
  * "carregando") enquanto a versão nova chega por baixo. Por conta: a de uma
  * conta nunca aparece para outra. No máximo max telas (a usada há mais tempo
  * sai primeiro).
+ *
+ * Eventos de um servidor fechado (membro entrou, canal criado...) não
+ * atualizam a tela guardada: ao voltar, ela aparece como estava e a releitura
+ * acerta em seguida. A defasagem dura essa releitura; o que a pessoa deixou
+ * de poder ver (permissões, expulsão) esquece a tela na hora.
  */
 export function createServerViewCache(max = 30): ServerViewCache {
   const views = new Map<string, ServerView>()
+  const dirty = new Set<string>()
+  const forget = (serverId: string): void => {
+    for (const key of [...views.keys()]) {
+      if (key.endsWith(`\u0000${serverId}`)) views.delete(key)
+    }
+  }
   return {
     remember: (userId, view) => {
-      if (!userId) return
+      if (!userId || dirty.has(view.server.id)) return
       const key = keyOf(userId, view.server.id)
       views.delete(key)
       views.set(key, view)
@@ -44,10 +64,17 @@ export function createServerViewCache(max = 30): ServerViewCache {
       views.set(key, view)
       return view
     },
-    forget: (serverId) => {
-      for (const key of [...views.keys()]) {
-        if (key.endsWith(`\u0000${serverId}`)) views.delete(key)
-      }
+    forget,
+    invalidate: (serverId) => {
+      forget(serverId)
+      dirty.add(serverId)
+    },
+    markFresh: (serverId) => {
+      dirty.delete(serverId)
+    },
+    clear: () => {
+      views.clear()
+      dirty.clear()
     }
   }
 }

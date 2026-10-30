@@ -51,7 +51,7 @@ beforeEach(() => {
   getServer.mockReset()
   listChannels.mockReset()
   auth.userId = 'ana'
-  useServerStore.getState().reset()
+  useServerStore.getState().reset() // limpa também o cache de telas
 })
 
 describe('voltar a um servidor já visto', () => {
@@ -78,17 +78,62 @@ describe('voltar a um servidor já visto', () => {
     expect(useServerStore.getState().currentMembers.map((m) => m.user_id)).toEqual(['ana', 'bia', 'caio'])
   })
 
-  it('outra conta não vê a tela guardada', async () => {
+  it('outra conta não vê a tela guardada, nem a que estava aberta quando a sessão caiu', async () => {
     await open('s1', ['ana'])
-    await open('s2', ['ana'])
+    await open('s2', ['ana']) // s2 da ana segue no store (sessão encerrada à força não dá reset)
 
     auth.userId = 'bia'
     getServer.mockResolvedValueOnce(response('s1', ['bia']))
     const watch = watchLoading()
     await useServerStore.getState().selectServer('s1')
     watch.stop()
-
     expect(watch.loading).toContain(true)
+
+    // A tela de s2 era da ana: não pode ter ido para o cache da bia.
+    getServer.mockResolvedValueOnce(response('s2', ['bia']))
+    const watch2 = watchLoading()
+    await useServerStore.getState().selectServer('s2')
+    watch2.stop()
+    expect(watch2.loading).toContain(true)
+  })
+
+  it('tela invalidada não volta ao cache antes de uma leitura nova', async () => {
+    const { serverViewCache } = await import('../lib/serverViewCache')
+    await open('s1', ['ana', 'bia'])
+    serverViewCache.invalidate('s1') // server:permissions:invalidate, releitura ainda não saiu
+    await open('s2', ['ana']) // sair de s1 tentaria guardar a tela velha
+
+    getServer.mockResolvedValueOnce(response('s1', ['ana']))
+    const watch = watchLoading()
+    await useServerStore.getState().selectServer('s1')
+    watch.stop()
+    expect(watch.loading).toContain(true)
+  })
+
+  it('tela do cache tira o "carregando" de um servidor aberto antes', async () => {
+    await open('s1', ['ana'])
+    await open('s2', ['ana'])
+    getServer.mockReturnValueOnce(new Promise(() => {})) // s3 nunca responde
+    void useServerStore.getState().selectServer('s3')
+    expect(useServerStore.getState().loading).toBe(true)
+
+    getServer.mockReturnValueOnce(new Promise(() => {}))
+    void useServerStore.getState().selectServer('s1')
+
+    expect(useServerStore.getState().loading).toBe(false)
+    expect(useServerStore.getState().currentServer?.id).toBe('s1')
+  })
+
+  it('tela do cache sem canais não deixa a lista do servidor anterior', async () => {
+    getServer.mockResolvedValueOnce(response('s1', ['ana']))
+    await useServerStore.getState().selectServer('s1') // sem canais carregados
+    await open('s2', ['ana'])
+
+    getServer.mockReturnValueOnce(new Promise(() => {}))
+    void useServerStore.getState().selectServer('s1')
+
+    expect(useServerStore.getState().channels).toEqual([])
+    expect(useServerStore.getState().channelsLoadedFor).toBeNull()
   })
 
   it('servidor removido (saiu, expulso, banido) sai do cache', async () => {
