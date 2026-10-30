@@ -58,8 +58,7 @@ import {
 import { loadAudioPrefs, resolveDeviceId, saveAudioPrefs } from '../lib/audioDevices'
 import { useChatStore } from '../../chat/store/chatStore'
 import { useAuthStore } from '../../auth/store/authStore'
-import { useServerStore } from '../../servers/store/serverStore'
-import { serverDisplayName } from '../../servers/lib/serverNames'
+import { callName, upsertParticipant } from './callPeople'
 import { showToast } from '../../../shared/store/toastStore'
 import { useConnectionStore } from '../../../shared/store/connectionStore'
 import {
@@ -147,19 +146,6 @@ interface EndedPayload {
   call_id: string
 }
 
-/** Nome de quem está na call: numa call de canal, com o apelido daquele servidor. */
-function callName(
-  state: { type: CallKind | null; serverId: string | null },
-  user: { id: string; display_name?: string | null; username?: string | null } | undefined,
-  fallback?: string
-): string {
-  const nickname =
-    state.type === 'channel' && state.serverId && user
-      ? useServerStore.getState().nicknames?.[state.serverId]?.[user.id]
-      : undefined
-  return serverDisplayName({ nickname }, user, fallback)
-}
-
 /** Meu pedido para entrar numa sala trancada. */
 export interface KnockState {
   channelId: string
@@ -179,10 +165,6 @@ export class CallLockedError extends Error {
 
 // Aviso com instruções de instalação (portal de tela no Linux): dá tempo de ler.
 const SETUP_TOAST_MS = 20000
-
-function upsertParticipant(list: CallUserInfo[], user: CallUserInfo): CallUserInfo[] {
-  return list.some((p) => p.id === user.id) ? list : [...list, user]
-}
 
 /** Contexto que o handleWsEvent entrega ao handler do tipo do evento. */
 interface WsContext {
