@@ -19,8 +19,21 @@ export interface Channel {
   overwrites?: ChannelOverwrite[]
 }
 
+/**
+ * Pedidos da lista disparados no mesmo tick (o mesmo evento chama
+ * serverStore.fetchChannels e chatStore.fetchChannelsForServers) viram um só.
+ * Só junta no mesmo tick: um pedido mais antigo ainda no ar pode ter saído
+ * antes da mudança que o evento avisa.
+ */
+const sameTick = new Map<string, Promise<Channel[]>>()
+
 export function listChannels(serverId: string): Promise<Channel[]> {
-  return request<Channel[]>(`/servers/${serverId}/channels`)
+  const pending = sameTick.get(serverId)
+  if (pending) return pending
+  const promise = request<Channel[]>(`/servers/${serverId}/channels`)
+  sameTick.set(serverId, promise)
+  queueMicrotask(() => sameTick.delete(serverId))
+  return promise
 }
 
 export interface CreateChannelOptions {
