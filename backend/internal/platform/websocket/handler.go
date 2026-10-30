@@ -8,7 +8,6 @@ import (
 	"gin-quickstart/backend/internal/auth"
 	"gin-quickstart/backend/internal/conversation"
 	"gin-quickstart/backend/internal/permission"
-	"gin-quickstart/backend/internal/server"
 
 	"github.com/coder/websocket"
 	"github.com/gin-gonic/gin"
@@ -19,63 +18,64 @@ type ChannelPermissions interface {
 	ChannelPerms(ctx context.Context, channelID, userID string) (int64, error)
 }
 
+// ServerMembers: quem é membro do servidor (permission.Service, do cache).
+type ServerMembers interface {
+	IsMember(ctx context.Context, serverID, userID string) (bool, error)
+}
+
 type Handler struct {
 	hub                 *Hub
 	authService         *auth.Service
 	perms               ChannelPermissions
-	serverService       *server.Service
+	members             ServerMembers
 	conversationService *conversation.Service
 	callRouter          CallRouter
 	typing              TypingRouter
 }
 
-func WsHandler(hub *Hub, authService *auth.Service, perms ChannelPermissions, serverService *server.Service, conversationService *conversation.Service, callRouter CallRouter, typing TypingRouter) *Handler {
+func WsHandler(hub *Hub, authService *auth.Service, perms ChannelPermissions, members ServerMembers, conversationService *conversation.Service, callRouter CallRouter, typing TypingRouter) *Handler {
 	return &Handler{
 		hub:                 hub,
 		authService:         authService,
 		perms:               perms,
-		serverService:       serverService,
+		members:             members,
 		conversationService: conversationService,
 		callRouter:          callRouter,
 		typing:              typing,
 	}
 }
 
+// validator: userID pode entrar na sala pedida (uma por tipo).
 func (h *Handler) validator(ctx context.Context, userID string, channelID string, conversationID string, serverID string, userRoomID string, callID string) bool {
-	if userRoomID != "" {
+	switch {
+	case userRoomID != "":
 		return userRoomID == userID
+	case serverID != "":
+		return h.canJoinServer(ctx, serverID, userID)
+	case channelID != "":
+		return h.canJoinChannel(ctx, channelID, userID)
+	case conversationID != "":
+		return h.canJoinConversation(ctx, conversationID, userID)
+	case callID != "":
+		return h.callRouter != nil && h.callRouter.IsParticipant(callID, userID)
 	}
-
-	if serverID != "" {
-		isMember, err := h.serverService.IsMember(ctx, serverID, userID)
-		if err != nil || !isMember {
-			return false
-		}
-		return true
-	}
-
-	if channelID != "" {
-		// Canal privado: só quem tem VIEW_CHANNEL entra na sala.
-		perms, err := h.perms.ChannelPerms(ctx, channelID, userID)
-		return err == nil && permission.Has(perms, permission.ViewChannel)
-	}
-
-	if conversationID != "" {
-		isParticipant, err := h.conversationService.IsParticipant(ctx, conversationID, userID)
-		if err != nil || !isParticipant {
-			return false
-		}
-		return true
-	}
-
-	if callID != "" {
-		if h.callRouter == nil {
-			return false
-		}
-		return h.callRouter.IsParticipant(callID, userID)
-	}
-
 	return false
+}
+
+func (h *Handler) canJoinServer(ctx context.Context, serverID, userID string) bool {
+	isMember, err := h.members.IsMember(ctx, serverID, userID)
+	return err == nil && isMember
+}
+
+// canJoinChannel: canal privado só para quem tem VIEW_CHANNEL.
+func (h *Handler) canJoinChannel(ctx context.Context, channelID, userID string) bool {
+	perms, err := h.perms.ChannelPerms(ctx, channelID, userID)
+	return err == nil && permission.Has(perms, permission.ViewChannel)
+}
+
+func (h *Handler) canJoinConversation(ctx context.Context, conversationID, userID string) bool {
+	isParticipant, err := h.conversationService.IsParticipant(ctx, conversationID, userID)
+	return err == nil && isParticipant
 }
 
 // wsUser: quem o token deixa conectar — a conta (token de acesso) ou o
