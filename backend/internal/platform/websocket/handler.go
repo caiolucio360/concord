@@ -27,6 +27,8 @@ type Handler struct {
 	conversationService *conversation.Service
 	callRouter          CallRouter
 	typing              TypingRouter
+	// Conexões do app do celular (?client=mobile): o push usa para saber se o app está aberto.
+	mobile *MobileApps
 }
 
 func WsHandler(hub *Hub, authService *auth.Service, perms ChannelPermissions, serverService *server.Service, conversationService *conversation.Service, callRouter CallRouter, typing TypingRouter) *Handler {
@@ -105,7 +107,16 @@ func (h *Handler) ServeWS(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	if isMobileClient(c.Request.URL.Query()) {
+		defer h.mobile.Track(userID)()
+	}
 	h.serve(c.Request.Context(), conn, userID)
+}
+
+// WithMobileApps liga o contador de conexões do app do celular.
+func (h *Handler) WithMobileApps(m *MobileApps) *Handler {
+	h.mobile = m
+	return h
 }
 
 // serve registra a conexão no hub e fica lendo até ela fechar.

@@ -13,10 +13,10 @@ import (
 	"gin-quickstart/backend/internal/message"
 	"gin-quickstart/backend/internal/music"
 	"gin-quickstart/backend/internal/permission"
-	"gin-quickstart/backend/internal/push"
 	"gin-quickstart/backend/internal/platform/livekit"
 	"gin-quickstart/backend/internal/platform/media"
 	"gin-quickstart/backend/internal/platform/websocket"
+	"gin-quickstart/backend/internal/push"
 	"gin-quickstart/backend/internal/role"
 	"gin-quickstart/backend/internal/server"
 	"gin-quickstart/backend/internal/soundboard"
@@ -32,6 +32,8 @@ type app struct {
 	ctx context.Context
 	db  *pgxpool.Pool
 	hub *websocket.Hub
+	// Conexões do app do celular (push): o desktop aberto na mesma conta não impede o push.
+	mobileApps *websocket.MobileApps
 
 	authRepository *auth.Repository
 	authService    *auth.Service
@@ -54,13 +56,13 @@ type app struct {
 
 	friendshipService *friendship.Service
 	// friendAccepted: amizade aceita reavalia o badge Amigos (wireEngagement).
-	friendAccepted         *friendship.AcceptHook
+	friendAccepted *friendship.AcceptHook
 	// pushTap liga os publicadores ao notificador de push (wirePush) depois que ele existe.
-	pushTap                *push.Tap
+	pushTap *push.Tap
 	// pushNotifier/pushRepo/pushEnabled: o que wirePushCalls usa para ligar a chamada de DM ao push.
-	pushNotifier *push.Notifier
-	pushRepo     *push.Repository
-	pushEnabled  bool
+	pushNotifier           *push.Notifier
+	pushRepo               *push.Repository
+	pushEnabled            bool
 	channelRepository      *channel.Repository
 	channelService         *channel.Service
 	conversationRepository *conversation.Repository

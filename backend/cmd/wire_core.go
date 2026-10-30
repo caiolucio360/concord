@@ -9,8 +9,8 @@ import (
 	"gin-quickstart/backend/internal/conversation"
 	"gin-quickstart/backend/internal/friendship"
 	"gin-quickstart/backend/internal/permission"
-	"gin-quickstart/backend/internal/push"
 	"gin-quickstart/backend/internal/platform/websocket"
+	"gin-quickstart/backend/internal/push"
 	"gin-quickstart/backend/internal/role"
 	"gin-quickstart/backend/internal/server"
 	"gin-quickstart/backend/internal/user"
@@ -39,6 +39,7 @@ func (a *app) wireCore() {
 
 	// WebSocket hub (criado antes dos serviços que publicam eventos)
 	a.hub = websocket.NewHub()
+	a.mobileApps = websocket.NewMobileApps()
 	a.hub.SetStatusLookup(a.userRepository.GetStatus)
 	a.hub.SetAudience(websocket.NewSQLAudience(a.db))
 
