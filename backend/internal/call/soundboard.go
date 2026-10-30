@@ -125,12 +125,17 @@ func someoneElseHears(ac *activeCall, userID string) bool {
 	return false
 }
 
-func (t soundboardTarget) allowed(ctx context.Context, userID string) bool {
+// soundboardAllowed: USE_SOUNDBOARD no canal da chamada. Quem não é membro (o
+// visitante) segue o @everyone daquele canal (guestUsesSoundboard).
+func (s *Service) soundboardAllowed(ctx context.Context, t soundboardTarget, userID string) bool {
 	if t.perms == nil {
 		return true
 	}
 	got, err := t.perms.ChannelPerms(ctx, t.channelID, userID)
-	return err == nil && permission.Has(got, permission.UseSoundboard)
+	if err != nil {
+		return s.guestUsesSoundboard(ctx, t.serverID, t.channelID, userID)
+	}
+	return permission.Has(got, permission.UseSoundboard)
 }
 
 // playable: o som existe e é do servidor da chamada ou favorito de quem toca.
@@ -155,7 +160,7 @@ func (s *Service) TriggerSoundboard(ctx context.Context, callID, userID, soundID
 	if err != nil {
 		return err
 	}
-	if !t.allowed(ctx, userID) {
+	if !s.soundboardAllowed(ctx, t, userID) {
 		return ErrSoundboardNoPermission
 	}
 

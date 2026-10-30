@@ -184,6 +184,12 @@ func (d fakeDir) IsBanned(_ context.Context, _, userID string) bool { return d.b
 type fakeCalls struct {
 	in      map[string]string
 	removed []string
+	// members: visitantes que viraram membros (seguem na call).
+	members []string
+}
+
+func (f *fakeCalls) GuestBecameMember(_ context.Context, serverID, userID string) {
+	f.members = append(f.members, serverID+"|"+userID)
 }
 
 func (f *fakeCalls) VoiceLocationOf(userID string) (call.VoiceLocation, bool) {
@@ -215,6 +221,7 @@ type world struct {
 	store  *memStore
 	calls  *fakeCalls
 	notify *fakeNotifier
+	snap   *permission.Snapshot
 	now    time.Time
 }
 
@@ -234,6 +241,7 @@ func newWorld() *world {
 		store:  newMemStore(),
 		calls:  &fakeCalls{in: map[string]string{"dono": "sala", "mod": "sala", "ana": "sala", "seg": "sala"}},
 		notify: &fakeNotifier{sent: map[string][]string{}},
+		snap:   snap,
 		now:    time.Date(2026, 10, 28, 12, 0, 0, 0, time.UTC),
 	}
 	w.svc = NewService(w.store, perms, fakeDir{banned: map[string]bool{"banido": true}}, w.calls, w.notify, fakeTokens{})

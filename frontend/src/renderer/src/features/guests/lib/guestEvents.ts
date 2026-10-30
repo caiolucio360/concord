@@ -9,8 +9,10 @@ export type GuestEventAction =
   | { kind: 'pass'; pass: GuestPass }
   /** O acesso acabou (prazo, link revogado ou expulso). */
   | { kind: 'ended'; serverId: string; reason: string }
-  /** O servidor recusou algo que visitante não faz (trancar a sala...). */
+  /** Servidor antigo recusou algo ao visitante (desde a emenda de 2026-10-29 não manda). */
   | { kind: 'refused'; message: string }
+  /** Alguém da call (ou do servidor) deixou de ser visitante: virou membro. */
+  | { kind: 'member'; userId: string }
 
 type Payload = Record<string, unknown> | null | undefined
 
@@ -21,7 +23,8 @@ const ACTIONS: Record<string, (p: Payload) => GuestEventAction | null> = {
     serverId: String(p?.server_id ?? ''),
     reason: String(p?.reason ?? 'removed')
   }),
-  'guest:refused': (p) => ({ kind: 'refused', message: String(p?.message ?? GUEST_COPY.refused) })
+  'guest:refused': (p) => ({ kind: 'refused', message: String(p?.message ?? GUEST_COPY.refused) }),
+  'guest:member': (p) => (p?.user_id ? { kind: 'member', userId: String(p.user_id) } : null)
 }
 
 export function guestEventAction(event: WsEvent): GuestEventAction | null {
