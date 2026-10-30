@@ -74,6 +74,14 @@ export function pickSearchResult(serverId: string, token: string, index: number)
   })
 }
 
+/** Põe na fila o primeiro resultado da busca "artista - título", na call em que estou. */
+export function enqueueMusicQuery(serverId: string, query: string): Promise<void> {
+  return request<void>(`/servers/${serverId}/music/enqueue`, {
+    method: 'POST',
+    body: JSON.stringify({ query })
+  })
+}
+
 export function skipMusic(
   serverId: string
 ): Promise<{ kind: 'nothing' | 'done' | 'voted' | 'already'; votes: number; needed: number }> {

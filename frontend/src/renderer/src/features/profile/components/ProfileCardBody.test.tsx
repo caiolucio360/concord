@@ -6,6 +6,7 @@ const activity = vi.hoisted(() => ({
   game: null as Record<string, unknown> | null,
   listening: null as Record<string, unknown> | null
 }))
+vi.mock('../../call/store/callStore', () => ({ useCallStore: () => null }))
 vi.mock('../../activity/store/presenceActivityStore', () => ({ useActivity: () => activity.game }))
 vi.mock('../../activity/store/listeningStore', () => ({
   useListening: (id?: string) => (id ? activity.listening : null)
