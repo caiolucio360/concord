@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Mostra o IP público de um túnel do playit, para usar em LIVEKIT_NODE_IP.
+# Só para o PC de casa com playit; numa VPS deixe LIVEKIT_NODE_IP vazio.
 #
 #   scripts/playit-ip.sh abc-def.gl.at.ply.gg
 #
