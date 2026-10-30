@@ -15,6 +15,7 @@ import (
 	"gin-quickstart/backend/internal/message"
 	"gin-quickstart/backend/internal/notifysettings"
 	"gin-quickstart/backend/internal/proposal"
+	"gin-quickstart/backend/internal/relationship"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,7 +33,7 @@ func (a *app) wireEngagement() {
 	levelService := level.LevelService(levelRepository, a.hub, a.callAFK)
 	levelHandler := level.LevelHandler(levelService)
 	go levelService.Run(a.ctx)
-	rankingHandler := level.LevelRankingHandler(level.RankingServiceFor(levelRepository))
+	rankingHandler := level.LevelRankingHandler(level.RankingServiceFor(levelRepository, relationship.NewRepository(a.db)))
 
 	// Propostas (kanban com votação de 7 dias; aprovadas viram issue no GitHub)
 	issueCreator := newIssueCreator()

@@ -8,15 +8,17 @@ import (
 	"time"
 )
 
-// Prévia da transmissão no cartão de perfil. Em vez de assinar o vídeo da
-// tela (que é publicado sem simulcast, em qualidade cheia), quem transmite
+// Prévia da transmissão (cartão de perfil e selo LIVE da lista do canal de
+// voz). Em vez de assinar o vídeo da tela (que é publicado sem simulcast, em
+// qualidade cheia), quem transmite
 // manda uma miniatura JPEG pequena só quando alguém está com o cartão aberto:
 // o GET de quem olha pede uma foto nova (call:screen_preview_request) e
 // devolve a mais recente. Ninguém olhando, nada é enviado.
 
 const (
-	// Foto mais nova que isso é servida sem pedir outra.
-	screenPreviewFresh = 10 * time.Second
+	// Foto mais nova que isso é servida sem pedir outra. Quem olha busca a cada
+	// 5 s (PREVIEW_POLL_MS no app): com 4 s, cada busca pede a próxima foto.
+	screenPreviewFresh = 4 * time.Second
 	// Foto mais velha que isso não é mostrada (a tela já mudou demais).
 	screenPreviewMaxAge = time.Minute
 	// Intervalo mínimo entre dois pedidos de foto à mesma pessoa.

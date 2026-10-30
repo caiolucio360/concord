@@ -1,3 +1,4 @@
+import type { ProfileRelationship } from '../../profile/lib/profileRelationship'
 import type { MyRank, RankingEntry } from '../api/ranking'
 
 const PODIUM_SIZE = 3
@@ -34,4 +35,19 @@ export function myPositionText(me: MyRank | null): string {
 /** A pessoa tem posição, mas a linha dela não está na lista mostrada. */
 export function isOutsideList(me: MyRank | null, entries: RankingEntry[]): boolean {
   return me !== null && !entries.some((e) => e.position === me.position)
+}
+
+/**
+ * O que a linha leva para o cartão de perfil. Sem vínculo (nem amizade nem
+ * servidor em comum), o cartão abre sem o @ e sem os atalhos de DM e amizade.
+ */
+export function cardContact(entry: RankingEntry): {
+  username: string | undefined
+  relationship: ProfileRelationship
+} {
+  const linked = entry.relationship !== 'none'
+  return {
+    username: linked && entry.username ? entry.username : undefined,
+    relationship: entry.relationship
+  }
 }
