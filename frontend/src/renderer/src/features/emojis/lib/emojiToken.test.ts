@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  isEmojiOnly,
   isValidEmojiName,
   messageToken,
   reactionEmojiId,
@@ -55,5 +56,16 @@ describe('splitCustomEmojis', () => {
   it('token malformado fica texto', () => {
     const text = `<:a:${ID}> <:festa:123> <festa:${ID}>`
     expect(splitCustomEmojis(text)).toEqual([{ text }])
+  })
+})
+
+describe('isEmojiOnly', () => {
+  it('só emojis e espaços: grande', () => {
+    expect(isEmojiOnly(splitCustomEmojis(`<:a1:${ID}> <:b2:${ID2}>`))).toBe(true)
+  })
+  it('com texto, vazio ou emojis demais: normal', () => {
+    expect(isEmojiOnly(splitCustomEmojis(`oi <:a1:${ID}>`))).toBe(false)
+    expect(isEmojiOnly([{ text: '  ' }])).toBe(false)
+    expect(isEmojiOnly(splitCustomEmojis(`<:a1:${ID}>`.repeat(28)))).toBe(false)
   })
 })

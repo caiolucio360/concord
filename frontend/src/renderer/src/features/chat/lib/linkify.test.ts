@@ -187,3 +187,16 @@ describe('linkify: tempo linear (mensagem maliciosa não trava o app)', () => {
     expect(links(ok)).toEqual([[ok, ok]])
   })
 })
+
+describe('messageParts (emojis personalizados)', () => {
+  const id = '3f2b6c1e-8a4d-4f7e-9b1a-2c3d4e5f6a7b'
+  it('emoji vira pedaço próprio, entre menção e link', () => {
+    expect(messageParts(`@ana <:festa:${id}> https://x.com`, null)).toEqual([
+      { text: '@ana', mention: 'ana' },
+      { text: ' ' },
+      { text: `<:festa:${id}>`, emoji: { id, name: 'festa' } },
+      { text: ' ' },
+      { text: 'https://x.com', href: 'https://x.com' }
+    ])
+  })
+})

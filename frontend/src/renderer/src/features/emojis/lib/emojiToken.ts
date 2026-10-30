@@ -52,3 +52,16 @@ export function splitCustomEmojis(text: string): EmojiPart[] {
   if (last < text.length) parts.push({ text: text.slice(last) })
   return parts
 }
+
+/** Mais que isso numa mensagem só de emojis e eles voltam ao tamanho normal. */
+const MAX_JUMBO = 27
+
+/** Mensagem só com emojis personalizados (e espaços): mostra grandes. */
+export function isEmojiOnly(parts: { text: string; emoji?: unknown }[]): boolean {
+  let count = 0
+  for (const part of parts) {
+    if (part.emoji) count++
+    else if (part.text.trim()) return false
+  }
+  return count > 0 && count <= MAX_JUMBO
+}
