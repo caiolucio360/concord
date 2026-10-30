@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useExclusiveGestures, usePanGesture, usePinchGesture, useSimultaneousGestures, useTapGesture } from 'react-native-gesture-handler'
 import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
 import { scheduleOnRN } from 'react-native-worklets'
@@ -11,7 +11,8 @@ const CENTER: Point = { x: 0, y: 0 }
  * Pinça, arraste com um dedo, duplo toque (1x ↔ 2x) e toque simples (fecha em 1x)
  * na imagem do lightbox. A vista mora em shared values e os gestos rodam no thread
  * de UI: a imagem segue o dedo sem passar pelo JS. `level` (para a barra de zoom)
- * só chega ao React no fim de cada gesto ou toque de botão.
+ * só chega ao React no fim de cada gesto ou toque de botão. `bounds` vem do tamanho
+ * medido do lightbox (useLayoutSize).
  */
 export function useZoomGestures(bounds: ZoomBounds, onClose: () => void) {
   const scale = useSharedValue(1)
@@ -20,6 +21,12 @@ export function useZoomGestures(bounds: ZoomBounds, onClose: () => void) {
   const start = useSharedValue<ZoomView>(IDENTITY)
   const focal = useSharedValue<Point>(CENTER)
   const [level, setLevel] = useState(1)
+  // Onde a imagem vai parar: os botões partem dele, não do meio de uma animação.
+  const target = useRef<ZoomView>(IDENTITY)
+  const remember = (v: ZoomView) => {
+    target.current = v
+    setLevel(v.scale)
+  }
 
   const current = (): ZoomView => {
     'worklet'
@@ -37,14 +44,14 @@ export function useZoomGestures(bounds: ZoomBounds, onClose: () => void) {
     x.value = withTiming(v.x, TIMING)
     y.value = withTiming(v.y, TIMING)
   }
-  // Os gestos medem a partir do canto da tela; a conta, a partir do centro.
+  // Os gestos medem a partir do canto da área do lightbox; a conta, a partir do centro.
   const fromCenter = (px: number, py: number): Point => {
     'worklet'
     return { x: px - bounds.viewWidth / 2, y: py - bounds.viewHeight / 2 }
   }
   const settle = () => {
     'worklet'
-    scheduleOnRN(setLevel, scale.value)
+    scheduleOnRN(remember, current())
   }
 
   const pinch = usePinchGesture({
@@ -74,11 +81,12 @@ export function useZoomGestures(bounds: ZoomBounds, onClose: () => void) {
 
   const doubleTap = useTapGesture({
     numberOfTaps: 2,
+    testID: 'lightbox-duplo-toque',
     onActivate: (e) => {
       'worklet'
       const next = toggleZoom(current(), fromCenter(e.x, e.y), bounds)
       animateTo(next)
-      scheduleOnRN(setLevel, next.scale)
+      scheduleOnRN(remember, next)
     }
   })
 
@@ -101,14 +109,14 @@ export function useZoomGestures(bounds: ZoomBounds, onClose: () => void) {
   // Botões da barra (thread JS): a mesma conta, animada.
   const show = (v: ZoomView) => {
     animateTo(v)
-    setLevel(v.scale)
+    remember(v)
   }
 
   return {
     gesture,
     animatedStyle,
     level,
-    zoomBy: (factor: number) => show(zoomAt(current(), scale.value * factor, CENTER, bounds)),
+    zoomBy: (factor: number) => show(zoomAt(target.current, target.current.scale * factor, CENTER, bounds)),
     reset: () => show(IDENTITY)
   }
 }

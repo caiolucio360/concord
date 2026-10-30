@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react-native'
+import { act, fireEvent, render, screen } from '@testing-library/react-native'
 import { fireGestureHandler, getByGestureTestId } from 'react-native-gesture-handler/jest-utils'
 import { MediaLightbox } from './MediaLightbox'
 
@@ -38,5 +38,19 @@ describe('MediaLightbox', () => {
     expect(onClose).not.toHaveBeenCalled()
     await fireEvent.press(screen.getByLabelText('Fechar'))
     expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
+  it('leitor de tela (TalkBack): ativar a imagem fecha', async () => {
+    const onClose = jest.fn()
+    await open(onClose)
+    await fireEvent(screen.getByLabelText('Fechar imagem'), 'accessibilityAction', { nativeEvent: { actionName: 'activate' } })
+    expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
+  it('duplo toque amplia 2x e o nível acompanha', async () => {
+    await open()
+    await act(() => fireGestureHandler(getByGestureTestId('lightbox-duplo-toque')))
+    expect(screen.getByText('200%')).toBeOnTheScreen()
+    expect(screen.getByRole('button', { name: 'Diminuir zoom' })).toBeEnabled()
   })
 })

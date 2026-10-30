@@ -1,10 +1,13 @@
-import { Image, Modal, StyleSheet, useWindowDimensions, View } from 'react-native'
+import { Image, Modal, StyleSheet, View, type AccessibilityActionEvent } from 'react-native'
 import { GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 import { IconButton } from '../../../shared/ui/IconButton'
+import { useLayoutSize } from '../hooks/useLayoutSize'
 import { useZoomGestures } from '../hooks/useZoomGestures'
 import { containSize, ZOOM_STEP } from '../lib/imageZoom'
 import { ZoomBar } from './ZoomBar'
+
+const ACTIVATE = [{ name: 'activate' as const }]
 
 interface MediaLightboxProps {
   src: string
@@ -20,15 +23,26 @@ interface MediaLightboxProps {
  * imagem em 1x ou no X fecha; o botão voltar do Android também.
  */
 export function MediaLightbox({ src, label, onClose, width, height }: MediaLightboxProps) {
-  const view = useWindowDimensions()
-  const size = containSize(width, height, view.width, view.height)
-  const zoom = useZoomGestures({ ...size, viewWidth: view.width, viewHeight: view.height }, onClose)
+  const { size: view, onLayout } = useLayoutSize()
+  const image = containSize(width, height, view.width, view.height)
+  const zoom = useZoomGestures({ ...image, viewWidth: view.width, viewHeight: view.height }, onClose)
+  // onAccessibilityTap só existe no iOS; no Android (TalkBack) é a ação "activate".
+  const onAccessibilityAction = (e: AccessibilityActionEvent) => {
+    if (e.nativeEvent.actionName === 'activate') onClose()
+  }
   return (
     <Modal visible transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
       {/* No Android o Modal fica fora da raiz do app: precisa da própria raiz de gestos. */}
-      <GestureHandlerRootView style={styles.backdrop}>
+      <GestureHandlerRootView style={styles.backdrop} onLayout={onLayout}>
         <GestureDetector gesture={zoom.gesture}>
-          <View style={styles.fill} accessible accessibilityRole="button" accessibilityLabel="Fechar imagem" onAccessibilityTap={onClose}>
+          <View
+            style={styles.fill}
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel="Fechar imagem"
+            accessibilityActions={ACTIVATE}
+            onAccessibilityAction={onAccessibilityAction}
+          >
             <Animated.View style={[styles.fill, zoom.animatedStyle]}>
               <Image source={{ uri: src }} accessibilityLabel={label} style={styles.fill} resizeMode="contain" />
             </Animated.View>
