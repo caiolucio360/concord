@@ -134,3 +134,28 @@ func TestIssueBotTokenPublishesOnly(t *testing.T) {
 		t.Fatal("o bot precisa publicar")
 	}
 }
+
+func TestIssueScreenOnlyPublishesTheScreen(t *testing.T) {
+	raw, err := NewTokenIssuer(testKey, testSecret).IssueScreen("call-1", "user-1:screen", "Fulano")
+	if err != nil {
+		t.Fatalf("IssueScreen: %v", err)
+	}
+	verifier, err := auth.ParseAPIToken(raw)
+	if err != nil {
+		t.Fatalf("ParseAPIToken: %v", err)
+	}
+	_, grants, err := verifier.Verify(testSecret)
+	if err != nil {
+		t.Fatalf("Verify: %v", err)
+	}
+	v := grants.Video
+	if grants.Identity != "user-1:screen" || v.Room != "call-1" || !v.RoomJoin {
+		t.Fatalf("identity=%q video=%+v", grants.Identity, v)
+	}
+	if !v.GetCanPublish() || v.GetCanSubscribe() || v.GetCanPublishData() {
+		t.Fatalf("só publica: %+v", v)
+	}
+	if !reflect.DeepEqual(v.CanPublishSources, []string{"screen_share", "screen_share_audio"}) {
+		t.Fatalf("fontes = %v", v.CanPublishSources)
+	}
+}

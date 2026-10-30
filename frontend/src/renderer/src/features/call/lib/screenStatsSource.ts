@@ -1,6 +1,7 @@
 import { Track } from 'livekit-client'
 import type { ScreenStatsInput } from './screenStats'
 import { loadVideoDriverHint } from './videoDriverHint'
+import { screenHelperIdentity } from './screenIdentity'
 
 // Lê, sob demanda, o getStats() do vídeo da live (o meu envio ou a recepção da
 // de outra pessoa) e o estado da publicação. Só roda com o painel aberto.
@@ -64,9 +65,10 @@ async function readLocal(room: StatsRoomLike): Promise<ScreenStatsInput | null> 
 }
 
 async function readRemote(room: StatsRoomLike, userId: string): Promise<ScreenStatsInput | null> {
-  const publication = room.remoteParticipants
-    .get(userId)
-    ?.getTrackPublication(Track.Source.ScreenShare)
+  // A live pode sair pelo app (userId) ou pelo helper nativo (`<userId>:screen`).
+  const publication = [userId, screenHelperIdentity(userId)]
+    .map((id) => room.remoteParticipants.get(id)?.getTrackPublication(Track.Source.ScreenShare))
+    .find(Boolean)
   if (!publication) return null
   return {
     local: false,

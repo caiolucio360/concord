@@ -21,8 +21,9 @@ source .env
 set +a
 
 if [[ -z "${LIVEKIT_NODE_IP:-}" ]]; then
-  echo "aviso: LIVEKIT_NODE_IP vazio — chamadas só funcionam na rede local." >&2
-  echo "       Para amigos de fora: scripts/playit-ip.sh <endereço-do-túnel-udp>" >&2
+  echo "aviso: LIVEKIT_NODE_IP vazio — num PC de casa, chamadas só funcionam na rede local." >&2
+  echo "       Para amigos de fora (playit): scripts/playit-ip.sh <endereço-do-túnel-udp>." >&2
+  echo "       Numa VPS com IP público, vazio é o correto." >&2
 fi
 
 docker compose up -d

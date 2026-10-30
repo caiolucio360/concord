@@ -5,6 +5,8 @@ import { readActiveCallStats, readActiveScreenStats } from '../../call/lib/scree
 import { anonymousGuestLink, useGuestSessionStore } from '../../guests/store/guestSessionStore'
 import { postTelemetry } from '../api/telemetry'
 import { loadClientContext } from '../lib/telemetryContext'
+import { createConnectionLog } from '../lib/telemetryConnection'
+import { takeScreenCodecChoice } from '../../call/lib/screenCodecChoice'
 import {
   createTelemetryReporter,
   stepChanged,
@@ -24,27 +26,36 @@ function snapshot(): CallSnapshot {
 }
 
 /**
- * Telemetria das lives e calls (docs/adr/0028): a cada 20 s, com uma call
- * ativa, manda ao servidor o resumo técnico de cada sessão. Fora de call não
- * lê nem manda nada.
+ * Telemetria das lives e calls (docs/adr/0029 e 0032): a cada 20 s, com uma
+ * call ativa, manda ao servidor o resumo técnico de cada sessão, com a conexão
+ * da voz (fases do callStore, só lidas) e por que a live saiu nesse codec.
+ * Fora de call não lê nem manda nada.
  */
 function LiveTelemetryBridge(): null {
   useEffect(() => {
+    const connection = createConnectionLog()
     const reporter = createTelemetryReporter({
       snapshot,
       readScreen: readActiveScreenStats,
       readCall: readActiveCallStats,
       context: loadClientContext,
       send: postTelemetry,
-      newId: () => crypto.randomUUID()
+      newId: () => crypto.randomUUID(),
+      connection: connection.take,
+      codecChoice: takeScreenCodecChoice
     })
     const timer = setInterval(() => void reporter.tick(), TELEMETRY_INTERVAL_MS)
     const offAdapt = useScreenAdaptStore.subscribe((state, previous) => {
       if (stepChanged(previous.view, state.view)) reporter.noteStepChange()
     })
+    const offConnection = useCallStore.subscribe((state, previous) => {
+      if (state.connection !== previous.connection)
+        connection.observe(previous.connection, state.connection)
+    })
     return () => {
       clearInterval(timer)
       offAdapt()
+      offConnection()
     }
   }, [])
   return null

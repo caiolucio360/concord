@@ -34,6 +34,15 @@ export interface SessionStats {
   bitrate_kbps: number | null
   loss_pct: number | null
   rtt_ms: number | null
+  // Sinais da ADR 0032 (médias; null = sem dado).
+  capture_fps: number | null
+  recv_fps: number | null
+  codec_ms: number | null
+  concealed_pct: number | null
+  recv_loss_pct: number | null
+  connect_ms: number | null
+  reconnects: number
+  failures: number
 }
 
 export interface LiveRow extends SessionStats {

@@ -41,4 +41,11 @@ describe('createCallForeground', () => {
     await Promise.resolve()
     expect(p.start).toHaveBeenCalledTimes(1)
   })
+
+  // Regressão: o serviço é do tipo microfone; subir sem a permissão derruba o app no Android 14.
+  it('sem permissão de microfone não liga o serviço', () => {
+    const p = port()
+    createCallForeground(p).sync({ phase: 'active', name: 'voz', micDenied: true })
+    expect(p.start).not.toHaveBeenCalled()
+  })
 })

@@ -149,21 +149,16 @@ func (m *Manager) HandleCommand(serverID, textChannelID, userID, content string)
 	if !ok {
 		return false
 	}
-	m.mu.Lock()
-	if _, working := m.busy[userID]; working {
-		m.mu.Unlock()
+	end, ok := m.begin(userID)
+	if !ok {
 		return true // já tem um comando dele em andamento: ignora em silêncio
 	}
-	m.busy[userID] = struct{}{}
-	m.mu.Unlock()
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
 				log.Printf("[music] pânico no comando: %v %s", r, debug.Stack())
 			}
-			m.mu.Lock()
-			delete(m.busy, userID)
-			m.mu.Unlock()
+			end()
 		}()
 		m.run(serverID, textChannelID, userID, cmd)
 	}()
@@ -303,32 +298,6 @@ func newToken() string {
 	b := make([]byte, 16)
 	_, _ = rand.Read(b)
 	return hex.EncodeToString(b)
-}
-
-func (m *Manager) queueText(p *Player) (string, bool) {
-	s := p.Snapshot()
-	if s.Now == nil {
-		return "", false
-	}
-	elapsed := time.Since(s.StartedAt).Milliseconds()
-	remaining := s.Now.Track.DurationMs - elapsed
-	if remaining < 0 {
-		remaining = 0
-	}
-	var lines []QueueLine
-	var moreMs int64
-	for i, it := range s.Queue {
-		if i < queueListMax {
-			lines = append(lines, QueueLine{
-				Title: it.Track.Title, DurationMs: it.Track.DurationMs, User: it.RequestedBy.Username,
-				StartsInMs: StartsIn(remaining, s.Queue, i+1, crossfade.Milliseconds()),
-			})
-		} else {
-			moreMs += it.Track.DurationMs
-		}
-	}
-	more := len(s.Queue) - len(lines)
-	return TextQueue(p.ChannelName, s.Now.Track.Title, elapsed, s.Now.Track.DurationMs, s.Now.RequestedBy.Username, lines, more, moreMs), true
 }
 
 // playerOf: o player da call em que o usuário está, nesse servidor.

@@ -8,7 +8,10 @@ const path = require('node:path')
 const PROGUARD_RULES = [
   '# LiveKit: o WebRTC dele referencia livekit.org.jni_zero.JniZeroJni, que o R8 não encontra e faz o',
   '# build de release falhar. É a regra que o próprio Gradle sugere (app/build/outputs/mapping/release/missing_rules.txt).',
-  '-dontwarn livekit.org.jni_zero.JniZeroJni'
+  '-dontwarn livekit.org.jni_zero.JniZeroJni',
+  '# WorkManager (veio com o notifee): cria o banco do Room (WorkDatabase_Impl) por reflexão; sem o construtor',
+  '# o app fecha ao abrir com "Failed to create an instance of class androidx.work.impl.WorkDatabase".',
+  '-keep class * extends androidx.room.RoomDatabase { <init>(); }'
 ]
 
 /** Acrescenta as regras ao conteúdo do proguard-rules.pro, sem duplicar se o prebuild rodar de novo. */

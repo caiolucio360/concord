@@ -1,0 +1,28 @@
+[package]
+name = "concord-live"
+version = "0.1.0"
+edition = "2021"
+description = "Helper nativo da Salinha: a live (tela + som da tela) publicada direto no LiveKit pelo SDK Rust (docs/adr/0031)"
+publish = false
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+# SDK Rust do LiveKit (Apache-2.0): libwebrtc pré-compilado, captura pelo portal
+# ScreenCast/PipeWire e encoders por placa (VAAPI; NVENC se compilado com cuda.h).
+livekit = { version = "0.10.0", features = ["glib-main-loop", "rustls-tls-webpki-roots"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time"] }
+
+[profile.release]
+lto = "thin"
+strip = true
+panic = "abort"
+
+# A cola C++ do webrtc-sys (não o libwebrtc, que vem pré-compilado) sem
+# otimização: o escritor de bits do encoder VAAPI faz `x << 32` (indefinido em
+# C++) e o clang otimizado zera o código de início do SPS, derrubando o driver
+# do Mesa (radeonsi). Em -O0 o shl do x86 dá o resultado certo. Ver ADR 0031.
+[profile.release.package.webrtc-sys]
+opt-level = 0

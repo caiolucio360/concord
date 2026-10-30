@@ -95,6 +95,13 @@ export function getCallToken(callId: string): Promise<{ token: string }> {
   return request<{ token: string }>(`/calls/${callId}/token`, { method: 'POST' })
 }
 
+/** Token do participante "tela" (live pelo motor nativo, docs/adr/0031): só publica a tela. */
+export function getScreenToken(callId: string): Promise<{ token: string; identity: string }> {
+  return request<{ token: string; identity: string }>(`/calls/${callId}/screen-token`, {
+    method: 'POST'
+  })
+}
+
 /** Moderadores: tira alguém do canal de voz em que está e o põe em outro. */
 export function moveToVoiceChannel(userId: string, channelId: string): Promise<CallInfo> {
   return request<CallInfo>('/calls/move', {

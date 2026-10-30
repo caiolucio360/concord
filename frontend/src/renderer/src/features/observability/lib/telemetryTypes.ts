@@ -28,6 +28,20 @@ export interface TelemetrySample {
   nack: number
   transport: string
   paused: boolean
+  // Sinais de qualidade (docs/adr/0032): onde os quadros da live se perdem e
+  // o que a voz faz com o áudio recebido.
+  /** Transmite: quadros/s que a captura entregou. */
+  capture_fps: number | null
+  /** Assiste: quadros/s que chegaram (antes de decodificar). */
+  recv_fps: number | null
+  /** ms por quadro no codificador (transmite) ou decodificador (assiste). */
+  codec_ms: number | null
+  /** Call: % do áudio recebido que foi sintetizado (voz robotizada/cortes). */
+  concealed_pct: number | null
+  /** Call: perda no áudio que eu recebo. */
+  recv_loss_pct: number | null
+  /** Call: ms do "entrar" até a voz conectar (só na amostra seguinte). */
+  connect_ms: number | null
 }
 
 export interface TelemetryEvent {
@@ -82,6 +96,12 @@ export function emptySample(): TelemetrySample {
     pli: 0,
     nack: 0,
     transport: '',
-    paused: false
+    paused: false,
+    capture_fps: null,
+    recv_fps: null,
+    codec_ms: null,
+    concealed_pct: null,
+    recv_loss_pct: null,
+    connect_ms: null
   }
 }
