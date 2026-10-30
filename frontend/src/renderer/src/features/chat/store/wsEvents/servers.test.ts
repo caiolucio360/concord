@@ -104,10 +104,17 @@ describe('handleRoleEvent', () => {
     expect(toast.error).not.toHaveBeenCalled()
   })
 
-  it('server:permissions:invalidate relê os canais', async () => {
-    const { ctx, state } = fakeCtx({})
-    handleRoleEvent({ type: 'server:permissions:invalidate', payload: { server_id: 's1' } }, ctx)
-    await vi.waitFor(() => expect(state().fetchChannelsForServers).toHaveBeenCalledWith(['s1']))
+  it('server:permissions:invalidate relê os canais, espalhado em até 1,5 s', async () => {
+    vi.useFakeTimers()
+    try {
+      const { ctx, state } = fakeCtx({})
+      handleRoleEvent({ type: 'server:permissions:invalidate', payload: { server_id: 's1' } }, ctx)
+      expect(state().fetchChannelsForServers).not.toHaveBeenCalled()
+      await vi.advanceTimersByTimeAsync(1500)
+      expect(state().fetchChannelsForServers).toHaveBeenCalledWith(['s1'])
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('evento de outro tipo: false', () => {
