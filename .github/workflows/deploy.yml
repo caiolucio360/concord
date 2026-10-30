@@ -64,7 +64,7 @@ jobs:
       # Nota acima do limite do servidor faria o PUT do changelog falhar só no
       # fim, com a versão já no ar. Aqui falha antes de publicar qualquer coisa.
       - name: Changelog (limites)
-        run: node scripts/publish-changelog.mjs --check changelog/next.md
+        run: node scripts/publish-changelog.mjs --check changelog/pending
 
       - uses: actions/setup-go@v7
         with:
@@ -128,7 +128,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: node scripts/github-release.mjs "${{ steps.version.outputs.version }}" backend/updates changelog/next.md
+        run: node scripts/github-release.mjs "${{ steps.version.outputs.version }}" backend/updates changelog/pending
 
       - name: Publicar na VPS (backend + página de download + app web + atualização do app)
         env:
@@ -175,12 +175,12 @@ jobs:
           echo "Salinha ${{ steps.version.outputs.version }} no ar em ${PUBLIC_URL%/}"
 
       # Depois do "Conferir": a versão já está no ar e o endpoint novo também.
-      # O PUT é idempotente; o servidor guarda só as notas que nenhuma versão
-      # anterior trouxe, porque o next.md acumula entre deploys.
+      # O PUT é idempotente; o servidor guarda só as notas cujo arquivo nenhuma
+      # versão anterior trouxe, porque changelog/pending/ acumula entre deploys.
       - name: Changelog
         env:
           CHANGELOG_TOKEN: ${{ secrets.CHANGELOG_TOKEN }}
-        run: node scripts/publish-changelog.mjs "${{ steps.version.outputs.version }}" changelog/next.md "$PUBLIC_URL"
+        run: node scripts/publish-changelog.mjs "${{ steps.version.outputs.version }}" changelog/pending "$PUBLIC_URL"
 
       - name: Limpar chaves
         if: always()

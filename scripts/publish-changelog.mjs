@@ -1,13 +1,15 @@
 // Publica as notas da release no changelog do app.
 //
-//   CHANGELOG_TOKEN=… node scripts/publish-changelog.mjs <versão> <notas.md> <url-base>
-//   node scripts/publish-changelog.mjs --check <notas.md>
+//   CHANGELOG_TOKEN=… node scripts/publish-changelog.mjs <versão> <pasta> <url-base>
+//   node scripts/publish-changelog.mjs --check <pasta>
 //
-// Lê `changelog/next.md` (seções "## Novidades" e "## Correções" em bullets),
-// e faz o PUT idempotente em <url-base>/api/changelog/<versão>. O arquivo
-// acumula entre deploys (o CI não o esvazia no git): o servidor guarda na
-// versão só as notas que nenhuma versão anterior trouxe.
-import { readFileSync } from 'node:fs'
+// Lê os arquivos de `changelog/pending/` (um por mudança, com as seções
+// "## Novidades" e "## Correções" em bullets) e faz o PUT idempotente em
+// <url-base>/api/changelog/<versão>. Cada nota leva o nome do arquivo de
+// origem: o CI não apaga os arquivos já publicados do git, e é pela origem que
+// o servidor guarda na versão só as notas que nenhuma versão anterior trouxe.
+import { readdirSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 export const EMPTY_NOTES = '## Novidades\n\n## Correções\n'
 
@@ -15,10 +17,11 @@ export const EMPTY_NOTES = '## Novidades\n\n## Correções\n'
 // aqui, antes do merge, e não no PUT depois que a versão já está no ar.
 export const MAX_ENTRIES = 1000
 export const MAX_ENTRY_TEXT = 1000
+export const MAX_SOURCE = 200
 
 const SECTIONS = { novidades: 'feature', correções: 'fix', correcoes: 'fix' }
 
-export function parseNotes(markdown) {
+export function parseNotes(markdown, source = '') {
   const entries = []
   let kind = null
   for (const raw of markdown.split(/\r?\n/)) {
@@ -33,10 +36,30 @@ export function parseNotes(markdown) {
     const bullet = /^[-*]\s+(.+)$/.exec(line)
     if (!bullet) continue
     if (!kind) throw new Error(`bullet fora de uma seção: ${line}`)
-    entries.push({ kind, text: bullet[1].trim() })
+    entries.push({ kind, text: bullet[1].trim(), ...(source && { source }) })
   }
   checkLimits(entries)
   return { entries }
+}
+
+/** Notas de todos os arquivos de `dir`, do arquivo mais novo (nome maior) para o mais antigo. */
+export function readPending(dir) {
+  const names = readdirSync(dir)
+    .filter((name) => name.endsWith('.md') && name !== 'README.md')
+    .sort()
+    .reverse()
+  const entries = names.flatMap((name) => parseFile(dir, name))
+  checkLimits(entries)
+  return { entries, names }
+}
+
+function parseFile(dir, name) {
+  if ([...name].length > MAX_SOURCE) throw new Error(`nome de arquivo grande demais: ${name}`)
+  try {
+    return parseNotes(readFileSync(join(dir, name), 'utf8'), name).entries
+  } catch (err) {
+    throw new Error(`${name}: ${err.message}`)
+  }
 }
 
 // Conta caracteres (code points), como o utf8.RuneCountInString do servidor.
@@ -57,28 +80,28 @@ export async function publishError(version, res) {
   return `PUT /api/changelog/${version}: HTTP ${res.status}${body ? ` ${body}` : ''}`
 }
 
-// --check <notas.md>: só valida (o affected-tests pr chama quando o diff toca o arquivo).
-function check(file) {
-  if (!file) throw new Error('uso: publish-changelog.mjs --check <notas.md>')
-  const { entries } = parseNotes(readFileSync(file, 'utf8'))
-  console.log(`${file}: ${entries.length} entradas dentro dos limites`)
+// --check <pasta>: só valida (o affected-tests pr chama quando o diff toca a pasta).
+function check(dir) {
+  if (!dir) throw new Error('uso: publish-changelog.mjs --check <pasta>')
+  const { entries, names } = readPending(dir)
+  console.log(`${dir}: ${entries.length} entradas em ${names.length} arquivos, dentro dos limites`)
 }
 
-async function main([version, file, baseUrl]) {
-  if (version === '--check') return check(file)
+async function main([version, dir, baseUrl]) {
+  if (version === '--check') return check(dir)
   const token = process.env.CHANGELOG_TOKEN
-  if (!version || !file || !baseUrl || !token) {
-    throw new Error('uso: CHANGELOG_TOKEN=… publish-changelog.mjs <versão> <notas.md> <url-base>')
+  if (!version || !dir || !baseUrl || !token) {
+    throw new Error('uso: CHANGELOG_TOKEN=… publish-changelog.mjs <versão> <pasta> <url-base>')
   }
-  const { entries } = parseNotes(readFileSync(file, 'utf8'))
-  if (entries.length === 0) console.warn(`::warning::changelog/next.md vazio: ${version} sai sem notas`)
+  const { entries } = readPending(dir)
+  if (entries.length === 0) console.warn(`::warning::${dir} vazia: ${version} sai sem notas`)
   const res = await fetch(`${baseUrl.replace(/\/+$/, '')}/api/changelog/${version}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', 'X-Changelog-Token': token },
     body: JSON.stringify({ entries })
   })
   if (!res.ok) throw new Error(await publishError(version, res))
-  console.log(`changelog ${version}: ${entries.length} entradas enviadas (o servidor ignora as já publicadas)`)
+  console.log(`changelog ${version}: ${entries.length} entradas enviadas (o servidor ignora as de arquivos já publicados)`)
 }
 
 if (process.argv[1]?.endsWith('publish-changelog.mjs')) {

@@ -59,8 +59,8 @@ func TestDedupMigrationKeepsEachNoteInItsFirstRelease(t *testing.T) {
 		got[r.Version] = r.Entries
 	}
 	want := map[string][]Entry{
-		"9." + run + ".0": {{KindFeature, "A " + run}},
-		"9." + run + ".1": {{KindFeature, "B " + run}},
+		"9." + run + ".0": {{Kind: KindFeature, Text: "A " + run}},
+		"9." + run + ".1": {{Kind: KindFeature, Text: "B " + run}},
 		"9." + run + ".2": {},
 	}
 	for v, w := range want {

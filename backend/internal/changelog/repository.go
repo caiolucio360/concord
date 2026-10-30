@@ -41,7 +41,7 @@ func (r *Repository) List(ctx context.Context) ([]Release, error) {
 	}
 
 	erows, err := r.db.Query(ctx,
-		`SELECT release_id, kind, text FROM changelog_entries ORDER BY release_id, position`)
+		`SELECT release_id, kind, text, source FROM changelog_entries ORDER BY release_id, position`)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (r *Repository) List(ctx context.Context) ([]Release, error) {
 	for erows.Next() {
 		var id int64
 		var e Entry
-		if err := erows.Scan(&id, &e.Kind, &e.Text); err != nil {
+		if err := erows.Scan(&id, &e.Kind, &e.Text, &e.Source); err != nil {
 			return nil, err
 		}
 		if i, ok := index[id]; ok {
@@ -85,8 +85,8 @@ func (r *Repository) Upsert(ctx context.Context, version string, p Publication) 
 	}
 	for i, e := range p.Entries {
 		if _, err := tx.Exec(ctx,
-			`INSERT INTO changelog_entries (release_id, kind, text, position) VALUES ($1, $2, $3, $4)`,
-			id, e.Kind, e.Text, i); err != nil {
+			`INSERT INTO changelog_entries (release_id, kind, text, source, position) VALUES ($1, $2, $3, $4, $5)`,
+			id, e.Kind, e.Text, e.Source, i); err != nil {
 			return err
 		}
 	}
