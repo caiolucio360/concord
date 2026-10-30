@@ -37,7 +37,7 @@ export default function AccountHeader({
               cutoutColor={ACCOUNT_CARD_BG}
             />
           </div>
-          <p className="mb-2 truncate text-xl font-bold text-strong">
+          <p className="mb-2 truncate text-ds-lg font-bold text-strong">
             <StyledName name={name} userId={user.id} style={user.name_style} />
           </p>
         </div>

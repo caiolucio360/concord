@@ -8,11 +8,11 @@ function BadgeProgress({ badge, mythic }: { badge: Badge; mythic: boolean }): Re
 
   return (
     <>
-      <p className="text-sm font-semibold text-strong">Seu progresso</p>
+      <p className="text-ds-sm font-semibold text-strong">Seu progresso</p>
       <div className="mt-3 flex items-center gap-3">
         <BadgeIcon category={badge.category} tier={badge.tier} rarity={badge.rarity} size={32} />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-strong">{remainingText(badge)}</p>
+          <p className="text-ds-sm font-semibold text-strong">{remainingText(badge)}</p>
           <div
             className="mt-1.5 h-2 overflow-hidden rounded-full bg-fg/10"
             role="progressbar"

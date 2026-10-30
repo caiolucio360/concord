@@ -110,7 +110,7 @@ function ScreenSharePickerModal(): React.JSX.Element | null {
         aria-label="Compartilhe sua tela"
         className="rounded-xl border border-subtle bg-modal shadow-2xl shadow-black/70 max-h-[95vh] w-full max-w-2xl overflow-y-auto p-6"
       >
-        <h2 className="text-xl font-bold text-strong">Compartilhe sua tela</h2>
+        <h2 className="text-ds-lg font-bold text-strong">Compartilhe sua tela</h2>
         <ScreenPickerTabs tab={tab} onChange={selectTab} />
         <ScreenSourceGrid
           loaded={sourcesLoaded}

@@ -23,7 +23,7 @@ function BadgeTierLadder({ badge }: { badge: Badge }): React.JSX.Element {
               locked={!done}
             />
             <span
-              className={`mt-1 text-xs font-semibold ${done ? 'text-strong' : 'text-faint'}`}
+              className={`mt-1 text-ds-xs font-semibold ${done ? 'text-strong' : 'text-faint'}`}
             >
               {t.name}
             </span>

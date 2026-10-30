@@ -17,7 +17,7 @@ export function ScreenSimulcastOption({
   onChange: (mode: SimulcastMode) => void
   compact: boolean
 }): React.JSX.Element {
-  const size = compact ? 'px-2 py-1.5 text-xs' : 'px-3 py-2 text-sm'
+  const size = compact ? 'px-2 py-1.5 text-ds-xs' : 'px-3 py-2 text-ds-sm'
   return (
     <div role="group" aria-label="Enviar também em 720p" className={compact ? 'mt-3' : 'mt-4'}>
       <p className="mb-1.5 text-ds-xs font-semibold text-muted">
@@ -38,7 +38,7 @@ export function ScreenSimulcastOption({
           </button>
         ))}
       </div>
-      <p className="mt-1.5 text-xs text-faint">
+      <p className="mt-1.5 text-ds-xs text-faint">
         {compact
           ? 'Automático liga quando a sua placa de vídeo aguenta. Vale a partir da próxima transmissão.'
           : 'Automático liga quando a sua placa de vídeo aguenta; no processador fica desligada, porque deixa a transmissão mais pesada para o seu PC. Só vale em 1080p ou Fonte.'}

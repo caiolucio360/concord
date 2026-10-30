@@ -165,7 +165,7 @@ function SoundboardUploadModal({
 
         <SoundEmojiField emoji={emoji} onChange={setEmoji} />
 
-        {error && <p className="text-xs font-medium text-danger">{error}</p>}
+        {error && <p className="text-ds-xs font-medium text-danger">{error}</p>}
 
         <SoundUploadActions
           file={file}

@@ -143,7 +143,7 @@ function BackgroundPicker({
         })}
       </div>
       {error && (
-        <p role="alert" className="text-xs text-warning">
+        <p role="alert" className="text-ds-xs text-warning">
           {error}
         </p>
       )}

@@ -78,7 +78,7 @@ function Dialog({ mode }: { mode: 'background' | 'preview' }): React.JSX.Element
         className="flex max-h-full w-full max-w-xl flex-col rounded-xl border border-subtle bg-modal shadow-2xl shadow-black/70"
       >
         <div className="flex items-center justify-between px-6 pb-3 pt-5">
-          <h2 id="video-modal-title" className="w-full text-center text-xl font-bold text-strong">
+          <h2 id="video-modal-title" className="w-full text-center text-ds-lg font-bold text-strong">
             {title}
           </h2>
           <button
@@ -94,7 +94,7 @@ function Dialog({ mode }: { mode: 'background' | 'preview' }): React.JSX.Element
         <div className="space-y-4 overflow-y-auto px-6 pb-4">
           <VideoPreview stream={stream} loading={!error} error={error} />
           {effectFailed && (
-            <p className="text-xs text-warning">
+            <p className="text-ds-xs text-warning">
               Não foi possível aplicar o fundo neste computador. O vídeo segue normal.
             </p>
           )}

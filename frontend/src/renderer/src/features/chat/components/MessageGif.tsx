@@ -14,7 +14,7 @@ export default function MessageGif({ gifUrl, metadata }: MessageGifProps): React
 
   if (failed) {
     return (
-      <div className="my-1 flex h-32 w-48 items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/5 p-2 text-center text-xs text-faint">
+      <div className="my-1 flex h-32 w-48 items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/5 p-2 text-center text-ds-xs text-faint">
         GIF indisponível
       </div>
     )

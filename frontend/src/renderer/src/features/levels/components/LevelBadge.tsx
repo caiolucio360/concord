@@ -128,7 +128,7 @@ function LevelBadge({
     >
       <span
         data-badge={look.variant}
-        className={`inline-flex items-center gap-0.5 rounded-md font-extrabold leading-none tracking-wide ${text} ${look.className}`}
+        className={`inline-flex items-center gap-0.5 rounded-md font-bold leading-none tracking-wide ${text} ${look.className}`}
         style={{ ...look.style, boxShadow: badgeShadow(look, celebration !== undefined) }}
       >
         <span className={look.dimLabel ? 'opacity-70' : 'opacity-90'}>Nv</span>

@@ -40,12 +40,12 @@ function LoginNotices({
   return (
     <>
       {inviteCode && (
-        <p className="mb-4 rounded-lg border border-brand/30 bg-brand/10 px-3 py-2 text-sm text-brand">
+        <p className="mb-4 rounded-lg border border-brand/30 bg-brand/10 px-3 py-2 text-ds-sm text-brand">
           Entre na sua conta para aceitar o convite.
         </p>
       )}
       {notice && (
-        <p className="mb-4 rounded-lg border border-success/30 bg-success/15 px-3 py-2 text-sm text-success">
+        <p className="mb-4 rounded-lg border border-success/30 bg-success/15 px-3 py-2 text-ds-sm text-success">
           {notice}
         </p>
       )}
@@ -57,7 +57,7 @@ function LoginNotices({
 function LoginError({ error }: { error: LoginFailure | null }): React.JSX.Element | null {
   if (!error) return null
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-danger/30 bg-danger/15 px-3 py-2 text-sm text-danger">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-danger/30 bg-danger/15 px-3 py-2 text-ds-sm text-danger">
       <p className="min-w-0 flex-1">{error.message}</p>
       {error.offline && <ConnectionDetails className="text-danger" />}
     </div>
@@ -104,8 +104,8 @@ function Login(): React.JSX.Element {
 
   return (
     <AuthLayout>
-      <h1 className="text-2xl font-semibold text-strong">Boas-vindas de volta!</h1>
-      <p className="mb-6 mt-1 text-sm text-muted">Que bom te ver de novo na Salinha.</p>
+      <h1 className="text-ds-xl font-semibold text-strong">Boas-vindas de volta!</h1>
+      <p className="mb-6 mt-1 text-ds-sm text-muted">Que bom te ver de novo na Salinha.</p>
       <LoginNotices inviteCode={inviteCode} notice={notice} />
       <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
         <Input
@@ -132,7 +132,7 @@ function Login(): React.JSX.Element {
           />
           <Link
             to="/forgot-password"
-            className="w-fit text-sm font-medium text-brand hover:underline"
+            className="w-fit text-ds-sm font-medium text-brand hover:underline"
           >
             Esqueceu a senha?
           </Link>
@@ -142,7 +142,7 @@ function Login(): React.JSX.Element {
           {loading ? 'Entrando...' : 'Entrar'}
         </Button>
       </form>
-      <p className="mt-4 text-sm text-muted">
+      <p className="mt-4 text-ds-sm text-muted">
         Precisando de uma conta?{' '}
         <Link
           to={authPathWithInvite('/register', inviteCode)}

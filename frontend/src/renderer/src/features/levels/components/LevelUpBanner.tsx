@@ -175,7 +175,7 @@ function LevelUpBanner(): React.JSX.Element | null {
 
       {fx.tierReveal && (
         <p
-          className="rounded-full border px-3 py-1 text-xs font-extrabold uppercase tracking-[0.18em] text-white shadow-lg"
+          className="rounded-full border px-3 py-1 text-ds-xs font-bold uppercase tracking-[0.18em] text-white shadow-lg"
           style={{
             borderColor: `${tier.color}88`,
             background: `linear-gradient(90deg, ${tier.accent}cc, ${tier.color}cc)`,

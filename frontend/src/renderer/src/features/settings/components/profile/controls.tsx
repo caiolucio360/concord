@@ -6,7 +6,7 @@ import SectionHeader from '../../../../shared/ui/SectionHeader'
 // de cor, régua curta e o bloco de seção. Alvo de toque ≥ 40 px.
 
 const chipClass = (active: boolean): string =>
-  `flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-colors focus-ring ${
+  `flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-2.5 text-ds-xs font-medium transition-colors focus-ring ${
     active
       ? 'border-brand bg-brand/15 text-strong'
       : 'border-subtle bg-fg/5 text-secondary hover:bg-fg/10 hover:text-strong'
@@ -79,7 +79,7 @@ export function ColorSwatch({
   onChange: (color: string) => void
 }): React.JSX.Element {
   return (
-    <label className="flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border border-subtle bg-fg/5 py-1 pl-1 pr-2.5 text-xs text-secondary transition-colors hover:bg-fg/10 focus-within:ring-2 focus-within:ring-brand">
+    <label className="flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border border-subtle bg-fg/5 py-1 pl-1 pr-2.5 text-ds-xs text-secondary transition-colors hover:bg-fg/10 focus-within:ring-2 focus-within:ring-brand">
       <span
         className="relative size-8 shrink-0 overflow-hidden rounded-md border border-normal"
         style={{ background: value }}
@@ -116,7 +116,7 @@ export function RangeField({
   onChange: (value: number) => void
 }): React.JSX.Element {
   return (
-    <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
+    <label className="flex min-w-0 flex-col gap-1 text-ds-xs text-muted">
       <span className="flex items-baseline justify-between gap-2">
         <span>{label}</span>
         <span className="font-medium text-secondary">{display}</span>
@@ -152,7 +152,7 @@ export function EditorSection({
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="text-ds-sm font-semibold text-strong">{title}</h3>
-          {description && <p className="mt-0.5 text-xs text-muted">{description}</p>}
+          {description && <p className="mt-0.5 text-ds-xs text-muted">{description}</p>}
         </div>
         {aside}
       </div>

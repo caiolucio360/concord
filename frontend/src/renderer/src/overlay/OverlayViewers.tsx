@@ -18,7 +18,7 @@ export function OverlayViewers({
   return (
     <div
       title={viewersTitle(viewers)}
-      className="flex w-fit items-center gap-1.5 rounded-full bg-floating/85 px-3 py-1 text-sm font-medium text-normal"
+      className="flex w-fit items-center gap-1.5 rounded-full bg-floating/85 px-3 py-1 text-ds-sm font-medium text-normal"
       style={{ opacity: overlayRowOpacity(opacity, false) / 100 }}
     >
       <EyeIcon className="h-3.5 w-3.5 shrink-0 text-success" />

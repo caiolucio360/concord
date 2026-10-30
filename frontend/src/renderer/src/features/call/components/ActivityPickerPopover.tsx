@@ -52,7 +52,7 @@ function ActivityCard({
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
-          <span className="truncate text-sm font-bold text-strong">{activity.name}</span>
+          <span className="truncate text-ds-sm font-bold text-strong">{activity.name}</span>
           <span className="rounded bg-fg/10 px-1.5 py-0.5 text-ds-xxs font-bold uppercase tracking-wider text-secondary">
             {activity.category}
           </span>
@@ -134,7 +134,7 @@ function ActivityPickerPopover({
       className="fixed z-50 flex max-h-[460px] flex-col rounded-xl border border-subtle bg-floating p-4 shadow-2xl"
     >
       <div className="mb-3">
-        <p className="text-sm font-bold text-strong">Atividades</p>
+        <p className="text-ds-sm font-bold text-strong">Atividades</p>
         <p className="text-ds-xs text-muted">
           Jogue com quem está na chamada — a voz continua aqui.
         </p>
@@ -178,7 +178,7 @@ function ActivityPickerPopover({
               }}
               placeholder={selected.linkExample}
               aria-invalid={error !== null}
-              className={`w-full rounded-xl border bg-input px-3 py-1.5 text-xs text-strong placeholder:text-faint focus:outline-none ${
+              className={`w-full rounded-xl border bg-input px-3 py-1.5 text-ds-xs text-strong placeholder:text-faint focus:outline-none ${
                 error ? 'border-danger' : 'border-subtle focus:border-brand'
               }`}
             />
@@ -199,7 +199,7 @@ function ActivityPickerPopover({
           <button
             type="submit"
             disabled={!callId || busy}
-            className="w-full cursor-pointer rounded-xl bg-brand py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full cursor-pointer rounded-xl bg-brand py-2 text-ds-xs font-semibold text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
             {busy ? 'Abrindo…' : `Abrir ${selected.name}`}
           </button>

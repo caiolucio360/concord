@@ -93,7 +93,7 @@ export default function StickersTab({
 
   if (!serverId) {
     return (
-      <div className="flex h-48 flex-col items-center justify-center text-center p-4 text-xs text-faint">
+      <div className="flex h-48 flex-col items-center justify-center text-center p-4 text-ds-xs text-faint">
         <span>Figurinhas ficam disponíveis em canais de servidores.</span>
       </div>
     )
@@ -122,13 +122,13 @@ export default function StickersTab({
       </div>
 
       {stickers.length === 0 ? (
-        <div className="flex h-40 flex-col items-center justify-center text-center p-4 text-xs text-faint">
+        <div className="flex h-40 flex-col items-center justify-center text-center p-4 text-ds-xs text-faint">
           <span className="mb-2">Nenhuma figurinha no servidor ainda.</span>
           {canAdd && (
             <button
               type="button"
               onClick={onAdd}
-              className="rounded-lg bg-white/10 px-3 py-1.5 text-xs text-white transition-colors hover:bg-white/20 cursor-pointer"
+              className="rounded-lg bg-white/10 px-3 py-1.5 text-ds-xs text-white transition-colors hover:bg-white/20 cursor-pointer"
             >
               Adicionar a primeira
             </button>

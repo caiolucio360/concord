@@ -12,13 +12,13 @@ function EnqueteNeutra(): React.JSX.Element {
 
   return (
     <EnqueteCamada titleId={titleId} onFechar={fechar}>
-      <h2 id={titleId} className="text-balance text-base font-bold text-strong">
+      <h2 id={titleId} className="text-balance text-ds-md font-bold text-strong">
         Tudo certo! Sua escolha foi guardada.
       </h2>
       <button
         type="button"
         onClick={fechar}
-        className="mt-5 flex min-h-11 w-full cursor-pointer touch-manipulation items-center justify-center rounded-xl border border-subtle bg-surface px-4 text-sm font-bold text-normal transition-colors hover:bg-white/10 focus-ring"
+        className="mt-5 flex min-h-11 w-full cursor-pointer touch-manipulation items-center justify-center rounded-xl border border-subtle bg-surface px-4 text-ds-sm font-bold text-normal transition-colors hover:bg-white/10 focus-ring"
       >
         Fechar
       </button>

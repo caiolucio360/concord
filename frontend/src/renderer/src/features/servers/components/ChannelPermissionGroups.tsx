@@ -36,7 +36,7 @@ function ChannelPermissionGroups({
                   title={allowed ? undefined : 'Você não tem essa permissão neste canal.'}
                 >
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-strong">{p.label}</p>
+                    <p className="text-ds-sm font-semibold text-strong">{p.label}</p>
                     <p className="text-ds-xs leading-snug text-muted">{p.description}</p>
                   </div>
                   <PermissionTriState

@@ -38,7 +38,7 @@ function EmoteGrid({
                 type="button"
                 title={item.label}
                 onClick={() => onPick(item.emoji)}
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-lg transition-transform hover:scale-110 hover:bg-fg/10 max-md:size-11 max-md:text-2xl"
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-ds-lg transition-transform hover:scale-110 hover:bg-fg/10 max-md:size-11 max-md:text-ds-xl"
               >
                 {item.emoji}
               </button>
@@ -47,7 +47,7 @@ function EmoteGrid({
         </div>
       ))}
       {categories.length === 0 && (
-        <div className="py-4 text-center text-xs text-faint">Nenhum emote encontrado</div>
+        <div className="py-4 text-center text-ds-xs text-faint">Nenhum emote encontrado</div>
       )}
     </div>
   )
@@ -104,7 +104,7 @@ function EmotePickerPanel({
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Buscar emote..."
         aria-label="Buscar emote"
-        className="mb-2 w-full rounded-md border border-subtle bg-input px-2.5 py-1 text-xs text-strong max-md:py-2 max-md:text-base placeholder:text-faint outline-none focus:border-brand/50"
+        className="mb-2 w-full rounded-md border border-subtle bg-input px-2.5 py-1 text-ds-xs text-strong max-md:py-2 max-md:text-ds-md placeholder:text-faint outline-none focus:border-brand/50"
       />
       <EmoteGrid search={search} onPick={pick} />
     </div>

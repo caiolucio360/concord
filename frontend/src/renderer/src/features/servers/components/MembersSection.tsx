@@ -29,7 +29,7 @@ function MembersSection(): React.JSX.Element {
   const access = useServerAccess()
   const [query, setQuery] = useState('')
 
-  if (!server) return <p className="text-sm text-muted">Abra um servidor primeiro.</p>
+  if (!server) return <p className="text-ds-sm text-muted">Abra um servidor primeiro.</p>
 
   const assignable = assignableRoles(roles, {
     isOwner: access.isOwner,
@@ -74,7 +74,7 @@ function MembersSection(): React.JSX.Element {
           />
         ))}
         {shown.length === 0 && (
-          <li className="px-4 py-6 text-center text-sm text-faint">Ninguém encontrado.</li>
+          <li className="px-4 py-6 text-center text-ds-sm text-faint">Ninguém encontrado.</li>
         )}
       </ul>
     </div>

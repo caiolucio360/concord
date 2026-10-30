@@ -3,7 +3,7 @@ import type { PollAnswer } from '../api/messages'
 /** Emoji ou mini imagem da resposta. */
 export function PollAnswerMedia({
   answer,
-  className = 'h-6 w-6 text-xl'
+  className = 'h-6 w-6 text-ds-lg'
 }: {
   answer: Pick<PollAnswer, 'emoji' | 'image_url'>
   className?: string

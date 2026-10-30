@@ -54,7 +54,7 @@ function EntranceSoundSettings(): React.JSX.Element {
       <p className="mt-2 text-ds-xs text-faint" aria-live="polite">
         {status}
       </p>
-      {error && <p className="mt-1 text-xs text-danger">{error}</p>}
+      {error && <p className="mt-1 text-ds-xs text-danger">{error}</p>}
       <input
         ref={input}
         type="file"

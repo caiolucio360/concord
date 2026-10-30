@@ -30,7 +30,7 @@ function OverlayEditChrome({
         onPointerDown={onResizeStart}
       />
       <div
-        className={`pointer-events-none absolute whitespace-nowrap rounded-md bg-floating px-2 py-1 text-xs font-medium text-normal ${hintPositionClass(pos, box, area)}`}
+        className={`pointer-events-none absolute whitespace-nowrap rounded-md bg-floating px-2 py-1 text-ds-xs font-medium text-normal ${hintPositionClass(pos, box, area)}`}
       >
         {editHint(normalizeOverlayShortcut(shortcut))}
       </div>

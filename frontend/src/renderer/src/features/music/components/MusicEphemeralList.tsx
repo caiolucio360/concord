@@ -41,7 +41,7 @@ function SearchPicker({ e, serverId }: { e: MusicEphemeral; serverId: string }):
 
   return (
     <div className="mt-1">
-      <p className="flex items-start gap-1.5 text-sm text-strong">
+      <p className="flex items-start gap-1.5 text-ds-sm text-strong">
         <SearchIcon size={16} className="mt-0.5 shrink-0 text-muted" />
         {T16_TITLE(search.query)}
       </p>
@@ -58,8 +58,8 @@ function SearchPicker({ e, serverId }: { e: MusicEphemeral; serverId: string }):
               <img src={r.thumbnail} alt="" className="h-9 w-16 rounded object-cover" />
             )}
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-medium text-strong">{r.title}</span>
-              <span className="block truncate text-xs text-muted">
+              <span className="block truncate text-ds-sm font-medium text-strong">{r.title}</span>
+              <span className="block truncate text-ds-xs text-muted">
                 {r.artist} · {formatDuration(r.duration_ms)}
               </span>
             </span>
@@ -92,7 +92,7 @@ function MusicEphemeralList({
           <MaestroAvatar />
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline gap-2">
-              <span className="text-sm font-semibold text-brand">{MAESTRO_NAME}</span>
+              <span className="text-ds-sm font-semibold text-brand">{MAESTRO_NAME}</span>
               <span className="inline-flex flex-wrap items-center gap-x-1 text-ds-xxs text-faint">
                 <EyeIcon size={12} />
                 {T14_LABEL} ·
@@ -106,7 +106,7 @@ function MusicEphemeralList({
               </span>
             </div>
             {e.kind === 'text' && (
-              <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-strong">
+              <p className="whitespace-pre-wrap break-words text-ds-sm leading-relaxed text-strong">
                 <MaestroText text={e.text ?? ''} />
               </p>
             )}

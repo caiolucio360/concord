@@ -55,7 +55,7 @@ function ServerRailItem({
         onBlur={() => setAnchor(null)}
         aria-label={name}
         aria-describedby={anchor ? cardId : undefined}
-        className={`group/btn relative flex h-12 w-12 items-center justify-center font-bold text-base transition-all duration-200 cursor-pointer overflow-hidden ${
+        className={`group/btn relative flex h-12 w-12 items-center justify-center font-bold text-ds-md transition-all duration-200 cursor-pointer overflow-hidden ${
           view.dimmed ? 'opacity-50' : ''
         } ${
           isActive

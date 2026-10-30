@@ -9,7 +9,7 @@ import { acceptLabel, inviteSubtitle, pendingInvitesLabel, serverInitial } from 
 
 function InviteIcon({ invite }: { invite: ServerInvite }): React.JSX.Element {
   return (
-    <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-brand text-base font-bold text-white shadow-md">
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-brand text-ds-md font-bold text-white shadow-md">
       {invite.server_icon_url ? (
         <img
           src={serverIconSrc(invite.server_icon_url)}
@@ -39,8 +39,8 @@ function InviteRow({
       <div className="flex min-w-0 items-center gap-3">
         <InviteIcon invite={invite} />
         <div className="min-w-0 leading-tight">
-          <p className="truncate text-sm font-semibold text-strong">{invite.server_name}</p>
-          <p className="truncate text-xs text-muted">{inviteSubtitle(invite)}</p>
+          <p className="truncate text-ds-sm font-semibold text-strong">{invite.server_name}</p>
+          <p className="truncate text-ds-xs text-muted">{inviteSubtitle(invite)}</p>
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-2">
@@ -63,7 +63,7 @@ function InviteListBody(): React.JSX.Element {
   if (loading) return <InviteListSkeleton />
   if (invites.length === 0) {
     return (
-      <div className="py-12 text-center text-sm text-muted">
+      <div className="py-12 text-center text-ds-sm text-muted">
         Nenhum convite pendente no momento. Quando alguém te convidar para um servidor, ele
         aparecerá aqui.
       </div>

@@ -24,7 +24,7 @@ export function ComposerGate({
   children: ReactNode
 }): React.JSX.Element {
   return disabledReason ? (
-    <div className="rounded-xl border border-subtle bg-input px-4 py-3 text-center text-sm text-muted">
+    <div className="rounded-xl border border-subtle bg-input px-4 py-3 text-center text-ds-sm text-muted">
       {disabledReason}
     </div>
   ) : (

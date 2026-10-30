@@ -34,7 +34,7 @@ function EmailVerifyBanner(): React.JSX.Element | null {
   return (
     <div
       role="status"
-      className="flex items-center gap-3 border-b border-warning/20 bg-warning/10 px-4 py-2 text-sm text-warning"
+      className="flex items-center gap-3 border-b border-warning/20 bg-warning/10 px-4 py-2 text-ds-sm text-warning"
     >
       <span className="min-w-0 flex-1 truncate">
         {message ?? `Confirme seu e-mail (${user.email}) para liberar convites e entrada em servidores.`}

@@ -34,7 +34,7 @@ export function CommentReply({
 /** Autor, hora e o "(editado)". */
 export function CommentMeta({ comment }: { comment: ProposalComment }): React.JSX.Element {
   return (
-    <div className="flex flex-wrap items-baseline gap-x-2 text-xs">
+    <div className="flex flex-wrap items-baseline gap-x-2 text-ds-xs">
       <span className="font-semibold text-strong">{comment.author_name}</span>
       <span className="text-faint">{formatTime(comment.created_at)}</span>
       {comment.edited_at && <span className="text-faint">(editado)</span>}

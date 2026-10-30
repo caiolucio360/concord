@@ -55,7 +55,7 @@ function FullscreenOverlay({
           visible ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       >
-        <span className="min-w-0 flex-1 truncate text-sm font-semibold text-strong">{name}</span>
+        <span className="min-w-0 flex-1 truncate text-ds-sm font-semibold text-strong">{name}</span>
         {userId && <FullscreenAnnotationButtons sharerId={userId} />}
         {userId && (
           <div className="flex items-center gap-2 rounded-lg bg-black/60 px-2 py-1 on-media">

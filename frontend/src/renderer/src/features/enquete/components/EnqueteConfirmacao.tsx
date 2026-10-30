@@ -5,7 +5,7 @@ import { useEnqueteStore } from '../store/enqueteStore'
 import EnqueteCamada from './EnqueteCamada'
 
 const BOTAO =
-  'flex min-h-11 w-full cursor-pointer touch-manipulation items-center justify-center rounded-xl px-4 text-sm font-bold transition-colors focus-ring disabled:cursor-not-allowed disabled:opacity-60 sm:flex-1'
+  'flex min-h-11 w-full cursor-pointer touch-manipulation items-center justify-center rounded-xl px-4 text-ds-sm font-bold transition-colors focus-ring disabled:cursor-not-allowed disabled:opacity-60 sm:flex-1'
 
 /** "Confirmar: Fez o L?": a escolha é definitiva, então pede um segundo toque. */
 function EnqueteConfirmacao({ enquete }: { enquete: Enquete }): React.JSX.Element {
@@ -19,12 +19,12 @@ function EnqueteConfirmacao({ enquete }: { enquete: Enquete }): React.JSX.Elemen
 
   return (
     <EnqueteCamada titleId={titleId}>
-      <h2 id={titleId} className="text-balance text-lg font-bold text-strong">
+      <h2 id={titleId} className="text-balance text-ds-lg font-bold text-strong">
         Confirmar: {rotulo}?
       </h2>
-      <p className="mt-2 text-sm text-muted">Não dá para mudar depois.</p>
+      <p className="mt-2 text-ds-sm text-muted">Não dá para mudar depois.</p>
       {erro && (
-        <p role="alert" className="mt-3 text-sm text-danger">
+        <p role="alert" className="mt-3 text-ds-sm text-danger">
           Não foi possível enviar. Tente de novo.
         </p>
       )}

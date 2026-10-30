@@ -15,14 +15,14 @@ function RankRow({ entry, isMe }: { entry: RankingEntry; isMe: boolean }): React
         onClick={profileCardHandler(entry.user_id, name, entry.username, 'top')}
         className={`flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors hover:bg-fg/5 focus-ring ${isMe ? 'bg-brand/10' : ''}`}
       >
-        <span className="w-10 shrink-0 text-right text-sm font-bold tabular-nums text-muted">
+        <span className="w-10 shrink-0 text-right text-ds-sm font-bold tabular-nums text-muted">
           {positionLabel(entry.position)}
         </span>
         <Avatar userId={entry.user_id} name={name} avatarUrl={entry.avatar_url} size={36} />
-        <span className="min-w-0 flex-1 truncate text-sm font-semibold text-strong">
+        <span className="min-w-0 flex-1 truncate text-ds-sm font-semibold text-strong">
           <StyledName name={name} userId={entry.user_id} style={entry.name_style} />
         </span>
-        <span className="hidden shrink-0 text-xs text-muted sm:inline">
+        <span className="hidden shrink-0 text-ds-xs text-muted sm:inline">
           {formatXp(entry.xp)}
         </span>
         <LevelChip level={entry.level} />

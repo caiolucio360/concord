@@ -77,12 +77,12 @@ function BanModal(): React.JSX.Element | null {
 
   return (
     <Modal open title={`Banir ${ban.name}`} onClose={close}>
-      <p className="text-sm leading-relaxed text-gray-300">
+      <p className="text-ds-sm leading-relaxed text-gray-300">
         <b className="text-strong">{ban.name}</b> sai do servidor e não consegue voltar, nem por
         convite nem pelo código, até ser desbanido(a) em Configurações do servidor{' '}
         <ChevronRightIcon size={12} className="inline align-[-1px]" /> Banimentos.
       </p>
-      <label className="mt-4 block text-xs font-semibold text-gray-400" htmlFor="ban-reason">
+      <label className="mt-4 block text-ds-xs font-semibold text-gray-400" htmlFor="ban-reason">
         Motivo (opcional)
       </label>
       <textarea
@@ -92,7 +92,7 @@ function BanModal(): React.JSX.Element | null {
         maxLength={MAX_REASON}
         rows={3}
         placeholder="Só quem gerencia o servidor vê o motivo."
-        className="glass-input mt-1 w-full resize-none text-sm"
+        className="glass-input mt-1 w-full resize-none text-ds-sm"
       />
       <div className="mt-5 flex justify-end gap-2">
         <Button variant="ghost" onClick={close} disabled={busy}>

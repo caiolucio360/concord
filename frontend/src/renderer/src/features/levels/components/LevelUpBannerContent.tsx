@@ -33,7 +33,7 @@ export default function LevelUpBannerContent({
         <StageIcon size={24} />
       </span>
       <div className="relative leading-tight">
-        <p className="max-w-[280px] truncate text-sm font-bold text-strong">
+        <p className="max-w-[280px] truncate text-ds-sm font-bold text-strong">
           {levelUpHeadline(celebration, milestone)}
         </p>
         <p className="text-ds-xs text-muted">

@@ -50,7 +50,7 @@ function ContextSubmenu({ label, triggerClass, children }: ContextSubmenuProps):
           role="menu"
           aria-label={label}
           style={submenuPanelStyle(placement)}
-          className="fixed z-10 flex max-h-[min(20rem,calc(100dvh-16px))] flex-col overflow-hidden rounded-lg border border-subtle bg-floating text-sm text-normal shadow-2xl"
+          className="fixed z-10 flex max-h-[min(20rem,calc(100dvh-16px))] flex-col overflow-hidden rounded-lg border border-subtle bg-floating text-ds-sm text-normal shadow-2xl"
           {...panelProps}
         >
           {overlay && (
@@ -63,7 +63,7 @@ function ContextSubmenu({ label, triggerClass, children }: ContextSubmenuProps):
             >
               <ChevronRightIcon className="h-4 w-4 rotate-180" />
               Voltar
-              <span className="ml-auto min-w-0 truncate text-xs font-bold text-muted">
+              <span className="ml-auto min-w-0 truncate text-ds-xs font-bold text-muted">
                 {label}
               </span>
             </button>

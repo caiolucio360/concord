@@ -54,11 +54,11 @@ function ProposalCard({
     >
       <ProposalCover images={p.images} />
       <div className="min-w-0">
-        <h3 className="wrap-break-word text-sm font-semibold leading-snug text-strong">
+        <h3 className="wrap-break-word text-ds-sm font-semibold leading-snug text-strong">
           {p.title}
         </h3>
         {p.description && (
-          <p className="mt-1 line-clamp-4 whitespace-pre-wrap wrap-break-word text-xs text-muted">
+          <p className="mt-1 line-clamp-4 whitespace-pre-wrap wrap-break-word text-ds-xs text-muted">
             {p.description}
           </p>
         )}

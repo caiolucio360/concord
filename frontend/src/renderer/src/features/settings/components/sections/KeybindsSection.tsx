@@ -20,11 +20,11 @@ const GROUP_ORDER: ShortcutGroup[] = ['navigation', 'voice', 'chat']
 const MODIFIER_KEYS = new Set(['Control', 'Shift', 'Alt', 'Meta', 'AltGraph'])
 
 function Keys({ binding }: { binding: string | null }): React.JSX.Element {
-  if (!binding) return <span className="text-xs text-faint">Sem atalho</span>
+  if (!binding) return <span className="text-ds-xs text-faint">Sem atalho</span>
   return (
     <span className="flex gap-1">
       {bindingLabels(binding, isMacPlatform()).map((k) => (
-        <kbd key={k} className="rounded bg-fg/10 px-1.5 py-0.5 text-xs font-semibold text-strong">
+        <kbd key={k} className="rounded bg-fg/10 px-1.5 py-0.5 text-ds-xs font-semibold text-strong">
           {k}
         </kbd>
       ))}
@@ -120,7 +120,7 @@ function BindingField({
       }}
       className={`flex min-w-[10rem] shrink-0 cursor-pointer items-center justify-center rounded-lg border px-3 py-2 transition-colors focus-ring ${
         recording
-          ? 'border-brand bg-brand/15 text-xs font-semibold text-strong'
+          ? 'border-brand bg-brand/15 text-ds-xs font-semibold text-strong'
           : 'border-subtle bg-fg/10 hover:bg-fg/15'
       }`}
     >
@@ -185,7 +185,7 @@ function Row({
             onChange={() => setGlobal(def.id, !global[def.id])}
           />
           {global[def.id] && bindings[def.id] && globalActive[def.id] === false && (
-            <p className="mt-2 text-xs text-warning">
+            <p className="mt-2 text-ds-xs text-warning">
               Não foi possível ativar fora do app: o atalho está em uso por outro programa.
             </p>
           )}
@@ -211,7 +211,7 @@ export function KeybindsSection(): React.JSX.Element {
           Clique em um atalho e aperte a nova tecla ou um botão do mouse (meio ou laterais). Esc
           cancela.
         </p>
-        {error && <p className="mt-2 text-xs text-warning">{error}</p>}
+        {error && <p className="mt-2 text-ds-xs text-warning">{error}</p>}
       </div>
 
       {GROUP_ORDER.map((group) => (

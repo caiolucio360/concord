@@ -40,7 +40,7 @@ export function ScreenStatsCard({
     <div
       role="dialog"
       aria-label="Estatísticas da transmissão"
-      className="on-media absolute right-2 top-11 z-20 max-h-[calc(100%-3.25rem)] w-60 max-w-[calc(100%-1rem)] overflow-y-auto rounded-lg bg-black/80 p-2.5 text-xs text-strong shadow-xl backdrop-blur-sm"
+      className="on-media absolute right-2 top-11 z-20 max-h-[calc(100%-3.25rem)] w-60 max-w-[calc(100%-1rem)] overflow-y-auto rounded-lg bg-black/80 p-2.5 text-ds-xs text-strong shadow-xl backdrop-blur-sm"
       {...keepInside}
     >
       <div className="mb-1.5 flex items-center justify-between gap-2">

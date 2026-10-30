@@ -215,7 +215,7 @@ function MessageStickerSlot({ message }: { message: Message }): React.JSX.Elemen
   if (message.sticker) return <MessageSticker sticker={message.sticker} />
   if (!stickerUnavailable(message)) return null
   return (
-    <div className="my-1 flex h-28 w-28 items-center justify-center rounded-lg border border-dashed border-white/10 bg-white/5 p-2 text-center text-xs text-faint">
+    <div className="my-1 flex h-28 w-28 items-center justify-center rounded-lg border border-dashed border-white/10 bg-white/5 p-2 text-center text-ds-xs text-faint">
       Figurinha indisponível
     </div>
   )

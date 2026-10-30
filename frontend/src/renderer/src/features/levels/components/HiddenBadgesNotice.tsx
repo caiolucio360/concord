@@ -17,13 +17,13 @@ function HiddenBadgesNotice({
     <div className={`flex items-center gap-3 rounded-xl bg-fg/5 p-3 ${className}`}>
       <span
         aria-hidden="true"
-        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-fg/10 text-2xl font-black text-muted"
+        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-fg/10 text-ds-xl font-bold text-muted"
       >
         ?
       </span>
       <div className="min-w-0">
-        <p className="text-sm font-bold leading-snug text-strong">{title}</p>
-        <p className="mt-0.5 text-xs leading-snug text-muted">{HIDDEN_BADGES_HINT}</p>
+        <p className="text-ds-sm font-bold leading-snug text-strong">{title}</p>
+        <p className="mt-0.5 text-ds-xs leading-snug text-muted">{HIDDEN_BADGES_HINT}</p>
       </div>
     </div>
   )

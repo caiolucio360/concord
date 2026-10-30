@@ -80,7 +80,7 @@ function LiveStreamPreview({
             className="h-full w-full object-contain"
           />
         ) : ended ? (
-          <div className="flex h-full items-center justify-center text-xs text-faint">
+          <div className="flex h-full items-center justify-center text-ds-xs text-faint">
             Transmissão encerrada
           </div>
         ) : (
@@ -97,7 +97,7 @@ function LiveStreamPreview({
           type="button"
           onClick={onWatch}
           disabled={ended}
-          className="w-full cursor-pointer rounded-md bg-success-strong px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-success-strong-hover disabled:cursor-default disabled:opacity-60"
+          className="w-full cursor-pointer rounded-md bg-success-strong px-3 py-2 text-ds-xs font-semibold text-white transition-colors hover:bg-success-strong-hover disabled:cursor-default disabled:opacity-60"
         >
           Entrar na transmissão
         </button>

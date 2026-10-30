@@ -42,7 +42,7 @@ function LinkRow({
           <XIcon className="h-4 w-4" />
         </button>
       </div>
-      {error && <p className="ml-11 mt-1 text-xs text-danger">{error}</p>}
+      {error && <p className="ml-11 mt-1 text-ds-xs text-danger">{error}</p>}
     </div>
   )
 }
@@ -84,7 +84,7 @@ export default function ProfileLinksField({
               Adicionar link
             </span>
           </SecondaryButton>
-          {full && <span className="ml-3 text-xs text-faint">Máximo de {MAX_LINKS} links.</span>}
+          {full && <span className="ml-3 text-ds-xs text-faint">Máximo de {MAX_LINKS} links.</span>}
         </div>
       </div>
     </Field>

@@ -116,7 +116,7 @@ export function TileAction({
       aria-label={label}
       onClick={onClick}
       disabled={disabled}
-      className="-my-2 min-h-10 cursor-pointer rounded-md px-2 text-xs font-medium text-link hover:underline focus-ring disabled:cursor-wait disabled:opacity-60"
+      className="-my-2 min-h-10 cursor-pointer rounded-md px-2 text-ds-xs font-medium text-link hover:underline focus-ring disabled:cursor-wait disabled:opacity-60"
     >
       {children}
     </button>

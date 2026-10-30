@@ -21,7 +21,7 @@ function TTSSettings(): React.JSX.Element {
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="text-ds-sm font-medium text-strong">Ouvir mensagens de TTS</p>
-          <p className="text-xs text-muted">
+          <p className="text-ds-xs text-muted">
             Lê em voz as mensagens /tts do servidor (ou da DM) da call em que você está.
           </p>
         </div>
@@ -29,7 +29,7 @@ function TTSSettings(): React.JSX.Element {
       </div>
       {localVoice && <TTSVoiceStatus voice={localVoice} />}
       {!localVoice && voiceAvailable === false && (
-        <p className="text-xs text-warning">
+        <p className="text-ds-xs text-warning">
           Este aparelho não tem voz de leitura instalada: as mensagens /tts aparecem só no chat.
         </p>
       )}

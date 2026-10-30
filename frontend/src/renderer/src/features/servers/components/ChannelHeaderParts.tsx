@@ -20,7 +20,7 @@ export function ChannelTitle({
       {channel?.type === 'voice' ? (
         <VolumeIcon className="h-5 w-5 text-muted" />
       ) : (
-        <span className="text-muted text-xl font-bold">#</span>
+        <span className="text-muted text-ds-lg font-bold">#</span>
       )}
       <span title={name} className="truncate text-ds-md font-semibold text-strong">
         {name}

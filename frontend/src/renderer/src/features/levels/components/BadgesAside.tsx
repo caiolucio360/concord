@@ -46,11 +46,11 @@ function BadgesAside({
               size={28}
             />
           )}
-          <h2 id={titleId} className="min-w-0 truncate text-xl font-bold text-strong">
+          <h2 id={titleId} className="min-w-0 truncate text-ds-lg font-bold text-strong">
             {isMe ? 'Seus badges' : `Badges de ${target.name}`}
           </h2>
         </div>
-        <p className="mt-1.5 text-sm leading-snug text-muted">
+        <p className="mt-1.5 text-ds-sm leading-snug text-muted">
           {isMe
             ? 'Os badges aparecem conforme você usa o Salinha.'
             : `Explore os badges de ${target.name} ou veja os seus.`}
@@ -63,7 +63,7 @@ function BadgesAside({
             <BadgeGrid badges={earned} selected={selected?.category} onSelect={onSelect} />
           </div>
         ) : (
-          <p className="mt-5 text-sm text-faint">
+          <p className="mt-5 text-ds-sm text-faint">
             {isMe
               ? 'Nenhum badge ainda. Eles aparecem conforme você usa o Salinha.'
               : 'Nenhum badge ainda.'}
@@ -76,7 +76,7 @@ function BadgesAside({
           <button
             type="button"
             onClick={onViewMine}
-            className="w-full cursor-pointer rounded-lg bg-fg/10 px-3 py-2 text-sm font-semibold text-strong transition-colors hover:bg-fg/15"
+            className="w-full cursor-pointer rounded-lg bg-fg/10 px-3 py-2 text-ds-sm font-semibold text-strong transition-colors hover:bg-fg/15"
           >
             Ver seus badges
           </button>

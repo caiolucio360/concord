@@ -26,7 +26,7 @@ export default function ProfileStage({
     >
       <div className="mb-4 flex min-h-5 flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <SectionHeader id="profile-stage-title">Como os outros veem</SectionHeader>
-        <p aria-live="polite" className="text-xs font-medium text-link">
+        <p aria-live="polite" className="text-ds-xs font-medium text-link">
           {status}
         </p>
       </div>
@@ -41,7 +41,7 @@ export default function ProfileStage({
           onEdit={onEdit}
         />
       </div>
-      <p className="mt-4 text-center text-xs text-muted">
+      <p className="mt-4 text-center text-ds-xs text-muted">
         Clique ou toque em qualquer parte do cartão para editar.
       </p>
     </section>

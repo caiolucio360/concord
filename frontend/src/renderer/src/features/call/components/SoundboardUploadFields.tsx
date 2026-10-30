@@ -48,7 +48,7 @@ export function SoundFileField({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="flex flex-1 cursor-pointer items-center justify-between rounded-xl border border-dashed border-normal bg-fg/5 px-3 py-2.5 text-left text-xs text-normal transition-colors hover:border-strong hover:bg-fg/10"
+          className="flex flex-1 cursor-pointer items-center justify-between rounded-xl border border-dashed border-normal bg-fg/5 px-3 py-2.5 text-left text-ds-xs text-normal transition-colors hover:border-strong hover:bg-fg/10"
         >
           <span className="truncate">{file ? file.name : 'Escolher arquivo (.mp3, .wav, .ogg, .m4a)'}</span>
           {durationMs !== null && file && (
@@ -92,7 +92,7 @@ export function SoundEmojiField({
             key={em}
             type="button"
             onClick={() => onChange(em)}
-            className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-base transition-colors ${
+            className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-ds-md transition-colors ${
               emoji === em ? 'bg-brand text-white ring-2 ring-fg/40' : 'bg-fg/5 hover:bg-fg/15'
             }`}
           >
@@ -106,7 +106,7 @@ export function SoundEmojiField({
           // design-allow: exemplo de emoji no campo de emoji
           placeholder="🎵"
           aria-label="Emoji personalizado"
-          className="h-8 w-12 rounded-lg border border-subtle bg-fg/5 text-center text-sm text-strong focus:border-brand focus:outline-none"
+          className="h-8 w-12 rounded-lg border border-subtle bg-fg/5 text-center text-ds-sm text-strong focus:border-brand focus:outline-none"
         />
       </div>
     </div>

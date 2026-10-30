@@ -32,7 +32,7 @@ describe('SoundPad', () => {
   it('som sem emoji mostra o ícone da mesa, não o 🔊', () => {
     const html = render()
     expect(html).not.toContain('🔊')
-    expect(html).toMatch(/text-lg">(?:<svg)/)
+    expect(html).toMatch(/text-ds-lg">(?:<svg)/)
   })
 
   it('o emoji do som é conteúdo e continua', () => {

@@ -24,8 +24,8 @@ function Group({
   if (items.length === 0) return null
   return (
     <div className="mt-3">
-      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${tone}`}>{title}</span>
-      <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-secondary">
+      <span className={`rounded-full px-2 py-0.5 text-ds-xs font-semibold ${tone}`}>{title}</span>
+      <ul className="mt-2 list-disc space-y-1 pl-5 text-ds-sm text-secondary">
         {items.map((text, i) => (
           <li key={i}>{text}</li>
         ))}
@@ -40,14 +40,14 @@ export function ChangelogView({ releases, current, loading, error }: ViewProps):
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="flex h-14 shrink-0 items-center gap-3 border-b border-subtle px-4">
           <ChangelogIcon className="h-5 w-5 text-brand" />
-          <h1 className="text-base font-semibold">Novidades</h1>
+          <h1 className="text-ds-md font-semibold">Novidades</h1>
         </header>
         <main className="flex-1 overflow-y-auto p-4">
           <div className="mx-auto flex max-w-2xl flex-col gap-4">
             {loading && <ChangelogSkeleton />}
-            {error && <p className="text-sm text-danger">{error}</p>}
+            {error && <p className="text-ds-sm text-danger">{error}</p>}
             {!loading && !error && releases.length === 0 && (
-              <p className="text-sm text-muted">Nenhuma versão publicada ainda.</p>
+              <p className="text-ds-sm text-muted">Nenhuma versão publicada ainda.</p>
             )}
             {releases.map((rel) => {
               const { features, fixes } = groupEntries(rel)
@@ -57,17 +57,17 @@ export function ChangelogView({ releases, current, loading, error }: ViewProps):
                   className="rounded-xl border border-subtle bg-surface p-4"
                 >
                   <div className="flex flex-wrap items-baseline gap-2">
-                    <h2 className="text-lg font-bold">v{rel.version}</h2>
-                    <span className="text-xs text-muted">
+                    <h2 className="text-ds-lg font-bold">v{rel.version}</h2>
+                    <span className="text-ds-xs text-muted">
                       {formatReleaseDate(rel.released_at)}
                     </span>
                     {current === rel.version && (
-                      <span className="rounded-full bg-brand/30 px-2 py-0.5 text-xs font-semibold text-brand">
+                      <span className="rounded-full bg-brand/30 px-2 py-0.5 text-ds-xs font-semibold text-brand">
                         Você está aqui
                       </span>
                     )}
                   </div>
-                  {rel.summary && <p className="mt-1 text-sm text-muted">{rel.summary}</p>}
+                  {rel.summary && <p className="mt-1 text-ds-sm text-muted">{rel.summary}</p>}
                   <Group
                     title="Novidades"
                     items={features}
@@ -75,7 +75,7 @@ export function ChangelogView({ releases, current, loading, error }: ViewProps):
                   />
                   <Group title="Correções" items={fixes} tone="bg-warning/20 text-warning" />
                   {features.length + fixes.length === 0 && (
-                    <p className="mt-3 text-sm text-faint">Sem notas para esta versão.</p>
+                    <p className="mt-3 text-ds-sm text-faint">Sem notas para esta versão.</p>
                   )}
                 </section>
               )

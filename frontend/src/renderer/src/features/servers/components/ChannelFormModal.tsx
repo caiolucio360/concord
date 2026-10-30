@@ -39,7 +39,7 @@ function ChannelTypePicker({
               : 'border-subtle text-muted hover:bg-fg/5'
           }`}
         >
-          <span className="text-base leading-none">#</span>
+          <span className="text-ds-md leading-none">#</span>
           Texto
         </button>
         <button

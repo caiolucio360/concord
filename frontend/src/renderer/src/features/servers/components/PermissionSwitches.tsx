@@ -91,8 +91,8 @@ function PermissionSwitches({
                   title={title}
                 >
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-strong">{p.label}</p>
-                    <p className="text-xs leading-snug text-muted">{p.description}</p>
+                    <p className="text-ds-sm font-semibold text-strong">{p.label}</p>
+                    <p className="text-ds-xs leading-snug text-muted">{p.description}</p>
                   </div>
                   <Switch
                     checked={checked}

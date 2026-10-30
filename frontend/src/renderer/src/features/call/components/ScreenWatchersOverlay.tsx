@@ -23,7 +23,7 @@ export default function ScreenWatchersOverlay({
     <div
       data-testid="screen-watchers-overlay"
       title={`Assistindo (${watchers.length}): ${tooltipText}`}
-      className={`on-media z-20 flex items-center gap-1.5 rounded-full bg-black/65 px-2 py-1 text-xs text-white backdrop-blur-md shadow-lg border border-white/10 select-none ${className}`}
+      className={`on-media z-20 flex items-center gap-1.5 rounded-full bg-black/65 px-2 py-1 text-ds-xs text-white backdrop-blur-md shadow-lg border border-white/10 select-none ${className}`}
     >
       <div className="flex items-center gap-1 text-secondary">
         <EyeIcon className="h-3.5 w-3.5 text-success" />

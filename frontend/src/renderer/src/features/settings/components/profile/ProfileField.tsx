@@ -1,5 +1,5 @@
 export const inputClass =
-  'w-full rounded-md border border-subtle bg-input px-3 py-2 text-sm text-strong placeholder:text-faint focus:border-brand focus:outline-none'
+  'w-full rounded-md border border-subtle bg-input px-3 py-2 text-ds-sm text-strong placeholder:text-faint focus:border-brand focus:outline-none'
 
 function Counter({ used, max }: { used: number; max: number }): React.JSX.Element {
   return (
@@ -26,12 +26,12 @@ export function Field({
   return (
     <div className="min-w-0">
       <div className="mb-1.5 flex items-baseline justify-between gap-2">
-        <p className="text-xs font-medium text-secondary">{label}</p>
+        <p className="text-ds-xs font-medium text-secondary">{label}</p>
         {counter && <Counter {...counter} />}
       </div>
-      {hint && <p className="-mt-1 mb-1.5 text-xs text-muted">{hint}</p>}
+      {hint && <p className="-mt-1 mb-1.5 text-ds-xs text-muted">{hint}</p>}
       {children}
-      {error && <p className="mt-1.5 text-xs text-danger">{error}</p>}
+      {error && <p className="mt-1.5 text-ds-xs text-danger">{error}</p>}
     </div>
   )
 }

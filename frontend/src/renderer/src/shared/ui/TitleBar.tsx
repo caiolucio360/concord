@@ -24,7 +24,7 @@ function TitleBar(): React.JSX.Element {
       className="app-drag flex shrink-0 items-center gap-2 bg-app pl-3 pr-[140px]"
     >
       <SalinhaMarkIcon className="h-4 w-4 text-muted" />
-      <span className="text-xs font-semibold tracking-wide text-muted">Salinha</span>
+      <span className="text-ds-xs font-semibold tracking-wide text-muted">Salinha</span>
     </div>
   )
 }

@@ -34,11 +34,11 @@ function HubCard({
         {icon}
       </div>
       <div className="relative min-w-0 flex-1">
-        <h2 className="text-lg font-bold text-strong">{title}</h2>
-        <p className="mt-1 text-sm text-muted">{description}</p>
+        <h2 className="text-ds-lg font-bold text-strong">{title}</h2>
+        <p className="mt-1 text-ds-sm text-muted">{description}</p>
       </div>
       <div className="relative flex items-center justify-between gap-2">
-        <span className="min-w-0 truncate text-xs font-semibold text-secondary">{stat ?? ' '}</span>
+        <span className="min-w-0 truncate text-ds-xs font-semibold text-secondary">{stat ?? ' '}</span>
         <ChevronRightIcon className="size-5 shrink-0 text-faint transition-transform group-hover:translate-x-1 group-hover:text-strong" />
       </div>
     </Link>

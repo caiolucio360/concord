@@ -9,7 +9,7 @@ export default function SoundboardEmpty({
 }): React.JSX.Element {
   return (
     <div className="rounded-xl border border-dashed border-subtle py-8 text-center">
-      <p className="text-xs font-medium text-secondary">
+      <p className="text-ds-xs font-medium text-secondary">
         {searching ? 'Nenhum som encontrado para essa busca.' : 'Nenhum som neste servidor ainda.'}
       </p>
       {!searching && canAdd && (

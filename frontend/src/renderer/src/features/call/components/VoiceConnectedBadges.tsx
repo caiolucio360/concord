@@ -23,7 +23,7 @@ function VoiceConnectedBadges(): React.JSX.Element {
         />
       )}
       {/* À direita fica o botão do chat do canal. */}
-      <div className="absolute right-16 top-3 z-10 flex items-center gap-2 rounded-full border border-success/30 bg-success/15 px-3 py-1 text-xs font-semibold text-success">
+      <div className="absolute right-16 top-3 z-10 flex items-center gap-2 rounded-full border border-success/30 bg-success/15 px-3 py-1 text-ds-xs font-semibold text-success">
         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" />
         Voz conectada · {formatDuration(elapsed)}
       </div>

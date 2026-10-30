@@ -48,7 +48,7 @@ export function Toast({ toast }: { toast: ToastMessage }): React.JSX.Element {
       >
         <Icone type={toast.type} />
       </span>
-      <p className="min-w-0 flex-1 break-words text-sm font-medium leading-snug text-strong">{toast.message}</p>
+      <p className="min-w-0 flex-1 break-words text-ds-sm font-medium leading-snug text-strong">{toast.message}</p>
 
       {toast.action && (
         <button
@@ -57,7 +57,7 @@ export function Toast({ toast }: { toast: ToastMessage }): React.JSX.Element {
             toast.action?.run()
             removeToast(toast.id)
           }}
-          className="shrink-0 cursor-pointer rounded-md border border-normal px-2 py-1 text-xs font-semibold text-strong transition-colors hover:bg-fg/10"
+          className="shrink-0 cursor-pointer rounded-md border border-normal px-2 py-1 text-ds-xs font-semibold text-strong transition-colors hover:bg-fg/10"
         >
           {toast.action.label}
         </button>

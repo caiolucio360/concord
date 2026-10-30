@@ -65,7 +65,7 @@ function PollCard({ poll, isAuthor, onVote, onEnd }: PollCardProps): React.JSX.E
   return (
     <div className="mt-1 w-full max-w-md rounded-xl border border-subtle bg-input p-4">
       <p className="break-words text-ds-md font-semibold text-strong">{poll.question}</p>
-      <p className="mb-3 mt-0.5 text-xs text-muted">
+      <p className="mb-3 mt-0.5 text-ds-xs text-muted">
         {pollHint(closed, poll.allow_multiselect)}
       </p>
 
@@ -86,7 +86,7 @@ function PollCard({ poll, isAuthor, onVote, onEnd }: PollCardProps): React.JSX.E
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-        <span className="flex items-center gap-1.5 text-xs text-muted">
+        <span className="flex items-center gap-1.5 text-ds-xs text-muted">
           <PollIcon className="h-3.5 w-3.5" />
           {votesLabel(poll.total_voters)} · {pollTimeLeft(poll, now)}
         </span>

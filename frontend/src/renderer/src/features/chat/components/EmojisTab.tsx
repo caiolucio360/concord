@@ -23,7 +23,7 @@ export default function EmojisTab({
                 type="button"
                 title={item.label}
                 onClick={() => onSelect(item.emoji)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-lg transition-colors hover:bg-white/10 cursor-pointer"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-ds-lg transition-colors hover:bg-white/10 cursor-pointer"
               >
                 {item.emoji}
               </button>

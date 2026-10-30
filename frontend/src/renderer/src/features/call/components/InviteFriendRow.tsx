@@ -40,8 +40,8 @@ function InviteFriendRow({
           status={status}
         />
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-sm font-medium text-strong">{name}</span>
-          <span className="block truncate text-xs text-muted">
+          <span className="block truncate text-ds-sm font-medium text-strong">{name}</span>
+          <span className="block truncate text-ds-xs text-muted">
             {status === 'offline' ? INVITE_COPY.offline : INVITE_COPY.online}
           </span>
         </span>

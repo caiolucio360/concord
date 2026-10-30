@@ -39,7 +39,7 @@ function ComposerAttachments({
               <MicIcon className="h-8 w-8" />
             )}
           </div>
-          <p className="truncate text-xs text-normal" title={d.file.name}>
+          <p className="truncate text-ds-xs text-normal" title={d.file.name}>
             {d.file.name}
           </p>
           <p className="text-ds-xxs text-faint">{formatBytes(d.file.size)}</p>

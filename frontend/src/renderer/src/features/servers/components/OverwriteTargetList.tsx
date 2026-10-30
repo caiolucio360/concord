@@ -32,19 +32,19 @@ function OverwriteTargetList({
         aria-label="Adicionar membro"
         value={adding}
         onChange={(e) => onAddingChange(e.target.value)}
-        className="mb-2 text-xs"
+        className="mb-2 text-ds-xs"
       />
       {adding.trim() && (
         <ul className="mb-2 max-h-40 overflow-y-auto rounded-lg border border-subtle bg-input p-1">
           {candidates.length === 0 && (
-            <li className="px-2 py-1.5 text-xs text-faint">Ninguém encontrado.</li>
+            <li className="px-2 py-1.5 text-ds-xs text-faint">Ninguém encontrado.</li>
           )}
           {candidates.map((c) => (
             <li key={`${c.ref.type}:${c.ref.id}`}>
               <button
                 type="button"
                 onClick={() => onAdd(c.ref)}
-                className="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-left text-xs text-normal hover:bg-fg/10"
+                className="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-left text-ds-xs text-normal hover:bg-fg/10"
               >
                 <span className="text-faint">@</span>
                 <span className="truncate">{c.name}</span>
@@ -78,7 +78,7 @@ function TargetButton({
       type="button"
       onClick={() => onSelect({ type: row.type, id: row.id })}
       aria-current={active ? 'true' : undefined}
-      className={`flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm font-medium ${
+      className={`flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-left text-ds-sm font-medium ${
         active ? 'bg-fg/10 text-strong' : 'text-muted hover:bg-fg/5'
       }`}
     >

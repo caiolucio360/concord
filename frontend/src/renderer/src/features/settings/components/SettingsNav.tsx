@@ -48,7 +48,7 @@ function SettingsNav({
         />
         <span className="min-w-0">
           <span className="block truncate text-ds-md font-medium text-strong">{name}</span>
-          <span className="flex items-center gap-1 text-xs text-muted">
+          <span className="flex items-center gap-1 text-ds-xs text-muted">
             Editar perfis <PencilIcon className="h-3 w-3" />
           </span>
         </span>

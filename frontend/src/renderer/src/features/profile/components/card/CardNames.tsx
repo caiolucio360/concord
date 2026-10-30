@@ -13,7 +13,7 @@ function NameLine({
   you: boolean
 }): React.JSX.Element {
   return (
-    <p className="truncate text-xl font-bold text-strong">
+    <p className="truncate text-ds-lg font-bold text-strong">
       {profile.nickname ? (
         profile.nickname
       ) : (
@@ -23,7 +23,7 @@ function NameLine({
           style={profile.name_style}
         />
       )}
-      {you && <span className="ml-1.5 text-xs font-medium text-muted">(você)</span>}
+      {you && <span className="ml-1.5 text-ds-xs font-medium text-muted">(você)</span>}
     </p>
   )
 }
@@ -50,7 +50,7 @@ function SubLine({
   if (!username && !pronouns && !badges) return null
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <p className="min-w-0 truncate text-sm text-secondary">
+      <p className="min-w-0 truncate text-ds-sm text-secondary">
         {username && <span>{username}</span>}
         {username && pronouns && <span className="text-faint"> · </span>}
         <Pronouns value={profile.pronouns} placeholder={placeholder} />

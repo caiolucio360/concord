@@ -27,7 +27,7 @@ function SceneTitle({
     >
       {scene.crown && <Crown size={Math.round(fontPx * 0.45)} />}
       <p
-        className={`bg-clip-text font-black leading-none tracking-tight text-transparent ${scene.shine ? 'level-number-shine' : ''}`}
+        className={`bg-clip-text font-bold leading-none tracking-tight text-transparent ${scene.shine ? 'level-number-shine' : ''}`}
         style={{
           fontSize: scene.crown ? fontPx * 0.42 : fontPx,
           letterSpacing: scene.crown ? '0.18em' : undefined,
@@ -39,7 +39,7 @@ function SceneTitle({
         {scene.numberText}
       </p>
       <p
-        className="mt-2 rounded-full border px-4 py-1 text-xs font-extrabold uppercase tracking-[0.3em] text-white shadow-lg"
+        className="mt-2 rounded-full border px-4 py-1 text-ds-xs font-bold uppercase tracking-[0.3em] text-white shadow-lg"
         style={{
           borderColor: `${scene.color}88`,
           background: `linear-gradient(90deg, ${scene.accent}cc, ${scene.color}aa)`,

@@ -30,7 +30,7 @@ function MemberIdentity({
     <span className="flex min-w-40 flex-1 items-center gap-3">
       <Avatar userId={member.user_id} name={name} avatarUrl={member.avatar_url} size={32} />
       <span className="min-w-0">
-        <span className="block truncate text-sm font-semibold text-strong">
+        <span className="block truncate text-ds-sm font-semibold text-strong">
           {name}
           {isOwner && (
             <span className="ml-1.5 inline-flex align-[-2px]">
@@ -38,7 +38,7 @@ function MemberIdentity({
             </span>
           )}
         </span>
-        {member.username && <span className="block text-xs text-muted">@{member.username}</span>}
+        {member.username && <span className="block text-ds-xs text-muted">@{member.username}</span>}
       </span>
     </span>
   )

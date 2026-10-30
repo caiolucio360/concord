@@ -31,12 +31,12 @@ function ConfirmTakeoverModal({
               avatarUrl={assignee.avatar_url}
               size={28}
             />
-            <span className="text-sm text-normal">
+            <span className="text-ds-sm text-normal">
               Está com <span className="font-semibold text-strong">{assignee.name}</span>
             </span>
           </div>
         )}
-        <p className="text-sm text-secondary">
+        <p className="text-ds-sm text-secondary">
           Mover <span className="font-semibold text-strong">“{proposal.title}”</span> para{' '}
           <span className="font-semibold text-strong">{STATUS_ACTION_LABEL[target]}</span> passa a
           tarefa para você.

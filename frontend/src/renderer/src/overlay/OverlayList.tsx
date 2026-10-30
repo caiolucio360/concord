@@ -27,7 +27,7 @@ function OverlayPill({
     >
       <OverlayAvatar member={member} />
       <span
-        className={`truncate text-sm ${
+        className={`truncate text-ds-sm ${
           member.speaking ? 'font-bold text-strong' : 'font-medium text-normal'
         }`}
       >
@@ -49,7 +49,7 @@ function OverlayList({ snapshot }: { snapshot: OverlaySnapshot }): React.JSX.Ele
       ))}
       {snapshot.more > 0 && (
         <div
-          className="w-fit rounded-full bg-floating/85 px-3 py-1 text-sm font-medium text-normal"
+          className="w-fit rounded-full bg-floating/85 px-3 py-1 text-ds-sm font-medium text-normal"
           style={rowStyle(snapshot.opacity, false)}
         >
           +{snapshot.more}

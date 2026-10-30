@@ -64,7 +64,7 @@ function IconWithRing({
         {iconUrl ? (
           <img src={serverIconSrc(iconUrl)} alt="" className="h-full w-full object-cover" />
         ) : (
-          <span className="font-black">{serverName.charAt(0).toUpperCase()}</span>
+          <span className="font-bold">{serverName.charAt(0).toUpperCase()}</span>
         )}
       </div>
     </div>
@@ -82,7 +82,7 @@ function LevelCount({
   const gradient = `linear-gradient(180deg, #ffffff 0%, ${scene.palette[0]} 55%, ${scene.palette[1] ?? scene.color} 100%)`
   return (
     <p
-      className="font-black leading-none tracking-tight tabular-nums"
+      className="font-bold leading-none tracking-tight tabular-nums"
       style={{
         marginTop: '0.3em',
         fontSize: 'clamp(56px, 16vw, 128px)',
@@ -135,11 +135,11 @@ function ServerLevelUpView(props: ServerLevelUpViewProps): React.JSX.Element {
           animation: reduced ? undefined : `server-lvl-badge ${scene.durationMs}ms ease-out both`
         }}
       >
-        <p className="max-w-full truncate text-base font-extrabold text-white [text-shadow:0_2px_8px_rgba(0,0,0,.8)] sm:text-lg">
+        <p className="max-w-full truncate text-ds-md font-bold text-white [text-shadow:0_2px_8px_rgba(0,0,0,.8)] sm:text-ds-lg">
           {serverName}
         </p>
         <p
-          className="max-w-full truncate rounded-full border px-4 py-1 text-ds-xs font-extrabold uppercase tracking-[0.2em] text-white shadow-lg sm:text-xs sm:tracking-[0.3em]"
+          className="max-w-full truncate rounded-full border px-4 py-1 text-ds-xs font-bold uppercase tracking-[0.2em] text-white shadow-lg sm:text-ds-xs sm:tracking-[0.3em]"
           style={{
             borderColor: `${scene.color}aa`,
             background: `linear-gradient(90deg, #1b1030dd, ${scene.color}88, #1b1030dd)`,

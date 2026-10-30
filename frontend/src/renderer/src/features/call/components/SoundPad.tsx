@@ -48,11 +48,11 @@ export default function SoundPad({
         className="flex w-full cursor-pointer items-center gap-2.5 text-left"
         title={`Tocar "${sound.name}" para todos na chamada`}
       >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-input text-lg">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-input text-ds-lg">
           {sound.emoji || <SoundboardIcon size={20} className="text-muted" />}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-bold text-strong">{sound.name}</p>
+          <p className="truncate text-ds-xs font-bold text-strong">{sound.name}</p>
           <p className="truncate text-ds-xxs text-muted">
             {(sound.duration_ms / 1000).toFixed(1)}s{subtitleSuffix(sound, origin)}
           </p>

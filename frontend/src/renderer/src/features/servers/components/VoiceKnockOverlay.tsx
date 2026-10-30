@@ -25,7 +25,7 @@ function VoiceKnockOverlay({
       <div className="absolute inset-0 z-10 flex items-center justify-between rounded-lg bg-black/80 px-2.5 backdrop-blur-sm border border-warning/40 animate-in on-media fade-in duration-150">
         <div className="flex items-center gap-1.5 min-w-0">
           <span className="h-2 w-2 shrink-0 animate-ping rounded-full bg-warning" />
-          <span className="truncate text-xs font-semibold text-warning">Pedido enviado...</span>
+          <span className="truncate text-ds-xs font-semibold text-warning">Pedido enviado...</span>
         </div>
         <button
           onClick={(e) => {
@@ -44,7 +44,7 @@ function VoiceKnockOverlay({
     return (
       <div className="absolute inset-0 z-10 flex items-center gap-1.5 rounded-lg bg-black/80 px-2.5 backdrop-blur-sm border border-danger/40 animate-in fade-in duration-150 on-media">
         <XIcon className="h-3.5 w-3.5 text-danger shrink-0" />
-        <span className="truncate text-xs font-medium text-danger">Pedido recusado</span>
+        <span className="truncate text-ds-xs font-medium text-danger">Pedido recusado</span>
       </div>
     )
   }
@@ -54,7 +54,7 @@ function VoiceKnockOverlay({
       className="pointer-events-none group-hover/voicech:pointer-events-auto absolute inset-0 z-10 flex items-center justify-center gap-1.5 rounded-lg bg-black/80 px-2 opacity-0 backdrop-blur-xs transition-opacity group-hover/voicech:opacity-100 cursor-pointer border border-warning/20 on-media"
     >
       <LockIcon className="h-3.5 w-3.5 text-warning shrink-0" />
-      <span className="truncate text-xs font-semibold text-warning">
+      <span className="truncate text-ds-xs font-semibold text-warning">
         Sala trancada · Pedir permissão
       </span>
     </div>

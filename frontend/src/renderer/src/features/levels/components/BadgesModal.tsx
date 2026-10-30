@@ -24,7 +24,7 @@ function RarityChip({ badge }: { badge: Badge }): React.JSX.Element {
   const meta = rarityMeta(badge.rarity)
   if (isMythic(badge.rarity)) {
     return (
-      <span className="mythic-chip inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-ds-xs font-black uppercase tracking-wide">
+      <span className="mythic-chip inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-ds-xs font-bold uppercase tracking-wide">
         <SparkleIcon size={12} />
         {meta.label}
       </span>
@@ -80,15 +80,15 @@ function Detail({
         />
       </div>
 
-      {title !== badge.name && <p className="mt-2 text-sm text-secondary">{badge.name}</p>}
+      {title !== badge.name && <p className="mt-2 text-ds-sm text-secondary">{badge.name}</p>}
       <h3
-        className={`${title !== badge.name ? 'mt-0.5' : 'mt-2'} text-center text-3xl font-black uppercase tracking-wide ${
+        className={`${title !== badge.name ? 'mt-0.5' : 'mt-2'} text-center text-ds-xxl font-bold uppercase tracking-wide ${
           mythic ? 'mythic-text' : 'text-strong'
         }`}
       >
         {title}
       </h3>
-      <p className="mt-1.5 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-xs text-muted">
+      <p className="mt-1.5 flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-ds-xs text-muted">
         {/* Perfil de outra pessoa: só o limite do tier, nunca o número exato. */}
         <span>{isMe ? statText(badge) : publicStatText(badge)}</span>
         {unlocked && (
@@ -106,10 +106,10 @@ function Detail({
       <div className="mt-5 w-full rounded-xl bg-input p-4">
         {isMe && <BadgeProgress badge={badge} mythic={mythic} />}
 
-        <p className="text-sm leading-snug text-normal">{badge.description}</p>
+        <p className="text-ds-sm leading-snug text-normal">{badge.description}</p>
 
         <div className="my-4 h-px bg-fg/10" />
-        <p className="text-sm font-semibold text-strong">
+        <p className="text-ds-sm font-semibold text-strong">
           {isMe ? 'Tiers' : `Progresso de ${ownerName}`}
         </p>
         <BadgeTierLadder badge={badge} />
@@ -177,7 +177,7 @@ function BadgesModal(): React.JSX.Element | null {
           ) : !badges ? (
             <BadgeDetailSkeleton />
           ) : (
-            <div className="flex h-full items-center justify-center text-sm text-faint">
+            <div className="flex h-full items-center justify-center text-ds-sm text-faint">
               Nada por aqui ainda.
             </div>
           )}

@@ -27,7 +27,7 @@ function BannerColorTile({ color, onOpen }: { color: string | null; onOpen: Open
     <TileSection title="Cor do banner">
       <Tile label="Mudar a cor do banner" onClick={() => onOpen('banner_color')} className="h-11 w-full px-3">
         <span aria-hidden="true" className="absolute inset-0" style={{ background: color ?? DEFAULT_BANNER }} />
-        <span className="relative rounded-md bg-black/45 px-1.5 py-0.5 font-mono text-xs text-white">
+        <span className="relative rounded-md bg-black/45 px-1.5 py-0.5 font-mono text-ds-xs text-white">
           {color ?? 'Padrão'}
         </span>
       </Tile>
@@ -67,10 +67,10 @@ function NameTile({ user, onOpen }: { user: User; onOpen: Open }): React.JSX.Ele
         onClick={() => onOpen('name')}
         className="w-full flex-col items-start gap-0.5 px-3 py-2.5 pr-9"
       >
-        <span className="w-full min-w-0 truncate text-lg font-bold text-strong">
+        <span className="w-full min-w-0 truncate text-ds-lg font-bold text-strong">
           <StyledName name={display_name || user.username} style={name_style} />
         </span>
-        <span className="text-xs text-muted">{nameStyleSummary(name_style)}</span>
+        <span className="text-ds-xs text-muted">{nameStyleSummary(name_style)}</span>
       </Tile>
     </TileSection>
   )

@@ -16,8 +16,8 @@ function ResultRow({ result, name }: { result: InviteResult; name: string }): Re
   const line = resultLine(result.status)
   return (
     <li className="flex min-h-10 items-center justify-between gap-3 rounded-lg px-2 py-1.5">
-      <span className="min-w-0 truncate text-sm text-strong">{name}</span>
-      <span className={`shrink-0 text-right text-xs ${TONE_CLASS[line.tone]}`}>{line.text}</span>
+      <span className="min-w-0 truncate text-ds-sm text-strong">{name}</span>
+      <span className={`shrink-0 text-right text-ds-xs ${TONE_CLASS[line.tone]}`}>{line.text}</span>
     </li>
   )
 }
@@ -36,7 +36,7 @@ function InviteResultsList({
   const { sent } = summarizeResults(results)
   return (
     <div className="flex flex-col gap-3">
-      <p role="status" className="text-sm font-medium text-strong">
+      <p role="status" className="text-ds-sm font-medium text-strong">
         {sendHeadline(sent, results.length)}
       </p>
       <ul className="flex flex-col gap-1">

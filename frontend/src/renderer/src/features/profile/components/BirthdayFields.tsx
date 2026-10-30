@@ -1,6 +1,6 @@
 import { birthYears, daysInMonth, MONTHS, type BirthdayValue } from '../lib/birthday'
 
-const selectClass = 'glass-input !py-2 text-sm'
+const selectClass = 'glass-input !py-2 text-ds-sm'
 
 /** Dia, mês e ano do aniversário (opcional; a idade só a própria pessoa vê). */
 function BirthdayFields({

@@ -22,10 +22,10 @@ function SlashSuggestions({
             e.preventDefault() // não tira o foco do campo
             onPick(s.command + ' ')
           }}
-          className="flex w-full cursor-pointer items-baseline gap-2 rounded px-2 py-1.5 text-left text-sm hover:bg-fg/10"
+          className="flex w-full cursor-pointer items-baseline gap-2 rounded px-2 py-1.5 text-left text-ds-sm hover:bg-fg/10"
         >
           <span className="shrink-0 whitespace-nowrap font-semibold text-strong">{s.usage}</span>
-          <span className="min-w-0 truncate text-xs text-faint">
+          <span className="min-w-0 truncate text-ds-xs text-faint">
             {s.description ?? s.aliases.join(' · ')}
           </span>
         </button>

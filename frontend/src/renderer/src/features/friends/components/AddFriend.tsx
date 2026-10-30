@@ -62,7 +62,7 @@ export default function AddFriend(): React.JSX.Element {
         <button
           type="submit"
           disabled={!canSubmitFriend(username, sending)}
-          className="shrink-0 cursor-pointer rounded-md bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
+          className="shrink-0 cursor-pointer rounded-md bg-brand px-4 py-2 text-ds-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           Enviar pedido de amizade
         </button>

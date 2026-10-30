@@ -18,7 +18,7 @@ function OverwriteEditorFooter({
     <div className="mt-4 flex items-center justify-between gap-2">
       <Button
         variant="ghost"
-        className="px-3 py-1.5 text-xs"
+        className="px-3 py-1.5 text-ds-xs"
         disabled={busy || !canRemove}
         onClick={onRemove}
       >

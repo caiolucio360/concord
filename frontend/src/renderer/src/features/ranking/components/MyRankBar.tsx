@@ -9,10 +9,10 @@ function MyRankBar({ me }: { me: MyRank | null }): React.JSX.Element {
       role="status"
       className="flex shrink-0 items-center justify-between gap-3 border-t border-subtle bg-secondary px-4 py-3"
     >
-      <span className="min-w-0 truncate text-sm font-bold text-strong">{myPositionText(me)}</span>
+      <span className="min-w-0 truncate text-ds-sm font-bold text-strong">{myPositionText(me)}</span>
       {me && (
         <span className="flex shrink-0 items-center gap-2">
-          <span className="hidden text-xs text-muted sm:inline">{formatXp(me.xp)}</span>
+          <span className="hidden text-ds-xs text-muted sm:inline">{formatXp(me.xp)}</span>
           <LevelChip level={me.level} />
         </span>
       )}

@@ -283,7 +283,7 @@ function CommentComposer({
         </div>
         <Button
           type="button"
-          className="shrink-0 px-3 py-1 text-xs"
+          className="shrink-0 px-3 py-1 text-ds-xs"
           disabled={sending || !submittable}
           onClick={() => void send()}
         >

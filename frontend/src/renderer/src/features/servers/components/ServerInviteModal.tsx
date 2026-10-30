@@ -79,7 +79,7 @@ function ServerInviteModal({ server }: { server: Server }): React.JSX.Element {
         </div>
 
         {friends.length === 0 ? (
-          <p className="py-6 text-center text-xs text-faint italic">
+          <p className="py-6 text-center text-ds-xs text-faint italic">
             Você ainda não tem amigos para convidar. Adicione amigos primeiro na aba
             &quot;Amigos&quot;.
           </p>
@@ -109,9 +109,9 @@ function ServerInviteModal({ server }: { server: Server }): React.JSX.Element {
                   </div>
 
                   {alreadyInServer ? (
-                    <span className="text-xs text-faint">Já é membro</span>
+                    <span className="text-ds-xs text-faint">Já é membro</span>
                   ) : alreadyInvited ? (
-                    <span className="text-xs text-brand">Convite pendente</span>
+                    <span className="text-ds-xs text-brand">Convite pendente</span>
                   ) : (
                     <Button
                       variant="success"
@@ -127,7 +127,7 @@ function ServerInviteModal({ server }: { server: Server }): React.JSX.Element {
             })}
 
             {filteredFriends.length === 0 && (
-              <p className="py-6 text-center text-xs text-faint italic">
+              <p className="py-6 text-center text-ds-xs text-faint italic">
                 Nenhum amigo encontrado para &quot;{inviteFilter}&quot;.
               </p>
             )}

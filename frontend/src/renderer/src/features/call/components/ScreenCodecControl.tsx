@@ -32,7 +32,7 @@ export function ScreenCodecOptions({
   onChange: (value: ScreenCodecPreference) => void
   compact: boolean
 }): React.JSX.Element {
-  const size = compact ? 'px-2 py-1.5 text-xs' : 'px-3 py-2 text-sm'
+  const size = compact ? 'px-2 py-1.5 text-ds-xs' : 'px-3 py-2 text-ds-sm'
   const usable = support && codecChoices(support)
   const hint = unavailableHint(usable)
   const option = (choice: ScreenCodecPreference, wide = false): React.JSX.Element => {
@@ -55,7 +55,7 @@ export function ScreenCodecOptions({
   }
   return (
     <details className={compact ? 'mt-3' : 'mt-4'}>
-      <summary className="cursor-pointer rounded text-xs font-semibold text-muted hover:text-normal focus-ring">
+      <summary className="cursor-pointer rounded text-ds-xs font-semibold text-muted hover:text-normal focus-ring">
         Avançado
       </summary>
       <div role="group" aria-label="Codec" className="mt-2">
@@ -64,8 +64,8 @@ export function ScreenCodecOptions({
           {option('auto', true)}
           {CODECS.map((codec) => option(codec))}
         </div>
-        {hint && <p className="mt-1.5 text-xs text-faint">{hint}</p>}
-        <p className="mt-1.5 text-xs text-faint">
+        {hint && <p className="mt-1.5 text-ds-xs text-faint">{hint}</p>}
+        <p className="mt-1.5 text-ds-xs text-faint">
           {compact
             ? 'Vale a partir da próxima transmissão.'
             : 'Automático usa o melhor que a sua placa de vídeo codifica: AV1, depois H.265, depois H.264. Use VP8 se a transmissão falhar para alguém.'}

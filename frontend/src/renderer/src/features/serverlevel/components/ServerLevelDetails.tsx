@@ -13,7 +13,7 @@ function ServerLevelDetails({ serverId }: { serverId: string }): React.JSX.Eleme
     void load(serverId)
   }, [serverId, load])
 
-  if (!progress) return <p className="text-sm text-muted">Carregando nível…</p>
+  if (!progress) return <p className="text-ds-sm text-muted">Carregando nível…</p>
   const { rows, total } = weekBreakdown(week ?? [])
 
   return (

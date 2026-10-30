@@ -43,7 +43,7 @@ export function VideoSection(): React.JSX.Element {
         <select
           value={checkedId}
           onChange={(e) => void setCameraDevice(e.target.value)}
-          className="glass-input !py-2 text-sm"
+          className="glass-input !py-2 text-ds-sm"
         >
           {cameras.map((c) => (
             <option key={c.id} value={c.id} className="bg-floating">
@@ -61,7 +61,7 @@ export function VideoSection(): React.JSX.Element {
           idle="Clique em “Testar vídeo” para ver como você aparece."
         />
         {effectFailed && (
-          <p className="text-xs text-warning">
+          <p className="text-ds-xs text-warning">
             Não foi possível aplicar o fundo neste computador. O vídeo segue normal.
           </p>
         )}
@@ -77,7 +77,7 @@ export function VideoSection(): React.JSX.Element {
       <div className="flex items-center justify-between gap-3 border-t border-subtle pt-4">
         <div>
           <p className="text-ds-sm font-medium text-strong">Sempre ver prévia do vídeo</p>
-          <p className="text-xs text-muted">
+          <p className="text-ds-xs text-muted">
             Mostra a prévia antes de ligar a câmera em uma chamada.
           </p>
         </div>
@@ -100,7 +100,7 @@ export function VideoSection(): React.JSX.Element {
           onUpload={upload}
           onRemoveCustom={removeCustom}
         />
-        <p className="text-xs text-muted">
+        <p className="text-ds-xs text-muted">
           A separação do fundo roda no seu computador: o vídeo original não sai dele.
         </p>
       </div>

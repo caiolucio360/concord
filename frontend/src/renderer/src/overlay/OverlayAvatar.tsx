@@ -7,7 +7,7 @@ function OverlayAvatar({ member }: { member: OverlayMember }): React.JSX.Element
   const src = overlayAvatarSrc(member, failedUrl)
   return (
     <div
-      className={`flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand text-xs font-bold text-white ${
+      className={`flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand text-ds-xs font-bold text-white ${
         member.speaking ? 'ring-2 ring-success' : ''
       }`}
     >

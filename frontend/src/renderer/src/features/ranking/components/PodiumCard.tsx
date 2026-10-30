@@ -30,14 +30,14 @@ function PodiumCard({ slot }: { slot: PodiumSlot }): React.JSX.Element {
             size={look.avatar}
           />
         </span>
-        <span className="w-full min-w-0 truncate text-center text-sm font-semibold text-strong">
+        <span className="w-full min-w-0 truncate text-center text-ds-sm font-semibold text-strong">
           <StyledName name={name} userId={entry.user_id} style={entry.name_style} />
         </span>
         <LevelChip level={entry.level} />
-        <span className="text-xs text-muted">{formatXp(entry.xp)}</span>
+        <span className="text-ds-xs text-muted">{formatXp(entry.xp)}</span>
       </button>
       <div
-        className={`flex w-full items-center justify-center rounded-t-lg bg-fg/5 text-2xl font-black ${look.step} ${look.text}`}
+        className={`flex w-full items-center justify-center rounded-t-lg bg-fg/5 text-ds-xl font-bold ${look.step} ${look.text}`}
         aria-label={`${place}º lugar`}
       >
         {positionLabel(place)}

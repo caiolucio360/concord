@@ -68,7 +68,7 @@ export default function SavedProfileCard({
             </span>
           )}
         </span>
-        <span className="w-full min-w-0 truncate text-xs text-muted">
+        <span className="w-full min-w-0 truncate text-ds-xs text-muted">
           <StyledName name={shown} style={item.fields.name_style} />
         </span>
       </button>

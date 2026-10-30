@@ -42,7 +42,7 @@ function RankingBody({ ranking, loading, error, onRetry }: ViewProps): React.JSX
   if (ranking === null) {
     return (
       <div className="flex flex-col items-start gap-3">
-        <p className="text-sm text-danger">{error ?? 'Não foi possível carregar o ranking.'}</p>
+        <p className="text-ds-sm text-danger">{error ?? 'Não foi possível carregar o ranking.'}</p>
         <Button variant="ghost" onClick={onRetry}>
           Tentar de novo
         </Button>
@@ -51,7 +51,7 @@ function RankingBody({ ranking, loading, error, onRetry }: ViewProps): React.JSX
   }
   if (ranking.entries.length === 0) {
     return (
-      <p className="text-sm text-muted">
+      <p className="text-ds-sm text-muted">
         Ninguém no ranking ainda. Entre numa call e seja o primeiro!
       </p>
     )
@@ -66,12 +66,12 @@ export function RankingView(props: ViewProps): React.JSX.Element {
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="flex h-14 shrink-0 items-center gap-3 border-b border-subtle px-4">
           <CrownIcon className="h-5 w-5 text-warning" />
-          <h1 className="text-base font-semibold">Rank global</h1>
+          <h1 className="text-ds-md font-semibold">Rank global</h1>
         </header>
         <main className="flex-1 overflow-y-auto p-4">
           <div className="mx-auto flex max-w-2xl flex-col gap-4">
             {ranking && error && (
-              <p className="flex flex-wrap items-center gap-2 text-sm text-danger">
+              <p className="flex flex-wrap items-center gap-2 text-ds-sm text-danger">
                 {error}
                 <Button variant="ghost" onClick={onRetry}>
                   Tentar de novo

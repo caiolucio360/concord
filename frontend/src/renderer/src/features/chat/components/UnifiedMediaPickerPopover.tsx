@@ -81,7 +81,7 @@ export default function UnifiedMediaPickerPopover({
         className="absolute bottom-14 right-2 z-40 flex h-96 w-80 flex-col rounded-xl border border-white/10 bg-floating p-3 shadow-2xl backdrop-blur-xl"
       >
         {/* Abas Superiores estilo WhatsApp */}
-        <div className="mb-2 flex items-center justify-around border-b border-white/10 pb-2 text-xs font-medium text-muted">
+        <div className="mb-2 flex items-center justify-around border-b border-white/10 pb-2 text-ds-xs font-medium text-muted">
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -109,7 +109,7 @@ export default function UnifiedMediaPickerPopover({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={TABS.find((t) => t.id === tab)?.placeholder}
-            className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-white placeholder:text-faint outline-none focus:border-brand/50"
+            className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-ds-xs text-white placeholder:text-faint outline-none focus:border-brand/50"
           />
         </div>
 

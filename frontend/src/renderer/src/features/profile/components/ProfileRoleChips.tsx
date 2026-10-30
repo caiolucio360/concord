@@ -30,7 +30,7 @@ function Chip({
   const text = readableColor(color, background, ink)
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-md bg-fg/5 px-2 py-0.5 text-xs font-semibold"
+      className="inline-flex items-center gap-1.5 rounded-md bg-fg/5 px-2 py-0.5 text-ds-xs font-semibold"
       style={{ color: text }}
     >
       <span className="h-2 w-2 rounded-full" style={{ background: text }} />
@@ -50,7 +50,7 @@ export default function ProfileRoleChips({
     <div className="flex flex-wrap items-center gap-1.5">
       {owner && <OwnerCrown className="h-4 w-4" />}
       {owner && roles.length === 0 && (
-        <span className="text-xs" style={{ color: readableColor('#9ca3af', background, ink) }}>
+        <span className="text-ds-xs" style={{ color: readableColor('#9ca3af', background, ink) }}>
           Sem cargo
         </span>
       )}

@@ -77,7 +77,7 @@ function CreatePollModal({ open, onClose, onCreate }: CreatePollModalProps): Rea
         onMouseDown={() => setPicker(null)}
       >
         <label className="flex flex-col gap-1.5">
-          <span className="flex items-baseline justify-between text-sm font-medium text-secondary">
+          <span className="flex items-baseline justify-between text-ds-sm font-medium text-secondary">
             Pergunta
             <span className="text-ds-xxs text-faint">
               {draft.question.length}/{POLL_QUESTION_MAX}
@@ -94,7 +94,7 @@ function CreatePollModal({ open, onClose, onCreate }: CreatePollModalProps): Rea
         </label>
 
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-secondary">Respostas</span>
+          <span className="text-ds-sm font-medium text-secondary">Respostas</span>
           {draft.answers.map((answer, i) => (
             <PollAnswerField
               key={i}
@@ -112,7 +112,7 @@ function CreatePollModal({ open, onClose, onCreate }: CreatePollModalProps): Rea
             <button
               type="button"
               onClick={() => setDraft((d) => ({ ...d, answers: [...d.answers, emptyAnswer()] }))}
-              className="flex cursor-pointer items-center gap-1.5 self-start rounded-md px-1 py-1 text-xs font-semibold text-brand transition-colors hover:text-strong"
+              className="flex cursor-pointer items-center gap-1.5 self-start rounded-md px-1 py-1 text-ds-xs font-semibold text-brand transition-colors hover:text-strong"
             >
               <PlusIcon className="h-4 w-4" />
               Adicionar outra resposta
@@ -121,7 +121,7 @@ function CreatePollModal({ open, onClose, onCreate }: CreatePollModalProps): Rea
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
-          <label className="flex items-center gap-2 text-sm text-secondary">
+          <label className="flex items-center gap-2 text-ds-sm text-secondary">
             Duração
             <select
               value={draft.duration_hours}
@@ -135,7 +135,7 @@ function CreatePollModal({ open, onClose, onCreate }: CreatePollModalProps): Rea
               ))}
             </select>
           </label>
-          <label className="flex cursor-pointer items-center gap-2 text-sm text-secondary">
+          <label className="flex cursor-pointer items-center gap-2 text-ds-sm text-secondary">
             <input
               type="checkbox"
               checked={draft.allow_multiselect}

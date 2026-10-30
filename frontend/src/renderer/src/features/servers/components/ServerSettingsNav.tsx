@@ -11,7 +11,7 @@ interface ServerSettingsNavProps {
 }
 
 const DANGER_ITEM =
-  'block w-full cursor-pointer rounded-md px-2 py-1.5 text-left text-sm font-medium text-danger transition-colors hover:bg-danger/10'
+  'block w-full cursor-pointer rounded-md px-2 py-1.5 text-left text-ds-sm font-medium text-danger transition-colors hover:bg-danger/10'
 
 /** Coluna da esquerda das configurações do servidor: seções e "Deletar"/"Sair". */
 function ServerSettingsNav({
@@ -35,7 +35,7 @@ function ServerSettingsNav({
             type="button"
             onClick={() => onGo(item.id)}
             aria-current={item.id === currentId ? 'page' : undefined}
-            className={`mb-0.5 block w-full cursor-pointer rounded-md px-2 py-1.5 text-left text-sm font-medium transition-colors ${
+            className={`mb-0.5 block w-full cursor-pointer rounded-md px-2 py-1.5 text-left text-ds-sm font-medium transition-colors ${
               item.id === currentId
                 ? 'bg-fg/10 text-strong'
                 : 'text-muted hover:bg-fg/5 hover:text-normal'

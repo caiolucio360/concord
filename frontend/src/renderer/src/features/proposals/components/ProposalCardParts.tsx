@@ -56,7 +56,7 @@ export function ProposalCover({ images }: { images: ProposalImage[] }): React.JS
 /** Autor, comentários e o tempo que falta para a votação acabar. */
 export function ProposalByline({ proposal: p, now }: { proposal: Proposal; now: number }): React.JSX.Element {
   return (
-    <div className="flex items-center gap-2 text-xs text-muted">
+    <div className="flex items-center gap-2 text-ds-xs text-muted">
       <Avatar userId={p.author_id} name={p.author_name} avatarUrl={p.author_avatar_url} size={20} />
       <span className="min-w-0 truncate">{p.author_name}</span>
       {p.comment_count > 0 && (
@@ -146,7 +146,7 @@ export function ProposalIssueLink({ proposal: p }: { proposal: Proposal }): Reac
       target="_blank"
       rel="noreferrer"
       onClick={stopPropagation}
-      className="text-xs font-medium text-brand hover:text-strong hover:underline"
+      className="text-ds-xs font-medium text-brand hover:text-strong hover:underline"
     >
       Issue #{p.github_issue_number} no GitHub
     </a>
@@ -179,7 +179,7 @@ export function ProposalCardActions({
       {canDelete && (
         <Button
           variant="ghost"
-          className="ml-auto px-3 py-1 text-xs"
+          className="ml-auto px-3 py-1 text-ds-xs"
           disabled={busy}
           onClick={onDelete}
         >

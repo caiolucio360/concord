@@ -25,7 +25,7 @@ function SliderRow({
 }): React.JSX.Element {
   return (
     <div className="mb-3">
-      <div className="mb-1 flex items-center justify-between text-xs">
+      <div className="mb-1 flex items-center justify-between text-ds-xs">
         <span className="font-semibold text-normal">{label}</span>
         <span className="font-semibold text-muted">{display}</span>
       </div>
@@ -91,7 +91,7 @@ function VoiceModPanel(): React.JSX.Element {
               aria-checked={selected}
               disabled={!available}
               onClick={() => selectPreset(id)}
-              className={`min-w-0 cursor-pointer truncate rounded-xl border px-1.5 py-2 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+              className={`min-w-0 cursor-pointer truncate rounded-xl border px-1.5 py-2 text-ds-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                 selected
                   ? 'border-brand bg-brand/20 text-strong'
                   : 'border-subtle bg-fg/[0.04] text-secondary hover:border-normal hover:bg-fg/[0.08]'
@@ -143,7 +143,7 @@ function VoiceModPanel(): React.JSX.Element {
         disabled={!connected || !available}
         onClick={() => setMonitoring(!monitoring)}
         aria-pressed={monitoring}
-        className={`w-full cursor-pointer rounded-xl px-3 py-2 text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+        className={`w-full cursor-pointer rounded-xl px-3 py-2 text-ds-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
           monitoring
             ? 'bg-brand text-white hover:bg-brand-hover'
             : 'bg-fg/10 text-normal hover:bg-fg/15'

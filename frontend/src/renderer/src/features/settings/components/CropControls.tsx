@@ -9,7 +9,7 @@ export function ZoomSlider({
 }): React.JSX.Element {
   return (
     <div className="flex items-center gap-3 px-6 pt-4">
-      <span className="text-xs text-muted">−</span>
+      <span className="text-ds-xs text-muted">−</span>
       <input
         type="range"
         min={MIN_ZOOM}
@@ -20,7 +20,7 @@ export function ZoomSlider({
         aria-label="Zoom"
         className="flex-1 accent-brand"
       />
-      <span className="text-sm text-muted">+</span>
+      <span className="text-ds-sm text-muted">+</span>
     </div>
   )
 }
@@ -43,14 +43,14 @@ export function CropFooter({
       <button
         type="button"
         onClick={onReset}
-        className="mr-auto cursor-pointer text-sm text-secondary hover:underline"
+        className="mr-auto cursor-pointer text-ds-sm text-secondary hover:underline"
       >
         Redefinir
       </button>
       <button
         type="button"
         onClick={onCancel}
-        className="cursor-pointer rounded-md px-4 py-2 text-sm text-strong hover:underline"
+        className="cursor-pointer rounded-md px-4 py-2 text-ds-sm text-strong hover:underline"
       >
         Cancelar
       </button>
@@ -58,7 +58,7 @@ export function CropFooter({
         type="button"
         onClick={onApply}
         disabled={busy || !canApply}
-        className="cursor-pointer rounded-md bg-brand px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
+        className="cursor-pointer rounded-md bg-brand px-5 py-2 text-ds-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
       >
         {busy ? 'Aplicando...' : 'Aplicar'}
       </button>

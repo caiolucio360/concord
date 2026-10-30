@@ -32,7 +32,7 @@ function MediaPicker({
               onChange({ emoji, image_url: '' })
               onClose()
             }}
-            className={`cursor-pointer rounded-md p-1 text-lg leading-none transition-colors hover:bg-fg/10 ${
+            className={`cursor-pointer rounded-md p-1 text-ds-lg leading-none transition-colors hover:bg-fg/10 ${
               answer.emoji === emoji ? 'bg-brand/30' : ''
             }`}
           >
@@ -53,12 +53,12 @@ function MediaPicker({
           onChange={(e) => setUrl(e.target.value)}
           placeholder="ou link de uma imagem (https://…)"
           maxLength={512}
-          className="glass-input min-w-0 flex-1 !py-1.5 text-xs"
+          className="glass-input min-w-0 flex-1 !py-1.5 text-ds-xs"
         />
         <button
           type="submit"
           disabled={!url.trim()}
-          className="cursor-pointer rounded-md bg-fg/10 px-2 text-xs font-semibold text-strong hover:bg-fg/15 disabled:opacity-40"
+          className="cursor-pointer rounded-md bg-fg/10 px-2 text-ds-xs font-semibold text-strong hover:bg-fg/15 disabled:opacity-40"
         >
           Usar
         </button>
@@ -70,7 +70,7 @@ function MediaPicker({
             onChange({ emoji: '', image_url: '' })
             onClose()
           }}
-          className="mt-2 cursor-pointer text-xs font-semibold text-muted hover:text-danger"
+          className="mt-2 cursor-pointer text-ds-xs font-semibold text-muted hover:text-danger"
         >
           Remover emoji/imagem
         </button>
@@ -107,7 +107,7 @@ export function PollAnswerField({
         aria-label={`Emoji ou imagem da resposta ${index + 1}`}
         onMouseDown={(e) => e.stopPropagation()}
         onClick={onTogglePicker}
-        className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-subtle bg-fg/5 text-lg text-muted transition-colors hover:bg-fg/10"
+        className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-subtle bg-fg/5 text-ds-lg text-muted transition-colors hover:bg-fg/10"
       >
         {answer.emoji || answer.image_url ? (
           <PollAnswerMedia answer={answer} />

@@ -26,7 +26,7 @@ export function JoinRequestsStack(): React.JSX.Element | null {
                     className="h-10 w-10 rounded-full object-cover border border-subtle"
                   />
                 ) : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-sm font-semibold text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-ds-sm font-semibold text-white">
                     {name.slice(0, 1).toUpperCase()}
                   </div>
                 )}
@@ -35,8 +35,8 @@ export function JoinRequestsStack(): React.JSX.Element | null {
                 </div>
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-strong">{name}</p>
-                <p className="text-xs text-warning/90 font-medium">Pediu para entrar na sala</p>
+                <p className="truncate text-ds-sm font-semibold text-strong">{name}</p>
+                <p className="text-ds-xs text-warning/90 font-medium">Pediu para entrar na sala</p>
               </div>
             </div>
 

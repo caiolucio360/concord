@@ -8,7 +8,7 @@ const LEVELS = [1, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 120, 250]
 const MILESTONES = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
 const chip =
-  'cursor-pointer rounded-md bg-fg/10 px-2 py-1 text-xs font-semibold text-normal hover:bg-fg/20'
+  'cursor-pointer rounded-md bg-fg/10 px-2 py-1 text-ds-xs font-semibold text-normal hover:bg-fg/20'
 
 /**
  * Só em dev (import.meta.env.DEV): toca a animação de subir para qualquer
@@ -22,10 +22,10 @@ function LevelUpPreview(): React.JSX.Element {
 
   return (
     <div className="rounded-xl border border-dashed border-warning/40 bg-warning/5 p-4">
-      <h3 className="mb-1 text-xs font-bold uppercase tracking-wide text-warning">
+      <h3 className="mb-1 text-ds-xs font-bold uppercase tracking-wide text-warning">
         Prévia da subida de nível (dev)
       </h3>
-      <p className="mb-3 text-xs text-muted">
+      <p className="mb-3 text-ds-xs text-muted">
         Toca a animação em você sem mudar o seu nível de verdade.
       </p>
 
@@ -64,7 +64,7 @@ function LevelUpPreview(): React.JSX.Element {
         ))}
         <button
           onClick={previewNext}
-          className="cursor-pointer rounded-md bg-warning/20 px-2 py-1 text-xs font-bold text-warning hover:bg-warning/30"
+          className="cursor-pointer rounded-md bg-warning/20 px-2 py-1 text-ds-xs font-bold text-warning hover:bg-warning/30"
         >
           Próximo marco
         </button>
@@ -78,11 +78,11 @@ function LevelUpPreview(): React.JSX.Element {
           onChange={(e) => setLevel(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && preview(Number(level))}
           aria-label="Nível da prévia"
-          className="w-20 rounded-md border border-subtle bg-input px-2 py-1 text-xs text-strong"
+          className="w-20 rounded-md border border-subtle bg-input px-2 py-1 text-ds-xs text-strong"
         />
         <button
           onClick={() => preview(Number(level))}
-          className="cursor-pointer rounded-md bg-warning/80 px-2 py-1 text-xs font-bold text-black hover:bg-warning/80"
+          className="cursor-pointer rounded-md bg-warning/80 px-2 py-1 text-ds-xs font-bold text-black hover:bg-warning/80"
         >
           Tocar
         </button>
