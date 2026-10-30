@@ -76,7 +76,7 @@ function PinnedMessageItem({
           >
             {authorName}
           </span>
-          <span className="text-[11px] text-faint">{formatDateTime(pin.created_at)}</span>
+          <span className="text-ds-xs text-faint">{formatDateTime(pin.created_at)}</span>
         </div>
 
         <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100">
@@ -84,7 +84,7 @@ function PinnedMessageItem({
             type="button"
             onClick={() => onJump(pin.id)}
             title="Ir para a mensagem no chat"
-            className="rounded bg-fg/5 px-2 py-0.5 text-[11px] font-medium text-secondary hover:bg-brand hover:text-white"
+            className="rounded bg-fg/5 px-2 py-0.5 text-ds-xs font-medium text-secondary hover:bg-brand hover:text-white"
           >
             Ir
           </button>
@@ -93,7 +93,7 @@ function PinnedMessageItem({
               type="button"
               onClick={() => onUnpin(pin.id)}
               title="Desafixar mensagem"
-              className="rounded bg-fg/5 px-2 py-0.5 text-[11px] font-medium text-muted hover:bg-danger/20 hover:text-danger"
+              className="rounded bg-fg/5 px-2 py-0.5 text-ds-xs font-medium text-muted hover:bg-danger/20 hover:text-danger"
             >
               Desafixar
             </button>
@@ -128,7 +128,7 @@ function PinnedMessageItem({
       )}
 
       {/* Rodapé: Quem fixou */}
-      <div className="mt-2.5 flex items-center gap-1 text-[10px] text-faint">
+      <div className="mt-2.5 flex items-center gap-1 text-ds-xxs text-faint">
         <PinIcon className="h-3 w-3 text-warning/80" />
         <span>
           Fixado por <strong className="text-muted">{pinnedByName}</strong> em{' '}
@@ -204,7 +204,7 @@ export default function PinnedMessagesPopover({
         <div className="flex items-center gap-2">
           <PinIcon className="h-4 w-4 text-warning" />
           <h3 className="text-ds-sm font-semibold text-strong">Mensagens Fixadas</h3>
-          <span className="rounded bg-fg/10 px-1.5 py-0.5 text-[11px] font-medium text-secondary">
+          <span className="rounded bg-fg/10 px-1.5 py-0.5 text-ds-xs font-medium text-secondary">
             {pins.length}/50
           </span>
         </div>

@@ -40,7 +40,7 @@ function SliderRow({
         className="h-1.5 w-full cursor-pointer accent-brand"
       />
       {hint && (
-        <div className="mt-0.5 flex justify-between text-[10px] text-faint">
+        <div className="mt-0.5 flex justify-between text-ds-xxs text-faint">
           <span>{hint[0]}</span>
           <span>{hint[1]}</span>
         </div>
@@ -70,7 +70,7 @@ function VoiceModPanel(): React.JSX.Element {
   return (
     <div className="@container min-h-0 flex-1 overflow-y-auto pr-1">
       {!available && (
-        <p className="mb-3 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-[11px] text-warning">
+        <p className="mb-3 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-ds-xs text-warning">
           O voice mod não carregou neste PC. Sua voz segue normal.
         </p>
       )}
@@ -151,7 +151,7 @@ function VoiceModPanel(): React.JSX.Element {
       >
         {monitoring ? 'Parar de ouvir' : 'Ouvir minha voz'}
       </button>
-      <p className="mt-1 text-[10px] text-faint">
+      <p className="mt-1 text-ds-xxs text-faint">
         {connected ? 'Use fone para evitar eco.' : 'Entre numa chamada para ouvir.'}
       </p>
     </div>

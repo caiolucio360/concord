@@ -39,7 +39,7 @@ export default function JumpToPresentButton({
         <span
           data-new-count
           aria-hidden="true"
-          className="absolute -right-1 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-[11px] font-bold leading-none text-white"
+          className="absolute -right-1 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-ds-xs font-bold leading-none text-white"
         >
           {badge}
         </span>

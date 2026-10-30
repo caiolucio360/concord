@@ -24,7 +24,7 @@ function RarityChip({ badge }: { badge: Badge }): React.JSX.Element {
   const meta = rarityMeta(badge.rarity)
   if (isMythic(badge.rarity)) {
     return (
-      <span className="mythic-chip inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-black uppercase tracking-wide">
+      <span className="mythic-chip inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-ds-xs font-black uppercase tracking-wide">
         <SparkleIcon size={12} />
         {meta.label}
       </span>
@@ -32,7 +32,7 @@ function RarityChip({ badge }: { badge: Badge }): React.JSX.Element {
   }
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide"
+      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-ds-xs font-bold uppercase tracking-wide"
       style={{
         color: meta.color,
         background: meta.bg,

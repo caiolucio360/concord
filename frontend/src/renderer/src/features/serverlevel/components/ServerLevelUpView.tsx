@@ -139,7 +139,7 @@ function ServerLevelUpView(props: ServerLevelUpViewProps): React.JSX.Element {
           {serverName}
         </p>
         <p
-          className="max-w-full truncate rounded-full border px-4 py-1 text-[11px] font-extrabold uppercase tracking-[0.2em] text-white shadow-lg sm:text-xs sm:tracking-[0.3em]"
+          className="max-w-full truncate rounded-full border px-4 py-1 text-ds-xs font-extrabold uppercase tracking-[0.2em] text-white shadow-lg sm:text-xs sm:tracking-[0.3em]"
           style={{
             borderColor: `${scene.color}aa`,
             background: `linear-gradient(90deg, #1b1030dd, ${scene.color}88, #1b1030dd)`,

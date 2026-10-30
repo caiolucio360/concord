@@ -45,7 +45,7 @@ export function ProposalCover({ images }: { images: ProposalImage[] }): React.JS
         className="h-full w-full object-cover"
       />
       {images.length > 1 && (
-        <span className="absolute bottom-1 right-1 rounded-full bg-black/70 px-1.5 py-0.5 text-[10px] font-semibold text-white on-media">
+        <span className="absolute bottom-1 right-1 rounded-full bg-black/70 px-1.5 py-0.5 text-ds-xxs font-semibold text-white on-media">
           +{images.length - 1}
         </span>
       )}
@@ -93,7 +93,7 @@ export function ProposalVoteBar({ proposal: p }: { proposal: Proposal }): React.
           style={{ width: total === 0 ? '0%' : `${100 - percent}%` }}
         />
       </div>
-      <div className="flex justify-between text-[11px] text-muted">
+      <div className="flex justify-between text-ds-xs text-muted">
         <span>{p.yes_votes} sim</span>
         <span>{p.no_votes} não</span>
       </div>

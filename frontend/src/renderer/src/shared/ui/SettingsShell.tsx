@@ -98,7 +98,7 @@ function SettingsShell({
         >
           <XIcon className="h-4 w-4" />
         </button>
-        <span className="hidden text-[11px] font-bold text-faint md:block">ESC</span>
+        <span className="hidden text-ds-xs font-bold text-faint md:block">ESC</span>
       </div>
 
       {overlay}

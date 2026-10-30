@@ -20,7 +20,7 @@ export function ScreenSimulcastOption({
   const size = compact ? 'px-2 py-1.5 text-xs' : 'px-3 py-2 text-sm'
   return (
     <div role="group" aria-label="Enviar também em 720p" className={compact ? 'mt-3' : 'mt-4'}>
-      <p className="mb-1.5 text-[11px] font-semibold text-muted">
+      <p className="mb-1.5 text-ds-xs font-semibold text-muted">
         Enviar também em 720p para quem tem internet fraca
       </p>
       <div className="flex overflow-hidden rounded-md">

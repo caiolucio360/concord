@@ -64,7 +64,7 @@ function PollCard({ poll, isAuthor, onVote, onEnd }: PollCardProps): React.JSX.E
 
   return (
     <div className="mt-1 w-full max-w-md rounded-xl border border-subtle bg-input p-4">
-      <p className="break-words text-[15px] font-semibold text-strong">{poll.question}</p>
+      <p className="break-words text-ds-md font-semibold text-strong">{poll.question}</p>
       <p className="mb-3 mt-0.5 text-xs text-muted">
         {pollHint(closed, poll.allow_multiselect)}
       </p>

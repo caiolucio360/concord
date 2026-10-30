@@ -53,7 +53,7 @@ export default function SoundPad({
         </span>
         <div className="min-w-0 flex-1">
           <p className="truncate text-xs font-bold text-strong">{sound.name}</p>
-          <p className="truncate text-[10px] text-muted">
+          <p className="truncate text-ds-xxs text-muted">
             {(sound.duration_ms / 1000).toFixed(1)}s{subtitleSuffix(sound, origin)}
           </p>
         </div>
@@ -64,7 +64,7 @@ export default function SoundPad({
           type="button"
           onClick={onStartRecordKey}
           title="Definir atalho de teclado (ex.: F1, Alt+1). Clique e pressione a combinação ou Backspace para limpar."
-          className={`cursor-pointer truncate rounded px-1.5 py-0.5 text-[10px] font-semibold transition-colors ${
+          className={`cursor-pointer truncate rounded px-1.5 py-0.5 text-ds-xxs font-semibold transition-colors ${
             recordingKey
               ? 'animate-pulse bg-brand text-white'
               : keybind

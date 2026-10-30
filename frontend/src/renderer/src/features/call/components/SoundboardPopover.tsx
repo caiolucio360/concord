@@ -114,7 +114,7 @@ function SoundboardPopover({
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <div className="mb-3">
           <p className="text-sm font-bold text-strong">Mesa de Áudio · {current.label}</p>
-          <p className="text-[11px] text-muted">{current.subtitle}</p>
+          <p className="text-ds-xs text-muted">{current.subtitle}</p>
         </div>
         {section === 'sounds' ? (
           <SoundboardSoundsPanel serverId={serverId} onBusyChange={handleBusy} />

@@ -40,11 +40,11 @@ export default function PinnedMessageBar({
 
       <div className="flex shrink-0 items-center gap-2 pl-3">
         {more && (
-          <span className="rounded bg-fg/5 px-2 py-0.5 text-[10px] font-medium text-muted">
+          <span className="rounded bg-fg/5 px-2 py-0.5 text-ds-xxs font-medium text-muted">
             {more}
           </span>
         )}
-        <span className="flex items-center gap-0.5 text-[11px] font-medium text-brand opacity-80 group-hover:opacity-100 group-hover:underline">
+        <span className="flex items-center gap-0.5 text-ds-xs font-medium text-brand opacity-80 group-hover:opacity-100 group-hover:underline">
           Ir para mensagem
           <ChevronRightIcon size={12} />
         </span>

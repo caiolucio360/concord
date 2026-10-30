@@ -42,7 +42,7 @@ function ComposerAttachments({
           <p className="truncate text-xs text-normal" title={d.file.name}>
             {d.file.name}
           </p>
-          <p className="text-[10px] text-faint">{formatBytes(d.file.size)}</p>
+          <p className="text-ds-xxs text-faint">{formatBytes(d.file.size)}</p>
           {d.status === 'uploading' && (
             <div className="h-1 overflow-hidden rounded-full bg-fg/10">
               <div
@@ -51,7 +51,7 @@ function ComposerAttachments({
               />
             </div>
           )}
-          {d.status === 'error' && <p className="text-[10px] text-danger">{d.error}</p>}
+          {d.status === 'error' && <p className="text-ds-xxs text-danger">{d.error}</p>}
           <CloseButton
             label="Remover anexo"
             size="xs"

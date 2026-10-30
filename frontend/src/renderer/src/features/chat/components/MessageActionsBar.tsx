@@ -67,7 +67,7 @@ function ReactionButtons({
           onClick={() => onReact(emoji)}
           title={`Reagir com ${emoji}`}
           aria-label={`Reagir com ${emoji}`}
-          className={`${iconButton} text-[20px] leading-none hover:scale-110`}
+          className={`${iconButton} text-ds-lg leading-none hover:scale-110`}
         >
           {emoji}
         </button>

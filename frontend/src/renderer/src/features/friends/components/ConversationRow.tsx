@@ -134,7 +134,7 @@ function ConversationTail({
   return (
     <>
       {unread > 0 && (
-        <span className="shrink-0 rounded-full bg-danger-strong px-1.5 text-[11px] font-bold text-white [@media(hover:hover)]:group-hover:hidden">
+        <span className="shrink-0 rounded-full bg-danger-strong px-1.5 text-ds-xs font-bold text-white [@media(hover:hover)]:group-hover:hidden">
           {unread > 99 ? '99+' : unread}
         </span>
       )}

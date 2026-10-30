@@ -125,7 +125,7 @@ export default function StickerUploadModal({
             <div className="flex flex-col items-center gap-1 text-center">
               <ImageIcon size={24} className="text-muted" />
               <span className="text-xs font-medium text-white">Escolha ou arraste uma imagem</span>
-              <span className="text-[10px] text-muted">PNG, WebP ou GIF (máx. 1 MB)</span>
+              <span className="text-ds-xxs text-muted">PNG, WebP ou GIF (máx. 1 MB)</span>
             </div>
           )}
         </div>

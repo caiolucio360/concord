@@ -39,7 +39,7 @@ export function ServerHoverCardBody({
               />
             ))}
             {extra > 0 && (
-              <span className="z-10 flex h-6 min-w-6 items-center justify-center rounded-full bg-fg/20 px-1 text-[10px] font-bold text-strong ring-2 ring-[var(--bg-floating)]">
+              <span className="z-10 flex h-6 min-w-6 items-center justify-center rounded-full bg-fg/20 px-1 text-ds-xxs font-bold text-strong ring-2 ring-[var(--bg-floating)]">
                 +{extra}
               </span>
             )}

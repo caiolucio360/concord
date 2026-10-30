@@ -62,7 +62,7 @@ function ReactionChip({
       }`}
     >
       {/* Emoji (ou imagem de emoji) sempre em 20px. */}
-      <span className="flex h-5 min-w-5 items-center justify-center text-[20px] leading-none [&>img]:h-5 [&>img]:w-5 [&>img]:object-contain">
+      <span className="flex h-5 min-w-5 items-center justify-center text-ds-lg leading-none [&>img]:h-5 [&>img]:w-5 [&>img]:object-contain">
         {reaction.emoji}
       </span>
       <span

@@ -108,12 +108,12 @@ export default function StickersTab({
   return (
     <div>
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-[11px] text-muted">{stickers.length} / 60 figurinhas</span>
+        <span className="text-ds-xs text-muted">{stickers.length} / 60 figurinhas</span>
         {canAdd && (
           <button
             type="button"
             onClick={onAdd}
-            className="flex items-center gap-1 rounded-md bg-brand/30 px-2 py-1 text-[11px] font-medium text-brand transition-colors hover:bg-brand/50 cursor-pointer"
+            className="flex items-center gap-1 rounded-md bg-brand/30 px-2 py-1 text-ds-xs font-medium text-brand transition-colors hover:bg-brand/50 cursor-pointer"
           >
             <PlusIcon className="h-3 w-3" />
             <span>Nova Figurinha</span>

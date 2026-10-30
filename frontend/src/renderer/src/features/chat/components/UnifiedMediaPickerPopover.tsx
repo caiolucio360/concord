@@ -153,7 +153,7 @@ export default function UnifiedMediaPickerPopover({
 
         {/* Rodapé Giphy se na aba de GIFs */}
         {tab === 'gifs' && (
-          <div className="mt-2 flex items-center justify-center border-t border-white/5 pt-1.5 text-[10px] text-faint tracking-wider">
+          <div className="mt-2 flex items-center justify-center border-t border-white/5 pt-1.5 text-ds-xxs text-faint tracking-wider">
             Powered by GIPHY
           </div>
         )}

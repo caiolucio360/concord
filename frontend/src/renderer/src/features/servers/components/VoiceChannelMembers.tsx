@@ -160,7 +160,7 @@ function MaestroVoiceItem({ channelId }: { channelId: string }): React.JSX.Eleme
       <span className="min-w-0 truncate text-ds-sm font-medium text-secondary transition-colors group-hover/voiceuser:text-strong">
         {MAESTRO_NAME}
       </span>
-      <span className="ml-auto mr-1 rounded bg-brand/30 px-1 text-[9px] font-bold uppercase text-brand">
+      <span className="ml-auto mr-1 rounded bg-brand/30 px-1 text-ds-xxs font-bold uppercase text-brand">
         {T18.tag}
       </span>
     </div>

@@ -18,25 +18,25 @@ function ThemePreview({ theme }: { theme: ThemeInfo }): React.JSX.Element {
       {/* Canais */}
       <div className="flex w-14 shrink-0 flex-col gap-1 bg-secondary p-1.5">
         <span className="h-1.5 w-8 rounded-full bg-fg/15" />
-        <span className="rounded bg-selected px-1 text-[8px] leading-3 font-medium text-interactive-active">
+        <span className="rounded bg-selected px-1 text-ds-xxs leading-3 font-medium text-interactive-active">
           # geral
         </span>
-        <span className="px-1 text-[8px] leading-3 text-interactive-normal"># jogos</span>
+        <span className="px-1 text-ds-xxs leading-3 text-interactive-normal"># jogos</span>
       </div>
       {/* Chat */}
       <div className="flex min-w-0 flex-1 flex-col justify-between bg-primary p-1.5">
         <div className="flex gap-1">
           <span className="h-3.5 w-3.5 shrink-0 rounded-full bg-success" />
           <span className="min-w-0 leading-none">
-            <span className="block truncate text-[8px] font-semibold text-strong">
+            <span className="block truncate text-ds-xxs font-semibold text-strong">
               Ana <span className="font-normal text-faint">agora</span>
             </span>
-            <span className="block truncate text-[8px] text-normal">Bora jogar hoje?</span>
+            <span className="block truncate text-ds-xxs text-normal">Bora jogar hoje?</span>
           </span>
         </div>
         <div className="flex items-center gap-1">
           <span className="h-3 min-w-0 flex-1 rounded border border-normal bg-input" />
-          <span className="rounded bg-brand px-1 text-[7px] leading-3 font-semibold text-white">
+          <span className="rounded bg-brand px-1 text-ds-xxs leading-3 font-semibold text-white">
             Enviar
           </span>
         </div>

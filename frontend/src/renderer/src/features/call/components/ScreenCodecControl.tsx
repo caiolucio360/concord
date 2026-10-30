@@ -59,7 +59,7 @@ export function ScreenCodecOptions({
         Avançado
       </summary>
       <div role="group" aria-label="Codec" className="mt-2">
-        <p className="mb-1.5 text-[11px] font-semibold text-muted">Codec</p>
+        <p className="mb-1.5 text-ds-xs font-semibold text-muted">Codec</p>
         <div className="grid grid-cols-4 gap-px overflow-hidden rounded-md">
           {option('auto', true)}
           {CODECS.map((codec) => option(codec))}

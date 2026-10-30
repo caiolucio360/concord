@@ -106,7 +106,7 @@ function BackgroundPicker({
                   className="absolute inset-0 h-full w-full object-cover"
                 />
                 {c.animated && (
-                  <span className="absolute left-1 top-1 rounded bg-black/70 px-1 text-[10px] font-bold text-white">
+                  <span className="absolute left-1 top-1 rounded bg-black/70 px-1 text-ds-xxs font-bold text-white">
                     GIF
                   </span>
                 )}

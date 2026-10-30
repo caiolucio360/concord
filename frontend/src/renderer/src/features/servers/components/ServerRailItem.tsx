@@ -70,7 +70,7 @@ function ServerRailItem({
         )}
       </button>
       {view.badge > 0 && (
-        <span className="absolute -bottom-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-[10px] font-bold text-white shadow-md">
+        <span className="absolute -bottom-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1 text-ds-xxs font-bold text-white shadow-md">
           {badgeText(view.badge)}
         </span>
       )}

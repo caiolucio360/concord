@@ -144,7 +144,7 @@ export function MessageGutter({
     return (
       <span
         aria-hidden="true"
-        className="w-10 shrink-0 select-none self-start pt-[3px] text-center text-[10px] font-medium leading-[1.375rem] text-faint opacity-0 group-hover:opacity-100"
+        className="w-10 shrink-0 select-none self-start pt-[3px] text-center text-ds-xxs font-medium leading-[1.375rem] text-faint opacity-0 group-hover:opacity-100"
       >
         {formatTime(message.created_at)}
       </span>

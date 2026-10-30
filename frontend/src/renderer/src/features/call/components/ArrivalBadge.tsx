@@ -14,7 +14,7 @@ function ArrivalBadge({
 }): React.JSX.Element | null {
   if (!useRecentArrival(channelId, userId)) return null
   return (
-    <span className="arrival-badge shrink-0 rounded-full bg-success-strong px-1.5 text-[9px] font-bold leading-4 text-white">
+    <span className="arrival-badge shrink-0 rounded-full bg-success-strong px-1.5 text-ds-xxs font-bold leading-4 text-white">
       Chegou
     </span>
   )

@@ -37,7 +37,7 @@ function ChannelPermissionGroups({
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-strong">{p.label}</p>
-                    <p className="text-[11px] leading-snug text-muted">{p.description}</p>
+                    <p className="text-ds-xs leading-snug text-muted">{p.description}</p>
                   </div>
                   <PermissionTriState
                     label={p.label}

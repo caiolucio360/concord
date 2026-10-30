@@ -56,7 +56,7 @@ function SubLine({
         <Pronouns value={profile.pronouns} placeholder={placeholder} />
       </p>
       {profile.is_bot && (
-        <span className="shrink-0 rounded bg-brand px-1.5 py-px text-[10px] font-bold uppercase leading-tight text-white">
+        <span className="shrink-0 rounded bg-brand px-1.5 py-px text-ds-xxs font-bold uppercase leading-tight text-white">
           Bot
         </span>
       )}

@@ -32,7 +32,7 @@ function ProposalImageStrip({
             </div>
           )}
           {d.error && (
-            <span className="absolute inset-0 flex items-center justify-center p-1 text-center text-[10px] leading-tight text-danger">
+            <span className="absolute inset-0 flex items-center justify-center p-1 text-center text-ds-xxs leading-tight text-danger">
               {d.error}
             </span>
           )}

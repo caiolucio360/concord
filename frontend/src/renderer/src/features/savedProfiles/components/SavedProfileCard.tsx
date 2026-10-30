@@ -63,7 +63,7 @@ export default function SavedProfileCard({
         <span className="flex w-full min-w-0 items-center gap-2 pr-20">
           <span className="min-w-0 truncate text-ds-sm font-semibold text-strong">{item.name}</span>
           {current && (
-            <span className="shrink-0 rounded-md bg-brand/20 px-1.5 py-0.5 text-[11px] font-semibold text-strong">
+            <span className="shrink-0 rounded-md bg-brand/20 px-1.5 py-0.5 text-ds-xs font-semibold text-strong">
               Em uso
             </span>
           )}

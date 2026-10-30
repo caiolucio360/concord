@@ -13,7 +13,7 @@ export default function SoundboardEmpty({
         {searching ? 'Nenhum som encontrado para essa busca.' : 'Nenhum som neste servidor ainda.'}
       </p>
       {!searching && canAdd && (
-        <p className="mt-1 text-[11px] text-faint">
+        <p className="mt-1 text-ds-xs text-faint">
           Clique em &ldquo;Adicionar som&rdquo; para enviar um áudio de até 15s (5 MB).
         </p>
       )}

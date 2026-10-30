@@ -43,7 +43,7 @@ function VoiceChannelMeta({
         <span className={`flex h-6 shrink-0 items-center ${FADE_ON_HOVER}`}>
           <span
             title={badge.mention ? 'Menções no chat' : 'Mensagens não lidas no chat'}
-            className="rounded-full bg-danger px-1.5 py-0.2 text-[10px] font-bold text-white"
+            className="rounded-full bg-danger px-1.5 py-0.2 text-ds-xxs font-bold text-white"
           >
             {badge.label}
           </span>
@@ -56,7 +56,7 @@ function VoiceChannelMeta({
       )}
       {people > 0 && (
         <span className={`flex h-6 shrink-0 items-center ${FADE_ON_HOVER}`}>
-          <span className="rounded-full bg-fg/10 px-1.5 py-0.2 text-[10px] font-bold text-secondary">
+          <span className="rounded-full bg-fg/10 px-1.5 py-0.2 text-ds-xxs font-bold text-secondary">
             {people}
           </span>
         </span>

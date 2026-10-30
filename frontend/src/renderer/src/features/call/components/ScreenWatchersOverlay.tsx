@@ -27,7 +27,7 @@ export default function ScreenWatchersOverlay({
     >
       <div className="flex items-center gap-1 text-secondary">
         <EyeIcon className="h-3.5 w-3.5 text-success" />
-        <span className="text-[11px] font-bold text-normal">{watchers.length}</span>
+        <span className="text-ds-xs font-bold text-normal">{watchers.length}</span>
       </div>
 
       <div className="flex items-center -space-x-1.5 ml-0.5">
@@ -52,7 +52,7 @@ export default function ScreenWatchersOverlay({
               .slice(maxVisible)
               .map((w) => w.display_name || w.username)
               .join(', ')}`}
-            className="flex h-5 w-5 items-center justify-center rounded-full bg-fg/20 text-[10px] font-bold text-strong ring-2 ring-black/80"
+            className="flex h-5 w-5 items-center justify-center rounded-full bg-fg/20 text-ds-xxs font-bold text-strong ring-2 ring-black/80"
           >
             +{remainingCount}
           </div>

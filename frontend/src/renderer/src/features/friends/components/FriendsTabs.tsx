@@ -30,7 +30,7 @@ function TabButton({
     >
       {label}
       {badge > 0 && (
-        <span className="rounded-full bg-danger-strong px-1.5 text-[11px] font-bold text-white">
+        <span className="rounded-full bg-danger-strong px-1.5 text-ds-xs font-bold text-white">
           {badge}
         </span>
       )}

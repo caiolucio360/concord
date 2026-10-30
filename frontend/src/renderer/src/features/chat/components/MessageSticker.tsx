@@ -58,7 +58,7 @@ export default function MessageSticker({ sticker }: MessageStickerProps): React.
       ) : (
         <div className="h-36 w-36 animate-pulse rounded-lg bg-white/5" />
       )}
-      <span className="pointer-events-none absolute -bottom-5 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded bg-black/80 px-1.5 py-0.5 text-[10px] text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+      <span className="pointer-events-none absolute -bottom-5 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded bg-black/80 px-1.5 py-0.5 text-ds-xxs text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
         :{sticker.name}:
       </span>
     </div>

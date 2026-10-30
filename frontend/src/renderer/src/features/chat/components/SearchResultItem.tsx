@@ -75,7 +75,7 @@ export default function SearchResultItem({
       className="group w-full cursor-pointer rounded-lg border border-subtle bg-floating p-3 text-left transition hover:border-normal hover:bg-surface focus-visible:outline-2 focus-visible:outline-brand"
     >
       {result.channel_name && (
-        <span className="mb-1.5 flex items-center gap-1 text-[11px] font-semibold text-muted">
+        <span className="mb-1.5 flex items-center gap-1 text-ds-xs font-semibold text-muted">
           <HashIcon className="h-3 w-3" />
           {result.channel_name}
         </span>
@@ -95,7 +95,7 @@ export default function SearchResultItem({
             >
               {name}
             </span>
-            <time dateTime={result.created_at} className="shrink-0 text-[11px] text-faint">
+            <time dateTime={result.created_at} className="shrink-0 text-ds-xs text-faint">
               {formatDateTime(result.created_at)}
             </time>
           </span>

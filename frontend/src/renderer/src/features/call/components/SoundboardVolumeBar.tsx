@@ -45,7 +45,7 @@ export default function SoundboardVolumeBar(): React.JSX.Element {
         aria-label="Volume da mesa de áudio"
         className="h-1.5 flex-1 cursor-pointer accent-brand"
       />
-      <span className="w-9 text-right text-[11px] font-semibold text-secondary">
+      <span className="w-9 text-right text-ds-xs font-semibold text-secondary">
         {Math.round(volume * 100)}%
       </span>
     </div>

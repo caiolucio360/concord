@@ -17,7 +17,7 @@ export default function ScreenQualityControls({
       compact ? 'px-2 py-1.5 text-xs' : 'px-3 py-2 text-sm'
     } ${selected ? 'bg-brand text-white' : 'bg-fg/5 text-secondary hover:bg-fg/10'}`
   const labelClass = compact
-    ? 'mb-1.5 text-[11px] font-semibold text-muted'
+    ? 'mb-1.5 text-ds-xs font-semibold text-muted'
     : 'mb-2 text-xs font-semibold text-muted'
   return (
     <fieldset className={compact ? 'mt-3' : 'mt-5 rounded-lg border border-subtle p-4'}>

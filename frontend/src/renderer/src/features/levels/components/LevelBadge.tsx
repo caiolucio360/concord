@@ -93,7 +93,7 @@ function LevelBadge({
 
   const tier = levelTier(level)
   const look = levelBadgeStyle(level)
-  const text = size === 'md' ? 'text-[11px] px-1.5 py-0.5' : 'text-[9px] px-1 py-px'
+  const text = size === 'md' ? 'text-ds-xs px-1.5 py-0.5' : 'text-ds-xxs px-1 py-px'
 
   const title = `Nível ${level} · ${tier.name}`
   const wrapperProps = onClick

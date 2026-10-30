@@ -3,7 +3,7 @@ export const inputClass =
 
 function Counter({ used, max }: { used: number; max: number }): React.JSX.Element {
   return (
-    <span className={`text-[11px] ${used > max ? 'text-danger' : 'text-faint'}`}>
+    <span className={`text-ds-xs ${used > max ? 'text-danger' : 'text-faint'}`}>
       {max - used}
     </span>
   )

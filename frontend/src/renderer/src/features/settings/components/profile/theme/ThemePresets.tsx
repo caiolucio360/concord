@@ -50,7 +50,7 @@ export default function ThemePresets({
                 />
               )}
             </ProfileCardFrame>
-            <span className="mt-1 block truncate text-[11px] text-secondary">{preset.label}</span>
+            <span className="mt-1 block truncate text-ds-xs text-secondary">{preset.label}</span>
           </button>
         )
       })}

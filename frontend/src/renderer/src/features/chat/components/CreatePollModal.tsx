@@ -79,7 +79,7 @@ function CreatePollModal({ open, onClose, onCreate }: CreatePollModalProps): Rea
         <label className="flex flex-col gap-1.5">
           <span className="flex items-baseline justify-between text-sm font-medium text-secondary">
             Pergunta
-            <span className="text-[10px] text-faint">
+            <span className="text-ds-xxs text-faint">
               {draft.question.length}/{POLL_QUESTION_MAX}
             </span>
           </span>

@@ -28,7 +28,7 @@ function BadgeTierLadder({ badge }: { badge: Badge }): React.JSX.Element {
               {t.name}
             </span>
             <span
-              className={`flex items-center gap-0.5 text-[11px] ${done ? 'text-muted' : 'text-faint'}`}
+              className={`flex items-center gap-0.5 text-ds-xs ${done ? 'text-muted' : 'text-faint'}`}
             >
               {!done && <LockIcon className="h-2.5 w-2.5" />}
               {formatThreshold(badge.unit, t.threshold, badge.category)}

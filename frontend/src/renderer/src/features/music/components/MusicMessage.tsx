@@ -45,10 +45,10 @@ function MusicMessage({ message }: { message: Message }): React.JSX.Element {
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2">
           <span className="text-sm font-semibold text-brand">{MAESTRO_NAME}</span>
-          <span className="rounded bg-brand/20 px-1 py-px text-[9px] font-bold uppercase tracking-wide text-brand">
+          <span className="rounded bg-brand/20 px-1 py-px text-ds-xxs font-bold uppercase tracking-wide text-brand">
             {T18.tag}
           </span>
-          <span className="text-[10px] text-faint">{formatTime(message.created_at)}</span>
+          <span className="text-ds-xxs text-faint">{formatTime(message.created_at)}</span>
         </div>
         <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-strong">
           <MaestroText text={message.content} />

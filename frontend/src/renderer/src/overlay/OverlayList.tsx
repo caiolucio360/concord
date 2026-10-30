@@ -33,7 +33,7 @@ function OverlayPill({
       >
         {member.name}
       </span>
-      {member.self && <span className="shrink-0 text-[10px] uppercase text-muted">você</span>}
+      {member.self && <span className="shrink-0 text-ds-xxs uppercase text-muted">você</span>}
       <VoiceStateIcons muted={member.muted} deafened={member.deafened} />
       <OverlayWatchingEye watching={member.watchingMe} />
     </div>

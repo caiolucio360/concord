@@ -41,7 +41,7 @@ function SystemMessage({ message }: { message: Message }): React.JSX.Element {
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline gap-2">
           <span className="text-ds-chat font-medium text-warning">{serverName}</span>
-          <span className="rounded bg-warning/20 px-1 py-px text-[9px] font-bold uppercase tracking-wide text-warning">
+          <span className="rounded bg-warning/20 px-1 py-px text-ds-xxs font-bold uppercase tracking-wide text-warning">
             Servidor
           </span>
           <span className="text-ds-xs font-medium text-faint">

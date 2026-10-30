@@ -77,7 +77,7 @@ function TextChannelRow({
           <span className="flex h-6 shrink-0 items-center">
             <span
               title={badge.mention ? 'Menções' : undefined}
-              className="rounded-full bg-danger px-1.5 py-0.2 text-[10px] font-bold text-white"
+              className="rounded-full bg-danger px-1.5 py-0.2 text-ds-xxs font-bold text-white"
             >
               {badge.label}
             </span>

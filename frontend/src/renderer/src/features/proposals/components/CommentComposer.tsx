@@ -277,7 +277,7 @@ function CommentComposer({
             <PaperclipIcon className="h-5 w-5" />
           </button>
           <VoiceRecordButton key={proposalId} disabled={sendingVoice} onRecorded={handleRecorded} />
-          <span className="ml-1 truncate text-[11px] text-faint">
+          <span className="ml-1 truncate text-ds-xs text-faint">
             {text.length}/{MAX_COMMENT} · Enter envia, Shift+Enter quebra a linha
           </span>
         </div>

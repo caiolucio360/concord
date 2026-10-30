@@ -46,7 +46,7 @@ export default function CardAvatar({
           type="button"
           onClick={onEditProfile}
           aria-label="Editar perfil"
-          className="absolute inset-1.5 flex cursor-pointer flex-col items-center justify-center gap-0.5 rounded-full bg-black/60 text-[10px] font-bold uppercase text-white opacity-0 transition-opacity hover:opacity-100 focus-visible:opacity-100 on-media"
+          className="absolute inset-1.5 flex cursor-pointer flex-col items-center justify-center gap-0.5 rounded-full bg-black/60 text-ds-xxs font-bold uppercase text-white opacity-0 transition-opacity hover:opacity-100 focus-visible:opacity-100 on-media"
         >
           <PencilIcon className="h-4 w-4" />
           Editar perfil

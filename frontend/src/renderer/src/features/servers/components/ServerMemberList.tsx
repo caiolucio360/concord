@@ -101,7 +101,7 @@ export function MemberRow({
           </p>
           {isOwner && <OwnerCrown />}
           {isBot ? (
-            <span className="rounded bg-brand/30 px-1 text-[9px] font-bold uppercase text-brand">
+            <span className="rounded bg-brand/30 px-1 text-ds-xxs font-bold uppercase text-brand">
               {T18.tag}
             </span>
           ) : (

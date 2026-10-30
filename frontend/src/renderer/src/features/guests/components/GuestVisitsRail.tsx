@@ -22,7 +22,7 @@ function GuestVisitsRail(): React.JSX.Element | null {
   return (
     <div role="group" aria-label={GUEST_COPY.railSection} className="flex flex-col items-center gap-2">
       <div className="h-0.5 w-8 rounded-full bg-fg/10" />
-      <p aria-hidden="true" className="text-[10px] font-bold uppercase tracking-wide text-warning">
+      <p aria-hidden="true" className="text-ds-xxs font-bold uppercase tracking-wide text-warning">
         {GUEST_COPY.railSection}
       </p>
       {visits.map((visit) => {
