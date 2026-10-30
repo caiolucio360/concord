@@ -27,6 +27,7 @@ import {
 } from '../lib/screenShareQuality'
 import type { MicHandle } from '../lib/noiseSuppression'
 import { CallMedia, type CallMediaHandlers, type RemoteMedia } from '../lib/livekit'
+import { sameScreenQuality, ScreenQualityQueue } from '../lib/screenQualityQueue'
 import { watchLocalSpeaking } from '../lib/localSpeaking'
 import { mergeLocalSpeaking, sameIds } from '../lib/voiceActivity'
 import { voiceServerId } from '../lib/voiceServer'
@@ -329,57 +330,20 @@ let speakingWatch: { track: MediaStreamTrack; stop: () => void } | null = null
 
 // Compartilhamento de tela (não-reativo; o estado reativo é localScreenStream)
 let localScreenStream: MediaStream | null = null
-/** Troca de qualidade esperando a vez: só a mais recente fica na fila. */
-let screenQualityQueue: ScreenQualityRequest | null = null
-let screenQualityRunning = false
-
-interface ScreenQualityRequest {
-  stream: MediaStream
-  connection: CallMedia
-  callId: string | null
-  quality: ScreenShareQuality
-}
-
-const sameScreenQuality = (a: ScreenShareQuality | null, b: ScreenShareQuality): boolean =>
-  a?.resolution === b.resolution && a?.frameRate === b.frameRate
-
-/** A troca ainda vale: mesma transmissão, mesma conexão e mesma chamada. */
-function isCurrentScreen(request: ScreenQualityRequest): boolean {
-  return (
+/** Trocas de qualidade da minha live (Chromium), uma de cada vez. */
+const screenQualities = new ScreenQualityQueue<CallMedia>({
+  isCurrent: (request) =>
     localScreenStream === request.stream &&
     media === request.connection &&
-    useCallStore.getState().callId === request.callId
-  )
-}
-
-/**
- * Aplica as trocas uma de cada vez. Enquanto uma está em andamento, cliques
- * novos substituem a fila: só a escolha final chega ao servidor.
- */
-async function runScreenQualityQueue(): Promise<void> {
-  screenQualityRunning = true
-  try {
-    while (screenQualityQueue) {
-      const request = screenQualityQueue
-      screenQualityQueue = null
-      if (!isCurrentScreen(request)) continue
-      try {
-        await request.connection.updateScreenQuality(request.stream, request.quality)
-        if (!isCurrentScreen(request)) continue
-        rememberStreamQuality(request.stream, request.quality)
-        saveScreenQuality(request.quality)
-        useCallStore.setState({ screenShareQuality: { ...request.quality } })
-      } catch {
-        if (isCurrentScreen(request)) {
-          showToast.error('Não foi possível alterar a qualidade da transmissão.')
-        }
-      }
-    }
-  } finally {
-    screenQualityRunning = false
-    useCallStore.setState({ pendingScreenQuality: null })
-  }
-}
+    useCallStore.getState().callId === request.callId,
+  applied: (request) => {
+    rememberStreamQuality(request.stream, request.quality)
+    saveScreenQuality(request.quality)
+    useCallStore.setState({ screenShareQuality: { ...request.quality } })
+  },
+  failed: () => showToast.error('Não foi possível alterar a qualidade da transmissão.'),
+  idle: () => useCallStore.setState({ pendingScreenQuality: null })
+})
 
 /** Foto da própria tela para a prévia no cartão de perfil, só quando o servidor pede. */
 const sendScreenPreview = createPreviewSender({
@@ -976,7 +940,7 @@ export const useCallStore = create<CallState>()((set, get) => {
     stopLocalStream()
     localScreenStream?.getTracks().forEach((t) => t.stop())
     localScreenStream = null
-    screenQualityQueue = null
+    screenQualities.clear()
     windowAudio?.stop()
     windowAudio = null
     localCameraStream?.getTracks().forEach((t) => t.stop())
@@ -1753,9 +1717,8 @@ export const useCallStore = create<CallState>()((set, get) => {
       )
         return
       if (sameScreenQuality(s.pendingScreenQuality ?? s.screenShareQuality, quality)) return
-      screenQualityQueue = { stream, connection, callId: s.callId, quality: { ...quality } }
       set({ pendingScreenQuality: { ...quality } })
-      if (!screenQualityRunning) void runScreenQualityQueue()
+      screenQualities.push({ stream, connection, callId: s.callId, quality: { ...quality } })
     },
 
     stopScreenShare: () => {
@@ -1765,7 +1728,7 @@ export const useCallStore = create<CallState>()((set, get) => {
       const callId = s.callId
       const stream = localScreenStream
       localScreenStream = null
-      screenQualityQueue = null
+      screenQualities.clear()
       windowAudio?.stop()
       windowAudio = null
 
