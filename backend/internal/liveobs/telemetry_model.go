@@ -1,7 +1,7 @@
 package liveobs
 
 // Telemetria das lives e calls: o que o app manda (POST /api/obs/telemetry).
-// Só números e nomes técnicos (ver docs/adr/0028-observabilidade-das-lives.md).
+// Só números e nomes técnicos (ver docs/adr/0029-observabilidade-das-lives.md).
 
 // Tipos de sessão.
 const (

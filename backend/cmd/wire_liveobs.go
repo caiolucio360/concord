@@ -12,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// wireLiveObs: observabilidade das lives (docs/adr/0028-observabilidade-das-lives.md).
+// wireLiveObs: observabilidade das lives (docs/adr/0029-observabilidade-das-lives.md).
 // A cada minuto, o /metrics do LiveKit (prometheus.port do LIVEKIT_CONFIG,
 // só em 127.0.0.1) e o /proc da máquina viram uma linha em livekit_metrics.
 // Sem o LiveKit com Prometheus, a linha sai só com a máquina (up = false).

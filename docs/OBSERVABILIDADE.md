@@ -1,7 +1,7 @@
 # Observabilidade das lives
 
 O que existe para saber como as lives e calls estão de fato, e onde agir.
-Decisão e alternativas: [ADR 0028](adr/0028-observabilidade-das-lives.md).
+Decisão e alternativas: [ADR 0029](adr/0029-observabilidade-das-lives.md).
 Como ligar na VPS: [HOSPEDAGEM.md](HOSPEDAGEM.md#métricas-do-livekit-observabilidade-das-lives).
 
 ## O que é coletado

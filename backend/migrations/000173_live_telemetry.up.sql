@@ -1,4 +1,4 @@
--- Telemetria das lives e calls (internal/liveobs, ADR 0028): o app manda, a
+-- Telemetria das lives e calls (internal/liveobs, ADR 0029): o app manda, a
 -- cada 20 s (lives) ou 60 s (calls), um resumo técnico do getStats() de cada
 -- sessão. Só números e nomes técnicos (codec, SO, placa de vídeo), nada do que
 -- se fala ou mostra. Retenção de 14 dias pelo last_seen_at (o backend apaga;

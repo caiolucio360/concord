@@ -1,4 +1,4 @@
-/** Configurações → Privacidade: o que a telemetria das calls e lives manda (ADR 0028). */
+/** Configurações → Privacidade: o que a telemetria das calls e lives manda (ADR 0029). */
 export function TelemetryPrivacyNote(): React.JSX.Element {
   return (
     <section className="border-b border-subtle pb-6">

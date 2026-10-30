@@ -8,7 +8,7 @@ import (
 
 // Métricas do LiveKit (o /metrics do Prometheus dele, só em 127.0.0.1) num
 // minuto: o que entrou e saiu do SFU, perda nos dois sentidos, carga e
-// quantas pessoas/tracks havia. Ver docs/adr/0028-observabilidade-das-lives.md.
+// quantas pessoas/tracks havia. Ver docs/adr/0029-observabilidade-das-lives.md.
 
 // ServerMinute: uma linha de livekit_metrics.
 type ServerMinute struct {

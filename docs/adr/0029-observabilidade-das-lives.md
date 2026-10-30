@@ -1,4 +1,4 @@
-# 0028. Observar as lives pelo próprio backend: Prometheus do LiveKit e telemetria do app no Postgres
+# 0029. Observar as lives pelo próprio backend: Prometheus do LiveKit e telemetria do app no Postgres
 
 - Status: aceito
 - Data: 2026-10-29

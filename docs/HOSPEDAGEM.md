@@ -817,7 +817,7 @@ backend lê esse `/metrics` e o `/proc` da VPS a cada minuto e grava uma linha
 em `livekit_metrics` (banda, perda, NACK/PLI, RTT, jitter, nota de
 qualidade, salas, participantes, tracks, CPU e memória do LiveKit e da
 máquina), com 14 dias de retenção. Painel e consultas:
-[OBSERVABILIDADE.md](OBSERVABILIDADE.md) ([ADR 0028](adr/0028-observabilidade-das-lives.md)).
+[OBSERVABILIDADE.md](OBSERVABILIDADE.md) ([ADR 0029](adr/0029-observabilidade-das-lives.md)).
 
 **Aplicar na VPS (uma vez):** a linha nova do `LIVEKIT_CONFIG` muda o hash do
 container, então o deploy normal **avisa e não recria** o LiveKit. Quando

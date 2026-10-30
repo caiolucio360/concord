@@ -1,4 +1,4 @@
--- Métricas do LiveKit por minuto (internal/liveobs, ADR 0028): o backend lê o
+-- Métricas do LiveKit por minuto (internal/liveobs, ADR 0029): o backend lê o
 -- /metrics do LiveKit (Prometheus, só em 127.0.0.1) e o /proc da máquina a
 -- cada minuto e grava a diferença entre duas coletas. Contadores = no minuto;
 -- salas/participantes/tracks = no fim do minuto. Retenção de 14 dias (o

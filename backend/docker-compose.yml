@@ -63,7 +63,7 @@ services:
           empty_timeout: 300
           max_participants: 25
         # Métricas (Prometheus) só em 127.0.0.1 (bind_addresses): o backend
-        # coleta a cada minuto (internal/liveobs, ADR 0028).
+        # coleta a cada minuto (internal/liveobs, ADR 0029).
         prometheus:
           port: ${LIVEKIT_PROMETHEUS_PORT:-6789}
 

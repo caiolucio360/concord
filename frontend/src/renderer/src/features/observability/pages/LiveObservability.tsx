@@ -44,7 +44,7 @@ export function LiveReportBody({
 
 /**
  * Observabilidade das lives (só devs, sem link no app: /observabilidade).
- * Ver docs/OBSERVABILIDADE.md e docs/adr/0028-observabilidade-das-lives.md.
+ * Ver docs/OBSERVABILIDADE.md e docs/adr/0029-observabilidade-das-lives.md.
  */
 function LiveObservability(): React.JSX.Element {
   const [days, setDays] = useState(7)
