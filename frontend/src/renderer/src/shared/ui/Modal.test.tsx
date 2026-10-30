@@ -42,6 +42,23 @@ describe('Modal', () => {
     expect(renderToStaticMarkup(<Modal open />)).not.toContain('aria-label="Fechar"')
   })
 
+  it('cabeçalho único: título na escala (text-ds-lg semibold) e o X ao lado', () => {
+    const html = renderToStaticMarkup(<Modal open title="Banir" onClose={() => {}} />)
+    expect(html).toMatch(/<h2 id="[^"]+" class="[^"]*text-ds-lg font-semibold text-strong[^"]*">Banir<\/h2>/)
+    expect(html).not.toContain('text-lg')
+  })
+
+  it('sem moldura (bare): sem cabeçalho, o X no canto e o rótulo vindo do conteúdo', () => {
+    const html = renderToStaticMarkup(
+      <Modal open bare wide labelledBy="titulo" onClose={() => {}}>
+        <h2 id="titulo">Badges</h2>
+      </Modal>
+    )
+    expect(html).toContain('aria-labelledby="titulo"')
+    expect(html.match(/<h2/g)?.length).toBe(1)
+    expect(html).toMatch(/aria-label="Fechar"[^>]*class="[^"]*absolute/)
+  })
+
   it('a largura segue wide e xl', () => {
     expect(renderToStaticMarkup(<Modal open />)).toContain('max-w-md')
     expect(renderToStaticMarkup(<Modal open wide />)).toContain('max-w-3xl')

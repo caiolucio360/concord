@@ -1,5 +1,6 @@
 import { DotsIcon } from '../../../../shared/ui/icons'
 import { formatMemberSince } from '../../lib/profileCard'
+import SectionHeader from '../../../../shared/ui/SectionHeader'
 
 // O pé do cartão como os outros veem, na prévia do editor de perfil: o
 // "Membro desde" e os botões de quem visita (só de enfeite: na prévia não
@@ -11,9 +12,9 @@ export function CardMemberSince({ createdAt }: { createdAt?: string }): React.JS
   if (!since) return null
   return (
     <div className="mt-3 rounded-lg bg-input p-3">
-      <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-gray-400">
+      <SectionHeader as="p" className="mb-1">
         Membro desde
-      </p>
+      </SectionHeader>
       <p className="text-xs text-gray-200">
         {since} <span className="text-gray-500">· no Salinha</span>
       </p>

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
 import {
   MAX_SOUNDBOARD_BYTES,
   MAX_SOUNDBOARD_DURATION_MS,
@@ -10,7 +9,7 @@ import { useSoundboardStore } from '../store/soundboardStore'
 import { showToast } from '../../../shared/store/toastStore'
 import { readMediaMeta } from '../../chat/lib/readMediaMeta'
 import Input from '../../../shared/ui/Input'
-import CloseButton from '../../../shared/ui/CloseButton'
+import Modal from '../../../shared/ui/Modal'
 import {
   DEFAULT_SOUND_EMOJI,
   SoundEmojiField,
@@ -136,60 +135,46 @@ function SoundboardUploadModal({
     }
   }
 
-  return createPortal(
-    <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-md rounded-2xl border border-subtle bg-floating p-5 shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-bold text-strong">Adicionar Som à Mesa de Áudio</h2>
-          <CloseButton size="sm" onClick={onClose} />
+  return (
+    <Modal open title="Adicionar Som à Mesa de Áudio" onClose={onClose}>
+      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
+        <SoundFileField
+          fileInputRef={fileInputRef}
+          previewAudioRef={previewAudioRef}
+          file={file}
+          durationMs={durationMs}
+          previewUrl={previewUrl}
+          previewPlaying={previewPlaying}
+          onPick={(e) => void handleSelectFile(e)}
+          onTogglePreview={togglePreview}
+          onPreviewEnded={() => setPreviewPlaying(false)}
+        />
+
+        <div>
+          <label className="mb-1.5 block text-ds-sm font-medium text-gray-400">
+            Nome do botão
+          </label>
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value.slice(0, MAX_SOUNDBOARD_NAME_LEN))}
+            placeholder="Ex.: Corneta, Risada, Tambores…"
+            maxLength={MAX_SOUNDBOARD_NAME_LEN}
+            required
+          />
         </div>
 
-        <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
-          <SoundFileField
-            fileInputRef={fileInputRef}
-            previewAudioRef={previewAudioRef}
-            file={file}
-            durationMs={durationMs}
-            previewUrl={previewUrl}
-            previewPlaying={previewPlaying}
-            onPick={(e) => void handleSelectFile(e)}
-            onTogglePreview={togglePreview}
-            onPreviewEnded={() => setPreviewPlaying(false)}
-          />
+        <SoundEmojiField emoji={emoji} onChange={setEmoji} />
 
-          <div>
-            <label className="mb-1.5 block text-ds-sm font-medium text-gray-400">
-              Nome do botão
-            </label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value.slice(0, MAX_SOUNDBOARD_NAME_LEN))}
-              placeholder="Ex.: Corneta, Risada, Tambores…"
-              maxLength={MAX_SOUNDBOARD_NAME_LEN}
-              required
-            />
-          </div>
+        {error && <p className="text-xs font-medium text-danger">{error}</p>}
 
-          <SoundEmojiField emoji={emoji} onChange={setEmoji} />
-
-          {error && <p className="text-xs font-medium text-danger">{error}</p>}
-
-          <SoundUploadActions
-            file={file}
-            name={name}
-            submitting={submitting}
-            onCancel={onClose}
-          />
-        </form>
-      </div>
-    </div>,
-    document.body
+        <SoundUploadActions
+          file={file}
+          name={name}
+          submitting={submitting}
+          onCancel={onClose}
+        />
+      </form>
+    </Modal>
   )
 }
 

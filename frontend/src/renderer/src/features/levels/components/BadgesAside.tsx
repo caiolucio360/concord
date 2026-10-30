@@ -37,7 +37,7 @@ function BadgesAside({
   return (
     <aside className="flex max-h-[50%] w-full shrink-0 flex-col bg-secondary md:max-h-none md:w-[290px]">
       <div className="min-h-0 flex-1 overflow-y-auto p-6">
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 max-md:pr-10">
           {!isMe && (
             <Avatar
               userId={target.userId}

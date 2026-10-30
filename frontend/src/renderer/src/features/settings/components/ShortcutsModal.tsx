@@ -10,6 +10,7 @@ import {
   isMacPlatform,
   type ShortcutGroup
 } from '../lib/shortcuts'
+import SectionHeader from '../../../shared/ui/SectionHeader'
 
 const GROUP_ORDER: ShortcutGroup[] = ['navigation', 'voice', 'chat']
 
@@ -40,9 +41,9 @@ function ShortcutsModal(): React.JSX.Element | null {
           if (defs.length === 0) return null
           return (
             <section key={group}>
-              <h3 className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-400">
+              <SectionHeader className="mb-2">
                 {SHORTCUT_GROUP_LABELS[group]}
-              </h3>
+              </SectionHeader>
               <ul className="flex flex-col gap-1.5">
                 {defs.map((def) => (
                   <li key={def.id} className="flex items-center justify-between gap-4">

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLevelStore } from '../store/levelStore'
 import { levelTier, milestoneFor } from '../lib/levels'
 import { SPECIAL_BADGE_LEVELS } from '../lib/levelBadgeStyle'
+import SectionHeader from '../../../shared/ui/SectionHeader'
 
 const LEVELS = [1, 5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 120, 250]
 const MILESTONES = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -28,7 +29,7 @@ function LevelUpPreview(): React.JSX.Element {
         Toca a animação em você sem mudar o seu nível de verdade.
       </p>
 
-      <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500">Níveis</p>
+      <SectionHeader as="p" className="mb-1">Níveis</SectionHeader>
       <div className="mb-3 flex flex-wrap items-center gap-1.5">
         {LEVELS.map((value) => (
           <button key={value} onClick={() => preview(value)} className={chip}>
@@ -37,9 +38,9 @@ function LevelUpPreview(): React.JSX.Element {
         ))}
       </div>
 
-      <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+      <SectionHeader as="p" className="mb-1">
         Selos especiais
-      </p>
+      </SectionHeader>
       <div className="mb-3 flex flex-wrap items-center gap-1.5">
         {SPECIAL_BADGE_LEVELS.map((value) => (
           <button key={value} onClick={() => preview(value)} className={chip}>
@@ -48,7 +49,7 @@ function LevelUpPreview(): React.JSX.Element {
         ))}
       </div>
 
-      <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500">Marcos</p>
+      <SectionHeader as="p" className="mb-1">Marcos</SectionHeader>
       <div className="mb-3 flex flex-wrap items-center gap-1.5">
         {MILESTONES.map((value) => (
           <button

@@ -1,4 +1,5 @@
 import { filterEmoteCategories } from '../lib/emotes'
+import SectionHeader from '../../../shared/ui/SectionHeader'
 
 /** Aba "Emojis" do seletor de mídia. */
 export default function EmojisTab({
@@ -12,9 +13,9 @@ export default function EmojisTab({
     <div>
       {filterEmoteCategories(search).map((category) => (
         <div key={category.id} className="mb-3 last:mb-0">
-          <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+          <SectionHeader as="p" className="mb-1">
             {category.name}
-          </div>
+          </SectionHeader>
           <div className="grid grid-cols-6 gap-1">
             {category.items.map((item) => (
               <button

@@ -46,7 +46,9 @@ roda no `affected-tests.mjs pr` e barra o diff que piora alguma regra.
 | `IconButton` | `icon` (componente de `icons`), `label` (obrigatório: vira `aria-label` e dica), `size`: xs (20 px, cresce no toque), sm (32), md (40 → 32 do `sm:` em diante), lg (44); `variant`: ghost, filled, danger, media | Botão só de ícone: apagar, mais ações, controles |
 | `CloseButton` | = `IconButton` com o X; `label` padrão "Fechar" | Fechar modal, toast, aviso; remover anexo, cargo, resposta |
 | `Switch` | `checked`, `onChange`, `label`, `disabled` | Liga/desliga. Bloqueado é `disabled`, não `pointer-events-none` (o teclado ainda alcança) |
-| `Modal` | `open`, `title`, `onClose`, `wide`, `xl` | Diálogo. Já traz foco preso, Esc e o `CloseButton` |
+| `Modal` | `open`, `title`, `onClose`, `wide`, `xl`, `bare` + `labelledBy` | Todo diálogo (nada de `fixed inset-0` próprio). Traz foco preso, Esc, o cabeçalho único (título `text-ds-lg` + `CloseButton`). `bare`: sem cabeçalho nem padding, o conteúdo faz o layout e o X fica no canto (ex.: `BadgesModal`) |
+| `SectionHeader` | `as` (h2/h3/h4/p/legend), `icon?`, `count?`, `id`, `className` (só espaçamento) | Todo título de seção em maiúsculas ("FAVORITOS", "ONLINE — 3"): um estilo só, `text-ds-xs font-semibold uppercase tracking-wide text-muted` |
+| `PreviewText` (`features/chat/components`) | `preview: { icon, text }` (de `chat/lib/preview`) | Prévia de mensagem (resposta, fixada, busca): o ícone do tipo desenhado, nunca emoji no texto |
 | `Input` | atributos de `<input>` | Campo de texto |
 | `Spinner` | `className` | Carregando, dentro de botão ou bloco |
 | `ChipGroup` (`settings/components/profile/controls.tsx`) | `options` com `icon?` | Escolha entre poucas opções |
@@ -59,6 +61,7 @@ Ruim:
 <button className="text-gray-400 hover:text-red-400 outline-none" onClick={onClose}>✕</button>
 <button className="rounded-2xl bg-violet-600 px-3 py-1 text-[11px] active:scale-95">Salvar</button>
 <span className="text-amber-300">★ Favoritos</span>
+<p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">Voz</p>
 ```
 
 Problemas: ✕ é texto (cada sistema desenha de um jeito), o foco some, as cores
@@ -73,6 +76,7 @@ Bom:
   <StarIcon size={16} /> Favoritos
 </span>
 <IconButton icon={TrashIcon} label="Apagar mensagem" variant="danger" onClick={onDelete} />
+<SectionHeader as="p" className="mb-1">Voz</SectionHeader>
 ```
 
 ## A catraca (`scripts/check-design.mjs`)

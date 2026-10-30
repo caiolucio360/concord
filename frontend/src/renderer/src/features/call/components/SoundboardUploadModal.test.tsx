@@ -26,6 +26,8 @@ describe('SoundboardUploadModal', () => {
   it('aberto: título, fechar, campos e Salvar travado sem arquivo', () => {
     const html = renderToStaticMarkup(<SoundboardUploadModal open serverId="s" onClose={noop} />)
     expect(html).toContain('Adicionar Som à Mesa de Áudio')
+    // É o Modal do app: diálogo de verdade, rotulado pelo título do cabeçalho único.
+    expect(html).toMatch(/role="dialog" aria-modal="true" aria-labelledby="([^"]+)"[^]*<h2 id="\1"[^>]*>Adicionar Som/)
     expect(html).toContain('aria-label="Fechar"')
     expect(html).not.toContain('✕')
     expect(html).toContain('Escolher arquivo')

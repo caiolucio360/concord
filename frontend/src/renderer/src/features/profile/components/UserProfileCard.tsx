@@ -42,6 +42,7 @@ import { DotsIcon, PencilIcon, VolumeIcon } from '../../../shared/ui/icons'
 import Avatar from '../../../shared/ui/Avatar'
 import { useThemeStore } from '../../settings/store/themeStore'
 import { ActivityGlyph } from '../../call/components/ActivityPickerPopover'
+import SectionHeader from '../../../shared/ui/SectionHeader'
 
 const CARD_WIDTH = 300
 /** Altura aproximada do submenu de status (4 opções, duas com descrição). */
@@ -52,9 +53,7 @@ const OWNER_STYLE = { label: 'Dono do servidor', color: '#f59e0b', avatar: 'bg-a
 const NO_ROLE_COLOR = '#6366f1'
 
 function SectionTitle({ children }: { children: React.ReactNode }): React.JSX.Element {
-  return (
-    <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-gray-400">{children}</p>
-  )
+  return <SectionHeader as="p" className="mb-1">{children}</SectionHeader>
 }
 
 function MenuButton({

@@ -14,6 +14,7 @@ import {
   type ShortcutGroup
 } from '../../lib/shortcuts'
 import { useKeybindStore } from '../../store/keybindStore'
+import SectionHeader from '../../../../shared/ui/SectionHeader'
 
 const GROUP_ORDER: ShortcutGroup[] = ['navigation', 'voice', 'chat']
 const MODIFIER_KEYS = new Set(['Control', 'Shift', 'Alt', 'Meta', 'AltGraph'])
@@ -215,9 +216,9 @@ export function KeybindsSection(): React.JSX.Element {
 
       {GROUP_ORDER.map((group) => (
         <section key={group} className="rounded-xl border border-subtle bg-fg/5 p-4">
-          <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">
+          <SectionHeader className="mb-3">
             {SHORTCUT_GROUP_LABELS[group]}
-          </h3>
+          </SectionHeader>
           <ul className="flex flex-col gap-3">
             {SHORTCUTS.filter((d) => d.group === group).map((def) => (
               <Row key={def.id} def={def} onError={setError} />

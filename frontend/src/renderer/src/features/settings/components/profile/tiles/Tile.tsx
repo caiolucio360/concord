@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { PencilIcon } from '../../../../../shared/ui/icons'
+import SectionHeader from '../../../../../shared/ui/SectionHeader'
 
 // Peças da coluna de personalização (Configurações → Perfis), no jeito do
 // Discord: um título pequeno e um controle visual compacto que abre o editor.
@@ -18,7 +19,7 @@ export function TileSection({
   return (
     <section className="min-w-0">
       <div className="mb-2 flex min-h-6 items-center justify-between gap-2">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-400">{title}</h3>
+        <SectionHeader>{title}</SectionHeader>
         {aside}
       </div>
       {children}

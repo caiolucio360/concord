@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useCallStore } from '../store/callStore'
 import { useVoiceModStore } from '../store/voiceModStore'
 import { PITCH_MAX, PITCH_MIN, PRESET_ORDER, VOICE_MOD_PRESETS } from '../lib/voiceModPresets'
+import SectionHeader from '../../../shared/ui/SectionHeader'
 
 function SliderRow({
   label,
@@ -103,9 +104,9 @@ function VoiceModPanel(): React.JSX.Element {
       </div>
 
       {customized && (
-        <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+        <SectionHeader as="p" className="mb-2">
           Personalizado
-        </p>
+        </SectionHeader>
       )}
 
       <SliderRow

@@ -5,6 +5,7 @@ import { useEmotePickerPlacement } from '../hooks/useEmotePickerPlacement'
 import { useAnchoredPickerPlacement } from '../hooks/useAnchoredPickerPlacement'
 import { useEmotePickerDismiss } from '../hooks/useEmotePickerDismiss'
 import { useIsMobile } from '../../navigation/hooks/useIsMobile'
+import SectionHeader from '../../../shared/ui/SectionHeader'
 
 /** Classes comuns; a posição muda conforme a âncora (veja `PLACE_*`). */
 const BASE =
@@ -27,9 +28,9 @@ function EmoteGrid({
     <div className="max-h-56 min-h-0 overflow-y-auto overscroll-contain pr-1 max-md:max-h-[45dvh]">
       {categories.map((category) => (
         <div key={category.id} className="mb-2 last:mb-0">
-          <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+          <SectionHeader as="p" className="mb-1">
             {category.name}
-          </div>
+          </SectionHeader>
           <div className="grid grid-cols-6 gap-1 max-md:grid-cols-[repeat(auto-fill,minmax(2.75rem,1fr))]">
             {category.items.map((item) => (
               <button

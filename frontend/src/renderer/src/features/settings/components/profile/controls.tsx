@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import type { IconProps } from '../../../../shared/ui/icons'
+import SectionHeader from '../../../../shared/ui/SectionHeader'
 
 // Controles compactos do editor de perfil: chips de escolha única, amostra
 // de cor, régua curta e o bloco de seção. Alvo de toque ≥ 40 px.
@@ -162,7 +163,5 @@ export function EditorSection({
 
 /** Subtítulo pequeno dentro de uma seção. */
 export function SubLabel({ children }: { children: React.ReactNode }): React.JSX.Element {
-  return (
-    <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">{children}</p>
-  )
+  return <SectionHeader as="p">{children}</SectionHeader>
 }

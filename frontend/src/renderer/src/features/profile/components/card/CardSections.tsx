@@ -1,6 +1,7 @@
 import { MAESTRO_HOWTO } from '../../../music/lib/music'
 import { detectProvider, linkLabel, splitLinks } from '../../lib/profileLinks'
 import LinkIcon from '../LinkIcon'
+import SectionHeader from '../../../../shared/ui/SectionHeader'
 
 // As seções de baixo do cartão: Sobre mim, o passo a passo do Maestro e os
 // links (o jogo e a música ficam em activity/components/ProfileActivities).
@@ -49,7 +50,7 @@ export function CardBio({
 export function MaestroHowto(): React.JSX.Element {
   return (
     <div className="mt-3 rounded-lg bg-fg/5 p-2.5">
-      <p className="text-ds-xs font-bold uppercase text-gray-400">{MAESTRO_HOWTO.title}</p>
+      <SectionHeader as="p">{MAESTRO_HOWTO.title}</SectionHeader>
       <ol className="mt-1 list-decimal space-y-1 pl-4 text-sm leading-snug text-gray-200">
         {MAESTRO_HOWTO.steps.map((step) => (
           <li key={step}>{step}</li>

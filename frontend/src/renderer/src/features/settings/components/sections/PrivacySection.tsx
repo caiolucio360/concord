@@ -13,6 +13,7 @@ import { useUIStore } from '../../../../shared/store/uiStore'
 import { showToast } from '../../../../shared/store/toastStore'
 import router from '../../../../app/router'
 import { SettingsSectionsSkeleton } from '../../../../shared/ui/skeleton/layouts'
+import SectionHeader from '../../../../shared/ui/SectionHeader'
 
 const POLICIES: { id: FriendRequestPolicy; title: string; description: string }[] = [
   { id: 'everyone', title: 'Todos', description: 'Qualquer pessoa com seu nome de usuário.' },
@@ -30,7 +31,11 @@ const POLICIES: { id: FriendRequestPolicy; title: string; description: string }[
 ]
 
 function SectionTitle({ children }: { children: React.ReactNode }): React.JSX.Element {
-  return <h2 className="mb-3 text-ds-sm font-medium text-gray-400">{children}</h2>
+  return (
+    <SectionHeader as="h2" className="mb-3">
+      {children}
+    </SectionHeader>
+  )
 }
 
 function blockedLabel(count: number): string {

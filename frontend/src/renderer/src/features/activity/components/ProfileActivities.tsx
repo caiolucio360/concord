@@ -7,11 +7,12 @@ import { Elapsed } from './ActivityCard'
 import GameIcon from './GameIcon'
 import MusicIcon from './MusicIcon'
 import TrackProgress from './TrackProgress'
+import SectionHeader from '../../../shared/ui/SectionHeader'
 
 function PlayingNow({ game }: { game: PresenceActivity }): React.JSX.Element {
   return (
     <div className="mt-3 rounded-lg bg-fg/5 p-2.5">
-      <p className="text-ds-xs font-bold uppercase text-gray-400">Jogando agora</p>
+      <SectionHeader as="p">Jogando agora</SectionHeader>
       <p className="mt-1 flex items-center gap-1.5 text-ds-md font-semibold text-strong">
         <GameIcon
           name={game.name}
@@ -33,9 +34,9 @@ export function ListeningNow({ listening }: { listening: ListeningActivity }): R
   const accent = musicAccent(listening.app) ?? '#5865f2'
   return (
     <div className="mt-3 rounded-lg bg-fg/5 p-2.5">
-      <p className="truncate text-ds-xs font-bold uppercase text-gray-400">
+      <SectionHeader as="p" className="truncate">
         Ouvindo {listening.app}
-      </p>
+      </SectionHeader>
       <div className="mt-1.5 flex min-w-0 items-center gap-2.5">
         <span
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md"

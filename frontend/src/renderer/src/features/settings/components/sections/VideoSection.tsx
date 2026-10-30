@@ -9,6 +9,7 @@ import BackgroundPicker from '../../../call/components/BackgroundPicker'
 import VideoPreview from '../../../call/components/VideoPreview'
 import { useBackgroundUpload } from '../../../call/hooks/useBackgroundUpload'
 import { useVideoPreview } from '../../../call/hooks/useVideoPreview'
+import SectionHeader from '../../../../shared/ui/SectionHeader'
 
 /** Configurações → Vídeo: câmera, prévia ao vivo e fundo (como no Discord). */
 export function VideoSection(): React.JSX.Element {
@@ -88,9 +89,9 @@ export function VideoSection(): React.JSX.Element {
       </div>
 
       <div className="space-y-2 border-t border-subtle pt-4">
-        <p className="text-ds-xs font-bold uppercase tracking-[0.02em] text-gray-400">
+        <SectionHeader as="p">
           Fundo do vídeo
-        </p>
+        </SectionHeader>
         <BackgroundPicker
           value={background}
           customs={customs}

@@ -11,6 +11,7 @@ import {
 } from '../lib/savedProfiles'
 import SavedProfileCard from './SavedProfileCard'
 import SavedProfileNameModal from './SavedProfileNameModal'
+import SectionHeader from '../../../shared/ui/SectionHeader'
 
 type NameModal = { kind: 'create' } | { kind: 'rename'; item: SavedProfile } | null
 
@@ -97,15 +98,12 @@ export default function SavedProfilesPanel(): React.JSX.Element | null {
     <section aria-labelledby="saved-profiles-title" className="min-w-0">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="min-w-0">
-          <h3
-            id="saved-profiles-title"
-            className="text-xs font-semibold uppercase tracking-wide text-gray-400"
-          >
+          <SectionHeader id="saved-profiles-title">
             Perfis salvos{' '}
             <span className="font-normal normal-case tracking-normal">
               ({view.items.length}/{MAX_SAVED_PROFILES})
             </span>
-          </h3>
+          </SectionHeader>
           <p className="text-xs text-gray-500">
             Guarde o perfil como está agora e troque com um toque.
           </p>

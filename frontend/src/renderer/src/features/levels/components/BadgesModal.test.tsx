@@ -65,6 +65,14 @@ describe('BadgesModal', () => {
     }
   })
 
+  it('é o Modal do app, sem moldura: rotulado pelo título da coluna e o X no canto', () => {
+    const html = renderToStaticMarkup(<BadgesModal />)
+    const labelledBy = html.match(/role="dialog"[^>]*aria-labelledby="([^"]+)"/)![1]
+    expect(html).toContain(`<h2 id="${labelledBy}"`)
+    expect(html).toMatch(/aria-label="Fechar"[^>]*class="[^"]*absolute/)
+    expect(html).toContain('bg-modal')
+  })
+
   it('sem modal aberto não renderiza nada', () => {
     store.modal = null
     expect(renderToStaticMarkup(<BadgesModal />)).toBe('')

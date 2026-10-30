@@ -1,5 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
+import { useId, useState } from 'react'
 import type { Badge } from '../api/badges'
 import type { BadgesModalTarget } from '../store/badgeStore'
 import { useAuthStore } from '../../auth/store/authStore'
@@ -13,8 +12,7 @@ import {
   statText,
   visibleBadges
 } from '../lib/badges'
-import { trapTab } from '../../../shared/lib/focusTrap'
-import CloseButton from '../../../shared/ui/CloseButton'
+import Modal from '../../../shared/ui/Modal'
 import { ChevronUpIcon, SparkleIcon } from '../../../shared/ui/icons'
 import BadgeIcon from './BadgeIcon'
 import BadgesAside from './BadgesAside'
@@ -138,37 +136,7 @@ function BadgesModal(): React.JSX.Element | null {
   )
   // Escolha vale só para esta abertura do modal (target novo = escolha nova).
   const [picked, setPicked] = useState<{ target: BadgesModalTarget; category: string } | null>(null)
-
-  const dialogRef = useRef<HTMLDivElement | null>(null)
-  const closeRef = useRef<HTMLButtonElement | null>(null)
   const titleId = useId()
-  const open = Boolean(target)
-
-  // Ao abrir: foco no Fechar. Ao fechar: o foco volta para onde estava.
-  useEffect(() => {
-    if (!open) return
-    const previous = document.activeElement as HTMLElement | null
-    closeRef.current?.focus()
-    return () => {
-      if (previous?.isConnected) previous.focus()
-    }
-  }, [open])
-
-  // Captura na janela: Esc fecha só este modal (não chega nos outros
-  // atalhos) e o Tab fica preso dentro dele.
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') {
-        e.stopPropagation()
-        close()
-        return
-      }
-      trapTab(e, dialogRef.current)
-    }
-    window.addEventListener('keydown', onKey, true)
-    return () => window.removeEventListener('keydown', onKey, true)
-  }, [open, close])
 
   if (!target) return null
 
@@ -186,20 +154,10 @@ function BadgesModal(): React.JSX.Element | null {
     })
   }
 
-  return createPortal(
-    <div
-      className="app-no-drag fixed inset-x-0 bottom-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-      style={{ top: 'var(--titlebar-height, 0px)' }}
-      onClick={close}
-    >
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        onClick={(e) => e.stopPropagation()}
-        className="flex h-[min(600px,100%)] w-full max-w-[760px] flex-col overflow-hidden rounded-2xl border border-subtle text-gray-200 shadow-2xl md:flex-row"
-      >
+  // Foco preso, Esc e o X vêm do Modal (sem moldura: a coluna e o detalhe são o layout).
+  return (
+    <Modal open bare wide labelledBy={titleId} onClose={close}>
+      <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden text-gray-200 md:h-[600px] md:flex-row">
         <BadgesAside
           target={target}
           isMe={isMe}
@@ -214,7 +172,6 @@ function BadgesModal(): React.JSX.Element | null {
         />
 
         <section className="relative min-h-0 min-w-0 flex-1 overflow-y-auto bg-primary p-6">
-          <CloseButton ref={closeRef} size="sm" className="absolute right-4 top-4" onClick={close} />
           {selected ? (
             <Detail badge={selected} isMe={isMe} ownerName={target.name} />
           ) : !badges ? (
@@ -226,8 +183,7 @@ function BadgesModal(): React.JSX.Element | null {
           )}
         </section>
       </div>
-    </div>,
-    document.body
+    </Modal>
   )
 }
 
