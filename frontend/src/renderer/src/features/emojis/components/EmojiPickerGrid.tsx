@@ -61,7 +61,7 @@ function ServerTitle({ group }: { group: ServerEmojis }): React.JSX.Element {
           {group.server_name.slice(0, 1)}
         </span>
       )}
-      <span className="truncate normal-case">{group.server_name}</span>
+      <span className="min-w-0 truncate normal-case">{group.server_name}</span>
     </SectionTitle>
   )
 }
@@ -86,9 +86,9 @@ function CustomEmojiCell({
           title="Excluir emoji"
           aria-label="Excluir emoji"
           onClick={() => onDelete(emoji)}
-          className="absolute -right-1 -top-1 rounded bg-black/80 p-0.5 text-red-400 opacity-80 focus-visible:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-80"
+          className="absolute -right-1 -top-1 rounded bg-black/80 p-0.5 text-red-400 opacity-80 hover:text-red-300 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-brand [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-80"
         >
-          <TrashIcon className="h-2.5 w-2.5" />
+          <TrashIcon aria-hidden className="h-2.5 w-2.5" />
         </button>
       )}
     </div>

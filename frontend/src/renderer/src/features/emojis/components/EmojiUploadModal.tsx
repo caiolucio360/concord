@@ -73,6 +73,7 @@ export default function EmojiUploadModal({
         </label>
         <Input
           label="Nome"
+          name="emoji-name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="nome_do_emoji"
