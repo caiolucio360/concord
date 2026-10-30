@@ -817,6 +817,67 @@ export const useCallStore = create<CallState>()((set, get) => {
     return result !== 'fallback'
   }
 
+  /**
+   * Qualidade (seletor do sistema), motor nativo ou o stream do Chromium. null =
+   * resolvido sem stream (live nativa, desistiu no seletor ou falhou com aviso).
+   */
+  const pickScreen = async (): Promise<MediaStream | null> => {
+    resetWindowAudio()
+    try {
+      const asked = await askScreenQuality()
+      if (asked && (await shareNatively(asked))) return null
+      return await getDisplayStream(asked)
+    } catch (err) {
+      abortWindowAudio()
+      // NotAllowedError: usuário cancelou o picker — sem toast.
+      if (err instanceof ScreenShareSetupError) {
+        // Ex.: Linux sem o xdg-desktop-portal: diz o que instalar.
+        showToast.error(err.message, SETUP_TOAST_MS)
+      } else if ((err as DOMException)?.name !== 'NotAllowedError') {
+        showToast.error('Não foi possível compartilhar a tela.')
+      }
+      return null
+    }
+  }
+
+  /** Janela no Windows: o som vem do helper (só o app da janela). false = a chamada mudou. */
+  const addWindowAudio = async (stream: MediaStream, callId: string | null): Promise<boolean> => {
+    const captured = await takeWindowAudio()
+    // A chamada pode ter acabado (ou mudado) com o seletor aberto.
+    if (get().callId !== callId || get().status !== 'active') {
+      captured?.stop()
+      stream.getTracks().forEach((t) => t.stop())
+      return false
+    }
+    if (captured) {
+      // O som da janela substitui qualquer som de sistema da captura.
+      stream.getAudioTracks().forEach((t) => {
+        stream.removeTrack(t)
+        t.stop()
+      })
+      windowAudio = captured
+      stream.addTrack(captured.track)
+    }
+    return true
+  }
+
+  /** A live pelo Chromium: no ar e publicada; parar pela barra do sistema encerra. */
+  const goLive = async (stream: MediaStream): Promise<void> => {
+    localScreenStream = stream
+    markScreenSharing(streamQuality(stream), stream)
+    stream.getVideoTracks().forEach((track) => {
+      track.addEventListener('ended', () => {
+        if (get().isScreenSharing) get().stopScreenShare()
+      })
+    })
+    try {
+      await media?.publishScreen(stream)
+    } catch {
+      showToast.error('Não foi possível transmitir a tela.')
+      get().stopScreenShare()
+    }
+  }
+
   /** Reenvia ao servidor se estou transmitindo (ou não) — corrige o que se perdeu na queda. */
   const sendScreenState = (callId: string): void => {
     useChatStore
@@ -1654,57 +1715,8 @@ export const useCallStore = create<CallState>()((set, get) => {
       }
       screenSharePending = true
       try {
-        let stream: MediaStream
-        resetWindowAudio()
-        try {
-          const asked = await askScreenQuality()
-          if (asked && (await shareNatively(asked))) return
-          stream = await getDisplayStream(asked)
-        } catch (err) {
-          abortWindowAudio()
-          // NotAllowedError: usuário cancelou o picker — sem toast.
-          if (err instanceof ScreenShareSetupError) {
-            // Ex.: Linux sem o xdg-desktop-portal: diz o que instalar.
-            showToast.error(err.message, SETUP_TOAST_MS)
-          } else if ((err as DOMException)?.name !== 'NotAllowedError') {
-            showToast.error('Não foi possível compartilhar a tela.')
-          }
-          return
-        }
-        // Janela no Windows: o som vem do helper (só o app da janela).
-        const captured = await takeWindowAudio()
-        // A chamada pode ter acabado (ou mudado) com o seletor aberto.
-        if (get().callId !== s.callId || get().status !== 'active') {
-          captured?.stop()
-          stream.getTracks().forEach((t) => t.stop())
-          return
-        }
-        if (captured) {
-          // O som da janela substitui qualquer som de sistema da captura.
-          stream.getAudioTracks().forEach((t) => {
-            stream.removeTrack(t)
-            t.stop()
-          })
-          windowAudio = captured
-          stream.addTrack(captured.track)
-        }
-
-        localScreenStream = stream
-        markScreenSharing(streamQuality(stream), stream)
-
-        // Parar pela barra nativa do Electron / fim da fonte encerra o share.
-        stream.getVideoTracks().forEach((track) => {
-          track.addEventListener('ended', () => {
-            if (get().isScreenSharing) get().stopScreenShare()
-          })
-        })
-
-        try {
-          await media?.publishScreen(stream)
-        } catch {
-          showToast.error('Não foi possível transmitir a tela.')
-          get().stopScreenShare()
-        }
+        const stream = await pickScreen()
+        if (stream && (await addWindowAudio(stream, s.callId))) await goLive(stream)
       } finally {
         screenSharePending = false
       }
