@@ -7,6 +7,9 @@ import "sync"
 // chama InvalidateServer/InvalidateChannel depois do commit (os repositórios
 // fazem isso). Os snapshots guardados são compartilhados: só leitura.
 //
+// Vale para uma instância só do backend (como o hub do WebSocket): não há
+// invalidação entre processos.
+//
 // Leituras simultâneas do mesmo servidor viram uma ida ao banco só. A geração
 // por servidor impede que uma leitura que começou antes de uma escrita grave o
 // snapshot velho depois da invalidação.
@@ -97,12 +100,17 @@ func (c *snapshotCache) invalidateLocked(serverID string) {
 	c.gens[serverID]++
 }
 
-// invalidateChannel invalida o servidor do canal, se ele estiver guardado
-// (canal fora do índice não está em nenhum snapshot guardado).
+// invalidateChannel invalida o servidor do canal. Canal fora do índice não
+// está em nenhum snapshot guardado, mas pode estar numa leitura em andamento
+// (de um servidor que não sabemos qual): essas leituras são descartadas.
 func (c *snapshotCache) invalidateChannel(channelID string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if serverID, ok := c.channels[channelID]; ok {
+		c.invalidateLocked(serverID)
+		return
+	}
+	for serverID := range c.inflight {
 		c.invalidateLocked(serverID)
 	}
 }

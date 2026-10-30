@@ -17,6 +17,7 @@ type countingStore struct {
 	loads     atomic.Int32
 	channelQs atomic.Int32
 	fail      error
+	panics    bool
 	gate      chan struct{}
 	started   chan struct{}
 }
@@ -46,6 +47,9 @@ func (s *countingStore) LoadSnapshot(_ context.Context, serverID string) (*Snaps
 	}
 	if gate != nil {
 		<-gate
+	}
+	if s.panics {
+		panic("banco explodiu")
 	}
 	if fail != nil {
 		return nil, fail
@@ -234,5 +238,57 @@ func TestLoadStartedBeforeInvalidationIsNotCached(t *testing.T) {
 	<-done
 	if _, err := svc.ServerPerms(context.Background(), "s1", "bia"); err != nil {
 		t.Fatalf("a leitura velha não pode ficar no cache: err = %v", err)
+	}
+}
+
+// Sobrescrita gravada durante a leitura de um servidor que ainda não está no
+// cache: o canal não está no índice, mas a leitura em andamento é velha.
+func TestInvalidateChannelDuringLoadOfUncachedServer(t *testing.T) {
+	store := newCountingStore(serverWithMember("ana"))
+	oldGate := make(chan struct{})
+	store.gate = oldGate
+	store.started = make(chan struct{}, 10)
+	svc := NewService(store)
+
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		_, _ = svc.Snapshot(context.Background(), "s1") // lê c1 ainda público
+	}()
+	<-store.started
+
+	store.mu.Lock()
+	store.snaps["s1"] = NewSnapshot("s1", "owner", ViewChannel|SendMessages).
+		WithChannel("c1", "text", Overwrite{TargetType: TargetRole, TargetID: "everyone", Deny: ViewChannel}).
+		WithMember("owner").WithMember("ana")
+	store.gate, store.started = nil, nil
+	store.mu.Unlock()
+	svc.InvalidateChannel("c1")
+	close(oldGate)
+	<-done
+
+	if err := svc.RequireChannel(context.Background(), "c1", "ana", ViewChannel); !errors.Is(err, ErrMissingPermission) {
+		t.Fatalf("canal virou privado: err = %v (snapshot velho ficou no cache)", err)
+	}
+}
+
+// Pânico na leitura não pode prender quem pede o mesmo servidor depois.
+func TestPanicInLoadDoesNotBlockLaterReaders(t *testing.T) {
+	store := newCountingStore(serverWithMember("ana"))
+	store.panics = true
+	svc := NewService(store)
+
+	func() {
+		defer func() { _ = recover() }()
+		_, _ = svc.Snapshot(context.Background(), "s1")
+	}()
+
+	store.mu.Lock()
+	store.panics = false
+	store.mu.Unlock()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	if _, err := svc.Snapshot(ctx, "s1"); err != nil {
+		t.Fatalf("depois do pânico: %v", err)
 	}
 }

@@ -2,6 +2,7 @@ package permission
 
 import (
 	"context"
+	"errors"
 	"time"
 )
 
@@ -37,11 +38,7 @@ func (s *Service) Snapshot(ctx context.Context, serverID string) (*Snapshot, err
 		return snap, nil
 	}
 	if leader {
-		loadCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), loadTimeout)
-		snap, err := s.store.LoadSnapshot(loadCtx, serverID)
-		cancel()
-		s.cache.finish(serverID, load, snap, err)
-		return snap, err
+		return s.lead(ctx, serverID, load)
 	}
 	select {
 	case <-load.done:
@@ -49,6 +46,27 @@ func (s *Service) Snapshot(ctx context.Context, serverID string) (*Snapshot, err
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	}
+}
+
+// errLoadAborted: a leitura compartilhada entrou em pânico (quem esperava
+// recebe este erro em vez de ficar preso).
+var errLoadAborted = errors.New("permission: leitura do snapshot interrompida")
+
+// lead faz a leitura compartilhada; o defer libera quem espera mesmo se o
+// store entrar em pânico (o pânico segue para quem chamou).
+func (s *Service) lead(ctx context.Context, serverID string, load *snapshotLoad) (snap *Snapshot, err error) {
+	finished := false
+	defer func() {
+		if !finished {
+			s.cache.finish(serverID, load, nil, errLoadAborted)
+		}
+	}()
+	loadCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), loadTimeout)
+	defer cancel()
+	snap, err = s.store.LoadSnapshot(loadCtx, serverID)
+	finished = true
+	s.cache.finish(serverID, load, snap, err)
+	return snap, err
 }
 
 // ChannelSnapshot: o snapshot do servidor do canal.
