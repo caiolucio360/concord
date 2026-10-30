@@ -1,6 +1,6 @@
 import type { CallStateResponse } from '../api/calls'
 
-// Prévia da transmissão no cartão de perfil. A tela é publicada sem simulcast
+// Prévia da transmissão no cartão de perfil e no selo LIVE. A tela é publicada sem simulcast
 // (uma camada só, na qualidade escolhida), então assinar o vídeo para uma
 // miniatura baixaria a transmissão inteira — e quem está fora da chamada nem
 // está na sala do LiveKit. Por isso a prévia é uma foto JPEG pequena que quem
@@ -13,7 +13,7 @@ export const PREVIEW_MAX_HEIGHT = 216
 /** Qualidade do JPEG: ~15–30 KB por foto. */
 export const PREVIEW_JPEG_QUALITY = 0.7
 /** Com o cartão aberto, busca a foto de novo a cada tanto (o servidor pede outra se ficou velha). */
-export const PREVIEW_POLL_MS = 10_000
+export const PREVIEW_POLL_MS = 5_000
 /** Foto pedida e ainda não chegou: tenta de novo logo. */
 export const PREVIEW_RETRY_MS = 1_500
 /** Tentativas rápidas antes de voltar ao intervalo normal. */
