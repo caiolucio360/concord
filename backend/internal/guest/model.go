@@ -91,6 +91,8 @@ const (
 	EndExpired = "expired"
 	EndRevoked = "revoked"
 	EndRemoved = "removed"
+	// EndMember: virou membro do servidor (segue na call, agora como membro).
+	EndMember = "member"
 )
 
 // EndedEvent avisa o visitante de que o acesso acabou (o app mostra a tela de

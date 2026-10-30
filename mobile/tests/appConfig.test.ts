@@ -27,9 +27,9 @@ describe('app.config (voz)', () => {
     expect(config.android?.permissions).toContain('android.permission.POST_NOTIFICATIONS')
   })
 
-  it('registra o seletor de imagens com o texto da permissão da câmera (sem pedir microfone)', () => {
+  it('registra o seletor de imagens com o texto da câmera e SEM remover o microfone (microphonePermission: false tira RECORD_AUDIO do APK e mata a voz)', () => {
     const entry = (config.plugins ?? []).find((p) => Array.isArray(p) && p[0] === 'expo-image-picker') as [string, Record<string, unknown>]
-    expect(entry[1]).toMatchObject({ microphonePermission: false })
+    expect(entry[1].microphonePermission).not.toBe(false)
     expect(String(entry[1].cameraPermission)).toMatch(/câmera/)
   })
 

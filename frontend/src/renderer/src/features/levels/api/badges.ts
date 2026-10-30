@@ -60,6 +60,17 @@ export interface Badge {
   tiers: BadgeTier[]
 }
 
+/**
+ * Sequência atual de dias (badge Sequência). A própria pessoa recebe também o
+ * recorde e se hoje ainda não contou (at_risk); os outros, só o número atual.
+ * Viva se usou hoje ou ontem. Ausente sem o badge (ou em servidor antigo).
+ */
+export interface BadgeStreak {
+  current: number
+  longest?: number
+  at_risk?: boolean
+}
+
 export interface BadgesResponse {
   user_id: string
   /** true: a própria pessoa (visão completa). */
@@ -70,6 +81,7 @@ export interface BadgesResponse {
    * quais). Servidor antigo não manda.
    */
   hidden_remaining?: number
+  streak?: BadgeStreak
 }
 
 /** Evento badge:unlock (só para a própria pessoa). */

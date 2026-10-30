@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import type { WsEvent } from '../../../shared/api/ws'
-import { fetchBadges, type Badge, type BadgeUnlockEvent } from '../api/badges'
+import { fetchBadges, type Badge, type BadgeStreak, type BadgeUnlockEvent } from '../api/badges'
 import { useAuthStore } from '../../auth/store/authStore'
 import { unlocksComAviso } from '../lib/badges'
 
@@ -23,7 +23,10 @@ export interface UnlockToast {
 }
 
 interface BadgeState {
-  byUser: Record<string, { badges: Badge[]; hiddenRemaining: number; loadedAt: number }>
+  byUser: Record<
+    string,
+    { badges: Badge[]; hiddenRemaining: number; streak?: BadgeStreak; loadedAt: number }
+  >
   modal: BadgesModalTarget | null
   toast: UnlockToast | null
   /** Busca se ainda não tem (ou se está velho). */
@@ -59,6 +62,7 @@ export const useBadgeStore = create<BadgeState>()((set, get) => ({
             [userId]: {
               badges: res.badges,
               hiddenRemaining: res.hidden_remaining ?? 0,
+              streak: res.streak,
               loadedAt: Date.now()
             }
           }

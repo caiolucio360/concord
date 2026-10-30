@@ -36,11 +36,16 @@
 	}
 }
 
-# Atualizações do app desktop (instaladores de ~120 MB, .sig, latest*.yml)
-# direto do disco: um download em andamento não segura o reinício do backend e
-# não cai no deploy. Mesmo conteúdo que o backend serviria (sem listagem).
+# Atualizações do app desktop (docs/adr/0028). Os manifestos (latest*.yml,
+# poucas centenas de bytes) saem do disco: são eles que dizem qual é a versão
+# atual. Os arquivos pesados (instaladores de ~120 MB, .blockmap, .sig) vão
+# para a GitHub Release da mesma versão (o nome traz a versão), com 302 — o
+# tráfego não passa pela VPS. Para voltar a servir tudo do disco (a cópia
+# continua em /opt/concord/updates), apague as duas linhas do @release.
 (salinha_updates) {
 	handle /updates/* {
+		@release path_regexp release ^/updates/(Salinha-([0-9]+\.[0-9]+\.[0-9]+)-[A-Za-z0-9._-]+)$
+		redir @release https://github.com/hugoemannuel/concord/releases/download/v{re.release.2}/{re.release.1} 302
 		uri strip_prefix /updates
 		root * /opt/concord/updates
 		file_server

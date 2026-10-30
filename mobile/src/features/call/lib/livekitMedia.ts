@@ -1,6 +1,7 @@
 import { AudioSession } from '@livekit/react-native'
 import { ConnectionState, Room, RoomEvent, Track, type RemoteParticipant, type RemoteTrackPublication, type VideoTrack } from 'livekit-client'
 import type { CallMedia, MediaConnection } from './callMedia'
+import { releaseNativeTrack } from './releaseNativeTrack'
 
 // Os dois únicos arquivos do app que falam com o SDK do LiveKit (ADR 0023): este e livekitScreen.tsx (que só
 // desenha a transmissão). Ficam fora da cobertura do Jest (módulo nativo): a lógica toda está no callController,
@@ -25,6 +26,20 @@ export const getScreenTrack = (userId: string): VideoTrack | undefined => screen
 export function onScreenTrack(listener: (userId: string) => void): () => void {
   screenTrackListeners.add(listener)
   return () => screenTrackListeners.delete(listener)
+}
+
+/** Desliga a minha transmissão e libera a captura nativa (senão o serviço de captura de tela do Android fica preso). */
+async function stopScreenShare(current: Room): Promise<void> {
+  const track = current.localParticipant.getTrackPublication(Track.Source.ScreenShare)?.track?.mediaStreamTrack
+  await current.localParticipant.setScreenShareEnabled(false).catch(() => {})
+  releaseNativeTrack(track)
+}
+
+/** Sai da sala: antes libera a captura de tela (se houver) e só então desconecta. */
+async function closeRoom(current: Room | null): Promise<void> {
+  if (!current) return
+  await stopScreenShare(current)
+  if (current.state !== ConnectionState.Disconnected) await current.disconnect()
 }
 
 export function createLiveKitMedia(): CallMedia {
@@ -90,14 +105,15 @@ export function createLiveKitMedia(): CallMedia {
       const current = room
       room = null
       screenTracks.clear()
-      if (current && current.state !== ConnectionState.Disconnected) await current.disconnect()
+      await closeRoom(current)
       await AudioSession.stopAudioSession()
     },
     async setMicEnabled(on) {
       await room?.localParticipant.setMicrophoneEnabled(on)
     },
     async setScreenShareEnabled(on) {
-      await room?.localParticipant.setScreenShareEnabled(on)
+      if (!on && room) await stopScreenShare(room)
+      else await room?.localParticipant.setScreenShareEnabled(on)
     },
     watchScreen(userId, on) {
       const participant = room?.remoteParticipants.get(userId)

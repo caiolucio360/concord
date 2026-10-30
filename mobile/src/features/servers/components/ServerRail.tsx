@@ -2,6 +2,8 @@ import { Ionicons } from '@expo/vector-icons'
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { colors, MIN_TOUCH, radius, spacing } from '../../../shared/theme/tokens'
 import { Avatar } from '../../../shared/ui/Avatar'
+import { PathIcon } from '../../../shared/ui/PathIcon'
+import { DIAMOND_PATHS } from '../../../shared/ui/icons/hubIcons'
 import { UnreadBadge, UnreadDot } from '../../chat/components/UnreadBadge'
 import type { Server } from '../api/servers'
 
@@ -14,7 +16,7 @@ interface ServerRailProps {
   dmUnread?: number
   /** Não lidas por servidor (só na sessão): o ícone ganha um ponto. */
   unreadServers?: Record<string, number>
-  /** O diamante do fim do trilho: Melhorias (Rank global e, em breve, Propostas e Novidades). */
+  /** O diamante logo abaixo das DMs (como na web): Melhorias (Novidades e Rank global; Propostas em breve). */
   onOpenHub?: () => void
 }
 
@@ -39,6 +41,11 @@ export function ServerRail({ servers, selectedId, onSelect, dmUnread = 0, unread
         ) : null}
       </Pressable>
       <View style={styles.divider} />
+      {onOpenHub ? (
+        <Pressable accessibilityRole="button" accessibilityLabel="Melhorias" onPress={onOpenHub} style={[styles.item, styles.hub]}>
+          <PathIcon paths={DIAMOND_PATHS} color={colors.textBrand} size={24} />
+        </Pressable>
+      ) : null}
       {servers.map((server) => (
         <Pressable
           key={server.id}
@@ -56,11 +63,6 @@ export function ServerRail({ servers, selectedId, onSelect, dmUnread = 0, unread
           ) : null}
         </Pressable>
       ))}
-      {onOpenHub ? (
-        <Pressable accessibilityRole="button" accessibilityLabel="Melhorias" onPress={onOpenHub} style={[styles.item, styles.hub]}>
-          <Ionicons name="diamond" size={22} color={colors.textBrand} />
-        </Pressable>
-      ) : null}
     </ScrollView>
   )
 }

@@ -129,5 +129,6 @@ func wire(ctx context.Context, db *pgxpool.Pool) *app {
 	a.wireRealtime()
 	a.wireAccount()
 	a.wireUpdates()
+	a.wireLiveObs()
 	return a
 }

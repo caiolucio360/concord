@@ -12,8 +12,9 @@ import (
 	"gin-quickstart/backend/internal/conversation"
 	"gin-quickstart/backend/internal/giphy"
 	"gin-quickstart/backend/internal/message"
-	"gin-quickstart/backend/internal/push"
 	"gin-quickstart/backend/internal/platform/media"
+	"gin-quickstart/backend/internal/push"
+	"gin-quickstart/backend/internal/relationship"
 	"gin-quickstart/backend/internal/server"
 	"gin-quickstart/backend/internal/soundboard"
 	"gin-quickstart/backend/internal/sticker"
@@ -30,7 +31,7 @@ func (a *app) wireChat() {
 	uploads := mustStore(a.uploadsDir, "uploads dir")
 
 	messageRepository := message.MessageRepository(a.db)
-	a.messageService = message.MessageService(messageRepository, push.WrapMessages(a.hub, a.pushTap),a.channelRepository, a.conversationRepository, uploads, a.permissionService)
+	a.messageService = message.MessageService(messageRepository, push.WrapMessages(a.hub, a.pushTap), a.channelRepository, a.conversationRepository, uploads, a.permissionService)
 	// Limpeza horária de arquivos sem dono (cascatas e uploads abandonados).
 	go message.NewJanitor(messageRepository, uploads).Run(a.ctx, time.Hour)
 	a.messageHandler = message.MessageHandler(a.messageService, a.channelService, a.conversationService, a.friendshipService, a.permissionService)
@@ -48,6 +49,7 @@ func (a *app) wireChat() {
 	soundboardUploads := mustStore(filepath.Join(a.uploadsDir, "soundboard"), "soundboard uploads dir")
 	a.soundboardRepository = soundboard.NewRepository(a.db)
 	soundboardHandler := soundboard.NewHandler(a.soundboardRepository, soundboardUploads, a.uploadSpace, a.serverService, a.permissionService, a.authService, a.hub)
+	soundboardHandler.SetVisitors(appVisitors{a})
 
 	// Figurinhas (Stickers) compartilhadas por servidor
 	stickersUploads := mustStore(filepath.Join(a.uploadsDir, "stickers"), "stickers uploads dir")
@@ -61,7 +63,7 @@ func (a *app) wireChat() {
 	profileMediaDir := filepath.Join(a.uploadsDir, user.ProfileMediaDir)
 	profileMedia := mustStore(profileMediaDir, "profile media dir")
 	profileStatic := mustStore(filepath.Join(profileMediaDir, "static"), "profile media dir")
-	profileService := user.NewProfileService(a.userRepository, a.hub)
+	profileService := user.NewProfileService(a.userRepository, a.hub, relationship.NewRepository(a.db))
 	a.profileHandler = user.NewProfileHandler(profileService, profileMedia, profileStatic, a.uploadSpace)
 	a.wireSavedProfiles(profileService)
 	entranceSounds := mustStore(filepath.Join(profileMediaDir, user.EntranceSoundDir), "entrance sounds dir")

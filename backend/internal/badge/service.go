@@ -63,6 +63,9 @@ type Response struct {
 	// Quantos badges a pessoa ainda não tem e ainda pode conseguir, sem dizer
 	// quais (hidden.go). Igual para quem vê o próprio perfil e o dos outros.
 	HiddenRemaining int `json:"hidden_remaining"`
+	// Sequência atual de dias (streak_atual.go): SelfStreak para a própria
+	// pessoa, PublicStreak para os outros; ausente sem o badge Sequência.
+	Streak any `json:"streak,omitempty"`
 }
 
 // UnlockEvent vai só para a própria pessoa quando ela alcança tiers novos.
@@ -122,9 +125,9 @@ func (s *Service) Badges(ctx context.Context, viewerID, userID string) (Response
 	}
 	hidden := HiddenRemaining(stats, badges)
 	if viewerID == userID {
-		return Response{UserID: userID, Self: true, Badges: badges, HiddenRemaining: hidden}, nil
+		return Response{UserID: userID, Self: true, Badges: badges, HiddenRemaining: hidden, Streak: streakFor(true, stats, badges, s.now())}, nil
 	}
-	return Response{UserID: userID, Badges: publicView(badges), HiddenRemaining: hidden}, nil
+	return Response{UserID: userID, Badges: publicView(badges), HiddenRemaining: hidden, Streak: streakFor(false, stats, badges, s.now())}, nil
 }
 
 // Refresh reavalia os badges de userID agora e avisa (badge:unlock) o que

@@ -103,13 +103,22 @@ func TestScreenPreviewOnDemand(t *testing.T) {
 		t.Fatalf("foto fresca não pede outra: pedidos = %d", n)
 	}
 
+	// Foto de 5 s: a prévia atualiza a cada poucos segundos, então já pede outra.
+	res, _ = svc.ScreenPreview(ctx, "c1", "vip", "ana", t0.Add(7*time.Second))
+	if res.Image == nil {
+		t.Fatal("foto de 5 s devia ser mostrada")
+	}
+	if n := previewRequests(pub, "vip"); n != 2 {
+		t.Fatalf("foto de 5 s: pedidos = %d, want 2", n)
+	}
+
 	// Foto velha: ainda mostra, mas pede uma nova.
 	res, _ = svc.ScreenPreview(ctx, "c1", "vip", "ana", t0.Add(15*time.Second))
 	if res.Image == nil {
 		t.Fatal("foto de 13 s devia ser mostrada")
 	}
-	if n := previewRequests(pub, "vip"); n != 2 {
-		t.Fatalf("foto velha: pedidos = %d, want 2", n)
+	if n := previewRequests(pub, "vip"); n != 3 {
+		t.Fatalf("foto velha: pedidos = %d, want 3", n)
 	}
 	// Velha demais: não mostra.
 	res, _ = svc.ScreenPreview(ctx, "c1", "vip", "ana", t0.Add(2*time.Minute))
