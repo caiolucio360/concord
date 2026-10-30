@@ -2,7 +2,7 @@ import { AudioSession } from '@livekit/react-native'
 import { ConnectionState, DisconnectReason, Room, RoomEvent, Track, type LocalVideoTrack, type RemoteParticipant, type RemoteTrackPublication, type VideoTrack } from 'livekit-client'
 import type { CallMedia, MediaConnection } from './callMedia'
 import { clearCameraTracks, setCameraTrack } from './livekitCamera'
-import { releaseNativeTrack } from './releaseNativeTrack'
+import { createNativeTracks, releaseNativeTrack } from './releaseNativeTrack'
 import { disableVideoStartBitrate } from './startBitrate'
 
 // Os dois únicos arquivos do app que falam com o SDK do LiveKit (ADR 0023): este e livekitScreen.tsx (que só
@@ -52,6 +52,9 @@ async function closeRoom(current: Room | null): Promise<void> {
   if (current.state !== ConnectionState.Disconnected) await current.disconnect()
 }
 
+// Faixas que capturam no aparelho (tela e câmera): liberadas no nativo ao sair, senão a captura fica presa.
+const NATIVE_SOURCES = new Set<Track.Source>([Track.Source.ScreenShare, Track.Source.Camera])
+
 export function createLiveKitMedia(): CallMedia {
   let room: Room | null = null
   let listening = true
@@ -61,6 +64,7 @@ export function createLiveKitMedia(): CallMedia {
   const peerListeners = new Set<(peers: Record<string, string>) => void>()
   const cameraListeners = new Set<(ids: string[]) => void>()
   let facing: 'user' | 'environment' = 'user'
+  const native = createNativeTracks()
 
   const emitConnection = (state: MediaConnection): void => connectionListeners.forEach((l) => l(state))
 
@@ -97,7 +101,11 @@ export function createLiveKitMedia(): CallMedia {
     })
     next.on(RoomEvent.Reconnecting, () => emitConnection('reconnecting'))
     next.on(RoomEvent.Reconnected, () => emitConnection('connected'))
-    next.on(RoomEvent.Disconnected, (reason) => emitConnection(reason === DisconnectReason.DUPLICATE_IDENTITY ? 'replaced' : 'disconnected'))
+    next.on(RoomEvent.Disconnected, (reason) => {
+      // Derrubado pelo servidor ou por outro aparelho: as publicações já sumiram, então libera pelo registro.
+      native.releaseAll()
+      emitConnection(reason === DisconnectReason.DUPLICATE_IDENTITY ? 'replaced' : 'disconnected')
+    })
     next.on(RoomEvent.ParticipantConnected, () => {
       setRemoteVolume(next, listening)
       emitPeers(next)
@@ -118,10 +126,12 @@ export function createLiveKitMedia(): CallMedia {
     next.on(RoomEvent.TrackUnmuted, () => emitCameras(next))
     next.on(RoomEvent.LocalTrackPublished, (pub) => {
       emitScreens(next)
+      if (NATIVE_SOURCES.has(pub.source)) native.keep(pub.track?.mediaStreamTrack)
       if (pub.source === Track.Source.Camera) cameraChanged(next, next.localParticipant.identity, pub.track as VideoTrack)
     })
     next.on(RoomEvent.LocalTrackUnpublished, (pub) => {
       emitScreens(next)
+      native.release(pub.track?.mediaStreamTrack)
       if (pub.source === Track.Source.Camera) cameraChanged(next, next.localParticipant.identity, undefined)
     })
     next.on(RoomEvent.TrackSubscribed, (track, _pub, participant) => {
@@ -160,6 +170,7 @@ export function createLiveKitMedia(): CallMedia {
       screenTracks.clear()
       clearCameraTracks()
       await closeRoom(current)
+      native.releaseAll()
       await AudioSession.stopAudioSession()
     },
     async setMicEnabled(on) {
