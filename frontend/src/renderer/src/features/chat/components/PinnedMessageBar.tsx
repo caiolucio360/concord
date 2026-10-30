@@ -1,5 +1,5 @@
 import type { PinnedMessage } from '../api/messages'
-import { PinIcon } from '../../../shared/ui/icons'
+import { ChevronRightIcon, PinIcon } from '../../../shared/ui/icons'
 import { messageAuthorName, morePinsLabel, pinnedPreview } from '../lib/chatPaneView'
 
 /** Barra com a última mensagem fixada no topo do canal; clicar pula até ela. */
@@ -43,8 +43,9 @@ export default function PinnedMessageBar({
             {more}
           </span>
         )}
-        <span className="text-[11px] font-medium text-violet-400 opacity-80 group-hover:opacity-100 group-hover:underline">
-          Ir para mensagem →
+        <span className="flex items-center gap-0.5 text-[11px] font-medium text-violet-400 opacity-80 group-hover:opacity-100 group-hover:underline">
+          Ir para mensagem
+          <ChevronRightIcon size={12} />
         </span>
       </div>
     </div>

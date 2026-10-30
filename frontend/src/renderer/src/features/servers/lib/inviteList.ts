@@ -14,7 +14,7 @@ export function formatInviteDate(dateStr?: string): string {
 export function inviteSubtitle(
   invite: Pick<ServerInvite, 'inviter_username' | 'created_at'>
 ): string {
-  const when = invite.created_at ? ` • ${formatInviteDate(invite.created_at)}` : ''
+  const when = invite.created_at ? ` · ${formatInviteDate(invite.created_at)}` : ''
   return `@${invite.inviter_username} convidou você${when}`
 }
 

@@ -7,6 +7,9 @@ import { PauseIcon, PlayIcon } from '../../../shared/ui/icons'
 // design-allow: emojis sugeridos para o botão do som (conteúdo, não ícone)
 const PRESET_EMOJIS = ['🎺', '😂', '🔥', '💀', '🎉', '👏', '🚨', '💥', '🥁', '🐸', '🎸', '🔔']
 
+/** Emoji que um som novo leva até a pessoa escolher outro. */
+export const DEFAULT_SOUND_EMOJI = PRESET_EMOJIS[0]
+
 const LABEL = 'mb-1.5 block text-ds-sm font-medium text-gray-400'
 
 /** Escolher o arquivo, ver duração/tamanho e ouvir a prévia. */

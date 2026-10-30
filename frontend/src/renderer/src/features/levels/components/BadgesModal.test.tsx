@@ -26,6 +26,19 @@ vi.mock('react-dom', async (original) => ({
 import { renderToStaticMarkup } from 'react-dom/server'
 import BadgesModal from './BadgesModal'
 
+const BADGE = {
+  category: 'teste',
+  name: 'Teste',
+  description: 'Um badge de teste.',
+  unit: 'vote',
+  value: 1,
+  tier: 1,
+  tier_name: 'Teste',
+  rarity: 'epico',
+  unlocked_at: '2026-10-27T12:00:00Z',
+  tiers: [{ tier: 1, name: 'Teste', threshold: 1, rarity: 'epico', unlocked_at: '2026-10-27' }]
+}
+
 describe('BadgesModal', () => {
   beforeEach(() => {
     vi.stubGlobal('document', { body: {} })
@@ -39,6 +52,17 @@ describe('BadgesModal', () => {
     expect(html).toContain('Badges de Ana')
     expect(html).toContain('aria-label="Fechar"')
     expect(html).not.toContain('✕')
+  })
+
+  it('raridade e separadores sem glifos de texto (✦ ▲ •)', () => {
+    for (const rarity of ['epico', 'mitico']) {
+      store.byUser = { u1: { badges: [{ ...BADGE, rarity }] } }
+      const html = renderToStaticMarkup(<BadgesModal />)
+      for (const glyph of ['✦', '▲', '•']) expect(html).not.toContain(glyph)
+      expect(html).toContain('>·<')
+      // O chip de raridade leva o ícone desenhado antes do nome.
+      expect(html).toMatch(/<svg[^>]*aria-hidden="true"[^>]*>(?:(?!<\/svg>).)*<\/svg>(Épico|Mítico)/)
+    }
   })
 
   it('sem modal aberto não renderiza nada', () => {

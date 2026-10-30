@@ -1,10 +1,10 @@
 import type { SoundboardItem } from '../api/soundboard'
-import { FavoriteStarIcon, TrashIcon } from '../../../shared/ui/icons'
+import { FavoriteStarIcon, SoundboardIcon, TrashIcon } from '../../../shared/ui/icons'
 
 /** Depois da duração: o servidor de origem (favorito de fora) ou quem enviou. */
 function subtitleSuffix(sound: SoundboardItem, origin?: string): string {
   const who = origin || sound.uploader_name
-  return who ? ` • ${who}` : ''
+  return who ? ` · ${who}` : ''
 }
 
 /** Um som da mesa de áudio: tocar, atalho, estrela e excluir. */
@@ -49,7 +49,7 @@ export default function SoundPad({
         title={`Tocar "${sound.name}" para todos na chamada`}
       >
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-input text-lg">
-          {sound.emoji || '🔊'}
+          {sound.emoji || <SoundboardIcon size={20} className="text-muted" />}
         </span>
         <div className="min-w-0 flex-1">
           <p className="truncate text-xs font-bold text-strong">{sound.name}</p>

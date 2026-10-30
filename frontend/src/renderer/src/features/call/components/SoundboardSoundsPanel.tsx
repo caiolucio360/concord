@@ -8,7 +8,7 @@ import { useSoundboardStore } from '../store/soundboardStore'
 import { useSoundFavoritesStore } from '../store/soundFavoritesStore'
 import { soundboardSections } from '../lib/soundboardSections'
 import { showToast } from '../../../shared/store/toastStore'
-import { PlusIcon, SearchIcon } from '../../../shared/ui/icons'
+import { FavoriteStarIcon, PlusIcon, SearchIcon } from '../../../shared/ui/icons'
 import SoundboardUploadModal from './SoundboardUploadModal'
 import SoundPad from './SoundPad'
 import SoundSection from './SoundSection'
@@ -177,7 +177,7 @@ function SoundboardSoundsPanel({
             />
           ) : (
             <>
-              <SoundSection title="★ Favoritos">{sections.favorites.map(renderPad)}</SoundSection>
+              <SoundSection title="Favoritos" icon={FavoriteStarIcon}>{sections.favorites.map(renderPad)}</SoundSection>
               <SoundSection title={sections.favorites.length > 0 ? 'Sons do servidor' : undefined}>
                 {sections.server.map(renderPad)}
               </SoundSection>

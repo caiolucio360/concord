@@ -18,40 +18,8 @@ export const POLL_DURATIONS: { hours: number; label: string }[] = [
 ]
 
 /** Emojis oferecidos no seletor de cada resposta. */
-export const POLL_EMOJIS = [
-  '👍',
-  '👎',
-  '❤️',
-  '😂',
-  '😮',
-  '😢',
-  '🔥',
-  '🎉',
-  '✅',
-  '❌',
-  '⭐',
-  '💡',
-  '🍕',
-  '🍔',
-  '🍣',
-  '☕',
-  '🎮',
-  '🎬',
-  '🎵',
-  '⚽',
-  '🏀',
-  '📚',
-  '💻',
-  '🐶',
-  '🐱',
-  '🌙',
-  '☀️',
-  '🌧️',
-  '🚀',
-  '💰',
-  '🤔',
-  '👀'
-]
+// design-allow: emojis que a pessoa escolhe para a resposta (conteúdo, não ícone)
+export const POLL_EMOJIS = '👍 👎 ❤️ 😂 😮 😢 🔥 🎉 ✅ ❌ ⭐ 💡 🍕 🍔 🍣 ☕ 🎮 🎬 🎵 ⚽ 🏀 📚 💻 🐶 🐱 🌙 ☀️ 🌧️ 🚀 💰 🤔 👀'.split(' ')
 
 /** Enquete sem votos novos: encerrada pelo autor ou com o prazo vencido. */
 export function isPollClosed(poll: Poll, now: number = Date.now()): boolean {

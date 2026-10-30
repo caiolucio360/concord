@@ -131,6 +131,9 @@ describe('ServerSidebar', () => {
     expect(html).not.toContain('Criar canal de texto')
     expect(html).not.toContain('draggable="true"')
     expect(html).toContain('aria-label="Opções do canal"')
+    // Os três pontos são o ícone desenhado, não "•••" de texto.
+    expect(html).not.toContain('•••')
+    expect(html).toMatch(/aria-label="Opções do canal"[^>]*><svg/)
   })
 
   it('dono: cria nos dois tipos, arrasta e vê o canal privado com cadeado', () => {

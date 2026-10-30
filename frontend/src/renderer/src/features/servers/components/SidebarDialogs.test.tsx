@@ -164,9 +164,12 @@ describe('ServerHeaderMenu', () => {
   })
 
   it('cabeçalho com o nome; sem servidor, skeleton', () => {
-    expect(render(<ServerHeaderMenu server={server} access={fakeAccess(0)} />)).toContain(
-      'title="Salinha"'
-    )
+    const html = render(<ServerHeaderMenu server={server} access={fakeAccess(0)} />)
+    expect(html).toContain('title="Salinha"')
+    // A seta do menu é o chevron desenhado, não o ▼ de texto.
+    expect(html).not.toContain('▼')
+    expect(html).toContain('aria-expanded="false"')
+    expect(html).toMatch(/<svg[^>]*aria-hidden="true"(?:(?!<\/svg>).)*<\/svg><\/button>/)
     expect(render(<ServerHeaderMenu server={null} access={fakeAccess(0)} />)).toContain(
       'Carregando servidor…'
     )

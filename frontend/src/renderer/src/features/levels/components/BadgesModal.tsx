@@ -15,6 +15,7 @@ import {
 } from '../lib/badges'
 import { trapTab } from '../../../shared/lib/focusTrap'
 import CloseButton from '../../../shared/ui/CloseButton'
+import { ChevronUpIcon, SparkleIcon } from '../../../shared/ui/icons'
 import BadgeIcon from './BadgeIcon'
 import BadgesAside from './BadgesAside'
 import BadgeProgress from './BadgeProgress'
@@ -26,7 +27,7 @@ function RarityChip({ badge }: { badge: Badge }): React.JSX.Element {
   if (isMythic(badge.rarity)) {
     return (
       <span className="mythic-chip inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-black uppercase tracking-wide">
-        <span aria-hidden="true">✦</span>
+        <SparkleIcon size={12} />
         {meta.label}
       </span>
     )
@@ -40,7 +41,7 @@ function RarityChip({ badge }: { badge: Badge }): React.JSX.Element {
         boxShadow: `inset 0 0 0 1px ${meta.color}55`
       }}
     >
-      <span aria-hidden="true">▲</span>
+      <ChevronUpIcon size={12} />
       {meta.label}
     </span>
   )
@@ -94,12 +95,12 @@ function Detail({
         <span>{isMe ? statText(badge) : publicStatText(badge)}</span>
         {unlocked && (
           <>
-            <span aria-hidden="true">•</span>
+            <span aria-hidden="true">·</span>
             <span>Desbloqueado em {unlocked}</span>
           </>
         )}
         <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-          <span aria-hidden="true">•</span>
+          <span aria-hidden="true">·</span>
           <RarityChip badge={badge} />
         </span>
       </p>

@@ -50,7 +50,10 @@ describe('GroupMemberRow', () => {
   })
 
   it('o dono do grupo leva a coroa', () => {
-    expect(render({ isOwner: true })).toContain('Dono do grupo')
+    const html = render({ isOwner: true })
+    expect(html).toContain('Dono do grupo')
+    expect(html).not.toContain('👑')
+    expect(html).toMatch(/title="Dono do grupo"[^>]*><svg/)
     expect(render()).not.toContain('Dono do grupo')
   })
 

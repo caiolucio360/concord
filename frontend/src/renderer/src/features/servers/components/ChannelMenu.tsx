@@ -8,6 +8,7 @@ import { showToast } from '../../../shared/store/toastStore'
 import {
   ChevronDownIcon,
   ChevronUpIcon,
+  DotsIcon,
   LockIcon,
   PencilIcon,
   StarIcon,
@@ -41,7 +42,7 @@ export function ChannelMenuButton({
           : ''
       }`}
     >
-      <span className="text-[10px] leading-none">•••</span>
+      <DotsIcon size={16} />
     </button>
   )
 }

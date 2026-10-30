@@ -72,6 +72,9 @@ describe('SoundboardSoundsPanel', () => {
     ]
     const html = render()
     expect(html).toContain('Favoritos')
+    // A estrela é o ícone desenhado, não o caractere ★.
+    expect(html).not.toContain('★')
+    expect(html).toMatch(/<svg[^>]*aria-hidden="true"[^>]*>(?:(?!<\/svg>).)*<\/svg>Favoritos/)
     expect(html).toContain('Sons do servidor')
     expect(html).toContain('Servidor B')
     // O favorito daqui não repete na seção do servidor.

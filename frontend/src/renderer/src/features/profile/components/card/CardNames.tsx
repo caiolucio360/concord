@@ -52,7 +52,7 @@ function SubLine({
     <div className="flex min-w-0 items-center gap-2">
       <p className="min-w-0 truncate text-sm text-gray-300">
         {username && <span>{username}</span>}
-        {username && pronouns && <span className="text-gray-500"> • </span>}
+        {username && pronouns && <span className="text-gray-500"> · </span>}
         <Pronouns value={profile.pronouns} placeholder={placeholder} />
       </p>
       {profile.is_bot && (

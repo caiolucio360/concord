@@ -5,7 +5,7 @@ import { profileCardHandler } from '../../profile/store/profileCardStore'
 import { userMenuHandler } from '../../profile/store/userMenuStore'
 import Avatar from '../../../shared/ui/Avatar'
 import StyledName from '../../profile/components/StyledName'
-import { XIcon } from '../../../shared/ui/icons'
+import { CrownIcon, XIcon } from '../../../shared/ui/icons'
 import type { ConversationOtherUser } from '../api/conversations'
 
 /** Um participante na lista do grupo; o dono pode removê-lo. */
@@ -50,8 +50,8 @@ function GroupMemberRow({
         <StyledName name={look.name} userId={member.id} style={member.name_style} />
       </span>
       {isOwner && (
-        <span title="Dono do grupo" className="text-warning">
-          👑
+        <span title="Dono do grupo" className="shrink-0 text-warning">
+          <CrownIcon size={16} />
         </span>
       )}
       {canRemove && (

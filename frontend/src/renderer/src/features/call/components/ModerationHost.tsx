@@ -8,6 +8,7 @@ import { MAX_NICKNAME, normalizeNickname } from '../../servers/lib/serverNames'
 import ConfirmModal from '../../friends/components/ConfirmModal'
 import Modal from '../../../shared/ui/Modal'
 import Button from '../../../shared/ui/Button'
+import { ChevronRightIcon } from '../../../shared/ui/icons'
 
 const MAX_REASON = 512
 
@@ -78,7 +79,8 @@ function BanModal(): React.JSX.Element | null {
     <Modal open title={`Banir ${ban.name}`} onClose={close}>
       <p className="text-sm leading-relaxed text-gray-300">
         <b className="text-strong">{ban.name}</b> sai do servidor e não consegue voltar, nem por
-        convite nem pelo código, até ser desbanido(a) em Configurações do servidor → Banimentos.
+        convite nem pelo código, até ser desbanido(a) em Configurações do servidor{' '}
+        <ChevronRightIcon size={12} className="inline align-[-1px]" /> Banimentos.
       </p>
       <label className="mt-4 block text-xs font-semibold text-gray-400" htmlFor="ban-reason">
         Motivo (opcional)

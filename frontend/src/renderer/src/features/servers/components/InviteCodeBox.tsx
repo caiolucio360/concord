@@ -7,6 +7,7 @@ import { actionErrorMessage } from '../lib/permissionErrors'
 import Button from '../../../shared/ui/Button'
 import { Skeleton } from '../../../shared/ui/skeleton/Skeleton'
 import ConfirmModal from '../../friends/components/ConfirmModal'
+import { ChevronRightIcon } from '../../../shared/ui/icons'
 
 /** Link de convite do servidor para mandar aos amigos (entram sozinhos com ele). */
 function InviteCodeBox({ serverId }: { serverId: string }): React.JSX.Element {
@@ -73,7 +74,8 @@ function InviteCodeBox({ serverId }: { serverId: string }): React.JSX.Element {
       <p className="text-ds-xs text-gray-400">
         Mande para seus amigos: o link abre no navegador ou no app. Também dá para colar o link (ou
         o código <code className="font-mono text-gray-300">{code ?? '········'}</code>) em{' '}
-        <strong>+</strong> → <strong>Entrar com código</strong>.
+        <strong>+</strong> <ChevronRightIcon size={12} className="inline align-[-1px]" />{' '}
+        <strong>Entrar com código</strong>.
       </p>
       <button
         type="button"

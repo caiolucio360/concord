@@ -67,7 +67,7 @@ describe('ProfileCardBody', () => {
         links: ['https://github.com/ana']
       }
     })
-    expect(html).toContain(' • ')
+    expect(html).toContain(' · ')
     expect(html).toContain('ela/dela')
     expect(html).toContain('jogando')
     expect(html).toContain('href="https://ana.dev"')

@@ -51,9 +51,11 @@ describe('ProposalCard', () => {
     expect(html).toContain('data-avatar')
   })
 
-  it('mostra a contagem de comentários', () => {
+  it('mostra a contagem de comentários com o ícone desenhado, sem emoji', () => {
     const html = render()
     expect(html).toContain('title="2 comentários"')
+    expect(html).not.toContain('💬')
+    expect(html).toMatch(/title="2 comentários"[^>]*><svg[^>]*aria-hidden="true"/)
     expect(render({ comment_count: 1 })).toContain('title="1 comentário"')
     expect(render({ comment_count: 0 })).not.toContain('comentário')
   })

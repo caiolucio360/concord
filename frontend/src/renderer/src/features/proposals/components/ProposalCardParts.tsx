@@ -3,6 +3,7 @@ import type { Proposal, ProposalImage, ProposalStatus } from '../api/proposals'
 import { proposalImageSrc, timeLeftLabel, yesPercent } from '../lib/proposals'
 import Avatar from '../../../shared/ui/Avatar'
 import Button from '../../../shared/ui/Button'
+import { ChatBubbleIcon } from '../../../shared/ui/icons'
 import MoveSelect from './MoveSelect'
 
 /** Os controles de dentro do card não abrem o modal. */
@@ -60,10 +61,11 @@ export function ProposalByline({ proposal: p, now }: { proposal: Proposal; now: 
       <span className="min-w-0 truncate">{p.author_name}</span>
       {p.comment_count > 0 && (
         <span
-          className="shrink-0 text-gray-400"
+          className="flex shrink-0 items-center gap-1 text-gray-400"
           title={`${p.comment_count} ${p.comment_count === 1 ? 'comentário' : 'comentários'}`}
         >
-          💬 {p.comment_count}
+          <ChatBubbleIcon size={16} />
+          {p.comment_count}
         </span>
       )}
       {p.status === 'voting' && (

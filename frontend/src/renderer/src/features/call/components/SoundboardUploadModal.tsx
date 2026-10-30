@@ -11,7 +11,12 @@ import { showToast } from '../../../shared/store/toastStore'
 import { readMediaMeta } from '../../chat/lib/readMediaMeta'
 import Input from '../../../shared/ui/Input'
 import CloseButton from '../../../shared/ui/CloseButton'
-import { SoundEmojiField, SoundFileField, SoundUploadActions } from './SoundboardUploadFields'
+import {
+  DEFAULT_SOUND_EMOJI,
+  SoundEmojiField,
+  SoundFileField,
+  SoundUploadActions
+} from './SoundboardUploadFields'
 
 interface SoundboardUploadModalProps {
   open: boolean
@@ -31,7 +36,7 @@ function SoundboardUploadModal({
   const [file, setFile] = useState<File | null>(null)
   const [durationMs, setDurationMs] = useState<number | null>(null)
   const [name, setName] = useState('')
-  const [emoji, setEmoji] = useState('🎺')
+  const [emoji, setEmoji] = useState(DEFAULT_SOUND_EMOJI)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [previewPlaying, setPreviewPlaying] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -44,7 +49,7 @@ function SoundboardUploadModal({
       setFile(null)
       setDurationMs(null)
       setName('')
-      setEmoji('🎺')
+      setEmoji(DEFAULT_SOUND_EMOJI)
       setPreviewPlaying(false)
       setSubmitting(false)
       setError(null)

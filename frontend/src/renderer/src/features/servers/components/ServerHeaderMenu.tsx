@@ -5,7 +5,14 @@ import { useModerationStore } from '../../call/store/moderationStore'
 import { useNotifySettingsStore } from '../../notifications/store/notifySettingsStore'
 import { useUIStore } from '../../../shared/store/uiStore'
 import { Skeleton } from '../../../shared/ui/skeleton/Skeleton'
-import { GearIcon, PencilIcon, TrashIcon, UserPlusIcon } from '../../../shared/ui/icons'
+import {
+  ChevronDownIcon,
+  GearIcon,
+  PencilIcon,
+  TrashIcon,
+  UserPlusIcon,
+  XIcon
+} from '../../../shared/ui/icons'
 import { useServerStore } from '../store/serverStore'
 import { useServerSettingsStore } from '../store/serverSettingsStore'
 import { useChannelSidebarStore } from '../store/channelSidebarStore'
@@ -111,6 +118,12 @@ export function ServerMenuItems({
   )
 }
 
+/** Seta do menu do servidor; aberto, vira X (como no Discord). */
+function MenuToggleIcon({ open }: { open: boolean }): React.JSX.Element {
+  const Icon = open ? XIcon : ChevronDownIcon
+  return <Icon size={16} className="shrink-0 text-gray-400" />
+}
+
 /** Nome do servidor no topo da barra; clicar abre o menu dele. */
 function ServerHeaderMenu({
   server,
@@ -126,6 +139,7 @@ function ServerHeaderMenu({
       <button
         onClick={() => setOpen((d) => !d)}
         title={name}
+        aria-expanded={open}
         className="flex w-full min-w-0 items-center justify-between gap-1 text-left text-ds-md font-semibold text-strong hover:text-gray-200 cursor-pointer"
       >
         {/* Até duas linhas (o cabeçalho tem altura fixa); o resto no title. */}
@@ -141,7 +155,7 @@ function ServerHeaderMenu({
             <span className="sr-only">Carregando servidor…</span>
           </span>
         )}
-        <span className="shrink-0 text-xs text-gray-400">▼</span>
+        <MenuToggleIcon open={open} />
       </button>
       {open && <ServerMenuItems server={server} access={access} onPicked={() => setOpen(false)} />}
       <ServerLevelModal />

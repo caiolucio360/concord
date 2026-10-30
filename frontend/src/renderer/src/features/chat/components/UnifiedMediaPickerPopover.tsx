@@ -7,13 +7,19 @@ import StickerUploadModal from './StickerUploadModal'
 import StickersTab from './StickersTab'
 import EmojisTab from './EmojisTab'
 import GifsTab from './GifsTab'
+import { GifIcon, SmileyIcon, StickerIcon, type IconProps } from '../../../shared/ui/icons'
 
 type TabType = 'emojis' | 'gifs' | 'stickers'
 
-const TABS: { id: TabType; icon: string; label: string; placeholder: string }[] = [
-  { id: 'emojis', icon: '😊', label: 'Emojis', placeholder: 'Buscar emoji...' },
-  { id: 'gifs', icon: '👾', label: 'GIFs', placeholder: 'Buscar GIFs no GIPHY...' },
-  { id: 'stickers', icon: '💟', label: 'Figurinhas', placeholder: 'Filtrar figurinhas...' }
+const TABS: {
+  id: TabType
+  icon: React.ComponentType<IconProps>
+  label: string
+  placeholder: string
+}[] = [
+  { id: 'emojis', icon: SmileyIcon, label: 'Emojis', placeholder: 'Buscar emoji...' },
+  { id: 'gifs', icon: GifIcon, label: 'GIFs', placeholder: 'Buscar GIFs no GIPHY...' },
+  { id: 'stickers', icon: StickerIcon, label: 'Figurinhas', placeholder: 'Filtrar figurinhas...' }
 ]
 
 interface UnifiedMediaPickerPopoverProps {
@@ -90,7 +96,7 @@ export default function UnifiedMediaPickerPopover({
                   : 'hover:text-white hover:bg-white/5'
               }`}
             >
-              <span>{t.icon}</span>
+              <t.icon size={16} />
               <span>{t.label}</span>
             </button>
           ))}

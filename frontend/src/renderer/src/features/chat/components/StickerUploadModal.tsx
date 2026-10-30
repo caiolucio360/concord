@@ -5,6 +5,7 @@ import Input from '../../../shared/ui/Input'
 import { MAX_STICKER_BYTES, MAX_STICKER_NAME_LEN } from '../api/stickers'
 import { useStickerStore } from '../store/stickerStore'
 import { showToast } from '../../../shared/store/toastStore'
+import { ImageIcon } from '../../../shared/ui/icons'
 
 interface StickerUploadModalProps {
   open: boolean
@@ -122,7 +123,7 @@ export default function StickerUploadModal({
             </div>
           ) : (
             <div className="flex flex-col items-center gap-1 text-center">
-              <span className="text-2xl">🖼️</span>
+              <ImageIcon size={24} className="text-muted" />
               <span className="text-xs font-medium text-white">Escolha ou arraste uma imagem</span>
               <span className="text-[10px] text-gray-400">PNG, WebP ou GIF (máx. 1 MB)</span>
             </div>

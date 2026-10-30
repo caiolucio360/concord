@@ -95,6 +95,7 @@ function LevelUpScreen(): React.JSX.Element | null {
                 } as React.CSSProperties
               }
             >
+              {/* design-allow: partícula do efeito lendário (efeito visual, não ícone) */}
               ✦
             </span>
           ))}

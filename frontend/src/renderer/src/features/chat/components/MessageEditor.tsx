@@ -71,7 +71,7 @@ function MessageEditor({
         >
           cancelar
         </button>{' '}
-        • Enter para{' '}
+        · Enter para{' '}
         <button
           type="button"
           onClick={() => onSave(draft)}

@@ -37,6 +37,19 @@ describe('LevelUpBanner', () => {
     expect(html).toContain('data-selo')
   })
 
+  it('o símbolo é ícone desenhado: seta, troféu no marco e coroa no lendário', () => {
+    const glyph = (c: ScreenCelebration): string => {
+      celebration = c
+      const html = renderToStaticMarkup(<LevelUpBanner />)
+      for (const emoji of ['⬆️', '🏆', '👑']) expect(html).not.toContain(emoji)
+      return html.match(/<span class="relative shrink-0" aria-hidden="true"[^>]*>(<svg.*?<\/svg>)<\/span>/)![1]
+    }
+    const up = glyph(at(3))
+    const trophy = glyph(at(50, { previous: 49 }))
+    const crown = glyph(at(100, { previous: 99 }))
+    expect(new Set([up, trophy, crown]).size).toBe(3)
+  })
+
   it('a de outra pessoa, no nível alto: borda girando e emblema', () => {
     celebration = at(85, { own: false, name: 'Ana' })
     const html = renderToStaticMarkup(<LevelUpBanner />)

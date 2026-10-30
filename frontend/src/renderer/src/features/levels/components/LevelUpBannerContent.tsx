@@ -1,6 +1,13 @@
 import type { LevelUpEffects } from '../lib/levels'
 import { levelUpHeadline, type BannerCelebration } from '../lib/levelUpBanner'
 import LevelBadge from './LevelBadge'
+import { ArrowUpIcon, CrownIcon, TrophyIcon, type IconProps } from '../../../shared/ui/icons'
+
+/** Símbolo da faixa: coroa no lendário (100+), troféu no marco, seta no resto. */
+function stageIcon(fx: LevelUpEffects): React.ComponentType<IconProps> {
+  if (fx.stage === 5) return CrownIcon
+  return fx.milestone ? TrophyIcon : ArrowUpIcon
+}
 
 /** Miolo da faixa de nível: brilho que passa, símbolo, título, faixa e selo. */
 export default function LevelUpBannerContent({
@@ -11,6 +18,7 @@ export default function LevelUpBannerContent({
   fx: LevelUpEffects
 }): React.JSX.Element {
   const { tier, milestone } = fx
+  const StageIcon = stageIcon(fx)
   return (
     <>
       <span
@@ -21,8 +29,8 @@ export default function LevelUpBannerContent({
           animation: 'level-shimmer 1.4s ease-in-out 300ms 2 both'
         }}
       />
-      <span className="relative text-xl" aria-hidden="true">
-        {fx.stage === 5 ? '👑' : milestone ? '🏆' : '⬆️'}
+      <span className="relative shrink-0" aria-hidden="true" style={{ color: tier.color }}>
+        <StageIcon size={24} />
       </span>
       <div className="relative leading-tight">
         <p className="max-w-[280px] truncate text-sm font-bold text-strong">
