@@ -89,6 +89,8 @@ export function readScreenStatsInput(
 
 export interface ScreenStatsReader {
   readScreenStats(userId: string, local: boolean): Promise<ScreenStatsInput | null>
+  /** getStats() da voz (telemetria das calls; ver callStatsReport). */
+  readCallStats?(): Promise<RTCStatsReport | null>
 }
 
 // A chamada atual (o CallMedia se registra ao nascer e sai ao desconectar):
@@ -108,4 +110,9 @@ export async function readActiveScreenStats(
   local: boolean
 ): Promise<ScreenStatsInput | null> {
   return (await active?.readScreenStats(userId, local)) ?? null
+}
+
+/** A voz da chamada atual, para a telemetria (null = sem chamada). */
+export async function readActiveCallStats(): Promise<RTCStatsReport | null> {
+  return (await active?.readCallStats?.()) ?? null
 }

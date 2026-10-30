@@ -77,8 +77,8 @@ só com a máquina (`up = false`).
 manda), até 8 sessões por pedido, corpo ≤ 32 KB, 6 pedidos por minuto por
 pessoa (o app manda 3). Cada sessão tem id gerado no app (UUID), tipo
 (`transmite`, `assiste`, `call`), call, de quem é a live (`assiste`), contexto
-(SO, versão, app web/desktop, GPU pelo WebGL, tipo de rede quando o navegador
-conta) e uma amostra: codec, placa ou processador, resolução e fps reais ×
+(SO, versão, app web/desktop, GPU pelo WebGL, núcleos do processador, tipo
+de rede quando o navegador conta) e uma amostra: codec, placa ou processador, resolução e fps reais ×
 alvo, Mbps, `qualityLimitationReason`, degrau do controlador e trocas,
 camadas, reserva, perda, jitter, RTT, congelamentos (quantos e quanto tempo),
 quadros descartados, quadros-chave, PLI, NACK, UDP/TCP/TURN (par ICE
@@ -86,8 +86,8 @@ escolhido) e se o servidor pausou a live. Contadores vão como diferença no
 intervalo. O servidor valida tudo (tipos fixos, números com teto, textos
 cortados) e é dono da sessão quem a criou. Eventos em `live_events`: início e
 fim (servidor), degrau caiu/subiu, reserva ligada, codificador/decodificador
-caiu para o processador, congelamento longo (≥ 2 s no intervalo), pausada pelo
-servidor (app). Calls sem live mandam uma amostra por minuto (RTT, perda,
+caiu para o processador, codec trocou, congelamento longo (≥ 2 s no
+intervalo), pausada pelo servidor (app). Visitante sem conta não manda. Calls sem live mandam uma amostra por minuto (RTT, perda,
 jitter, transporte); lives, a cada 20 s.
 
 **Retenção**: 14 dias para tudo, apagado de hora em hora pelo backend.
