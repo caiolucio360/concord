@@ -52,8 +52,8 @@ async function closeRoom(current: Room | null): Promise<void> {
   if (current.state !== ConnectionState.Disconnected) await current.disconnect()
 }
 
-// Faixas que capturam no aparelho (tela e câmera): liberadas no nativo ao sair, senão a captura fica presa.
-const NATIVE_SOURCES = new Set<Track.Source>([Track.Source.ScreenShare, Track.Source.Camera])
+/** Faixas que capturam no aparelho (tela e câmera): liberadas no nativo ao sair, senão a captura fica presa. */
+const isNativeSource = (source: Track.Source): boolean => source === Track.Source.ScreenShare || source === Track.Source.Camera
 
 export function createLiveKitMedia(): CallMedia {
   let room: Room | null = null
@@ -126,7 +126,7 @@ export function createLiveKitMedia(): CallMedia {
     next.on(RoomEvent.TrackUnmuted, () => emitCameras(next))
     next.on(RoomEvent.LocalTrackPublished, (pub) => {
       emitScreens(next)
-      if (NATIVE_SOURCES.has(pub.source)) native.keep(pub.track?.mediaStreamTrack)
+      if (isNativeSource(pub.source)) native.keep(pub.track?.mediaStreamTrack)
       if (pub.source === Track.Source.Camera) cameraChanged(next, next.localParticipant.identity, pub.track as VideoTrack)
     })
     next.on(RoomEvent.LocalTrackUnpublished, (pub) => {
