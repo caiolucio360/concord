@@ -6,7 +6,7 @@ import SectionHeader from '../../../../shared/ui/SectionHeader'
 // "Membro desde" e os botões de quem visita (só de enfeite: na prévia não
 // fazem nada e ficam fora do Tab).
 
-/** "Membro desde" no Salinha (a caixa cinza do cartão). */
+/** "Membro desde" na Salinha (a caixa cinza do cartão). */
 export function CardMemberSince({ createdAt }: { createdAt?: string }): React.JSX.Element | null {
   const since = formatMemberSince(createdAt)
   if (!since) return null

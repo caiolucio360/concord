@@ -55,11 +55,11 @@ export default function EmojiUploadModal({
     <Modal open title="Novo emoji" onClose={onClose}>
       <form onSubmit={submit} className="flex flex-col gap-4">
         {error && (
-          <div role="alert" className="rounded-lg border border-red-500/20 bg-red-500/10 p-2.5 text-xs text-red-300">
+          <div role="alert" className="rounded-lg border border-danger/20 bg-danger/10 p-2.5 text-ds-xs text-danger">
             {error}
           </div>
         )}
-        <label className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/20 bg-white/5 p-4 text-center transition-colors hover:border-violet-500/50 hover:bg-white/10 focus-within:border-violet-500">
+        <label className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/20 bg-white/5 p-4 text-center transition-colors hover:border-brand/50 hover:bg-white/10 focus-within:border-brand">
           <input
             type="file"
             accept={EMOJI_ACCEPT}
@@ -67,7 +67,8 @@ export default function EmojiUploadModal({
             onChange={(e) => pick(e.target.files?.[0])}
           />
           {preview && <img src={preview} alt="" width={64} height={64} className="h-16 w-16 object-contain" />}
-          <span className="text-xs text-gray-400">
+          <span className="text-ds-xs text-muted">
+            {/* design-allow: × da dimensão em pixels, não é ícone */}
             PNG, JPEG, WEBP, AVIF ou GIF, até 256 KB. O ideal é 128×128.
           </span>
         </label>

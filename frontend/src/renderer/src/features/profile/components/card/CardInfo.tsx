@@ -50,7 +50,7 @@ function TierSection({ info, look }: { info: Info; look: Look }): React.JSX.Elem
   return (
     <div>
       <SectionTitle>Nível de voz</SectionTitle>
-      <p className="text-xs text-gray-200">
+      <p className="text-ds-xs text-normal">
         Nível {info.level} ·{' '}
         <TierName
           name={info.tier.name}
@@ -68,15 +68,15 @@ function SinceSection({ info }: { info: Info }): React.JSX.Element | null {
   return (
     <div>
       <SectionTitle>Membro desde</SectionTitle>
-      <div className="flex flex-col gap-0.5 text-xs text-gray-200">
+      <div className="flex flex-col gap-0.5 text-ds-xs text-normal">
         {info.salinhaSince && (
           <p>
-            {info.salinhaSince} <span className="text-gray-500">· no Salinha</span>
+            {info.salinhaSince} <span className="text-faint">· na Salinha</span>
           </p>
         )}
         {info.serverSince && (
           <p>
-            {info.serverSince} <span className="text-gray-500">· neste servidor</span>
+            {info.serverSince} <span className="text-faint">· neste servidor</span>
           </p>
         )}
       </div>
@@ -92,7 +92,7 @@ function MutualServersSection({ info }: { info: Info }): React.JSX.Element | nul
       <SectionTitle>
         {servers.length === 1 ? '1 servidor em comum' : `${servers.length} servidores em comum`}
       </SectionTitle>
-      <p className="truncate text-xs text-gray-200">{servers.map((sv) => sv.name).join(', ')}</p>
+      <p className="truncate text-ds-xs text-normal">{servers.map((sv) => sv.name).join(', ')}</p>
     </div>
   )
 }
@@ -126,7 +126,7 @@ function VoiceSection({ info, live }: { info: Info; live: boolean }): React.JSX.
   return (
     <div>
       <SectionTitle>Em call</SectionTitle>
-      <p className="flex items-center gap-1.5 text-xs text-gray-200">
+      <p className="flex items-center gap-1.5 text-ds-xs text-normal">
         <VolumeIcon className="h-3.5 w-3.5 text-success" />
         <span className="min-w-0 truncate">{info.voiceChannel.name}</span>
         {live && <LiveBadge />}
