@@ -206,24 +206,16 @@ func (s *Service) create(ctx context.Context, channelID string, conversationID s
 	if err := validateNewMessageWithMedia(content, attachmentIDs, hasMedia); err != nil {
 		return nil, err
 	}
-
-	var normalizedReplyID *string
-	if replyToID != nil {
-		trimmed := strings.TrimSpace(*replyToID)
-		if trimmed != "" {
-			target, err := s.repository.FindByID(ctx, trimmed)
-			if err != nil || !SameRoomTarget(target, channelID, conversationID) {
-				return nil, ErrInvalidReply
-			}
-			normalizedReplyID = &trimmed
-		}
+	normalizedReplyID, err := s.replyTarget(ctx, replyToID, channelID, conversationID)
+	if err != nil {
+		return nil, err
 	}
 
 	msg := &Message{
 		ID:              uuid.New().String(),
 		AuthorID:        authorID,
-		ChannelID:       &channelID,
-		ConversationID:  &conversationID,
+		ChannelID:       nilIfEmpty(channelID),
+		ConversationID:  nilIfEmpty(conversationID),
 		ReplyToID:       normalizedReplyID,
 		Content:         content,
 		MentionEveryone: mentionEveryone,
@@ -231,34 +223,56 @@ func (s *Service) create(ctx context.Context, channelID string, conversationID s
 		GifURL:          gifURL,
 		GifMetadata:     gifMetadata,
 	}
-
-	if channelID == "" {
-		msg.ChannelID = nil
-	}
-	if conversationID == "" {
-		msg.ConversationID = nil
-	}
-
 	if len(attachmentIDs) == 0 {
-		if err := s.repository.Create(ctx, msg); err != nil {
-			return nil, err
-		}
-	} else if err := s.repository.CreateWithAttachments(ctx, msg, attachmentIDs); err != nil {
-		return nil, err
+		err = s.repository.Create(ctx, msg)
+	} else {
+		err = s.repository.CreateWithAttachments(ctx, msg, attachmentIDs)
 	}
-
-	full, err := s.repository.FindByID(ctx, msg.ID)
 	if err != nil {
 		return nil, err
 	}
+	return s.reloadNew(ctx, msg.ID, len(attachmentIDs) > 0)
+}
 
-	// O message:create publicado já leva os anexos.
-	page := []Message{*full}
-	if err := s.repository.AttachAttachments(ctx, page); err != nil {
+// replyTarget confere que a mensagem respondida é da mesma sala e devolve o
+// id sem espaços (nil = não é resposta).
+func (s *Service) replyTarget(ctx context.Context, replyToID *string, channelID, conversationID string) (*string, error) {
+	if replyToID == nil {
+		return nil, nil
+	}
+	trimmed := strings.TrimSpace(*replyToID)
+	if trimmed == "" {
+		return nil, nil
+	}
+	target, err := s.repository.FindByID(ctx, trimmed)
+	if err != nil || !SameRoomTarget(target, channelID, conversationID) {
+		return nil, ErrInvalidReply
+	}
+	return &trimmed, nil
+}
+
+// reloadNew relê a mensagem recém-gravada para publicar. Ela ainda não tem
+// reações, e só tem anexos se foram enviados: sem eles, nada a buscar.
+func (s *Service) reloadNew(ctx context.Context, id string, withAttachments bool) (*Message, error) {
+	full, err := s.repository.FindNewByID(ctx, id)
+	if err != nil {
 		return nil, err
 	}
-
+	page := []Message{*full}
+	if withAttachments {
+		// O message:create publicado já leva os anexos.
+		if err := s.repository.AttachAttachments(ctx, page); err != nil {
+			return nil, err
+		}
+	}
 	return &page[0], nil
+}
+
+func nilIfEmpty(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
 }
 
 func (s *Service) ListChannelMessages(ctx context.Context, channelID string, viewerID string, limit int, before string) ([]Message, error) {
