@@ -22,4 +22,25 @@ describe('ParticipantTile', () => {
     await render(<ParticipantTile user={{ ...ana, id: 'u2', display_name: 'Bia' }} speaking={false} voice={{ ...NO_VOICE, serverDeafened: true }} />)
     expect(screen.getByLabelText('Bia, ensurdecido')).toBeOnTheScreen()
   })
+
+  // Regressão: o avatar da chamada era sempre o quadro parado; o GIF só deve animar enquanto a pessoa fala.
+  it('GIF animado: parado (/static) em silêncio e animado enquanto fala', async () => {
+    const gif = { ...ana, avatar_url: '/api/profile-media/a_abc123' }
+    await render(<ParticipantTile user={gif} speaking={false} voice={NO_VOICE} />)
+    expect(screen.getByLabelText('Foto de Ana').props.source.uri).toMatch(/\/static$/)
+    await render(<ParticipantTile user={{ ...gif, id: 'u9', display_name: 'Caio' }} speaking voice={NO_VOICE} />)
+    expect(screen.getByLabelText('Foto de Caio').props.source.uri).not.toMatch(/static/)
+  })
+
+  it('mudo: mostra o selo de mudo e não anima o GIF mesmo se o servidor disser que fala', async () => {
+    const gif = { ...ana, avatar_url: '/api/profile-media/a_abc123' }
+    await render(<ParticipantTile user={gif} speaking voice={{ ...NO_VOICE, muted: true }} />)
+    expect(screen.getByLabelText('Foto de Ana').props.source.uri).toMatch(/\/static$/)
+    expect(screen.getByLabelText('Ana, mudo')).toBeOnTheScreen()
+  })
+
+  it('tile grande: foto e altura vêm da grade', async () => {
+    await render(<ParticipantTile user={ana} speaking={false} voice={NO_VOICE} height={300} avatarSize={96} />)
+    expect(screen.getByLabelText('Ana').props.style).toEqual(expect.arrayContaining([expect.objectContaining({ height: 300 })]))
+  })
 })
