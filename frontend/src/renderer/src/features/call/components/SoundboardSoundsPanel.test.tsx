@@ -46,6 +46,7 @@ vi.mock('./SoundboardUploadModal', () => ({ default: () => null }))
 import { renderToStaticMarkup } from 'react-dom/server'
 import SoundboardSoundsPanel from './SoundboardSoundsPanel'
 import { Perm } from '../../servers/lib/permissions'
+import { StarIcon } from '../../../shared/ui/icons'
 
 const sound = (id: string, name: string, server = 'srv-a'): Record<string, unknown> => ({
   id,
@@ -74,7 +75,9 @@ describe('SoundboardSoundsPanel', () => {
     expect(html).toContain('Favoritos')
     // A estrela é o ícone desenhado, não o caractere ★.
     expect(html).not.toContain('★')
-    expect(html).toMatch(/<svg[^>]*aria-hidden="true"[^>]*>(?:(?!<\/svg>).)*<\/svg>Favoritos/)
+    // Estrela cheia (a mesma do som favoritado), não a vazada.
+    const star = renderToStaticMarkup(<StarIcon filled size={12} className="shrink-0" />)
+    expect(html).toContain(`${star}Favoritos`)
     expect(html).toContain('Sons do servidor')
     expect(html).toContain('Servidor B')
     // O favorito daqui não repete na seção do servidor.

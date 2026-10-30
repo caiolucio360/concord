@@ -8,7 +8,7 @@ import { useSoundboardStore } from '../store/soundboardStore'
 import { useSoundFavoritesStore } from '../store/soundFavoritesStore'
 import { soundboardSections } from '../lib/soundboardSections'
 import { showToast } from '../../../shared/store/toastStore'
-import { FavoriteStarIcon, PlusIcon, SearchIcon } from '../../../shared/ui/icons'
+import { FavoriteStarIcon, PlusIcon, SearchIcon, type IconProps } from '../../../shared/ui/icons'
 import SoundboardUploadModal from './SoundboardUploadModal'
 import SoundPad from './SoundPad'
 import SoundSection from './SoundSection'
@@ -16,6 +16,9 @@ import SoundboardVolumeBar from './SoundboardVolumeBar'
 import SoundboardEmpty from './SoundboardEmpty'
 import { formatKeyboardShortcut } from '../hooks/useSoundboardHotkeys'
 import { SoundboardSkeleton } from '../../../shared/ui/skeleton/layouts'
+
+/** Título dos Favoritos: a estrela cheia, igual à do som favoritado. */
+const FavoritesIcon = (props: IconProps): React.JSX.Element => <FavoriteStarIcon {...props} filled />
 
 const EMPTY_SOUNDS: SoundboardItem[] = []
 
@@ -177,7 +180,7 @@ function SoundboardSoundsPanel({
             />
           ) : (
             <>
-              <SoundSection title="Favoritos" icon={FavoriteStarIcon}>{sections.favorites.map(renderPad)}</SoundSection>
+              <SoundSection title="Favoritos" icon={FavoritesIcon}>{sections.favorites.map(renderPad)}</SoundSection>
               <SoundSection title={sections.favorites.length > 0 ? 'Sons do servidor' : undefined}>
                 {sections.server.map(renderPad)}
               </SoundSection>
