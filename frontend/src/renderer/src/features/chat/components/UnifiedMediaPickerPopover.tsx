@@ -7,6 +7,7 @@ import StickerUploadModal from './StickerUploadModal'
 import StickersTab from './StickersTab'
 import EmojisTab from './EmojisTab'
 import GifsTab from './GifsTab'
+import { useMediaPickerDismiss } from '../hooks/useMediaPickerDismiss'
 
 type TabType = 'emojis' | 'gifs' | 'stickers'
 
@@ -42,23 +43,7 @@ export default function UnifiedMediaPickerPopover({
 
   const ref = useRef<HTMLDivElement>(null)
 
-  // Escape e click outside
-  useEffect(() => {
-    const handleMouseDown = (e: MouseEvent): void => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        if (!uploadOpen) onClose()
-      }
-    }
-    const handleKeyDown = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape' && !uploadOpen) onClose()
-    }
-    document.addEventListener('mousedown', handleMouseDown)
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('mousedown', handleMouseDown)
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [onClose, uploadOpen])
+  useMediaPickerDismiss(ref, uploadOpen, onClose)
 
   // Load stickers on mount if serverId present
   useEffect(() => {
