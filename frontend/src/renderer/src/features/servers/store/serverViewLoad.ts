@@ -4,6 +4,7 @@ import { listChannels as apiListChannels } from '../api/channels'
 import { useAuthStore } from '../../auth/store/authStore'
 import { sortRoles } from '../lib/roleList'
 import { nicknameMap } from '../lib/serverNames'
+import { serverViewCache } from '../lib/serverViewCache'
 import type { ServerState } from './serverStore'
 
 // Carregar a tela de um servidor (o servidor, membros, cargos e canais),
@@ -20,6 +21,33 @@ export const isSameSession = (tokenAtStart: string | null): boolean =>
 type Set = StoreApi<ServerState>['setState']
 type Get = StoreApi<ServerState>['getState']
 
+const currentUserId = (): string | undefined => useAuthStore.getState().user?.id
+
+/** Guarda a tela do servidor aberto (já com o que os eventos mudaram) antes de sair dele. */
+export function stashCurrentView(get: Get): void {
+  const { currentServer, currentMembers, roles, channels, channelsLoadedFor } = get()
+  if (!currentServer) return
+  serverViewCache.remember(currentUserId(), {
+    server: currentServer,
+    members: currentMembers,
+    roles,
+    channels: channelsLoadedFor === currentServer.id ? channels : []
+  })
+}
+
+/** Mostra a última tela vista de id, se houver; true = mostrou. */
+function showCachedView(id: string, set: Set): boolean {
+  const view = serverViewCache.recall(currentUserId(), id)
+  if (!view) return false
+  set({
+    currentServer: view.server,
+    currentMembers: view.members,
+    roles: view.roles,
+    ...(view.channels.length > 0 ? { channels: view.channels, channelsLoadedFor: id } : {})
+  })
+  return true
+}
+
 export function serverViewActions(
   set: Set,
   get: Get
@@ -28,10 +56,14 @@ export function serverViewActions(
     selectServer: async (id: string) => {
       const token = useAuthStore.getState().accessToken
       const seq = ++selectSeq
-      // Já é o servidor na tela: busca por baixo e troca quando chegar. O
-      // "carregando" (que tira a tela toda, modal junto) é só para abrir outro.
+      // Já é o servidor na tela, ou ele já foi visto: mostra o que há e
+      // busca por baixo. O "carregando" (que tira a tela toda, modal junto) é
+      // só para abrir um servidor pela primeira vez.
       const refreshing = get().currentServer?.id === id
-      if (!refreshing) set({ loading: true })
+      if (!refreshing) {
+        stashCurrentView(get)
+        if (!showCachedView(id, set)) set({ loading: true })
+      }
       try {
         const res = await getServer(id)
         if (!isSameSession(token) || seq !== selectSeq) return
@@ -43,6 +75,7 @@ export function serverViewActions(
         })
       } catch (err) {
         if (!isSameSession(token) || seq !== selectSeq) return
+        serverViewCache.forget(id)
         if (!refreshing) set({ currentServer: null, currentMembers: [], roles: [] })
         throw err
       } finally {

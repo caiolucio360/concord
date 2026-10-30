@@ -117,6 +117,19 @@ describe('handleRoleEvent', () => {
     }
   })
 
+  it('server:permissions:invalidate esquece na hora a tela guardada do servidor', async () => {
+    const { serverViewCache } = await import('../../../servers/lib/serverViewCache')
+    serverViewCache.remember('ana', {
+      server: { id: 's9', name: 's9', owner_id: 'ana' },
+      members: [],
+      roles: [],
+      channels: []
+    })
+    const { ctx } = fakeCtx({})
+    handleRoleEvent({ type: 'server:permissions:invalidate', payload: { server_id: 's9' } }, ctx)
+    expect(serverViewCache.recall('ana', 's9')).toBeNull()
+  })
+
   it('evento de outro tipo: false', () => {
     const { ctx } = fakeCtx({})
     expect(handleRoleEvent({ type: 'message:create', payload: {} }, ctx)).toBe(false)

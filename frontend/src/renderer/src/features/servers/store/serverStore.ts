@@ -42,7 +42,8 @@ import {
 } from '../lib/channelReorderQueue'
 import { removeRole, sortRoles, stripRoleFromMembers, upsertRole } from '../lib/roleList'
 import { withNickname } from '../lib/serverNames'
-import { isSameSession, serverViewActions } from './serverViewLoad'
+import { isSameSession, serverViewActions, stashCurrentView } from './serverViewLoad'
+import { serverViewCache } from '../lib/serverViewCache'
 
 export interface ServerState {
   servers: Server[]
@@ -278,6 +279,7 @@ export const useServerStore = create<ServerState>()((set, get) => ({
     })
   },
   removeLocalServer: (serverId) => {
+    serverViewCache.forget(serverId)
     const nicknames = { ...get().nicknames }
     delete nicknames[serverId]
     set({
@@ -398,14 +400,16 @@ export const useServerStore = create<ServerState>()((set, get) => ({
     // server:member_join): basta a lista de convites pendentes.
     await get().fetchServerInvites(serverId)
   },
-  clearCurrentServer: () =>
+  clearCurrentServer: () => {
+    stashCurrentView(get)
     set({
       currentServer: null,
       currentMembers: [],
       roles: [],
       channels: [],
       channelsLoadedFor: null
-    }),
+    })
+  },
   reset: () =>
     set({
       servers: [],

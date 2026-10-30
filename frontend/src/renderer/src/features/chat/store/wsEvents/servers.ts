@@ -9,6 +9,7 @@ import { handleServerRoleEvent, removedMessage } from '../../../servers/store/se
 import { showToast } from '../../../../shared/store/toastStore'
 import { router } from '../../../../app/router'
 import { createSpreadRefresh } from '../../../servers/lib/spreadRefresh'
+import { serverViewCache } from '../../../servers/lib/serverViewCache'
 
 /** O canal aberto que sumiu da lista do servidor (a pessoa perdeu o acesso), ou null. */
 export function lostChannelRoom(
@@ -65,8 +66,11 @@ const spreadPermissionRefresh = createSpreadRefresh({ maxDelayMs: 1500 })
 export const handleRoleEvent = (event: WsEvent, ctx: ChatWsContext): boolean =>
   handleServerRoleEvent(event, {
     onServerRemoved: (serverId, reason) => removeServer(serverId, reason, ctx),
-    onPermissionsChanged: (serverId) =>
+    onPermissionsChanged: (serverId) => {
+      // A tela guardada pode mostrar um canal que a pessoa deixou de ver.
+      serverViewCache.forget(serverId)
       spreadPermissionRefresh(serverId, () => void reconcileAfterPermissionChange(serverId, ctx))
+    }
   })
 
 const handleUpdate: WsHandler = (payload) => {
