@@ -42,6 +42,16 @@ type SessionStats struct {
 	BitrateKbps    *float64 `json:"bitrate_kbps"`
 	LossPct        *float64 `json:"loss_pct"`
 	RTTMs          *float64 `json:"rtt_ms"`
+	// Sinais da ADR 0032 (médias das amostras; nil = sem dado).
+	CaptureFPS   *float64 `json:"capture_fps"`
+	RecvFPS      *float64 `json:"recv_fps"`
+	CodecMs      *float64 `json:"codec_ms"`
+	ConcealedPct *float64 `json:"concealed_pct"`
+	RecvLossPct  *float64 `json:"recv_loss_pct"`
+	ConnectMs    *float64 `json:"connect_ms"`
+	// Reconnects e Failures: eventos reconectou e conexao_falhou da sessão.
+	Reconnects int64 `json:"reconnects"`
+	Failures   int64 `json:"failures"`
 }
 
 // LiveRow: uma live (sessão de quem transmite) com quem assistiu.

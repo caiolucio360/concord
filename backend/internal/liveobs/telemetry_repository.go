@@ -88,11 +88,14 @@ func insertSample(ctx context.Context, tx pgx.Tx, sessionID string, s *Sample) e
 	_, err := tx.Exec(ctx, `INSERT INTO live_samples
 		(session_id, seconds, codec, hardware, width, height, fps, target_height, target_fps,
 		 bitrate_kbps, limitation, step, step_changes, layers, backup, loss_pct, jitter_ms, rtt_ms,
-		 freezes, freeze_ms, frames_dropped, key_frames, pli, nack, transport, paused)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26)`,
+		 freezes, freeze_ms, frames_dropped, key_frames, pli, nack, transport, paused,
+		 capture_fps, recv_fps, codec_ms, concealed_pct, recv_loss_pct, connect_ms)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,
+		 $27,$28,$29,$30,$31,$32)`,
 		sessionID, s.Seconds, s.Codec, s.Hardware, s.Width, s.Height, s.FPS, s.TargetHeight, s.TargetFPS,
 		s.BitrateKbps, s.Limitation, s.Step, s.StepChanges, s.Layers, s.Backup, s.LossPct, s.JitterMs, s.RTTMs,
-		s.Freezes, s.FreezeMs, s.Dropped, s.KeyFrames, s.PLI, s.NACK, s.Transport, s.Paused)
+		s.Freezes, s.FreezeMs, s.Dropped, s.KeyFrames, s.PLI, s.NACK, s.Transport, s.Paused,
+		s.CaptureFPS, s.RecvFPS, s.CodecMs, s.ConcealedPct, s.RecvLossPct, s.ConnectMs)
 	if err != nil {
 		return fmt.Errorf("gravar live_samples: %w", err)
 	}

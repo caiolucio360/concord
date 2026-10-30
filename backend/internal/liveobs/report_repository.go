@@ -41,7 +41,11 @@ SELECT s.id, s.user_id, COALESCE(u.username, ''), s.kind, COALESCE(s.call_id::te
 	COALESCE(AVG(CASE WHEN x.backup THEN 1.0 ELSE 0.0 END), 0),
 	COALESCE(AVG(CASE WHEN x.paused THEN 1.0 ELSE 0.0 END), 0),
 	COALESCE(SUM(x.freezes), 0), COALESCE(SUM(x.freeze_ms), 0), COALESCE(SUM(x.step_changes), 0),
-	AVG(x.bitrate_kbps), AVG(x.loss_pct), AVG(x.rtt_ms)
+	AVG(x.bitrate_kbps), AVG(x.loss_pct), AVG(x.rtt_ms),
+	AVG(x.capture_fps), AVG(x.recv_fps), AVG(x.codec_ms), AVG(x.concealed_pct), AVG(x.recv_loss_pct),
+	AVG(x.connect_ms),
+	(SELECT count(*) FROM live_events e WHERE e.session_id = s.id AND e.type = 'reconectou'),
+	(SELECT count(*) FROM live_events e WHERE e.session_id = s.id AND e.type = 'conexao_falhou')
 FROM live_sessions s
 LEFT JOIN users u ON u.id = s.user_id
 LEFT JOIN live_samples x ON x.session_id = s.id
@@ -54,7 +58,8 @@ func (s *SessionStats) fields() []any {
 	return []any{&s.ID, &s.UserID, &s.Username, &s.Kind, &s.CallID, &s.StreamerID, &s.OS, &s.GPU,
 		&s.AppVersion, &s.Target, &s.Cores, &s.StartedAt, &s.EndedAt, &s.Seconds, &s.Codec, &s.Transport,
 		&s.FPS, &s.TargetFPS, &s.Height, &s.HardwareRatio, &s.BelowRatio, &s.CPURatio, &s.BandwidthRatio,
-		&s.BackupRatio, &s.PausedRatio, &s.Freezes, &s.FreezeMs, &s.StepChanges, &s.BitrateKbps, &s.LossPct, &s.RTTMs}
+		&s.BackupRatio, &s.PausedRatio, &s.Freezes, &s.FreezeMs, &s.StepChanges, &s.BitrateKbps, &s.LossPct, &s.RTTMs,
+		&s.CaptureFPS, &s.RecvFPS, &s.CodecMs, &s.ConcealedPct, &s.RecvLossPct, &s.ConnectMs, &s.Reconnects, &s.Failures}
 }
 
 // Sessions: as sessões vistas desde from, agregadas, da mais recente.

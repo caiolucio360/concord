@@ -45,6 +45,11 @@ function markedSoftware(codec: ScreenVideoCodec): boolean {
   }
 }
 
+/** Os codecs que já caíram no processador neste aparelho (telemetria: screenCodecChoice). */
+export function softwareMarkedCodecs(): ScreenVideoCodec[] {
+  return QUERIED.map((q) => q.codec).filter(markedSoftware)
+}
+
 /** powerEfficient = encoder da placa de vídeo (o Chromium responde pelo encoder da GPU). */
 async function encoderOf(
   query: (typeof QUERIED)[number],

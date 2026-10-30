@@ -22,17 +22,19 @@ function room(local?: RTCStatsReport, remote: (RTCStatsReport | undefined)[] = [
   }
 }
 
+const ids = (report: RTCStatsReport | null): string[] => (report ? [...report.keys()] : [])
+
 describe('readCallReport', () => {
-  it('prefere o meu microfone', async () => {
-    expect(await readCallReport(room(mine, [theirs]))).toBe(mine)
+  it('junta o meu microfone e a voz de cada pessoa (o que eu ouço)', async () => {
+    expect(ids(await readCallReport(room(mine, [theirs])))).toEqual(['a', 'b'])
   })
-  it('só ouvindo: o microfone de alguém', async () => {
-    expect(await readCallReport(room(undefined, [undefined, theirs]))).toBe(theirs)
+  it('só ouvindo: a voz de quem fala', async () => {
+    expect(ids(await readCallReport(room(undefined, [undefined, theirs])))).toEqual(['b'])
   })
   it('ninguém com microfone: null', async () => {
     expect(await readCallReport(room())).toBeNull()
   })
-  it('track removida no meio da leitura: tenta a próxima', async () => {
+  it('track removida no meio da leitura: junta as outras', async () => {
     const r = room(undefined, [theirs])
     r.localParticipant.getTrackPublication = () => ({
       track: {
@@ -41,6 +43,6 @@ describe('readCallReport', () => {
         }
       }
     })
-    expect(await readCallReport(r)).toBe(theirs)
+    expect(ids(await readCallReport(r))).toEqual(['b'])
   })
 })

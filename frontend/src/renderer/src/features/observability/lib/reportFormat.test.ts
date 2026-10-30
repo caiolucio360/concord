@@ -7,7 +7,8 @@ import {
   nearestIndex,
   niceMax,
   numberLabel,
-  pctLabel
+  pctLabel,
+  qualityLine
 } from './reportFormat'
 
 describe('rótulos', () => {
@@ -30,6 +31,48 @@ describe('rótulos', () => {
     expect(kindLabel('x')).toBe('x')
     expect(eventLabel('degrau_caiu')).toBe('Qualidade caiu')
     expect(eventLabel('novo')).toBe('novo')
+    expect(eventLabel('conexao_falhou')).toBe('Voz não conectou')
+  })
+})
+
+describe('qualityLine', () => {
+  const none = {
+    capture_fps: null,
+    recv_fps: null,
+    codec_ms: null,
+    fps: null,
+    concealed_pct: null,
+    recv_loss_pct: null,
+    connect_ms: null,
+    reconnects: 0,
+    failures: 0
+  }
+  it('onde os quadros se perdem: captura × codificado, chegam × decodificados', () => {
+    expect(
+      qualityLine({ ...none, kind: 'transmite', capture_fps: 43, fps: 42, codec_ms: 4.6 })
+    ).toBe('Captura 43 fps · codificado 42 fps · 4,6 ms/quadro')
+    expect(qualityLine({ ...none, kind: 'assiste', recv_fps: 44, fps: 12 })).toBe(
+      'Chegam 44 fps · decodificados 12 fps'
+    )
+  })
+  it('voz: sintetizado, perda recebida, entrada, quedas e falhas', () => {
+    expect(
+      qualityLine({
+        ...none,
+        kind: 'call',
+        concealed_pct: 4.52,
+        recv_loss_pct: 0.1,
+        connect_ms: 1850,
+        reconnects: 2,
+        failures: 1
+      })
+    ).toBe(
+      'Áudio sintetizado 4,5% · perda recebida 0,1% · entrou em 1,9 s · 2 reconexões · 1 falha'
+    )
+  })
+  it('sem dado: null', () => {
+    expect(qualityLine({ ...none, kind: 'call' })).toBeNull()
+    expect(qualityLine({ ...none, kind: 'transmite' })).toBeNull()
   })
 })
 

@@ -9,6 +9,7 @@ func Routes(api *gin.RouterGroup, h *Handler, authMiddleware gin.HandlerFunc) {
 		g.GET("/state", h.State)
 		g.GET("/presence", h.Presence)
 		g.POST("/pick", h.Pick)
+		g.POST("/enqueue", h.Enqueue)
 		g.POST("/skip", h.Skip)
 		g.DELETE("/queue/:itemId", h.Remove)
 		g.POST("/queue/swap", h.Swap)

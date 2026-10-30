@@ -1,8 +1,9 @@
 import type { WorstRow } from '../api/observability'
-import { durationLabel, kindLabel, numberLabel, pctLabel } from '../lib/reportFormat'
+import { durationLabel, kindLabel, numberLabel, pctLabel, qualityLine } from '../lib/reportFormat'
 import { Empty, Panel } from './Panel'
 
 function WorstItem({ row }: { row: WorstRow }): React.JSX.Element {
+  const quality = qualityLine(row)
   return (
     <li className="flex flex-col gap-2 rounded-lg bg-surface p-3">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
@@ -13,10 +14,13 @@ function WorstItem({ row }: { row: WorstRow }): React.JSX.Element {
           {durationLabel(row.duration_seconds)} · {row.codec || '—'} · {row.os || '—'}
         </span>
       </div>
-      <p className="text-ds-sm text-gray-300">
-        Abaixo do alvo {pctLabel(row.below_ratio)} · {numberLabel(row.freezes_per_min)} congel./min
-        · perda {numberLabel(row.loss_pct)}% · {row.gpu || 'placa desconhecida'}
-      </p>
+      {row.kind !== 'call' && (
+        <p className="text-ds-sm text-gray-300">
+          Abaixo do alvo {pctLabel(row.below_ratio)} · {numberLabel(row.freezes_per_min)}{' '}
+          congel./min · perda {numberLabel(row.loss_pct)}% · {row.gpu || 'placa desconhecida'}
+        </p>
+      )}
+      {quality && <p className="text-ds-sm text-secondary">{quality}</p>}
       {row.reasons.length > 0 && (
         <ul className="flex flex-wrap gap-1.5">
           {row.reasons.map((reason) => (
@@ -30,7 +34,7 @@ function WorstItem({ row }: { row: WorstRow }): React.JSX.Element {
   )
 }
 
-/** As piores sessões de live (quem transmite e quem assiste) e o motivo provável. */
+/** As piores sessões (lives e voz das calls) e o motivo provável. */
 export function WorstSessions({ rows }: { rows: WorstRow[] }): React.JSX.Element {
   return (
     <Panel title="Piores sessões e por quê">

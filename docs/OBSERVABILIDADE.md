@@ -1,7 +1,9 @@
 # Observabilidade das lives
 
 O que existe para saber como as lives e calls estão de fato, e onde agir.
-Decisão e alternativas: [ADR 0029](adr/0029-observabilidade-das-lives.md).
+Decisão e alternativas: [ADR 0029](adr/0029-observabilidade-das-lives.md); os
+sinais de qualidade (cada um com a pergunta e a ação que ele habilita):
+[ADR 0032](adr/0032-sinais-de-qualidade-das-lives-e-calls.md).
 Como ligar na VPS: [HOSPEDAGEM.md](HOSPEDAGEM.md#métricas-do-livekit-observabilidade-das-lives).
 
 ## O que é coletado
@@ -9,10 +11,10 @@ Como ligar na VPS: [HOSPEDAGEM.md](HOSPEDAGEM.md#métricas-do-livekit-observabil
 | Fonte | Tabela | De quanto em quanto | O quê |
 |---|---|---|---|
 | LiveKit (`/metrics`, Prometheus em 127.0.0.1) + `/proc` da VPS | `livekit_metrics` | 1 min | banda entrando/saindo, retransmissões, perda na subida (quem publica → SFU) e na descida (SFU → quem assiste), NACK, PLI, RTT, jitter, nota de qualidade, salas, participantes, tracks, CPU e memória do LiveKit e da VPS |
-| App (quem transmite) | `live_sessions` (`transmite`) + `live_samples` | 20 s | codec, placa ou processador, resolução e fps reais × escolhidos, Mbps, `qualityLimitationReason`, degrau do controlador e trocas, camadas, reserva, quadros-chave, PLI, NACK, UDP/TCP/TURN |
-| App (quem assiste) | `live_sessions` (`assiste`) + `live_samples` | 20 s | codec, decodificador na placa ou no processador, resolução e fps recebidos, perda, jitter, congelamentos, quadros descartados, pausa do servidor, UDP/TCP/TURN |
-| App (voz) | `live_sessions` (`call`) + `live_samples` | 60 s | RTT, perda e jitter vistos pelo servidor, UDP/TCP/TURN |
-| App e servidor | `live_events` | quando acontece | início, fim, qualidade caiu/voltou, reserva ligada, codificador/decodificador no processador, codec trocou, congelamento longo (≥ 2 s em 20 s), pausada pelo servidor |
+| App (quem transmite) | `live_sessions` (`transmite`) + `live_samples` | 20 s | codec, placa ou processador, resolução e fps codificados × escolhidos, **fps da captura** (`capture_fps`), **ms por quadro no codificador** (`codec_ms`), Mbps, `qualityLimitationReason`, degrau do controlador e trocas, camadas, reserva, quadros-chave, PLI, NACK, UDP/TCP/TURN |
+| App (quem assiste) | `live_sessions` (`assiste`) + `live_samples` | 20 s | codec, decodificador na placa ou no processador, resolução, **quadros/s que chegaram** (`recv_fps`) × decodificados (`fps`), **ms por quadro no decodificador** (`codec_ms`), perda, jitter, congelamentos, quadros descartados, pausa do servidor, UDP/TCP/TURN |
+| App (voz) | `live_sessions` (`call`) + `live_samples` | 60 s | RTT, perda e jitter vistos pelo servidor, UDP/TCP/TURN; **o que eu ouço**: % de áudio sintetizado (`concealed_pct`) e perda no áudio recebido (`recv_loss_pct`); **tempo para conectar** (`connect_ms`) |
+| App e servidor | `live_events` | quando acontece | início, fim, qualidade caiu/voltou, reserva ligada, codificador/decodificador no processador, codec trocou, **codec escolhido (e por quê)**, congelamento longo (≥ 2 s em 20 s), pausada pelo servidor, **voz não conectou (etapa e motivo)**, **voz reconectou (tempo fora)** |
 
 Contexto de cada sessão: SO, versão do app, web/desktop, placa de vídeo (renderer
 do WebGL), núcleos do processador e tipo de rede (quando o navegador conta).
@@ -21,7 +23,9 @@ hora em hora). Visitante sem conta não manda.
 
 Nos contadores das amostras (`freezes`, `freeze_ms`, `frames_dropped`,
 `key_frames`, `pli`, `nack`, `step_changes`) o valor é a diferença no intervalo
-`seconds`; o resto é o valor no momento. A primeira amostra de cada sessão é a
+`seconds`. `fps`, `capture_fps`, `recv_fps`, `codec_ms`, `concealed_pct` e
+`recv_loss_pct` são médias do intervalo (a partir do app com a ADR 0032; antes,
+`fps` era o do momento da leitura); o resto é o valor no momento. A primeira amostra de cada sessão é a
 base (contadores zerados, `seconds = 0`).
 
 ## Painel
@@ -37,7 +41,10 @@ Não tem link no app. Mostra, para 24 h, 3, 7 ou 14 dias:
   CPU/banda, espectadores, congelamentos por minuto e % decodificando no
   processador entre os espectadores.
 - **Piores sessões e por quê**: pontuação (abaixo do alvo, congelamentos,
-  pausa, perda, CPU/banda, processador) e os motivos prováveis.
+  pausa, perda, CPU/banda, processador; na voz: não conectou, reconexões, áudio
+  sintetizado, perda) e os motivos prováveis, com a linha de números da sessão
+  (captura × codificado, chegam × decodificados, ms por quadro; na voz, áudio
+  sintetizado, perda recebida, tempo para entrar).
 - **Distribuição** por sistema, placa de vídeo, codec e conexão.
 - **Eventos recentes.**
 
@@ -130,6 +137,47 @@ SELECT codec, count(DISTINCT session_id) AS sessoes, round(avg(fps)::numeric) AS
 FROM live_samples WHERE codec <> '' GROUP BY 1 ORDER BY 2 DESC;
 ```
 
+**Onde os quadros da live se perdem** (captura → codificador → quem assiste):
+```sql
+SELECT u.username, s.kind, s.started_at, s.gpu,
+       round(avg(x.target_fps)) AS alvo, round(avg(x.capture_fps)::numeric, 1) AS captura,
+       round(avg(x.fps)::numeric, 1) AS fps, round(avg(x.recv_fps)::numeric, 1) AS chegam,
+       round(avg(x.codec_ms)::numeric, 1) AS ms_por_quadro, sum(x.freezes) AS congelamentos
+FROM live_sessions s JOIN users u ON u.id = s.user_id JOIN live_samples x ON x.session_id = s.id
+WHERE s.kind IN ('transmite', 'assiste') AND x.seconds > 0
+GROUP BY s.id, u.username ORDER BY s.started_at DESC LIMIT 30;
+```
+
+**Por que cada live saiu naquele codec:**
+```sql
+SELECT e.at, u.username, s.os, s.gpu, e.detail
+FROM live_events e JOIN live_sessions s ON s.id = e.session_id JOIN users u ON u.id = s.user_id
+WHERE e.type = 'codec_escolhido' ORDER BY e.at DESC LIMIT 30;
+```
+
+**Voz: quem ouve robotizado e por quê** (síntese com perda = rede; sem perda = PC):
+```sql
+SELECT u.username, s.os, s.started_at,
+       round(avg(x.concealed_pct)::numeric, 2) AS sintetizado_pct,
+       round(avg(x.recv_loss_pct)::numeric, 2) AS perda_recebida_pct,
+       round(avg(x.loss_pct)::numeric, 2) AS perda_subida_pct,
+       max(x.connect_ms) AS entrou_ms
+FROM live_sessions s JOIN users u ON u.id = s.user_id JOIN live_samples x ON x.session_id = s.id
+WHERE s.kind = 'call' GROUP BY s.id, u.username
+ORDER BY sintetizado_pct DESC NULLS LAST LIMIT 30;
+```
+
+**Voz que não conectou ou caiu** (muitas ao mesmo tempo = servidor):
+```sql
+SELECT date_trunc('minute', e.at) AS minuto, e.type, count(*) AS quantas,
+       string_agg(DISTINCT u.username, ', ') AS quem, min(e.detail) AS exemplo
+FROM live_events e JOIN live_sessions s ON s.id = e.session_id JOIN users u ON u.id = s.user_id
+WHERE e.type IN ('conexao_falhou', 'reconectou')
+GROUP BY 1, 2 ORDER BY 1 DESC LIMIT 50;
+```
+Sessões de voz do app antigo que nunca conectaram aparecem sem transporte em
+nenhuma amostra (`bool_and(transport = '')`).
+
 **Eventos das últimas 24 h, por tipo:**
 ```sql
 SELECT type, count(*) FROM live_events WHERE at > now() - interval '24 hours' GROUP BY 1 ORDER BY 2 DESC;
@@ -154,3 +202,18 @@ SELECT at, type, detail FROM live_events WHERE session_id = '<id>' ORDER BY at;
 | `backup` alto | alguém sem o codec principal | ver quem (SO/placa) e a ordem de codecs |
 | muitas sessões `tcp`/`relay` | rede bloqueando UDP | TURN/TLS na 443 (relatório da investigação §3.8) |
 | CPU da VPS > 80% ou `mbps_saida` no teto do plano | VPS no limite | VPS maior, teto de bitrate, simulcast |
+| `capture_fps` < 80% do alvo, `limitation = none` | a captura do Chromium não entrega o fps | captura nativa (ADR 0031) ou outra fonte; codec/bitrate não resolvem |
+| `codec_ms` (transmite) perto de 1000/alvo | codificador não dá conta | preset menor ou outro codec para aquela placa |
+| quem assiste: `recv_fps` ≫ `fps`, congelamentos | decodificador | tirar o codec da ordem para aquela placa/SO; driver |
+| quem assiste: `recv_fps` baixo com perda 0 | não chega: quem transmite ou SFU | comparar com o `fps`/`capture_fps` de quem transmite e a pausa/camada |
+| `codec_escolhido` com "caiu no proc." ou "—" numa placa boa | marca permanente ou o Chromium sem encoder | limpar a marca; Linux/NVIDIA → motor nativo |
+| `concealed_pct` ≥ 3% com `recv_loss_pct` alto | rede de quem ouve | TCP/TURN? (o RED já está ligado) |
+| `concealed_pct` ≥ 3% sem perda | PC de quem ouve (CPU, DSP de áudio) | rever o custo do processamento local (ADR 0005) |
+| vários `conexao_falhou` "entrando (mídia)" no mesmo minuto | servidor (IP anunciado, firewall, LiveKit) | conferir `LIVEKIT_NODE_IP`/portas; reverter a mudança |
+| `conexao_falhou` de uma pessoa só, etapa mídia | UDP bloqueado na rede dela | TURN/TLS na 443 |
+| `reconectou` em muitas sessões juntas | reinício/queda do LiveKit | não rodar `--infra` com gente na call |
+
+**Na VPS, se a perda na subida subir com lives pesadas:** o LiveKit avisa no
+boot que o buffer de UDP é pequeno (425 984 × 5 000 000 sugeridos); confira
+`grep -A1 '^Udp:' /proc/net/snmp` (coluna `RcvbufErrors`). Em 30/10/2026
+eram 10 em 5 dias (sem efeito).

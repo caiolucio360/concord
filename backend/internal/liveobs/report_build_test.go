@@ -153,16 +153,20 @@ func TestWorstRowsOrdenaPelasPiores(t *testing.T) {
 	call := session("voz", KindCall, "e", 0, 10)
 	call.LossPct = fp(50)
 
-	rows := worstRows([]SessionStats{good, frozen, slow, short, call}, 2)
+	call.LossPct = nil
+	failed := session("falhou", KindCall, "f", 0, 0)
+	failed.Failures = 1
+
+	rows := worstRows([]SessionStats{good, frozen, slow, short, call, failed}, 3)
 	ids := []string{}
 	for _, r := range rows {
 		ids = append(ids, r.ID)
 	}
-	if !slices.Equal(ids, []string{"lenta", "congela"}) {
-		t.Errorf("piores = %v, quer [lenta congela] (sem a boa, a curta e a call)", ids)
+	if !slices.Equal(ids, []string{"lenta", "falhou", "congela"}) {
+		t.Errorf("piores = %v, quer [lenta falhou congela] (sem a boa, a curta e a call boa)", ids)
 	}
-	if rows[1].FreezesPerMin != 3 || len(rows[1].Reasons) == 0 {
-		t.Errorf("congela = %+v", rows[1])
+	if rows[2].FreezesPerMin != 3 || len(rows[2].Reasons) == 0 {
+		t.Errorf("congela = %+v", rows[2])
 	}
 }
 
@@ -211,5 +215,51 @@ func TestBuildReportJuntaTudo(t *testing.T) {
 	}
 	if r.Worst == nil {
 		t.Error("piores nil (o JSON precisa de [])")
+	}
+}
+
+func TestReasonsDizOndeOsQuadrosSePerdem(t *testing.T) {
+	capture := session("cap", KindShare, "ana", 0, 10)
+	capture.TargetFPS, capture.FPS, capture.CaptureFPS, capture.CodecMs = fp(60), fp(42), fp(43), fp(3)
+	want := []string{"Captura abaixo do alvo (não é o codificador)"}
+	if got := reasons(capture); !slices.Equal(got, want) {
+		t.Errorf("captura: %q, quer %q", got, want)
+	}
+
+	slowEncoder := session("enc", KindShare, "ana", 0, 10)
+	slowEncoder.TargetFPS, slowEncoder.CaptureFPS, slowEncoder.CodecMs = fp(60), fp(60), fp(15)
+	want = []string{"Codificador não dá conta do fps"}
+	if got := reasons(slowEncoder); !slices.Equal(got, want) {
+		t.Errorf("codificador: %q, quer %q", got, want)
+	}
+
+	decoder := session("dec", KindWatch, "bia", 0, 10)
+	decoder.RecvFPS, decoder.FPS = fp(44), fp(12)
+	want = []string{"Quadros chegam e não decodificam"}
+	if got := reasons(decoder); !slices.Equal(got, want) {
+		t.Errorf("decodificador: %q, quer %q", got, want)
+	}
+	decoder.FPS = fp(41)
+	if got := reasons(decoder); len(got) != 0 {
+		t.Errorf("decodificando quase tudo: %q", got)
+	}
+}
+
+func TestReasonsDaVoz(t *testing.T) {
+	cpu := session("cpu", KindCall, "ana", 0, 10)
+	cpu.ConcealedPct, cpu.RecvLossPct = fp(6), fp(0.1)
+	want := []string{"Voz robotizada (áudio sintetizado)", "Áudio sintetizado sem perda (PC de quem ouve)"}
+	if got := reasons(cpu); !slices.Equal(got, want) {
+		t.Errorf("sem perda: %q, quer %q", got, want)
+	}
+
+	net := session("rede", KindCall, "bia", 0, 10)
+	net.ConcealedPct, net.RecvLossPct, net.Reconnects, net.Failures = fp(8), fp(4), 2, 1
+	want = []string{"Voz robotizada (áudio sintetizado)", "Perda no áudio recebido", "Voz reconectou", "Voz não conectou"}
+	if got := reasons(net); !slices.Equal(got, want) {
+		t.Errorf("rede: %q, quer %q", got, want)
+	}
+	if callScore(net) <= callScore(cpu) || callScore(session("ok", KindCall, "c", 0, 10)) != 0 {
+		t.Errorf("pontuação da voz: rede %v, cpu %v", callScore(net), callScore(cpu))
 	}
 }
