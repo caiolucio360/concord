@@ -51,7 +51,7 @@ export function MediaLightbox({ src, label, onClose, width, height }: MediaLight
         <View style={styles.close}>
           <IconButton icon="close" label="Fechar" onPress={onClose} />
         </View>
-        <ZoomBar scale={zoom.level} onZoomOut={() => zoom.zoomBy(1 / ZOOM_STEP)} onZoomIn={() => zoom.zoomBy(ZOOM_STEP)} onReset={zoom.reset} />
+        <ZoomBar scale={zoom.level} onZoomOut={() => zoom.zoomBy(1 / ZOOM_STEP)} onZoomIn={() => zoom.zoomBy(ZOOM_STEP)} />
       </GestureHandlerRootView>
     </Modal>
   )

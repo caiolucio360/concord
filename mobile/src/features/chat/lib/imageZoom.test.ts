@@ -1,17 +1,4 @@
-import {
-  IDENTITY,
-  MAX_ZOOM,
-  ZOOM_STEP,
-  clampView,
-  containSize,
-  panBy,
-  pinchView,
-  toggleZoom,
-  zoomAt,
-  zoomLevelLabel,
-  zoomLimit,
-  type ZoomBounds
-} from './imageZoom'
+import { IDENTITY, MAX_ZOOM, ZOOM_STEP, clampView, containSize, panBy, pinchView, toggleZoom, zoomAt, zoomLimit, type ZoomBounds } from './imageZoom'
 
 // Imagem 800×600 em 1x numa tela do mesmo tamanho: em 1x não sobra nada para mover.
 const b: ZoomBounds = {
@@ -104,11 +91,6 @@ describe('containSize', () => {
 })
 
 describe('barra de zoom', () => {
-  it('nível em porcentagem inteira', () => {
-    expect(zoomLevelLabel(1)).toBe('100%')
-    expect(zoomLevelLabel(1.5625)).toBe('156%')
-  })
-
   it('diz a ponta da escala (desativa − em 1x e + em 5x)', () => {
     expect(zoomLimit(1)).toBe('min')
     expect(zoomLimit(2.5)).toBe('mid')

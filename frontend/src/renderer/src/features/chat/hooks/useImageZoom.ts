@@ -10,17 +10,15 @@ import {
   pointerUp,
   viewForKey,
   wheelScale,
-  zoomLevelLabel,
   zoomLimit,
   zoomTransform,
   type ZoomLimit
 } from '../lib/zoomInput'
 
-/** Onde o hook escuta e escreve: o palco, o transform da imagem e o texto do nível ("150%"). */
+/** Onde o hook escuta e escreve: o palco (eventos) e a imagem (transform). */
 export interface ZoomTargets {
   stage: RefObject<HTMLElement | null>
   image: RefObject<HTMLImageElement | null>
-  level: RefObject<HTMLElement | null>
 }
 
 export interface ImageZoom {
@@ -28,7 +26,6 @@ export interface ImageZoom {
   limit: ZoomLimit
   dragging: boolean
   zoomBy: (factor: number) => void
-  reset: () => void
   /** Duplo clique: amplia 2x no ponto ou volta para a imagem inteira. */
   toggleAt: (e: React.MouseEvent) => void
   /** true se o último gesto arrastou ou pinçou (o clique que vem depois dele não fecha). */
@@ -45,13 +42,13 @@ const point = (e: { clientX: number; clientY: number }): Point => fromCenter(e, 
 
 /**
  * Zoom da imagem do lightbox: roda/pinça do trackpad, arraste e pinça com ponteiros,
- * duplo clique, teclado e botões. A vista mora num ref, e o transform e o nível vão
+ * duplo clique, teclado e botões. A vista mora num ref, e o transform vai
  * direto no DOM, uma vez por frame: arrastar não re-renderiza o React. O state só
  * muda quando o cursor ou um botão muda (começo/fim do gesto, 1x, 5x). Só ações
  * discretas (botões, teclas, duplo clique) animam; roda e dedos seguem sem atraso.
  */
 export function useImageZoom(targets: ZoomTargets): ImageZoom {
-  const { stage, image, level } = targets
+  const { stage, image } = targets
   const [limit, setLimit] = useState<ZoomLimit>('min')
   const [dragging, setDragging] = useState(false)
   const view = useRef<ZoomView>(IDENTITY)
@@ -67,7 +64,6 @@ export function useImageZoom(targets: ZoomTargets): ImageZoom {
     // Sem a duração inline vale a da classe (e o motion-safe dela).
     style?.setProperty('transition-duration', smooth.current ? '' : '0s')
     style?.setProperty('transform', zoomTransform(view.current))
-    level.current?.replaceChildren(zoomLevelLabel(view.current.scale))
   }
 
   const apply = (next: ZoomView, animate = false): void => {
@@ -128,7 +124,6 @@ export function useImageZoom(targets: ZoomTargets): ImageZoom {
     dragging,
     zoomBy: (factor) =>
       apply(zoomAt(view.current, view.current.scale * factor, CENTER, bounds()), true),
-    reset: () => apply(IDENTITY, true),
     toggleAt: (e) => apply(toggleZoom(view.current, point(e), bounds()), true),
     wasDrag: () => drag.current.moved,
     handlers: { onPointerDown, onPointerMove, onPointerUp, onPointerCancel: onPointerUp }

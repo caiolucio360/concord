@@ -1,25 +1,21 @@
 import { Ionicons } from '@expo/vector-icons'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { colors, fontSize, MIN_TOUCH, radius, spacing } from '../../../shared/theme/tokens'
-import { zoomLevelLabel, zoomLimit } from '../lib/imageZoom'
+import { Pressable, StyleSheet, View } from 'react-native'
+import { colors, MIN_TOUCH, radius, spacing } from '../../../shared/theme/tokens'
+import { zoomLimit } from '../lib/imageZoom'
 
 interface ZoomBarProps {
   scale: number
   onZoomOut: () => void
   onZoomIn: () => void
-  onReset: () => void
 }
 
-/** Barra de zoom do lightbox: −, nível atual (tocar volta à imagem inteira) e +. */
-export function ZoomBar({ scale, onZoomOut, onZoomIn, onReset }: ZoomBarProps) {
+/** Barra de zoom do lightbox: só os ícones − e + (desativados em 1x e 5x). */
+export function ZoomBar({ scale, onZoomOut, onZoomIn }: ZoomBarProps) {
   const limit = zoomLimit(scale)
   return (
     <View style={styles.bar}>
       <BarButton label="Diminuir zoom" disabled={limit === 'min'} onPress={onZoomOut}>
         <Ionicons name="remove" size={22} color={colors.textNormal} />
-      </BarButton>
-      <BarButton label="Voltar ao tamanho original" disabled={limit === 'min'} onPress={onReset} wide>
-        <Text style={styles.level}>{zoomLevelLabel(scale)}</Text>
       </BarButton>
       <BarButton label="Aumentar zoom" disabled={limit === 'max'} onPress={onZoomIn}>
         <Ionicons name="add" size={22} color={colors.textNormal} />
@@ -32,11 +28,10 @@ interface BarButtonProps {
   label: string
   disabled: boolean
   onPress: () => void
-  wide?: boolean
   children: React.ReactNode
 }
 
-function BarButton({ label, disabled, onPress, wide = false, children }: BarButtonProps) {
+function BarButton({ label, disabled, onPress, children }: BarButtonProps) {
   return (
     <Pressable
       accessibilityRole="button"
@@ -44,7 +39,7 @@ function BarButton({ label, disabled, onPress, wide = false, children }: BarButt
       accessibilityState={{ disabled }}
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [styles.button, wide && styles.wide, pressed && styles.pressed, disabled && styles.disabled]}
+      style={({ pressed }) => [styles.button, pressed && styles.pressed, disabled && styles.disabled]}
     >
       {children}
     </Pressable>
@@ -70,12 +65,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  wide: { minWidth: 64, paddingHorizontal: spacing.sm },
   pressed: { backgroundColor: 'rgba(255,255,255,0.15)' },
-  disabled: { opacity: 0.4 },
-  level: {
-    color: colors.textNormal,
-    fontSize: fontSize.sm,
-    fontVariant: ['tabular-nums']
-  }
+  disabled: { opacity: 0.4 }
 })

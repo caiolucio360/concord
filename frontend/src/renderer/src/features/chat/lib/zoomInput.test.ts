@@ -12,7 +12,6 @@ import {
   wheelScale,
   ZOOM_STEP,
   zoomImageClass,
-  zoomLevelLabel,
   zoomLimit,
   zoomTransform
 } from './zoomInput'
@@ -181,12 +180,7 @@ describe('zoomTransform / zoomImageClass', () => {
   })
 })
 
-describe('zoomLevelLabel / zoomLimit / ZOOM_STEP', () => {
-  it('mostra o nível em porcentagem inteira', () => {
-    expect(zoomLevelLabel(1)).toBe('100%')
-    expect(zoomLevelLabel(1.5625)).toBe('156%')
-  })
-
+describe('zoomLimit / ZOOM_STEP', () => {
   it('diz se a imagem está no mínimo, no máximo ou no meio (para desativar - e +)', () => {
     expect(zoomLimit(1)).toBe('min')
     expect(zoomLimit(2.5)).toBe('mid')

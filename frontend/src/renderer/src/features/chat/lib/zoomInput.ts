@@ -181,10 +181,6 @@ export function zoomImageClass(zoomed: boolean, dragging: boolean): string {
   return `${cursor} motion-safe:transition-transform motion-safe:duration-150 motion-safe:ease-out`
 }
 
-export function zoomLevelLabel(scale: number): string {
-  return `${Math.round(scale * 100)}%`
-}
-
 export type ZoomLimit = 'min' | 'mid' | 'max'
 
 /** Em que ponta a escala está: desativa o − em 1x e o + em 5x. */

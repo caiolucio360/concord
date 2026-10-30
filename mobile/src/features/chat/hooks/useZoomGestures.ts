@@ -10,8 +10,8 @@ const CENTER: Point = { x: 0, y: 0 }
 /**
  * Pinça, arraste com um dedo, duplo toque (1x ↔ 2x) e toque simples (fecha em 1x)
  * na imagem do lightbox. A vista mora em shared values e os gestos rodam no thread
- * de UI: a imagem segue o dedo sem passar pelo JS. `level` (para a barra de zoom)
- * só chega ao React no fim de cada gesto ou toque de botão. `bounds` vem do tamanho
+ * de UI: a imagem segue o dedo sem passar pelo JS. `level` (a escala, que desativa
+ * − e + nas pontas) só chega ao React no fim de cada gesto ou toque de botão. `bounds` vem do tamanho
  * medido do lightbox (useLayoutSize).
  */
 export function useZoomGestures(bounds: ZoomBounds, onClose: () => void) {
@@ -116,7 +116,6 @@ export function useZoomGestures(bounds: ZoomBounds, onClose: () => void) {
     gesture,
     animatedStyle,
     level,
-    zoomBy: (factor: number) => show(zoomAt(target.current, target.current.scale * factor, CENTER, bounds)),
-    reset: () => show(IDENTITY)
+    zoomBy: (factor: number) => show(zoomAt(target.current, target.current.scale * factor, CENTER, bounds))
   }
 }

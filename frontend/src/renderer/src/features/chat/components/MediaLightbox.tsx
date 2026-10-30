@@ -25,8 +25,7 @@ function MediaLightbox({
 }): React.JSX.Element {
   const stageRef = useRef<HTMLDivElement>(null)
   const imgRef = useRef<HTMLImageElement>(null)
-  const levelRef = useRef<HTMLSpanElement>(null)
-  const zoom = useImageZoom({ stage: stageRef, image: imgRef, level: levelRef })
+  const zoom = useImageZoom({ stage: stageRef, image: imgRef })
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
@@ -63,10 +62,8 @@ function MediaLightbox({
       />
       <ZoomControls
         limit={zoom.limit}
-        levelRef={levelRef}
         onZoomOut={() => zoom.zoomBy(1 / ZOOM_STEP)}
         onZoomIn={() => zoom.zoomBy(ZOOM_STEP)}
-        onReset={zoom.reset}
       />
     </div>,
     document.body

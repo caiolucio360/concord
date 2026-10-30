@@ -92,10 +92,6 @@ export function containSize(width: number | null | undefined, height: number | n
   return { width: width * k, height: height * k }
 }
 
-export function zoomLevelLabel(scale: number): string {
-  return `${Math.round(scale * 100)}%`
-}
-
 export type ZoomLimit = 'min' | 'mid' | 'max'
 
 /** Em que ponta a escala está: desativa o − em 1x e o + em 5x. */

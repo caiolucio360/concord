@@ -23,14 +23,14 @@ describe('MediaLightbox', () => {
     expect(html).toContain('touch-none')
   })
 
-  it('mostra a barra de zoom em 100%, com o diminuir desativado', () => {
+  it('mostra a barra de zoom só com os ícones, com o diminuir desativado', () => {
     vi.stubGlobal('document', { body: {} })
     const html = renderToStaticMarkup(
       <MediaLightbox src="blob:foto" alt="foto.png" onClose={() => {}} />
     )
 
     expect(html).toContain('aria-label="Aumentar zoom"')
-    expect(html).toContain('100%')
-    expect(html.match(/aria-disabled="true"/g)).toHaveLength(2)
+    expect(html).not.toMatch(/>\d+%</)
+    expect(html.match(/aria-disabled="true"/g)).toHaveLength(1)
   })
 })
