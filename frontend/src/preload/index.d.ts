@@ -7,6 +7,7 @@ import type { PerfEvent } from '../shared/perfLog'
 import type { PortalStatus, ScreenShareFlow } from '../shared/screenShareFlow'
 import type { ServerDiagnostics } from '../shared/serverConnection'
 import type { TTSVoiceState } from '../shared/ttsVoice'
+import type { NativeLiveApi } from './nativeLiveApi'
 
 export interface ScreenSourceInfo {
   id: string
@@ -217,6 +218,8 @@ declare global {
       server?: ServerApi
       /** Só no app desktop do Linux (docs/adr/0014-voz-piper-no-linux.md). */
       tts?: TTSApi
+      /** Live pelo motor nativo (docs/adr/0031-live-pelo-helper-rust.md): só no Linux. */
+      nativeLive?: NativeLiveApi
     }
   }
 }

@@ -60,6 +60,7 @@ import {
   startWindowAudio,
   stopWindowAudio
 } from './screen/screenAudio'
+import { setupNativeLive } from './nativeLive/setupNativeLive'
 
 let mainWindow: BrowserWindow | null = null
 /** Endereço do servidor que respondeu ao abrir (undefined no dev: o do build). */
@@ -330,6 +331,7 @@ app.whenReady().then(() => {
   registerScreenShareHandlers()
   registerThemeHandlers()
   registerScreenAudio()
+  setupNativeLive()
   setupBackground(() => mainWindow, icon, { small: trayIcon, large: trayIcon2x })
   setupOverlay(() => mainWindow)
   setupGlobalKeybinds(() => mainWindow)
