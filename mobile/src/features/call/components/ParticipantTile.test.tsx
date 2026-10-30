@@ -51,4 +51,12 @@ describe('ParticipantTile', () => {
     expect(screen.getByTestId('maestro-avatar')).toBeOnTheScreen()
     expect(screen.queryByRole('button')).toBeNull()
   })
+
+  it('com a câmera ligada mostra o vídeo no lugar da foto, mantendo o nome', async () => {
+    const { Text } = require('react-native')
+    await render(<ParticipantTile user={ana} speaking={false} voice={NO_VOICE} video={<Text>vídeo de Ana</Text>} />)
+    expect(screen.getByText('vídeo de Ana')).toBeOnTheScreen()
+    expect(screen.getByText('Ana')).toBeOnTheScreen()
+    expect(screen.queryByText('A')).toBeNull()
+  })
 })

@@ -1,6 +1,7 @@
 import { AudioSession } from '@livekit/react-native'
-import { ConnectionState, Room, RoomEvent, Track, type RemoteParticipant, type RemoteTrackPublication, type VideoTrack } from 'livekit-client'
+import { ConnectionState, Room, RoomEvent, Track, type LocalVideoTrack, type RemoteParticipant, type RemoteTrackPublication, type VideoTrack } from 'livekit-client'
 import type { CallMedia, MediaConnection } from './callMedia'
+import { clearCameraTracks, setCameraTrack } from './livekitCamera'
 import { releaseNativeTrack } from './releaseNativeTrack'
 
 // Os dois únicos arquivos do app que falam com o SDK do LiveKit (ADR 0023): este e livekitScreen.tsx (que só
@@ -35,10 +36,18 @@ async function stopScreenShare(current: Room): Promise<void> {
   releaseNativeTrack(track)
 }
 
-/** Sai da sala: antes libera a captura de tela (se houver) e só então desconecta. */
+/** Desliga a minha câmera e libera a captura nativa (senão a câmera continua presa ao app). */
+async function stopCamera(current: Room): Promise<void> {
+  const track = current.localParticipant.getTrackPublication(Track.Source.Camera)?.track?.mediaStreamTrack
+  await current.localParticipant.setCameraEnabled(false).catch(() => {})
+  releaseNativeTrack(track)
+}
+
+/** Sai da sala: antes libera a captura de tela e a câmera (se houver) e só então desconecta. */
 async function closeRoom(current: Room | null): Promise<void> {
   if (!current) return
   await stopScreenShare(current)
+  await stopCamera(current)
   if (current.state !== ConnectionState.Disconnected) await current.disconnect()
 }
 
@@ -49,6 +58,8 @@ export function createLiveKitMedia(): CallMedia {
   const connectionListeners = new Set<(state: MediaConnection) => void>()
   const screenListeners = new Set<(ids: string[]) => void>()
   const peerListeners = new Set<(peers: Record<string, string>) => void>()
+  const cameraListeners = new Set<(ids: string[]) => void>()
+  let facing: 'user' | 'environment' = 'user'
 
   const emitConnection = (state: MediaConnection): void => connectionListeners.forEach((l) => l(state))
 
@@ -57,6 +68,19 @@ export function createLiveKitMedia(): CallMedia {
     const ids = [...current.remoteParticipants.values()].filter((p) => screenOf(p)).map((p) => p.identity)
     if (current.localParticipant.isScreenShareEnabled) ids.push(current.localParticipant.identity)
     screenListeners.forEach((l) => l(ids))
+  }
+
+  /** Quem está com a câmera ligada (eu e quem publicou a faixa da câmera sem mudo). */
+  function emitCameras(current: Room): void {
+    const ids = [...current.remoteParticipants.values()].filter((p) => p.isCameraEnabled).map((p) => p.identity)
+    if (current.localParticipant.isCameraEnabled) ids.push(current.localParticipant.identity)
+    cameraListeners.forEach((l) => l(ids))
+  }
+
+  /** A faixa da câmera de alguém chegou ou saiu: guarda para desenhar e avisa quem está com a câmera ligada. */
+  function cameraChanged(current: Room, userId: string, track: VideoTrack | undefined): void {
+    setCameraTrack(userId, track)
+    emitCameras(current)
   }
 
   /** Quem está na sala (sem mim): identidade -> nome do token. */
@@ -85,15 +109,28 @@ export function createLiveKitMedia(): CallMedia {
         emitScreens(next)
       }
     })
-    next.on(RoomEvent.TrackUnpublished, () => emitScreens(next))
-    next.on(RoomEvent.LocalTrackPublished, () => emitScreens(next))
-    next.on(RoomEvent.LocalTrackUnpublished, () => emitScreens(next))
+    next.on(RoomEvent.TrackUnpublished, () => {
+      emitScreens(next)
+      emitCameras(next)
+    })
+    next.on(RoomEvent.TrackMuted, () => emitCameras(next))
+    next.on(RoomEvent.TrackUnmuted, () => emitCameras(next))
+    next.on(RoomEvent.LocalTrackPublished, (pub) => {
+      emitScreens(next)
+      if (pub.source === Track.Source.Camera) cameraChanged(next, next.localParticipant.identity, pub.track as VideoTrack)
+    })
+    next.on(RoomEvent.LocalTrackUnpublished, (pub) => {
+      emitScreens(next)
+      if (pub.source === Track.Source.Camera) cameraChanged(next, next.localParticipant.identity, undefined)
+    })
     next.on(RoomEvent.TrackSubscribed, (track, _pub, participant) => {
+      if (track.source === Track.Source.Camera) return cameraChanged(next, participant.identity, track as VideoTrack)
       if (track.source !== Track.Source.ScreenShare) return
       screenTracks.set(participant.identity, track as VideoTrack)
       emitScreenTrack(participant.identity)
     })
     next.on(RoomEvent.TrackUnsubscribed, (track, _pub, participant) => {
+      if (track.source === Track.Source.Camera) return cameraChanged(next, participant.identity, undefined)
       if (track.source !== Track.Source.ScreenShare) return
       screenTracks.delete(participant.identity)
       emitScreenTrack(participant.identity)
@@ -112,11 +149,13 @@ export function createLiveKitMedia(): CallMedia {
       next.remoteParticipants.forEach((p) => screenOf(p)?.setSubscribed(false))
       emitScreens(next)
       emitPeers(next)
+      emitCameras(next)
     },
     async disconnect() {
       const current = room
       room = null
       screenTracks.clear()
+      clearCameraTracks()
       await closeRoom(current)
       await AudioSession.stopAudioSession()
     },
@@ -126,6 +165,21 @@ export function createLiveKitMedia(): CallMedia {
     async setScreenShareEnabled(on) {
       if (!on && room) await stopScreenShare(room)
       else await room?.localParticipant.setScreenShareEnabled(on)
+    },
+    async setCameraEnabled(on) {
+      if (!room) return
+      if (!on) return stopCamera(room)
+      await room.localParticipant.setCameraEnabled(true, { facingMode: facing })
+    },
+    async flipCamera() {
+      const track = room?.localParticipant.getTrackPublication(Track.Source.Camera)?.track as LocalVideoTrack | undefined
+      if (!track) return
+      facing = facing === 'user' ? 'environment' : 'user'
+      await track.restartTrack({ facingMode: facing })
+    },
+    onCameras(listener) {
+      cameraListeners.add(listener)
+      return () => cameraListeners.delete(listener)
     },
     watchScreen(userId, on) {
       const participant = room?.remoteParticipants.get(userId)

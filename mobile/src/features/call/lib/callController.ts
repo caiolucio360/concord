@@ -3,6 +3,7 @@ import { useCallNoticeStore } from '../store/callNoticeStore'
 import { isInCall, useCallSessionStore } from '../store/callSessionStore'
 import { useIncomingCallStore } from '../store/incomingCallStore'
 import { useParticipantsStore, voiceOf } from '../store/participantsStore'
+import { useCameraStore } from '../store/cameraStore'
 import { useScreenShareStore } from '../store/screenShareStore'
 import { useSpeakingStore } from '../store/speakingStore'
 import { callErrorMessage } from './callErrors'
@@ -25,6 +26,7 @@ export interface ControllerDeps {
   /** Mudo e fone do painel do usuário (voiceControlsStore). */
   controls: () => LocalControls
   ensureMicPermission: () => Promise<boolean>
+  ensureCameraPermission: () => Promise<boolean>
   meId?: () => string | null
 }
 
@@ -54,6 +56,7 @@ export function createCallController(deps: ControllerDeps) {
   deps.media.onConnection((state) => onMediaConnection(state))
   deps.media.onScreens((ids) => onScreens(ids))
   deps.media.onPeers((peers) => onPeers(peers))
+  deps.media.onCameras((ids) => useCameraStore.getState().setCameras(ids))
 
   /** Muda a lista de quem transmite: toca o som de quando alguém abre ou encerra uma transmissão. */
   /** A sala de mídia manda quem está nela: o Maestro entra e sai da lista por aqui. */
@@ -119,18 +122,21 @@ export function createCallController(deps: ControllerDeps) {
     if (s.phase === 'idle') return
     const callId = s.callId
     const wasSharing = useScreenShareStore.getState().sharing
+    const cameraOn = useCameraStore.getState().on
     if (s.phase === 'active' || s.phase === 'reconnecting') playSound('leave')
     mediaCallId = null
     s.reset()
     useParticipantsStore.getState().reset()
     useSpeakingStore.getState().reset()
     useScreenShareStore.getState().reset()
+    useCameraStore.getState().reset()
     if (callId) {
       if (notify) deps.ws.send('call:leave', { call_id: callId })
       deps.ws.unsubscribe(`call:${callId}`)
     }
     // Transmitindo, desliga a captura antes de desconectar: sem isso o serviço de captura de tela do Android fica preso.
     if (wasSharing) await deps.media.setScreenShareEnabled(false).catch(() => {})
+    if (cameraOn) await deps.media.setCameraEnabled(false).catch(() => {})
     await deps.media.disconnect().catch(() => {})
   }
 
@@ -228,6 +234,25 @@ export function createCallController(deps: ControllerDeps) {
   }
 
   /** Assiste à transmissão de alguém (null para de assistir). Uma de cada vez. */
+  /** Liga ou desliga a minha câmera; sem permissão ou com a câmera ocupada, avisa e fica desligada. */
+  async function toggleCamera(): Promise<void> {
+    const store = useCameraStore.getState()
+    const next = !store.on
+    if (next && !(await deps.ensureCameraPermission())) return notice('Sem permissão da câmera. Libere nas configurações do Android.')
+    try {
+      await deps.media.setCameraEnabled(next)
+      store.setOn(next)
+    } catch {
+      store.setOn(false)
+      await deps.media.setCameraEnabled(false).catch(() => {})
+      notice('Não foi possível ligar a câmera.')
+    }
+  }
+
+  async function flipCamera(): Promise<void> {
+    await deps.media.flipCamera().catch(() => notice('Não foi possível trocar de câmera.'))
+  }
+
   function watchScreen(userId: string | null): void {
     const store = useScreenShareStore.getState()
     if (store.watching && store.watching !== userId) deps.media.watchScreen(store.watching, false)
@@ -235,7 +260,7 @@ export function createCallController(deps: ControllerDeps) {
     store.setWatching(userId)
   }
 
-  return { joinChannel, callDm, connectIfNeeded, acceptIncoming, declineIncoming, leave, applyAudio, followMove, toggleScreenShare, watchScreen }
+  return { joinChannel, callDm, connectIfNeeded, acceptIncoming, declineIncoming, leave, applyAudio, followMove, toggleScreenShare, watchScreen, toggleCamera, flipCamera }
 }
 
 export type CallController = ReturnType<typeof createCallController>

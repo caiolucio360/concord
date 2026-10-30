@@ -3,6 +3,7 @@ import { Text } from 'react-native'
 import { useAuthStore } from '../../auth/store/authStore'
 import { useMusicStore } from '../../music/store/musicStore'
 import { useCallSessionStore } from '../store/callSessionStore'
+import { useCameraStore } from '../store/cameraStore'
 import { useScreenShareStore } from '../store/screenShareStore'
 import { useParticipantsStore } from '../store/participantsStore'
 import { useSpeakingStore } from '../store/speakingStore'
@@ -149,5 +150,22 @@ describe('CallScreen: layout', () => {
     for (const name of ['Silenciar microfone', 'Ensurdecer', 'Sair da chamada']) {
       expect(screen.getByRole('button', { name })).toBeOnTheScreen()
     }
+  })
+})
+
+describe('CallScreen: câmera', () => {
+  const props = { onBack: jest.fn(), onLeave: jest.fn() }
+
+  it('quem está com a câmera ligada aparece em vídeo (eu inclusive); o botão liga a minha', async () => {
+    useParticipantsStore.getState().upsert(ana)
+    useCameraStore.getState().reset()
+    const onToggleCamera = jest.fn()
+    await render(<CallScreen {...props} onToggleCamera={onToggleCamera} onFlipCamera={jest.fn()} renderCamera={(id) => <Text>{`câmera de ${id}`}</Text>} />)
+    expect(screen.queryByText('câmera de u1')).toBeNull()
+    await act(async () => useCameraStore.getState().setCameras(['u1', 'me']))
+    expect(screen.getByText('câmera de u1')).toBeOnTheScreen()
+    expect(screen.getByText('câmera de me')).toBeOnTheScreen()
+    await fireEvent.press(screen.getByRole('button', { name: 'Ligar câmera' }))
+    expect(onToggleCamera).toHaveBeenCalled()
   })
 })

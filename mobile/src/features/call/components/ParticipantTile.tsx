@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native'
 import { colors, fontSize, radius, spacing } from '../../../shared/theme/tokens'
 import { MaestroAvatar } from '../../music/components/MaestroAvatar'
@@ -17,6 +17,8 @@ interface ParticipantTileProps {
   /** Altura do tile e lado da foto (vêm da grade da chamada); sem eles, um tile compacto. */
   height?: number
   avatarSize?: number
+  /** Câmera ligada: o vídeo ocupa o tile no lugar da foto (vem da rota, que fala com o LiveKit). */
+  video?: ReactNode
 }
 
 function stateOf(speaking: boolean, voice: VoiceState): string {
@@ -44,14 +46,15 @@ function SpeakingRing({ active }: { active: boolean }) {
 }
 
 /** Uma pessoa na grade da chamada: foto grande (o GIF anima enquanto fala), nome em selo e estado de mudo ou fone. */
-export function ParticipantTile({ user, speaking, voice, live = false, onWatch, height, avatarSize = 64 }: ParticipantTileProps) {
+export function ParticipantTile({ user, speaking, voice, live = false, onWatch, height, avatarSize = 64, video }: ParticipantTileProps) {
   const state = stateOf(speaking, voice)
   const off = state === 'mudo' || state === 'ensurdecido'
   const talking = speaking && !off
   return (
     <View accessible accessibilityLabel={state ? `${user.display_name}, ${state}` : user.display_name} style={[styles.tile, height ? { height } : styles.compact]}>
       <SpeakingRing active={talking} />
-      {user.is_bot ? <MaestroAvatar size={avatarSize} /> : <CallAvatar name={user.display_name} uri={user.avatar_url} size={avatarSize} speaking={callAvatarAnimate({ speaking: talking })} />}
+      {video ? <View style={styles.video}>{video}</View> : null}
+      {video ? null : user.is_bot ? <MaestroAvatar size={avatarSize} /> : <CallAvatar name={user.display_name} uri={user.avatar_url} size={avatarSize} speaking={callAvatarAnimate({ speaking: talking })} />}
       <View style={styles.nameBadge}>
         {off ? <Ionicons name={state === 'mudo' ? 'mic-off' : 'volume-mute'} size={14} color={colors.textDanger} /> : null}
         <Text style={styles.name} numberOfLines={1}>
@@ -76,6 +79,7 @@ function LiveBadge({ name, onWatch }: { name: string; onWatch?: () => void }) {
 const styles = StyleSheet.create({
   tile: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.md, overflow: 'hidden', backgroundColor: colors.bgSurface, borderRadius: 16 },
   compact: { minHeight: 120 },
+  video: { ...StyleSheet.absoluteFill, backgroundColor: '#000' },
   ring: { ...StyleSheet.absoluteFill, borderRadius: 16, borderWidth: 3, borderColor: colors.green },
   nameBadge: { position: 'absolute', left: spacing.sm, bottom: spacing.sm, flexDirection: 'row', alignItems: 'center', gap: spacing.xs, maxWidth: '70%', paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.md, backgroundColor: 'rgba(0,0,0,0.55)' },
   name: { color: colors.white, fontSize: fontSize.sm, fontWeight: '600', flexShrink: 1 },

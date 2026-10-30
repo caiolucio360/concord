@@ -13,6 +13,12 @@ export interface CallMedia {
   setListening(on: boolean): void
   /** Liga ou desliga a transmissão da minha tela (o sistema pede a permissão de captura); rejeita se ela for negada. */
   setScreenShareEnabled(on: boolean): Promise<void>
+  /** Liga ou desliga a minha câmera; rejeita se o sistema negou ou a câmera está ocupada. */
+  setCameraEnabled(on: boolean): Promise<void>
+  /** Troca entre a câmera da frente e a de trás. */
+  flipCamera(): Promise<void>
+  /** Quem está com a câmera ligada agora (ids das pessoas, eu inclusive). */
+  onCameras(listener: (userIds: string[]) => void): () => void
   /** Quem está transmitindo a tela agora (ids das pessoas, eu inclusive). */
   onScreens(listener: (userIds: string[]) => void): () => void
   /** Começa ou para de receber a transmissão de alguém (só o que se assiste consome rede). */

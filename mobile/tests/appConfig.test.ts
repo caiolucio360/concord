@@ -12,7 +12,7 @@ describe('app.config (voz)', () => {
     )
   })
 
-  it('declara o serviço de captura de tela (transmitir a tela, ADR 0027), mas ainda não pede a câmera da chamada', () => {
+  it('declara o serviço de captura de tela (ADR 0027); a câmera (da chamada e das fotos) vem do plugin do seletor de imagens', () => {
     const permissions = config.android?.permissions ?? []
     expect(permissions).toContain('android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION')
     expect(permissions).not.toContain('android.permission.CAMERA')

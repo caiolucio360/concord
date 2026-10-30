@@ -36,4 +36,17 @@ describe('CallControls (barra redonda da chamada)', () => {
     await render(<CallControls sharing={false} onLeave={jest.fn()} />)
     expect(screen.queryByRole('button', { name: 'Compartilhar tela' })).toBeNull()
   })
+
+  it('câmera: ligar e, ligada, trocar de câmera e desligar', async () => {
+    const onToggleCamera = jest.fn()
+    const onFlipCamera = jest.fn()
+    const { rerender } = await render(<CallControls sharing={false} camera={false} onToggleCamera={onToggleCamera} onFlipCamera={onFlipCamera} onLeave={jest.fn()} />)
+    expect(screen.queryByRole('button', { name: 'Trocar câmera' })).toBeNull()
+    await fireEvent.press(screen.getByRole('button', { name: 'Ligar câmera' }))
+    expect(onToggleCamera).toHaveBeenCalledTimes(1)
+    await rerender(<CallControls sharing={false} camera onToggleCamera={onToggleCamera} onFlipCamera={onFlipCamera} onLeave={jest.fn()} />)
+    await fireEvent.press(screen.getByRole('button', { name: 'Trocar câmera' }))
+    expect(onFlipCamera).toHaveBeenCalledTimes(1)
+    expect(screen.getByRole('button', { name: 'Desligar câmera' })).toBeOnTheScreen()
+  })
 })

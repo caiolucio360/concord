@@ -13,7 +13,7 @@ interface RoundButtonProps {
   hangup?: boolean
 }
 
-/** Botão redondo da barra da chamada (56 dp, acima dos 44 dp de alvo de toque). */
+/** Botão redondo da barra da chamada (48 dp, acima dos 44 dp de alvo de toque; cabem os 6 em 360 dp). */
 function RoundButton({ icon, label, onPress, active = false, hangup = false }: RoundButtonProps) {
   return (
     <Pressable
@@ -30,13 +30,19 @@ function RoundButton({ icon, label, onPress, active = false, hangup = false }: R
 
 interface CallControlsProps {
   sharing: boolean
+  /** Minha câmera ligada. */
+  camera?: boolean
+  /** Liga ou desliga a câmera; sem ele o botão não aparece. */
+  onToggleCamera?: () => void
+  /** Troca entre a câmera da frente e a de trás (só com a câmera ligada). */
+  onFlipCamera?: () => void
   /** Liga ou desliga a transmissão da minha tela; sem ele o botão não aparece. */
   onToggleShare?: () => void
   onLeave: () => void
 }
 
-/** Barra de baixo da chamada, como no Discord: microfone, fone, compartilhar tela e sair, em botões redondos. */
-export function CallControls({ sharing, onToggleShare, onLeave }: CallControlsProps) {
+/** Barra de baixo da chamada, como no Discord: microfone, fone, câmera, compartilhar tela e sair, em botões redondos. */
+export function CallControls({ sharing, camera = false, onToggleCamera, onFlipCamera, onToggleShare, onLeave }: CallControlsProps) {
   const muted = useVoiceControlsStore((s) => s.muted)
   const deafened = useVoiceControlsStore((s) => s.deafened)
   const toggleMute = useVoiceControlsStore((s) => s.toggleMute)
@@ -45,6 +51,8 @@ export function CallControls({ sharing, onToggleShare, onLeave }: CallControlsPr
     <View style={styles.bar}>
       <RoundButton icon={muted ? 'mic-off' : 'mic'} label={muted ? 'Ativar microfone' : 'Silenciar microfone'} active={muted} onPress={() => void toggleMute()} />
       <RoundButton icon={deafened ? 'volume-mute' : 'headset'} label={deafened ? 'Desensurdecer' : 'Ensurdecer'} active={deafened} onPress={() => void toggleDeafen()} />
+      {onToggleCamera ? <RoundButton icon={camera ? 'videocam' : 'videocam-off'} label={camera ? 'Desligar câmera' : 'Ligar câmera'} active={camera} onPress={onToggleCamera} /> : null}
+      {camera && onFlipCamera ? <RoundButton icon="camera-reverse" label="Trocar câmera" onPress={onFlipCamera} /> : null}
       {onToggleShare ? (
         <RoundButton icon={sharing ? 'stop-circle' : 'tv-outline'} label={sharing ? 'Parar de compartilhar a tela' : 'Compartilhar tela'} active={sharing} onPress={onToggleShare} />
       ) : null}
@@ -53,10 +61,10 @@ export function CallControls({ sharing, onToggleShare, onLeave }: CallControlsPr
   )
 }
 
-const SIZE = 56
+const SIZE = 48
 
 const styles = StyleSheet.create({
-  bar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.md, marginHorizontal: spacing.lg, marginBottom: spacing.md, paddingVertical: spacing.md, borderRadius: 32, backgroundColor: colors.bgSurface },
+  bar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, marginHorizontal: spacing.md, marginBottom: spacing.md, paddingVertical: spacing.md, borderRadius: 32, backgroundColor: colors.bgSurface },
   button: { width: SIZE, height: SIZE, borderRadius: SIZE / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bgAccent },
   active: { backgroundColor: colors.white },
   hangup: { backgroundColor: colors.redStrong, borderRadius: radius.pill },

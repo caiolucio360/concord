@@ -8,6 +8,7 @@ import { callGrid } from '../lib/callGrid'
 import { phaseLabel } from '../lib/callLayout'
 import { NO_VOICE, type CallUser } from '../lib/callTypes'
 import { useCallSessionStore } from '../store/callSessionStore'
+import { useCameraStore } from '../store/cameraStore'
 import { useScreenShareStore } from '../store/screenShareStore'
 import { useParticipantsStore, voiceOf } from '../store/participantsStore'
 import { useSpeakingStore } from '../store/speakingStore'
@@ -30,12 +31,17 @@ interface CallScreenProps {
   onWatch?: (userId: string | null) => void
   /** Desenha a transmissão (o componente do LiveKit); sem ele não dá para assistir. */
   renderScreen?: (userId: string) => ReactNode
+  /** Liga ou desliga a minha câmera e troca entre a da frente e a de trás. */
+  onToggleCamera?: () => void
+  onFlipCamera?: () => void
+  /** Desenha a câmera de alguém (o componente do LiveKit); sem ele, só a foto. */
+  renderCamera?: (userId: string) => ReactNode
 }
 
 const peopleLabel = (count: number): string => (count === 1 ? '1 pessoa na chamada' : `${count} pessoas na chamada`)
 
 /** Tela cheia da chamada, no estilo do Discord no celular: tiles grandes de quem está nela, quem fala com anel verde e a barra redonda de controles. */
-export function CallScreen({ onBack, onLeave, onOpenSettings, onToggleShare, onWatch, renderScreen }: CallScreenProps) {
+export function CallScreen({ onBack, onLeave, onOpenSettings, onToggleShare, onWatch, renderScreen, onToggleCamera, onFlipCamera, renderCamera }: CallScreenProps) {
   const { width, height: windowHeight } = useWindowDimensions()
   const [gridHeight, setGridHeight] = useState(windowHeight * 0.55)
   const name = useCallSessionStore((s) => s.name)
@@ -51,6 +57,8 @@ export function CallScreen({ onBack, onLeave, onOpenSettings, onToggleShare, onW
   const sharers = useScreenShareStore((s) => s.sharers)
   const sharing = useScreenShareStore((s) => s.sharing)
   const watching = useScreenShareStore((s) => s.watching)
+  const cameras = useCameraStore((s) => s.cameras)
+  const cameraOn = useCameraStore((s) => s.on)
   const canWatch = Boolean(onWatch && renderScreen)
 
   const people: CallUser[] = me ? [{ id: me.id, username: me.username, display_name: me.display_name, avatar_url: me.avatar_url }, ...others] : others
@@ -92,12 +100,13 @@ export function CallScreen({ onBack, onLeave, onOpenSettings, onToggleShare, onW
               live={sharers.includes(item.id)}
               height={grid.tileHeight}
               avatarSize={grid.avatar}
+              video={renderCamera && cameras.includes(item.id) ? renderCamera(item.id) : undefined}
               onWatch={canWatch && item.id !== me?.id && watching !== item.id ? () => onWatch?.(item.id) : undefined}
             />
           )}
         />
       </View>
-      <CallControls sharing={sharing} onToggleShare={onToggleShare} onLeave={onLeave} />
+      <CallControls sharing={sharing} camera={cameraOn} onToggleCamera={onToggleCamera} onFlipCamera={onFlipCamera} onToggleShare={onToggleShare} onLeave={onLeave} />
       {serverId ? <MusicPanel serverId={serverId} /> : null}
     </SafeAreaView>
   )
