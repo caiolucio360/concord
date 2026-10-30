@@ -132,3 +132,32 @@ func TestSessionEventsPoeInicioEFim(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateReportLimitaOsSinaisDeQualidade(t *testing.T) {
+	r := validReport()
+	capture, recv, codecMs, concealed, recvLoss := 999.0, -1.0, 1e9, 140.0, 12.5
+	r.Sample = &Sample{CaptureFPS: &capture, RecvFPS: &recv, CodecMs: &codecMs,
+		ConcealedPct: &concealed, RecvLossPct: &recvLoss, ConnectMs: intp(9_000_000)}
+	r.Events = []Event{{Type: EventCodecChosen}, {Type: EventConnectFailed}, {Type: EventReconnected}}
+	if err := r.Validate(); err != nil {
+		t.Fatal(err)
+	}
+	s := r.Sample
+	checks := []struct {
+		name string
+		ok   bool
+	}{
+		{"captura no teto", *s.CaptureFPS == maxFPS},
+		{"recebidos negativo vira vazio", s.RecvFPS == nil},
+		{"ms do codec no teto", *s.CodecMs == maxMs},
+		{"áudio sintetizado até 100%", *s.ConcealedPct == 100},
+		{"perda recebida fica", *s.RecvLossPct == 12.5},
+		{"tempo para conectar no teto", *s.ConnectMs == int(maxMs)},
+		{"eventos de codec e conexão aceitos", len(r.Events) == 3},
+	}
+	for _, c := range checks {
+		if !c.ok {
+			t.Errorf("%s: %+v %v", c.name, s, r.Events)
+		}
+	}
+}

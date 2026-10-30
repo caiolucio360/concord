@@ -22,6 +22,13 @@ const (
 	EventLongFreeze    = "congelamento_longo"
 	EventServerPaused  = "pausada_pelo_servidor"
 	EventCodecSwitched = "codec_trocou"
+	// Por que a live saiu nesse codec (preferência, o que a placa codifica,
+	// codecs marcados como "caiu no processador").
+	EventCodecChosen = "codec_escolhido"
+	// A voz não conectou ou caiu sem volta (etapa e motivo).
+	EventConnectFailed = "conexao_falhou"
+	// A voz caiu e voltou sozinha (quanto tempo ficou fora).
+	EventReconnected = "reconectou"
 )
 
 // Batch: um pedido do app, com todas as sessões ativas dele.
@@ -87,6 +94,14 @@ type Sample struct {
 	Transport string `json:"transport"`
 	// Paused: o servidor pausou a live (conexão fraca de quem assiste).
 	Paused bool `json:"paused"`
+	// Sinais de qualidade (ADR 0032; migration 000176): onde os quadros da
+	// live se perdem e o que a voz da call faz com o áudio recebido.
+	CaptureFPS   *float64 `json:"capture_fps"`
+	RecvFPS      *float64 `json:"recv_fps"`
+	CodecMs      *float64 `json:"codec_ms"`
+	ConcealedPct *float64 `json:"concealed_pct"`
+	RecvLossPct  *float64 `json:"recv_loss_pct"`
+	ConnectMs    *int     `json:"connect_ms"`
 }
 
 type Event struct {

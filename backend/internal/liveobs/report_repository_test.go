@@ -82,3 +82,42 @@ func TestReportRepositoryAgregaSessoes(t *testing.T) {
 		}
 	}
 }
+
+func TestReportRepositoryAgregaOsSinaisDaVoz(t *testing.T) {
+	db := newTelemetryDB(t)
+	ctx := context.Background()
+	tel := NewTelemetryRepository(db)
+	samples := []Sample{
+		{Seconds: 0, ConnectMs: intp(1800)},
+		{Seconds: 60, ConcealedPct: fp(2), RecvLossPct: fp(1), CaptureFPS: fp(40), RecvFPS: fp(50), CodecMs: fp(4)},
+		{Seconds: 60, ConcealedPct: fp(6), RecvLossPct: fp(3), CaptureFPS: fp(50), RecvFPS: fp(30), CodecMs: fp(8)},
+	}
+	events := [][]Event{nil, {{Type: EventReconnected, Detail: "3 s"}}, {{Type: EventReconnected}, {Type: EventConnectFailed}}}
+	for i := range samples {
+		r := Report{SessionID: sessionA, Kind: KindCall, CallID: callA, Sample: &samples[i], Events: events[i]}
+		if err := tel.Save(ctx, userAna, r); err != nil {
+			t.Fatal(err)
+		}
+	}
+	got, err := NewReportRepository(db).Sessions(ctx, time.Now().Add(-time.Hour))
+	if err != nil || len(got) != 1 {
+		t.Fatalf("sessões = %v, %v", got, err)
+	}
+	s := got[0]
+	checks := []struct {
+		name string
+		ok   bool
+	}{
+		{"áudio sintetizado médio", s.ConcealedPct != nil && near(*s.ConcealedPct, 4)},
+		{"perda recebida média", s.RecvLossPct != nil && near(*s.RecvLossPct, 2)},
+		{"captura, recebidos e codec médios", s.CaptureFPS != nil && near(*s.CaptureFPS, 45) &&
+			s.RecvFPS != nil && near(*s.RecvFPS, 40) && s.CodecMs != nil && near(*s.CodecMs, 6)},
+		{"tempo para conectar", s.ConnectMs != nil && near(*s.ConnectMs, 1800)},
+		{"reconexões e falhas", s.Reconnects == 2 && s.Failures == 1},
+	}
+	for _, c := range checks {
+		if !c.ok {
+			t.Errorf("%s: %+v", c.name, s)
+		}
+	}
+}

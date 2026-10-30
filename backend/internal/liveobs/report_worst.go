@@ -37,9 +37,12 @@ var reasonRules = []reasonRule{
 	{"Conexão por TURN", func(s SessionStats) bool { return s.Transport == "relay" }},
 }
 
+// allRules: as de cima e, depois, as da ADR 0032 (onde os quadros se perdem e a voz).
+var allRules = slices.Concat(reasonRules, qualityRules)
+
 func reasons(s SessionStats) []string {
 	out := []string{}
-	for _, r := range reasonRules {
+	for _, r := range allRules {
 		if r.hit(s) {
 			out = append(out, r.text)
 		}
@@ -61,14 +64,23 @@ func score(s SessionStats) float64 {
 		(s.CPURatio+s.BandwidthRatio)*30 + orZero(software(s))*10
 }
 
-// worstRows: as lives (transmite/assiste) com pontuação acima de zero.
+// sessionScore: a voz tem a pontuação dela (report_quality.go).
+func sessionScore(s SessionStats) float64 {
+	if s.Kind == KindCall {
+		return callScore(s)
+	}
+	return score(s)
+}
+
+// worstRows: as sessões com pontuação acima de zero; a curta demais só entra
+// se a voz não conectou.
 func worstRows(sessions []SessionStats, limit int) []WorstRow {
 	rows := []WorstRow{}
 	for _, s := range sessions {
-		if s.Kind == KindCall || s.Seconds < minWorstSeconds {
+		if s.Seconds < minWorstSeconds && s.Failures == 0 {
 			continue
 		}
-		if sc := score(s); sc > 0 {
+		if sc := sessionScore(s); sc > 0 {
 			rows = append(rows, WorstRow{SessionStats: s, DurationSeconds: duration(s),
 				FreezesPerMin: freezesPerMin(s), Score: sc, Reasons: reasons(s)})
 		}
