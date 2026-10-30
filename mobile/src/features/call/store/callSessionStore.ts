@@ -21,7 +21,6 @@ interface CallSessionState extends CallSession {
   begin: (info: Partial<CallSession> & { callId: string; kind: CallKind; phase: CallPhase }) => void
   setCallId: (callId: string) => void
   setPhase: (phase: CallPhase) => void
-  setMicDenied: (micDenied: boolean) => void
   setMovedTo: (movedTo: CallSession['movedTo']) => void
   reset: () => void
 }
@@ -43,7 +42,6 @@ export const useCallSessionStore = create<CallSessionState>()((set) => ({
   begin: (info) => set({ ...IDLE, ...info }),
   setCallId: (callId) => set({ callId }),
   setPhase: (phase) => set({ phase }),
-  setMicDenied: (micDenied) => set({ micDenied }),
   setMovedTo: (movedTo) => set({ movedTo }),
   reset: () => set(IDLE)
 }))
