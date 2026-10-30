@@ -54,17 +54,23 @@ test('missingArtifacts aponta arquivo que falta e manifesto de outra versão', (
   ])
 })
 
-test('newEntries: só as notas que a release anterior não trouxe', () => {
-  const previous = '## Novidades\n\n- Antiga\n\n## Correções\n\n- Bug velho\n'
-  const current = '## Novidades\n\n- Antiga\n- Nova\n\n## Correções\n\n- Bug velho\n- Bug novo\n'
-  assert.deepEqual(newEntries(current, previous), [
-    { kind: 'feature', text: 'Nova' },
-    { kind: 'fix', text: 'Bug novo' }
+const note = (source, text, kind = 'feature') => ({ kind, text, source })
+
+test('newEntries: só as notas de arquivos que a release anterior não tinha', () => {
+  const entries = [note('nova.md', 'Nova'), note('nova.md', 'Bug novo', 'fix'), note('velha.md', 'Antiga')]
+  assert.deepEqual(newEntries(entries, new Set(['velha.md'])), [
+    note('nova.md', 'Nova'),
+    note('nova.md', 'Bug novo', 'fix')
   ])
 })
 
+// Regressão: reescrever uma nota já publicada fazia ela sair de novo como nova.
+test('newEntries: nota reescrita num arquivo antigo não volta', () => {
+  assert.deepEqual(newEntries([note('velha.md', 'Texto reescrito')], new Set(['velha.md'])), [])
+})
+
 test('newEntries sem release anterior: todas as notas', () => {
-  assert.deepEqual(newEntries('## Novidades\n\n- Uma\n', null), [{ kind: 'feature', text: 'Uma' }])
+  assert.deepEqual(newEntries([note('a.md', 'Uma')], null), [note('a.md', 'Uma')])
 })
 
 test('notesMarkdown separa novidades e correções e omite seção vazia', () => {
@@ -98,12 +104,12 @@ function fakeGh(responses = {}) {
   return { gh, calls }
 }
 
-function publish(gh, notes = '## Novidades\n\n- Nova\n') {
+function publish(gh, entries = [note('nova.md', 'Nova')]) {
   const written = []
   publishRelease({
     version: VERSION,
     dir: '/updates',
-    notes,
+    entries,
     target: 'abc123',
     gh,
     writeNotes: (text) => {
@@ -118,9 +124,9 @@ test('publishRelease cria rascunho com os arquivos e só então publica como lat
   const { gh, calls } = fakeGh({
     'release view v0.9.3': new Error('release not found'),
     'release list': 'v0.9.2\n',
-    'api ': '## Novidades\n\n- Velha\n'
+    'api ': 'velha.md\n'
   })
-  const written = publish(gh, '## Novidades\n\n- Velha\n- Nova\n')
+  const written = publish(gh, [note('velha.md', 'Velha'), note('nova.md', 'Nova')])
   assert.deepEqual(written, ['## Novidades\n\n- Nova\n'])
   const create = calls.find((args) => args[1] === 'create')
   assert.deepEqual(create.slice(0, 10), [
@@ -143,14 +149,14 @@ test('publishRelease cria rascunho com os arquivos e só então publica como lat
   assert.ok(calls.indexOf(create) < calls.length - 1)
 })
 
-test('publishRelease busca as notas da release anterior na tag dela', () => {
+test('publishRelease lista os arquivos de notas da release anterior na tag dela', () => {
   const { gh, calls } = fakeGh({
     'release view v0.9.3': new Error('release not found'),
     'release list': 'v0.9.2\n'
   })
   publish(gh)
   const api = calls.find((args) => args[0] === 'api')
-  assert.ok(api.includes('repos/{owner}/{repo}/contents/changelog/next.md?ref=v0.9.2'))
+  assert.ok(api.includes('repos/{owner}/{repo}/contents/changelog/pending?ref=v0.9.2'))
 })
 
 test('publishRelease em reexecução: apaga a release e a tag antigas e cria de novo', () => {
@@ -169,5 +175,15 @@ test('publishRelease sem release anterior (ou sem acesso a ela): publica todas a
     'release view v0.9.3': new Error('release not found'),
     'release list': new Error('HTTP 502')
   })
-  assert.deepEqual(publish(gh, '## Novidades\n\n- Uma\n'), ['## Novidades\n\n- Uma\n'])
+  assert.deepEqual(publish(gh, [note('a.md', 'Uma')]), ['## Novidades\n\n- Uma\n'])
+})
+
+// A tag anterior ainda guardava as notas no next.md (sem a pasta): a API dá 404.
+test('publishRelease com a pasta de notas ausente na tag anterior: publica todas as notas', () => {
+  const { gh } = fakeGh({
+    'release view v0.9.3': new Error('release not found'),
+    'release list': 'v0.9.2\n',
+    'api ': new Error('HTTP 404')
+  })
+  assert.deepEqual(publish(gh, [note('a.md', 'Uma')]), ['## Novidades\n\n- Uma\n'])
 })

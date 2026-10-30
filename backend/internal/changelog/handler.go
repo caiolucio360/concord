@@ -19,7 +19,8 @@ func NewHandler(store store, token string) *Handler {
 	return &Handler{store: store, token: token}
 }
 
-// List devolve as releases com conteúdo, da mais nova para a mais antiga: GET /changelog.
+// List devolve todas as releases, da mais nova para a mais antiga: GET /changelog.
+// As sem notas ficam: é por elas que o app mostra em que versão o usuário está.
 func (h *Handler) List(c *gin.Context) {
 	releases, err := h.store.List(c.Request.Context())
 	if err != nil {
@@ -27,7 +28,7 @@ func (h *Handler) List(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load changelog"})
 		return
 	}
-	c.JSON(http.StatusOK, visible(releases))
+	c.JSON(http.StatusOK, withoutSources(releases))
 }
 
 // Publish grava (ou regrava) uma release: PUT /changelog/:version. Quem chama é
