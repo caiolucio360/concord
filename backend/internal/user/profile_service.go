@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"gin-quickstart/backend/internal/bot"
+	"gin-quickstart/backend/internal/relationship"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -34,10 +35,11 @@ type ProfileEvents interface {
 type ProfileService struct {
 	repo   profileRepo
 	events ProfileEvents
+	links  linkResolver
 }
 
-func NewProfileService(repo profileRepo, events ProfileEvents) *ProfileService {
-	return &ProfileService{repo: repo, events: events}
+func NewProfileService(repo profileRepo, events ProfileEvents, links linkResolver) *ProfileService {
+	return &ProfileService{repo: repo, events: events, links: links}
 }
 
 func notFound(err error) error {
@@ -48,7 +50,8 @@ func notFound(err error) error {
 }
 
 // Profile é o cartão de perfil. A própria pessoa vê o status escolhido
-// (ex.: invisível); os outros veem o efetivo.
+// (ex.: invisível); os outros veem o efetivo, e sem o @ se não tiverem
+// vínculo com ela.
 func (s *ProfileService) Profile(ctx context.Context, viewerID, userID string) (PublicProfile, error) {
 	u, err := s.repo.FindByID(ctx, userID)
 	if err != nil {
@@ -61,9 +64,13 @@ func (s *ProfileService) Profile(ctx context.Context, viewerID, userID string) (
 		return p, nil
 	}
 	if viewerID == userID {
-		return u.Public(u.Status), nil
+		return forViewer(u.Public(u.Status), relationship.Self), nil
 	}
-	return u.Public(s.events.EffectiveStatus(userID)), nil
+	kind, err := s.links.Between(ctx, viewerID, userID)
+	if err != nil {
+		return PublicProfile{}, err
+	}
+	return forViewer(u.Public(s.events.EffectiveStatus(userID)), kind), nil
 }
 
 func (s *ProfileService) UpdateProfile(ctx context.Context, userID string, in ProfileInput) (*User, error) {

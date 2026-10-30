@@ -34,6 +34,16 @@ describe('profileStore', () => {
     })
   })
 
+  it('user:update de quem não tem vínculo comigo não traz o @ de volta', () => {
+    useProfileStore.getState().apply(profile({ username: '', relationship: 'none' }))
+    useProfileStore.getState().apply(profile({ display_name: 'Mugis RX' }))
+    expect(useProfileStore.getState().profiles.u1).toMatchObject({
+      display_name: 'Mugis RX',
+      username: '',
+      relationship: 'none'
+    })
+  })
+
   it('dois pedidos ao mesmo tempo fazem uma requisição só', async () => {
     getProfile.mockResolvedValue(profile())
     const [a, b] = await Promise.all([

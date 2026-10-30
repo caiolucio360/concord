@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { CardSide, Rect } from '../lib/profileCard'
+import type { ProfileRelationship } from '../lib/profileRelationship'
 
 // Cartão de perfil (clique numa pessoa, como no Discord).
 
@@ -7,6 +8,8 @@ export interface ProfileCardTarget {
   userId: string
   name: string
   username?: string
+  /** Vínculo já conhecido de onde o cartão abriu (ranking), antes do perfil chegar. */
+  relationship?: ProfileRelationship
   anchor: Rect
   side: CardSide
   /** O que foi clicado: clicar nele de novo fecha (não conta como "fora"). */
@@ -30,7 +33,8 @@ export function profileCardHandler(
   userId: string,
   name: string,
   username: string | undefined,
-  side: CardSide
+  side: CardSide,
+  relationship?: ProfileRelationship
 ): (e: React.MouseEvent<HTMLElement>) => void {
   return (e) => {
     const r = e.currentTarget.getBoundingClientRect()
@@ -44,6 +48,7 @@ export function profileCardHandler(
       userId,
       name,
       username,
+      relationship,
       side,
       anchor: { top: r.top, left: r.left, right: r.right, bottom: r.bottom },
       anchorEl: e.currentTarget
