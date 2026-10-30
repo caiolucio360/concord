@@ -1,4 +1,4 @@
-import { fireEvent } from '@testing-library/react-native'
+import { fireEvent, waitFor } from '@testing-library/react-native'
 import { renderRouter, screen } from 'expo-router/testing-library'
 import { loadTokens } from '../src/features/auth/lib/secureTokens'
 import { useAuthStore } from '../src/features/auth/store/authStore'
@@ -49,6 +49,8 @@ jest.mock('../src/features/call/api/calls', () => ({
   getCallState: jest.fn(),
   startCall: jest.fn().mockResolvedValue({ id: 'cl1', status: 'ringing' })
 }))
+// O pedido do microfone é a janela nativa do Android (vem antes de começar a chamada).
+jest.mock('../src/features/call/lib/micPermission', () => ({ ensureMicPermission: jest.fn().mockResolvedValue(true) }))
 jest.mock('@react-native-community/netinfo', () => ({
   __esModule: true,
   default: { addEventListener: jest.fn(() => jest.fn()) }
@@ -134,7 +136,7 @@ describe('rotas do app', () => {
     jest.mocked(loadTokens).mockResolvedValueOnce({ accessToken: 'a', refreshToken: 'r' })
     await renderRouter('./app', { initialUrl: '/dm/d1?name=Zed&type=dm' })
     await fireEvent.press(await screen.findByRole('button', { name: 'Iniciar chamada de voz' }))
-    expect(startCall).toHaveBeenCalledWith({ type: 'dm', conversation_id: 'd1' })
+    await waitFor(() => expect(startCall).toHaveBeenCalledWith({ type: 'dm', conversation_id: 'd1' }))
     expect(await screen.findByRole('button', { name: 'Sair da chamada' })).toBeOnTheScreen()
   })
 

@@ -12,6 +12,7 @@ import { useCameraStore } from '../store/cameraStore'
 import { useScreenShareStore } from '../store/screenShareStore'
 import { useParticipantsStore, voiceOf } from '../store/participantsStore'
 import { useSpeakingStore } from '../store/speakingStore'
+import { useUserAudioStore } from '../store/userAudioStore'
 import { CallNotice } from './CallNotice'
 import { XpBar } from '../../levels/components/XpBar'
 import { useVoiceControlsStore } from '../../voice/store/voiceControlsStore'
@@ -20,6 +21,7 @@ import { useMusicStore } from '../../music/store/musicStore'
 import { CallControls } from './CallControls'
 import { ParticipantTile } from './ParticipantTile'
 import { ScreenViewer } from './ScreenViewer'
+import { UserAudioSheet } from './UserAudioSheet'
 
 interface CallScreenProps {
   onBack: () => void
@@ -60,6 +62,8 @@ export function CallScreen({ onBack, onLeave, onOpenSettings, onToggleShare, onW
   const cameras = useCameraStore((s) => s.cameras)
   const cameraOn = useCameraStore((s) => s.on)
   const canWatch = Boolean(onWatch && renderScreen)
+  const userAudio = useUserAudioStore((s) => s.settings)
+  const [audioFor, setAudioFor] = useState<CallUser | null>(null)
 
   const people: CallUser[] = me ? [{ id: me.id, username: me.username, display_name: me.display_name, avatar_url: me.avatar_url }, ...others] : others
   const grid = callGrid(width, gridHeight, people.length)
@@ -102,12 +106,15 @@ export function CallScreen({ onBack, onLeave, onOpenSettings, onToggleShare, onW
               avatarSize={grid.avatar}
               video={renderCamera && cameras.includes(item.id) ? renderCamera(item.id) : undefined}
               onWatch={canWatch && item.id !== me?.id && watching !== item.id ? () => onWatch?.(item.id) : undefined}
+              localMuted={userAudio[item.id]?.muted ?? false}
+              onOpenAudio={item.id === me?.id ? undefined : () => setAudioFor(item)}
             />
           )}
         />
       </View>
       <CallControls sharing={sharing} camera={cameraOn} onToggleCamera={onToggleCamera} onFlipCamera={onFlipCamera} onToggleShare={onToggleShare} onLeave={onLeave} />
       {serverId ? <MusicPanel serverId={serverId} /> : null}
+      {audioFor ? <UserAudioSheet user={audioFor} onClose={() => setAudioFor(null)} /> : null}
     </SafeAreaView>
   )
 }

@@ -8,8 +8,8 @@ export function useCallForeground(port: ForegroundPort = notifeeForeground): voi
   useEffect(() => {
     const fg = createCallForeground(port)
     const sync = (): void => {
-      const { phase, name } = useCallSessionStore.getState()
-      fg.sync({ phase, name })
+      const { phase, name, micDenied } = useCallSessionStore.getState()
+      fg.sync({ phase, name, micDenied })
     }
     sync()
     return useCallSessionStore.subscribe(sync)

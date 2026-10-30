@@ -12,6 +12,8 @@ export interface CallMedia {
   setMicEnabled(on: boolean): Promise<void>
   /** Liga ou desliga o áudio que chega (fone). */
   setListening(on: boolean): void
+  /** Volume (0 a 1) de uma pessoa, só para mim; o fone desligado continua silenciando todo mundo. */
+  setUserVolume(userId: string, volume: number): void
   /** Liga ou desliga a transmissão da minha tela (o sistema pede a permissão de captura); rejeita se ela for negada. */
   setScreenShareEnabled(on: boolean): Promise<void>
   /** Liga ou desliga a minha câmera; rejeita se o sistema negou ou a câmera está ocupada. */

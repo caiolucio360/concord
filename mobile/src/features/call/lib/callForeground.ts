@@ -16,8 +16,9 @@ const KEEP_ALIVE: CallPhase[] = ['outgoing', 'connecting', 'active', 'reconnecti
 export function createCallForeground(port: ForegroundPort) {
   let running = false
   return {
-    sync({ phase, name }: { phase: CallPhase; name: string }): void {
-      const want = KEEP_ALIVE.includes(phase)
+    sync({ phase, name, micDenied = false }: { phase: CallPhase; name: string; micDenied?: boolean }): void {
+      // O serviço é do tipo microfone: subir sem a permissão faz o Android 14 derrubar o app (SecurityException).
+      const want = KEEP_ALIVE.includes(phase) && !micDenied
       if (want === running) return
       running = want
       const done = want ? port.start({ title: name }) : port.stop()
