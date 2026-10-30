@@ -100,6 +100,31 @@ func (h *Handler) Swap(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+// Enqueue põe na fila o primeiro resultado de uma busca ("artista - título"),
+// na call em que o usuário está. 422 traz o texto do Maestro (recusa do /play).
+func (h *Handler) Enqueue(c *gin.Context) {
+	var in struct {
+		Query string `json:"query"`
+	}
+	if err := c.ShouldBindJSON(&in); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+	var reply ReplyError
+	switch err := h.m.EnqueueQuery(c.Request.Context(), userID(c), c.Param("id"), in.Query); {
+	case err == nil:
+		c.Status(http.StatusNoContent)
+	case errors.Is(err, ErrInvalidQuery):
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	case errors.Is(err, ErrBusy):
+		c.JSON(http.StatusTooManyRequests, gin.H{"error": err.Error()})
+	case errors.As(err, &reply):
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": reply.Text})
+	default:
+		c.JSON(http.StatusInternalServerError, gin.H{"error": TextUnavailable})
+	}
+}
+
 func (h *Handler) VideoWatch(c *gin.Context) {
 	var in struct {
 		Watching bool `json:"watching"`

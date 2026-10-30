@@ -149,21 +149,16 @@ func (m *Manager) HandleCommand(serverID, textChannelID, userID, content string)
 	if !ok {
 		return false
 	}
-	m.mu.Lock()
-	if _, working := m.busy[userID]; working {
-		m.mu.Unlock()
+	end, ok := m.begin(userID)
+	if !ok {
 		return true // já tem um comando dele em andamento: ignora em silêncio
 	}
-	m.busy[userID] = struct{}{}
-	m.mu.Unlock()
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
 				log.Printf("[music] pânico no comando: %v %s", r, debug.Stack())
 			}
-			m.mu.Lock()
-			delete(m.busy, userID)
-			m.mu.Unlock()
+			end()
 		}()
 		m.run(serverID, textChannelID, userID, cmd)
 	}()
