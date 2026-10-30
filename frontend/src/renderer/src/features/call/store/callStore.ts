@@ -27,6 +27,15 @@ import {
 } from '../lib/screenShareQuality'
 import type { MicHandle } from '../lib/noiseSuppression'
 import { CallMedia, type CallMediaHandlers, type RemoteMedia } from '../lib/livekit'
+import type {
+  EndedPayload,
+  InvitePayload,
+  ResponsePayload,
+  RingPayload,
+  ScreenSharePayload,
+  StatePayload,
+  VoicePayload
+} from '../lib/callWsPayloads'
 import { sameScreenQuality, ScreenQualityQueue } from '../lib/screenQualityQueue'
 import {
   nativeLiveActive,
@@ -106,53 +115,11 @@ export interface CallUserInfo {
   name_style?: NameStyle | null
 }
 
-interface InvitePayload {
-  call_id: string
-  type: string
-  initiator: CallUserInfo
-  conversation_id?: string | null
-}
-
-interface RingPayload {
-  call_id: string
-  callee: CallUserInfo
-}
-
-interface ResponsePayload {
-  call_id: string
-  user: CallUserInfo
-}
-
-interface StatePayload {
-  call_id: string
-  user: CallUserInfo
-}
-
-interface ScreenSharePayload {
-  call_id: string
-  user: CallUserInfo
-  active: boolean
-}
-
-interface VoicePayload {
-  call_id: string
-  user_id: string
-  muted: boolean
-  deafened: boolean
-  /** Impostos por um moderador (silenciar/ensurdecer no servidor). */
-  server_muted?: boolean
-  server_deafened?: boolean
-}
-
 export interface VoiceState {
   muted: boolean
   deafened: boolean
   serverMuted?: boolean
   serverDeafened?: boolean
-}
-
-interface EndedPayload {
-  call_id: string
 }
 
 /** Meu pedido para entrar numa sala trancada. */
