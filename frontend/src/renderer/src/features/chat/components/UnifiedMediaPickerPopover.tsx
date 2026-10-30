@@ -7,6 +7,7 @@ import StickerUploadModal from './StickerUploadModal'
 import StickersTab from './StickersTab'
 import EmojisTab from './EmojisTab'
 import GifsTab from './GifsTab'
+import EmojiUploadModal from '../../emojis/components/EmojiUploadModal'
 import { useMediaPickerDismiss } from '../hooks/useMediaPickerDismiss'
 
 type TabType = 'emojis' | 'gifs' | 'stickers'
@@ -34,7 +35,8 @@ export default function UnifiedMediaPickerPopover({
 }: UnifiedMediaPickerPopoverProps): React.JSX.Element {
   const [tab, setTab] = useState<TabType>('emojis')
   const [search, setSearch] = useState('')
-  const [uploadOpen, setUploadOpen] = useState(false)
+  // Modal de envio aberto por cima (figurinha ou emoji do servidor).
+  const [upload, setUpload] = useState<'stickers' | 'emojis' | null>(null)
 
   const { gifs, loading: loadingGifs } = useGifSearch(tab === 'gifs', search)
 
@@ -43,7 +45,7 @@ export default function UnifiedMediaPickerPopover({
 
   const ref = useRef<HTMLDivElement>(null)
 
-  useMediaPickerDismiss(ref, uploadOpen, onClose)
+  useMediaPickerDismiss(ref, upload !== null, onClose)
 
   // Load stickers on mount if serverId present
   useEffect(() => {
@@ -96,7 +98,9 @@ export default function UnifiedMediaPickerPopover({
         <div className="flex-1 overflow-y-auto pr-1">
           {tab === 'emojis' && (
             <EmojisTab
+              serverId={serverId}
               search={search}
+              onAdd={() => setUpload('emojis')}
               onSelect={(emoji) => {
                 onSelectEmoji(emoji)
                 onClose()
@@ -120,7 +124,7 @@ export default function UnifiedMediaPickerPopover({
               <StickersTab
                 serverId={serverId}
                 search={search}
-                onAdd={() => setUploadOpen(true)}
+                onAdd={() => setUpload('stickers')}
                 onSelectSticker={(selected) => {
                   onSelectSticker(selected)
                   onClose()
@@ -138,12 +142,11 @@ export default function UnifiedMediaPickerPopover({
         )}
       </div>
 
-      {serverId && uploadOpen && (
-        <StickerUploadModal
-          open={uploadOpen}
-          serverId={serverId}
-          onClose={() => setUploadOpen(false)}
-        />
+      {serverId && upload === 'stickers' && (
+        <StickerUploadModal open serverId={serverId} onClose={() => setUpload(null)} />
+      )}
+      {serverId && upload === 'emojis' && (
+        <EmojiUploadModal serverId={serverId} onClose={() => setUpload(null)} />
       )}
     </>
   )
