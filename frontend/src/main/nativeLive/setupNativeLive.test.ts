@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { nativeLiveAvailability } from './setupNativeLive'
+import { leavesPage, nativeLiveAvailability } from './setupNativeLive'
 
 describe('nativeLiveAvailability', () => {
   it('Linux com o helper: disponível, e diz se a placa é NVIDIA', () => {
@@ -22,5 +22,13 @@ describe('nativeLiveAvailability', () => {
       available: false,
       nvidia: false
     })
+  })
+})
+
+describe('leavesPage', () => {
+  it('recarregar a página acaba com a live; trocar de rota (#/) ou um iframe não', () => {
+    expect(leavesPage({ isMainFrame: true, isSameDocument: false })).toBe(true)
+    expect(leavesPage({ isMainFrame: true, isSameDocument: true })).toBe(false)
+    expect(leavesPage({ isMainFrame: false, isSameDocument: false })).toBe(false)
   })
 })

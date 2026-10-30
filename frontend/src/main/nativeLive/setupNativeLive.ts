@@ -34,6 +34,11 @@ export function nativeLiveAvailability(
   return { available: true, nvidia: nvidiaOnly() }
 }
 
+/** Recarregar ou trocar de página (não um #/rota nem um iframe) acaba com a live. */
+export function leavesPage(details: { isMainFrame: boolean; isSameDocument: boolean }): boolean {
+  return details.isMainFrame && !details.isSameDocument
+}
+
 const spawnLive = (path: string): LiveChild =>
   spawn(path, [], { stdio: ['pipe', 'pipe', 'ignore'], env: process.env })
 
@@ -56,7 +61,7 @@ function bindOwner(contents: WebContents): void {
   owner = contents
   contents.once('destroyed', stopLive)
   contents.on('did-start-navigation', (details) => {
-    if (details.isMainFrame && !details.isSameDocument && owner === contents) stopLive()
+    if (owner === contents && leavesPage(details)) stopLive()
   })
 }
 
