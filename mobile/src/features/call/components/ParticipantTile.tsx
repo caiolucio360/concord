@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   ring: { ...StyleSheet.absoluteFill, borderRadius: 16, borderWidth: 3, borderColor: colors.green },
   nameBadge: { position: 'absolute', left: spacing.sm, bottom: spacing.sm, flexDirection: 'row', alignItems: 'center', gap: spacing.xs, maxWidth: '70%', paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.md, backgroundColor: 'rgba(0,0,0,0.55)' },
   name: { color: colors.white, fontSize: fontSize.sm, fontWeight: '600', flexShrink: 1 },
-  corner: { position: 'absolute', right: spacing.sm, bottom: spacing.sm },
+  corner: { position: 'absolute', right: spacing.sm, top: spacing.sm },
   live: { color: colors.white, fontSize: fontSize.xs, fontWeight: '700', paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.md, backgroundColor: colors.red, overflow: 'hidden' },
   watch: { minHeight: 44, justifyContent: 'center', paddingHorizontal: spacing.md, borderRadius: radius.md, backgroundColor: colors.red },
   watchText: { color: colors.white, fontSize: fontSize.xs, fontWeight: '700' }
