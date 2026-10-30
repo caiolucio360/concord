@@ -2,7 +2,7 @@ import { useState } from 'react'
 import router from '../../../../app/router'
 import { useFriendStore, useRelationship } from '../../../friends/store/friendStore'
 import { useUserMenuStore } from '../../store/userMenuStore'
-import { friendRequestError } from '../../lib/relationship'
+import { befriend, friendButtonOf } from '../../lib/cardFriendship'
 import { showToast } from '../../../../shared/store/toastStore'
 import { DotsIcon } from '../../../../shared/ui/icons'
 
@@ -36,23 +36,11 @@ function CardActions({
   const addFriend = async (): Promise<void> => {
     if (!username) return
     setSending(true)
-    try {
-      if (relationship === 'incoming') {
-        await accept(username)
-      } else {
-        const result = await sendRequest(username)
-        showToast.success(
-          result === 'accepted'
-            ? `Você e ${displayName} agora são amigos.`
-            : `Pedido de amizade enviado para ${displayName}.`
-        )
-      }
-    } catch (err) {
-      showToast.error(friendRequestError(err))
-    } finally {
-      setSending(false)
-    }
+    const notice = await befriend(relationship, username, displayName, { accept, sendRequest })
+    setSending(false)
+    if (notice) showToast[notice.kind](notice.message)
   }
+  const friend = friendButtonOf(relationship, Boolean(username))
 
   const openMore = (e: React.MouseEvent<HTMLButtonElement>): void => {
     const currentMenu = useUserMenuStore.getState().target
@@ -80,22 +68,18 @@ function CardActions({
       >
         Enviar mensagem
       </button>
-      {username && relationship !== 'friend' && relationship !== 'blocked' && (
+      {friend && (
         <button
           type="button"
-          disabled={sending || relationship === 'outgoing'}
+          disabled={sending || friend.pending}
           onClick={() => void addFriend()}
           className={`cursor-pointer rounded-lg px-3 py-2 text-xs font-semibold transition-colors disabled:cursor-default disabled:opacity-60 ${
-            relationship === 'incoming'
+            friend.incoming
               ? 'bg-success-strong text-white hover:bg-success-strong-hover'
               : 'bg-fg/10 text-strong hover:bg-fg/15'
           }`}
         >
-          {relationship === 'outgoing'
-            ? 'Pedido enviado'
-            : relationship === 'incoming'
-              ? 'Aceitar pedido'
-              : 'Adicionar amigo'}
+          {friend.label}
         </button>
       )}
       <button
