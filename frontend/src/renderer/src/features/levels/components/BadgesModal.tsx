@@ -157,7 +157,7 @@ function BadgesModal(): React.JSX.Element | null {
   // Foco preso, Esc e o X vêm do Modal (sem moldura: a coluna e o detalhe são o layout).
   return (
     <Modal open bare wide labelledBy={titleId} onClose={close}>
-      <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden text-gray-200 md:h-[600px] md:flex-row">
+      <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden text-gray-200 md:h-[600px] md:flex-auto md:flex-row">
         <BadgesAside
           target={target}
           isMe={isMe}
