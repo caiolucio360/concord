@@ -25,10 +25,26 @@ func (p fakePresence) EffectiveStatus(id string) string {
 	return "offline"
 }
 
-type fakeSettings struct{ all map[string]notifysettings.All }
+type fakeSettings struct {
+	all   map[string]notifysettings.All
+	calls *queryCalls
+}
+
+// queryCalls conta as idas "ao banco" dos fakes (uma por pessoa x uma em lote).
+type queryCalls struct{ single, batch int }
 
 func (s fakeSettings) All(_ context.Context, id string) (notifysettings.All, error) {
+	s.calls.single++
 	return s.all[id], nil
+}
+
+func (s fakeSettings) AllFor(_ context.Context, ids []string) (map[string]notifysettings.All, error) {
+	s.calls.batch++
+	out := map[string]notifysettings.All{}
+	for _, id := range ids {
+		out[id] = s.all[id]
+	}
+	return out, nil
 }
 
 type fakeDir struct {
@@ -61,10 +77,21 @@ func (a fakeAccess) CanView(_ context.Context, _ string, userID string) bool { r
 type fakeTokens struct {
 	tokens  map[string][]string
 	deleted []string
+	calls   queryCalls
 }
 
 func (t *fakeTokens) TokensForUser(_ context.Context, id string) ([]string, error) {
+	t.calls.single++
 	return t.tokens[id], nil
+}
+
+func (t *fakeTokens) TokensForUsers(_ context.Context, ids []string) (map[string][]string, error) {
+	t.calls.batch++
+	out := map[string][]string{}
+	for _, id := range ids {
+		out[id] = t.tokens[id]
+	}
+	return out, nil
 }
 func (t *fakeTokens) Delete(_ context.Context, token string) error {
 	t.deleted = append(t.deleted, token)
@@ -101,7 +128,7 @@ func newRig() *rig {
 		sender:   &fakeSender{errs: map[string]error{}},
 		tokens:   &fakeTokens{tokens: map[string][]string{"u-ana": {"tok-ana"}, "u-bia": {"tok-bia"}, "u-caio": {"tok-caio"}}},
 		presence: fakePresence{online: map[string]bool{}, status: map[string]string{}},
-		settings: fakeSettings{all: map[string]notifysettings.All{}},
+		settings: fakeSettings{all: map[string]notifysettings.All{}, calls: &queryCalls{}},
 		dir:      fakeDir{channelName: "geral", byUsername: map[string]string{"ana_mobile": "u-ana", "bia_web": "u-bia", "caio_dev": "u-caio"}, members: []string{"u-ana", "u-bia", "u-caio", "u-autor"}},
 		access:   fakeAccess{deny: map[string]bool{}},
 	}
@@ -415,4 +442,24 @@ func TestOnCallInvite(t *testing.T) {
 		r.n.OnCallInvite(invite)
 		expectTokens(t, r)
 	})
+}
+
+// @all num servidor grande: preferências e tokens de todo mundo em uma
+// consulta cada, e quem está online nem entra nelas.
+func TestMencaoParaTodosConsultaEmLote(t *testing.T) {
+	r := newRig()
+	r.presence.online["u-caio"] = true
+	r.build()
+
+	r.n.OnMessage(channelEvent("@all reunião", ptr("all")))
+
+	if got := *r.settings.calls; got != (queryCalls{batch: 1}) {
+		t.Fatalf("preferências: %+v, queria uma consulta em lote", got)
+	}
+	if got := r.tokens.calls; got != (queryCalls{batch: 1}) {
+		t.Fatalf("tokens: %+v, queria uma consulta em lote", got)
+	}
+	if len(r.sender.sent) != 2 {
+		t.Fatalf("enviados = %d, queria 2 (ana e bia; caio está online)", len(r.sender.sent))
+	}
 }
