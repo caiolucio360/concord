@@ -15,7 +15,7 @@ const SRC = fileURLToPath(new URL('../..', import.meta.url))
 /** Só dicas e informação, sem ação escondida (ou a ação continua no toque por outro caminho). */
 const INFORMATIVO = [
   'features/friends/components/PersonRow.tsx', // mostra o @ ao passar o mouse
-  'features/levels/components/BadgeRow.tsx', // balão com o nome do badge
+  'features/levels/components/BadgeRowItem.tsx', // balão com o nome do badge
   'features/chat/components/MessageSticker.tsx', // balão com o nome da figurinha
   'features/chat/components/MessageParts.tsx', // hora da mensagem compacta
   'features/profile/components/ProfileCardBody.tsx', // botão invisível sobre o avatar/banner, que já abre ao toque
