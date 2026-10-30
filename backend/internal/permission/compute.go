@@ -1,6 +1,9 @@
 package permission
 
-import "time"
+import (
+	"slices"
+	"time"
+)
 
 // Role é um cargo do servidor. O @everyone (IsDefault) tem posição 0 e vale
 // para todo membro; os demais somam permissões por cima dele.
@@ -28,16 +31,13 @@ type Overwrite struct {
 	Deny       int64  `json:"deny"`
 }
 
-// Base: permissões do membro no servidor, sem olhar canal. Dono e quem tem
-// ADMINISTRATOR ficam com tudo.
-func Base(ownerID, userID string, everyone int64, roles []Role) int64 {
+// baseFrom: permissões do membro no servidor, sem olhar canal, com os bits
+// dos cargos já somados. Dono e quem tem ADMINISTRATOR ficam com tudo.
+func baseFrom(ownerID, userID string, everyone, rolePerms int64) int64 {
 	if userID != "" && userID == ownerID {
 		return All
 	}
-	perms := everyone
-	for _, r := range roles {
-		perms |= r.Permissions
-	}
+	perms := everyone | rolePerms
 	if perms&Administrator != 0 {
 		return All
 	}
@@ -53,10 +53,6 @@ func ForChannel(base int64, channelType string, overwrites []Overwrite, everyone
 	}
 
 	perms := base
-	hasRole := make(map[string]bool, len(roleIDs))
-	for _, id := range roleIDs {
-		hasRole[id] = true
-	}
 
 	for _, o := range overwrites {
 		if o.TargetType == TargetRole && o.TargetID == everyoneRoleID {
@@ -67,7 +63,7 @@ func ForChannel(base int64, channelType string, overwrites []Overwrite, everyone
 
 	var allow, deny int64
 	for _, o := range overwrites {
-		if o.TargetType == TargetRole && o.TargetID != everyoneRoleID && hasRole[o.TargetID] {
+		if o.TargetType == TargetRole && o.TargetID != everyoneRoleID && slices.Contains(roleIDs, o.TargetID) {
 			allow |= o.Allow
 			deny |= o.Deny
 		}

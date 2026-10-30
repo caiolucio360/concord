@@ -292,3 +292,57 @@ func TestPanicInLoadDoesNotBlockLaterReaders(t *testing.T) {
 		t.Fatalf("depois do pânico: %v", err)
 	}
 }
+
+// Leitores e escritores ao mesmo tempo em vários servidores: depois da última
+// escrita (e da invalidação dela), toda leitura vê o estado final. Sem
+// -race nesta máquina, este teste é o que exercita o caminho sem lock.
+func TestConcurrentReadsAndInvalidationsConverge(t *testing.T) {
+	servers := []string{"s1", "s2", "s3", "s4"}
+	store := newCountingStore()
+	for _, id := range servers {
+		store.set(NewSnapshot(id, "owner", ViewChannel).WithChannel("c-"+id, "text").WithMember("owner"))
+	}
+	svc := NewService(store)
+	stop := make(chan struct{})
+	var readers sync.WaitGroup
+	for r := range 8 {
+		readers.Add(1)
+		go func() {
+			defer readers.Done()
+			for i := 0; ; i++ {
+				select {
+				case <-stop:
+					return
+				default:
+				}
+				id := servers[(r+i)%len(servers)]
+				_, _ = svc.ServerPerms(context.Background(), id, "ana")
+				_ = svc.RequireChannel(context.Background(), "c-"+id, "ana", ViewChannel)
+			}
+		}()
+	}
+	for round := range 200 {
+		id := servers[round%len(servers)]
+		snap := NewSnapshot(id, "owner", ViewChannel).WithChannel("c-"+id, "text").WithMember("owner")
+		if round >= 196 { // a última escrita de cada servidor põe a ana
+			snap.WithMember("ana")
+		}
+		store.set(snap)
+		if round%2 == 0 {
+			svc.InvalidateServer(id)
+		} else {
+			svc.InvalidateChannel("c-" + id)
+		}
+	}
+	close(stop)
+	readers.Wait()
+
+	for _, id := range servers {
+		if _, err := svc.ServerPerms(context.Background(), id, "ana"); err != nil {
+			t.Fatalf("%s: estado final não visto: %v", id, err)
+		}
+		if err := svc.RequireChannel(context.Background(), "c-"+id, "ana", ViewChannel); err != nil {
+			t.Fatalf("%s: canal no estado final: %v", id, err)
+		}
+	}
+}
