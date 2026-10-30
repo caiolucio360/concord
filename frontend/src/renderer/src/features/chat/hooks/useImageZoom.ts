@@ -2,16 +2,17 @@ import { useEffect, useEffectEvent, useRef, useState, type RefObject } from 'rea
 import { IDENTITY, toggleZoom, zoomAt, type Point, type ZoomView } from '../lib/imageZoom'
 import {
   CENTER,
+  IDLE_DRAG,
   elementBounds,
   fromCenter,
-  gestureView,
-  sameView,
+  pointerDown,
+  pointerMove,
+  pointerUp,
   viewForKey,
   wheelScale,
   zoomLevelLabel,
   zoomLimit,
   zoomTransform,
-  type GestureStart,
   type ZoomLimit
 } from '../lib/zoomInput'
 
@@ -30,8 +31,8 @@ export interface ImageZoom {
   reset: () => void
   /** Duplo clique: amplia 2x no ponto ou volta para a imagem inteira. */
   toggleAt: (e: React.MouseEvent) => void
-  /** true se o último gesto moveu a imagem (o clique que vem depois dele não fecha). */
-  consumeDrag: () => boolean
+  /** true se o último gesto arrastou ou pinçou (o clique que vem depois dele não fecha). */
+  wasDrag: () => boolean
   handlers: {
     onPointerDown: (e: React.PointerEvent) => void
     onPointerMove: (e: React.PointerEvent) => void
@@ -46,7 +47,8 @@ const point = (e: { clientX: number; clientY: number }): Point => fromCenter(e, 
  * Zoom da imagem do lightbox: roda/pinça do trackpad, arraste e pinça com ponteiros,
  * duplo clique, teclado e botões. A vista mora num ref, e o transform e o nível vão
  * direto no DOM, uma vez por frame: arrastar não re-renderiza o React. O state só
- * muda quando o cursor ou um botão muda (começo/fim do gesto, 1x, 5x).
+ * muda quando o cursor ou um botão muda (começo/fim do gesto, 1x, 5x). Só ações
+ * discretas (botões, teclas, duplo clique) animam; roda e dedos seguem sem atraso.
  */
 export function useImageZoom(targets: ZoomTargets): ImageZoom {
   const { stage, image, level } = targets
@@ -54,32 +56,31 @@ export function useImageZoom(targets: ZoomTargets): ImageZoom {
   const [dragging, setDragging] = useState(false)
   const view = useRef<ZoomView>(IDENTITY)
   const frame = useRef(0)
-  const pointers = useRef(new Map<number, Point>())
-  const start = useRef<GestureStart>({ view: IDENTITY, points: [] })
-  const moved = useRef(false)
+  const smooth = useRef(false)
+  const drag = useRef(IDLE_DRAG)
 
   const bounds = (): ReturnType<typeof elementBounds> => elementBounds(image.current, window)
 
   const paint = (): void => {
     frame.current = 0
-    image.current?.style.setProperty('transform', zoomTransform(view.current))
+    const style = image.current?.style
+    // Sem a duração inline vale a da classe (e o motion-safe dela).
+    style?.setProperty('transition-duration', smooth.current ? '' : '0s')
+    style?.setProperty('transform', zoomTransform(view.current))
     level.current?.replaceChildren(zoomLevelLabel(view.current.scale))
   }
 
-  const apply = (next: ZoomView): void => {
+  const apply = (next: ZoomView, animate = false): void => {
     view.current = next
+    smooth.current = animate
     setLimit(zoomLimit(next.scale))
     if (!frame.current) frame.current = requestAnimationFrame(paint)
-  }
-
-  const restart = (): void => {
-    start.current = { view: view.current, points: [...pointers.current.values()] }
   }
 
   // Não passivo: o preventDefault segura o zoom/rolagem da página na pinça do trackpad.
   const onWheel = useEffectEvent((e: WheelEvent) => {
     e.preventDefault()
-    const scale = wheelScale(view.current.scale, e.deltaY, e.ctrlKey)
+    const scale = wheelScale(view.current.scale, e)
     apply(zoomAt(view.current, scale, point(e), bounds()))
   })
 
@@ -87,7 +88,7 @@ export function useImageZoom(targets: ZoomTargets): ImageZoom {
     const next = viewForKey(view.current, e, bounds())
     if (!next) return
     e.preventDefault()
-    apply(next)
+    apply(next, true)
   })
 
   useEffect(() => {
@@ -106,39 +107,30 @@ export function useImageZoom(targets: ZoomTargets): ImageZoom {
 
   const onPointerDown = (e: React.PointerEvent): void => {
     if (e.button !== 0) return
-    pointers.current.set(e.pointerId, point(e))
+    drag.current = pointerDown(drag.current, e.pointerId, point(e), view.current)
     setDragging(true)
-    restart()
   }
 
   const onPointerMove = (e: React.PointerEvent): void => {
-    if (!pointers.current.has(e.pointerId)) return
-    pointers.current.set(e.pointerId, point(e))
-    const next = gestureView(start.current, [...pointers.current.values()], bounds())
-    if (!sameView(next, start.current.view)) moved.current = true
-    apply(next)
+    const next = pointerMove(drag.current, e.pointerId, point(e), bounds())
+    if (!next) return
+    drag.current = next.state
+    apply(next.view)
   }
 
-  // Dedo a mais ou a menos: o gesto recomeça de onde a imagem está, sem pular.
   const onPointerUp = (e: React.PointerEvent): void => {
-    pointers.current.delete(e.pointerId)
-    setDragging(pointers.current.size > 0)
-    restart()
-  }
-
-  const consumeDrag = (): boolean => {
-    const was = moved.current
-    moved.current = false
-    return was
+    drag.current = pointerUp(drag.current, e.pointerId, view.current)
+    setDragging(drag.current.pointers.size > 0)
   }
 
   return {
     limit,
     dragging,
-    zoomBy: (factor) => apply(zoomAt(view.current, view.current.scale * factor, CENTER, bounds())),
-    reset: () => apply(IDENTITY),
-    toggleAt: (e) => apply(toggleZoom(view.current, point(e), bounds())),
-    consumeDrag,
+    zoomBy: (factor) =>
+      apply(zoomAt(view.current, view.current.scale * factor, CENTER, bounds()), true),
+    reset: () => apply(IDENTITY, true),
+    toggleAt: (e) => apply(toggleZoom(view.current, point(e), bounds()), true),
+    wasDrag: () => drag.current.moved,
     handlers: { onPointerDown, onPointerMove, onPointerUp, onPointerCancel: onPointerUp }
   }
 }

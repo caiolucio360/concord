@@ -18,10 +18,20 @@ export const ZOOM_STEP = 1.25
 const KEY_PAN_STEP = 60
 export const CENTER: Point = { x: 0, y: 0 }
 
+export interface ZoomWheel {
+  deltaY: number
+  /** 0 = pixels; 1 = linhas (roda do Firefox). */
+  deltaMode: number
+  ctrlKey: boolean
+}
+
+const LINE_HEIGHT = 16
+
 /** Escala depois de um giro da roda; a pinça do trackpad chega como roda com Ctrl e passos pequenos. */
-export function wheelScale(scale: number, deltaY: number, ctrlKey: boolean): number {
-  const speed = ctrlKey ? 0.01 : 0.002
-  return clampScale(scale * Math.exp(-deltaY * speed))
+export function wheelScale(scale: number, e: ZoomWheel): number {
+  const speed = e.ctrlKey ? 0.01 : 0.002
+  const delta = e.deltaMode === 1 ? e.deltaY * LINE_HEIGHT : e.deltaY
+  return clampScale(scale * Math.exp(-delta * speed))
 }
 
 const KEY_SCALE: Record<string, number> = {
@@ -42,11 +52,22 @@ export interface ZoomKey {
   key: string
   ctrlKey: boolean
   metaKey: boolean
+  altKey: boolean
+  target: unknown
 }
 
-/** Teclado: + e − ampliam no centro, 0 volta, setas movem. Com Ctrl/Cmd é o zoom do app: `null`. */
+const TEXT_FIELDS = ['INPUT', 'TEXTAREA', 'SELECT']
+
+/** Tecla é do zoom: sem modificador (Ctrl/Cmd é o zoom do app, Alt são atalhos) e fora de campo de texto. */
+function isZoomKey(e: ZoomKey): boolean {
+  const target = e.target as { tagName?: string; isContentEditable?: boolean } | null
+  const typing = TEXT_FIELDS.includes(target?.tagName ?? '') || target?.isContentEditable === true
+  return !(e.ctrlKey || e.metaKey || e.altKey || typing)
+}
+
+/** Teclado: + e − ampliam no centro, 0 volta, setas movem. Tecla que não é do zoom: `null`. */
 export function viewForKey(v: ZoomView, e: ZoomKey, b: ZoomBounds): ZoomView | null {
-  if (e.ctrlKey || e.metaKey) return null
+  if (!isZoomKey(e)) return null
   if (e.key === '0') return IDENTITY
   const factor = KEY_SCALE[e.key]
   if (factor) return zoomAt(v, v.scale * factor, CENTER, b)
@@ -74,6 +95,57 @@ export function gestureView(start: GestureStart, now: Point[], b: ZoomBounds): Z
   return a0 && a1 ? panBy(start.view, a1.x - a0.x, a1.y - a0.y, b) : start.view
 }
 
+// Até isto o ponteiro só tremeu: ainda é um clique (fora da imagem, fecha).
+const DRAG_SLOP = 4
+
+/** Ponteiros no palco: onde estão, de onde o gesto partiu e se ele já arrastou. */
+export interface DragState {
+  pointers: ReadonlyMap<number, Point>
+  start: GestureStart
+  /** Onde o primeiro ponteiro do gesto desceu. */
+  origin: Point
+  moved: boolean
+}
+
+export const IDLE_DRAG: DragState = {
+  pointers: new Map(),
+  start: { view: IDENTITY, points: [] },
+  origin: CENTER,
+  moved: false
+}
+
+/** Ponteiro desceu: gesto novo zera o "arrastou"; dedo a mais vira pinça a partir da vista atual. */
+export function pointerDown(s: DragState, id: number, p: Point, view: ZoomView): DragState {
+  const pointers = new Map(s.pointers).set(id, p)
+  const fresh = s.pointers.size === 0
+  return {
+    pointers,
+    start: { view, points: [...pointers.values()] },
+    origin: fresh ? p : s.origin,
+    moved: !fresh
+  }
+}
+
+/** Ponteiro andou: a vista nova e o estado; `null` se o ponteiro não começou no palco. */
+export function pointerMove(
+  s: DragState,
+  id: number,
+  p: Point,
+  b: ZoomBounds
+): { state: DragState; view: ZoomView } | null {
+  if (!s.pointers.has(id)) return null
+  const pointers = new Map(s.pointers).set(id, p)
+  const moved = s.moved || distance(p, s.origin) > DRAG_SLOP
+  return { state: { ...s, pointers, moved }, view: gestureView(s.start, [...pointers.values()], b) }
+}
+
+/** Ponteiro subiu: quem sobrou recomeça o gesto de onde a imagem está, sem pular. */
+export function pointerUp(s: DragState, id: number, view: ZoomView): DragState {
+  const pointers = new Map(s.pointers)
+  pointers.delete(id)
+  return { ...s, pointers, start: { view, points: [...pointers.values()] } }
+}
+
 interface WindowSize {
   innerWidth: number
   innerHeight: number
@@ -96,10 +168,6 @@ export function elementBounds(
     viewWidth: win.innerWidth,
     viewHeight: win.innerHeight
   }
-}
-
-export function sameView(a: ZoomView, b: ZoomView): boolean {
-  return a.scale === b.scale && a.x === b.x && a.y === b.y
 }
 
 export function zoomTransform(v: ZoomView): string {

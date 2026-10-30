@@ -38,7 +38,7 @@ function MediaLightbox({
 
   // Soltar o arraste fora da imagem não conta como "clique fora".
   const onBackdropClick = (): void => {
-    if (!zoom.consumeDrag()) onClose()
+    if (!zoom.wasDrag()) onClose()
   }
 
   return createPortal(
@@ -56,10 +56,7 @@ function MediaLightbox({
         src={src}
         alt={alt}
         draggable={false}
-        onClick={(e) => {
-          e.stopPropagation()
-          zoom.consumeDrag()
-        }}
+        onClick={(e) => e.stopPropagation()}
         onDoubleClick={zoom.toggleAt}
         style={INITIAL_STYLE}
         className={`max-h-[calc(100dvh-8rem)] max-w-[90vw] rounded-md object-contain shadow-2xl will-change-transform ${zoomImageClass(zoom.limit !== 'min', zoom.dragging)}`}

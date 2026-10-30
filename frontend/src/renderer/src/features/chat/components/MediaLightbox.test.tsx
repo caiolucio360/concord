@@ -31,6 +31,6 @@ describe('MediaLightbox', () => {
 
     expect(html).toContain('aria-label="Aumentar zoom"')
     expect(html).toContain('100%')
-    expect(html.match(/disabled=""/g)).toHaveLength(2)
+    expect(html.match(/aria-disabled="true"/g)).toHaveLength(2)
   })
 })
