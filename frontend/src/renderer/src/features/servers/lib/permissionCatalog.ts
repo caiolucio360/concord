@@ -71,6 +71,11 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
         name: 'ADD_STICKERS',
         label: 'Adicionar figurinhas',
         description: 'Enviar figurinhas novas para este servidor.'
+      },
+      {
+        name: 'ADD_EMOJIS',
+        label: 'Adicionar emojis',
+        description: 'Enviar emojis novos para este servidor.'
       }
     ]
   },

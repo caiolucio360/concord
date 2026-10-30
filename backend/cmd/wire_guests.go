@@ -18,13 +18,16 @@ import (
 const guestSweepEvery = 30 * time.Second
 
 // wireGuests: convite de visitante para uma call (docs/adr/0017-visitante-na-call.md).
-// Vem depois das chamadas (consulta e tira gente delas) e antes do WebSocket
-// (o filtro de visitante fica na frente do roteador de call).
+// Vem depois das chamadas (consulta e tira gente delas).
 func (a *app) wireGuests() {
 	dir := guestDirectory{channels: a.channelService, servers: a.serverService, users: a.userService, bans: server.ServerRepository(a.db)}
 	a.guestService = guest.NewService(guest.NewRepository(a.db), a.permissionService, dir, a.callService, a.hub, a.authService)
 	must(a.guestService.Warm(a.ctx), "não foi possível carregar os acessos de visitante")
 	a.callService.SetGuests(a.guestService)
+	// Virou membro (convite do servidor ou outro caminho): deixa de ser visitante lá.
+	a.serverService.OnMemberJoined(func(ctx context.Context, serverID string, member server.ServerMember) {
+		a.guestService.MemberJoined(ctx, serverID, member.UserID)
+	})
 	go a.guestService.RunSweeper(a.ctx, guestSweepEvery)
 
 	handler := guest.NewHandler(a.guestService)
@@ -35,6 +38,14 @@ func (a *app) wireGuests() {
 			OptionalAuth:  auth.OptionalAuthMiddleware(a.authService),
 		})
 	})
+}
+
+// appVisitors: quem é visitante agora num servidor. A mesa de áudio sobe antes
+// dos visitantes; até o guest.Service existir, ninguém é.
+type appVisitors struct{ a *app }
+
+func (v appVisitors) HasGuestPass(serverID, userID string) bool {
+	return v.a.guestService != nil && v.a.guestService.HasGuestPass(serverID, userID)
 }
 
 // guestDirectory: nomes e banimentos que o convite de visitante mostra ou confere.

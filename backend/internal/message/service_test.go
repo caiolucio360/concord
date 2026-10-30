@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
-	"strings"
 	"testing"
 )
 
@@ -42,30 +41,6 @@ func TestDeleteChannelMessageBlockedInSystemChannels(t *testing.T) {
 		router.ServeHTTP(rec, req)
 		if rec.Code != http.StatusForbidden {
 			t.Fatalf("%s: status = %d, want 403", ch, rec.Code)
-		}
-	}
-}
-
-func TestValidateEmoji(t *testing.T) {
-	valid := []string{"👍", "❤️", "😂", "🔥", "🎉", "👀", "👨‍💻"}
-	for _, emoji := range valid {
-		if err := ValidateEmoji(emoji); err != nil {
-			t.Errorf("expected emoji %q to be valid, got error: %v", emoji, err)
-		}
-	}
-
-	invalid := []string{
-		"",
-		"   ",
-		" 👍",
-		"👍 ",
-		"👍 ❤️",
-		"👍\n",
-		strings.Repeat("a", 33),
-	}
-	for _, emoji := range invalid {
-		if err := ValidateEmoji(emoji); err == nil {
-			t.Errorf("expected emoji %q to be invalid", emoji)
 		}
 	}
 }

@@ -814,6 +814,23 @@ describe('callStore — mídia via LiveKit', () => {
     expect(useCallStore.getState().speakingIds).toEqual([])
   })
 
+  // Regressão (mesma conta no celular e no desktop): substituído pelo outro aparelho, o desktop esperava 60 s e
+  // chamava endCall(), que manda call:leave e tirava da chamada a conta inteira, inclusive o aparelho que entrou.
+  it('substituído por outro aparelho da mesma conta (DUPLICATE_IDENTITY): sai na hora, sem call:leave', async () => {
+    await joinChannel()
+    vi.useFakeTimers()
+    try {
+      chat.sendEvent.mockClear()
+      const handlers = media.instances[0].handlers as { onConnectionLost: (reason?: number) => void }
+      handlers.onConnectionLost(2)
+      expect(useCallStore.getState().callId).toBeNull()
+      vi.advanceTimersByTime(120_000)
+      expect(chat.sendEvent).not.toHaveBeenCalledWith('call:leave', expect.anything())
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('limpa quem está falando ao sair da chamada', async () => {
     await joinChannel()
     const handlers = media.instances[0].handlers as { onActiveSpeakers: (ids: string[]) => void }

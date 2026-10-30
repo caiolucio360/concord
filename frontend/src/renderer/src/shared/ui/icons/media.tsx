@@ -140,6 +140,19 @@ export function FullscreenExitIcon(props: IconProps): React.JSX.Element {
   )
 }
 
+/** Janela flutuante (Picture-in-Picture): tela com uma janelinha no canto. */
+export function PictureInPictureIcon(props: IconProps): React.JSX.Element {
+  return (
+    <Icon {...props}>
+      <path
+        fillRule="evenodd"
+        d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 2v12h16V6H4z"
+      />
+      <rect x="11" y="11" width="7" height="5" rx="1" />
+    </Icon>
+  )
+}
+
 /** Mesa de Áudio (mixer com faders). */
 export function SoundboardIcon(props: IconProps): React.JSX.Element {
   return (

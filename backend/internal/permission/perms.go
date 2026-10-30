@@ -11,20 +11,23 @@ import (
 // Bits de permissão. Todos abaixo de 1<<31 para o frontend fazer bitwise sem
 // BigInt. Os números são contrato com o app (lib/permissions.ts): não mudar.
 const (
-	ViewChannel       int64 = 1 << 0
-	ManageChannels    int64 = 1 << 1
-	ManageRoles       int64 = 1 << 2
-	ManageServer      int64 = 1 << 3
-	CreateInvite      int64 = 1 << 4
-	KickMembers       int64 = 1 << 5
-	BanMembers        int64 = 1 << 6
-	Administrator     int64 = 1 << 7
-	SendMessages      int64 = 1 << 8
-	AttachFiles       int64 = 1 << 9
-	AddReactions      int64 = 1 << 10
-	MentionEveryone   int64 = 1 << 11
-	ManageMessages    int64 = 1 << 12
-	ReadHistory       int64 = 1 << 13
+	ViewChannel     int64 = 1 << 0
+	ManageChannels  int64 = 1 << 1
+	ManageRoles     int64 = 1 << 2
+	ManageServer    int64 = 1 << 3
+	CreateInvite    int64 = 1 << 4
+	KickMembers     int64 = 1 << 5
+	BanMembers      int64 = 1 << 6
+	Administrator   int64 = 1 << 7
+	SendMessages    int64 = 1 << 8
+	AttachFiles     int64 = 1 << 9
+	AddReactions    int64 = 1 << 10
+	MentionEveryone int64 = 1 << 11
+	ManageMessages  int64 = 1 << 12
+	ReadHistory     int64 = 1 << 13
+	// Enviar emojis personalizados novos ao servidor (vale no servidor todo).
+	// Ver docs/adr/0028-emojis-personalizados.md.
+	AddEmojis         int64 = 1 << 15
 	Connect           int64 = 1 << 16
 	Speak             int64 = 1 << 17
 	Stream            int64 = 1 << 18
@@ -81,6 +84,7 @@ var Names = map[string]int64{
 	"MANAGE_NICKNAMES":     ManageNicknames,
 	"ADD_SOUNDS":           AddSounds,
 	"ADD_STICKERS":         AddStickers,
+	"ADD_EMOJIS":           AddEmojis,
 	"SEND_TTS_MESSAGES":    SendTTSMessages,
 }
 
@@ -89,15 +93,15 @@ const All = ViewChannel | ManageChannels | ManageRoles | ManageServer | CreateIn
 	KickMembers | BanMembers | Administrator | SendMessages | AttachFiles | AddReactions |
 	MentionEveryone | ManageMessages | ReadHistory | Connect | Speak | Stream |
 	MuteMembers | DeafenMembers | MoveMembers | DisconnectMembers | InviteGuests | UseSoundboard | ManageExpressions |
-	ChangeNickname | ManageNicknames | AddSounds | AddStickers | SendTTSMessages
+	ChangeNickname | ManageNicknames | AddSounds | AddStickers | SendTTSMessages | AddEmojis
 
 // DefaultEveryone: o que qualquer membro faz num servidor novo. Nos servidores
 // que já existiam, a migration 000039 ligou o CHANGE_NICKNAME no @everyone, a
 // 000127 o SEND_TTS_MESSAGES (ver docs/adr/0012-tts-no-cliente.md) e a 000125
-// o ADD_SOUNDS e o ADD_STICKERS.
+// o ADD_SOUNDS e o ADD_STICKERS; a 000174 o ADD_EMOJIS.
 const DefaultEveryone = ViewChannel | SendMessages | AttachFiles | AddReactions | ReadHistory |
 	CreateInvite | Connect | Speak | Stream | UseSoundboard | ChangeNickname |
-	AddSounds | AddStickers | SendTTSMessages
+	AddSounds | AddStickers | SendTTSMessages | AddEmojis
 
 // BotsRoleName é o nome fixo do cargo de sistema exclusivo para bots do servidor.
 const BotsRoleName = "Bots"

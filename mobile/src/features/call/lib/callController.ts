@@ -1,11 +1,14 @@
-import type { CallInfo, StartCallInput } from '../api/calls'
+import type { CallInfo, CallStateResponse, StartCallInput } from '../api/calls'
 import { useCallNoticeStore } from '../store/callNoticeStore'
 import { isInCall, useCallSessionStore } from '../store/callSessionStore'
 import { useIncomingCallStore } from '../store/incomingCallStore'
 import { useParticipantsStore, voiceOf } from '../store/participantsStore'
+import { useCameraStore } from '../store/cameraStore'
 import { useScreenShareStore } from '../store/screenShareStore'
 import { useSpeakingStore } from '../store/speakingStore'
 import { callErrorMessage } from './callErrors'
+import { resyncCall } from './callResync'
+import { mergeMediaPeers } from './mediaPeers'
 import { playSound } from './sounds/soundPlayer'
 import type { CallMedia, MediaConnection } from './callMedia'
 import { effectiveAudio, type LocalControls } from './voiceState'
@@ -15,6 +18,7 @@ export interface ControllerDeps {
     startCall: (input: StartCallInput) => Promise<CallInfo>
     getCallToken: (callId: string) => Promise<{ token: string }>
     endCallRequest: (callId: string) => Promise<unknown>
+    getCallState: (callId: string) => Promise<CallStateResponse>
   }
   media: CallMedia
   ws: { send: (type: string, payload: unknown) => void; subscribe: (room: string) => void; unsubscribe: (room: string) => void }
@@ -22,6 +26,7 @@ export interface ControllerDeps {
   /** Mudo e fone do painel do usuário (voiceControlsStore). */
   controls: () => LocalControls
   ensureMicPermission: () => Promise<boolean>
+  ensureCameraPermission: () => Promise<boolean>
   meId?: () => string | null
 }
 
@@ -50,8 +55,18 @@ export function createCallController(deps: ControllerDeps) {
   deps.media.onSpeakers((ids) => useSpeakingStore.getState().set(ids))
   deps.media.onConnection((state) => onMediaConnection(state))
   deps.media.onScreens((ids) => onScreens(ids))
+  deps.media.onPeers((peers) => onPeers(peers))
+  deps.media.onCameras((ids) => useCameraStore.getState().setCameras(ids))
 
   /** Muda a lista de quem transmite: toca o som de quando alguém abre ou encerra uma transmissão. */
+  /** A sala de mídia manda quem está nela: o Maestro entra e sai da lista por aqui. */
+  function onPeers(peers: Record<string, string>): void {
+    if (session().phase === 'idle') return
+    const store = useParticipantsStore.getState()
+    const merged = mergeMediaPeers(store.people, peers, deps.meId?.() ?? null)
+    if (merged !== store.people) store.replace(merged, store.voice)
+  }
+
   function onScreens(ids: string[]): void {
     const before = useScreenShareStore.getState().sharers
     const me = deps.meId?.() ?? null
@@ -65,7 +80,11 @@ export function createCallController(deps: ControllerDeps) {
     const { phase } = session()
     if (state === 'reconnecting' && phase === 'active') session().setPhase('reconnecting')
     else if (state === 'connected' && phase === 'reconnecting') session().setPhase('active')
-    else if (state === 'disconnected' && isInCall({ phase }) && phase !== 'outgoing') {
+    else if (state === 'replaced' && isInCall({ phase })) {
+      // A conta continua na chamada pelo outro aparelho: sair sem call:leave, senão o servidor tira os dois.
+      notice('Você entrou nesta chamada em outro aparelho.')
+      void leave(false)
+    } else if (state === 'disconnected' && isInCall({ phase }) && phase !== 'outgoing') {
       notice('A conexão com a chamada caiu.')
       void leave()
     }
@@ -107,19 +126,27 @@ export function createCallController(deps: ControllerDeps) {
     if (s.phase === 'idle') return
     const callId = s.callId
     const wasSharing = useScreenShareStore.getState().sharing
+    const cameraOn = useCameraStore.getState().on
     if (s.phase === 'active' || s.phase === 'reconnecting') playSound('leave')
     mediaCallId = null
     s.reset()
     useParticipantsStore.getState().reset()
     useSpeakingStore.getState().reset()
     useScreenShareStore.getState().reset()
+    useCameraStore.getState().reset()
     if (callId) {
       if (notify) deps.ws.send('call:leave', { call_id: callId })
       deps.ws.unsubscribe(`call:${callId}`)
     }
     // Transmitindo, desliga a captura antes de desconectar: sem isso o serviço de captura de tela do Android fica preso.
     if (wasSharing) await deps.media.setScreenShareEnabled(false).catch(() => {})
+    if (cameraOn) await deps.media.setCameraEnabled(false).catch(() => {})
     await deps.media.disconnect().catch(() => {})
+  }
+
+  /** Monta a lista de quem já está na chamada (e quem está mudo); erro de rede não impede de entrar. */
+  function loadRoster(): Promise<void> {
+    return resyncCall({ getState: deps.api.getCallState, meId: deps.meId?.() ?? null, onEnded: () => void leave(false) }).catch(() => {})
   }
 
   async function joinChannel(channel: ChannelTarget): Promise<void> {
@@ -131,7 +158,8 @@ export function createCallController(deps: ControllerDeps) {
       const call = await deps.api.startCall({ type: 'channel', channel_id: channel.id })
       session().setCallId(call.id)
       deps.ws.subscribe(`call:${call.id}`)
-      await connectMedia(call.id)
+      // Quem já está na chamada só chega por esta busca (os eventos call:joined são de quem entra depois de mim).
+      await Promise.all([loadRoster(), connectMedia(call.id)])
     } catch (err) {
       await fail(err)
     }
@@ -200,6 +228,9 @@ export function createCallController(deps: ControllerDeps) {
     try {
       await deps.media.setScreenShareEnabled(next)
       store.setSharing(next)
+      // O servidor precisa saber (como no desktop): sem isso, quem clica em Assistir recebe erro e cai da chamada.
+      const callId = session().callId
+      if (callId) deps.ws.send('call:screen', { call_id: callId, active: next })
       if (next) playSound('liveStart')
     } catch {
       store.setSharing(false)
@@ -207,6 +238,25 @@ export function createCallController(deps: ControllerDeps) {
       await deps.media.setScreenShareEnabled(false).catch(() => {})
       notice('Não foi possível transmitir a tela. Permita a captura de tela quando o Android pedir.')
     }
+  }
+
+  /** Liga ou desliga a minha câmera; sem permissão ou com a câmera ocupada, avisa e fica desligada. */
+  async function toggleCamera(): Promise<void> {
+    const store = useCameraStore.getState()
+    const next = !store.on
+    if (next && !(await deps.ensureCameraPermission())) return notice('Sem permissão da câmera. Libere nas configurações do Android.')
+    try {
+      await deps.media.setCameraEnabled(next)
+      store.setOn(next)
+    } catch {
+      store.setOn(false)
+      await deps.media.setCameraEnabled(false).catch(() => {})
+      notice('Não foi possível ligar a câmera.')
+    }
+  }
+
+  async function flipCamera(): Promise<void> {
+    await deps.media.flipCamera().catch(() => notice('Não foi possível trocar de câmera.'))
   }
 
   /** Assiste à transmissão de alguém (null para de assistir). Uma de cada vez. */
@@ -217,7 +267,7 @@ export function createCallController(deps: ControllerDeps) {
     store.setWatching(userId)
   }
 
-  return { joinChannel, callDm, connectIfNeeded, acceptIncoming, declineIncoming, leave, applyAudio, followMove, toggleScreenShare, watchScreen }
+  return { joinChannel, callDm, connectIfNeeded, acceptIncoming, declineIncoming, leave, applyAudio, followMove, toggleScreenShare, watchScreen, toggleCamera, flipCamera }
 }
 
 export type CallController = ReturnType<typeof createCallController>

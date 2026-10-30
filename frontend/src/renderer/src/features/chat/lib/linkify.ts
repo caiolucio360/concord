@@ -1,6 +1,7 @@
 import type { MentionEveryone } from '../api/messages'
 import { isSafeExternalUrl } from '../../../../../shared/externalUrl'
 import { splitMentions, type MessagePart } from './mentions'
+import { splitCustomEmojis, type CustomEmojiRef } from '../../emojis/lib/emojiToken'
 
 // Links clicáveis no texto das mensagens: http(s)://… e www.… viram <a>.
 // Só gera http/https (www. vira https://), nunca javascript:/data:.
@@ -16,8 +17,8 @@ export interface LinkPart {
   href?: string
 }
 
-/** Pedaço do texto da mensagem: texto, menção (chip) ou link. */
-export type RichPart = MessagePart & { href?: string }
+/** Pedaço do texto da mensagem: texto, menção (chip), link ou emoji personalizado. */
+export type RichPart = MessagePart & { href?: string; emoji?: CustomEmojiRef }
 
 /** Onde um link pode começar: http://, https:// ou www. (sem diferenciar maiúsculas). */
 const START = /https?:\/\/|www\./giu
@@ -144,11 +145,16 @@ export function linkify(text: string): LinkPart[] {
  * link não vira menção) e, no resto, as menções do splitMentions. Um link
  * nunca começa colado num "@nick", então não há link dentro de chip.
  */
+/** Texto fora de link: emojis personalizados primeiro, menções no resto. */
+function textParts(text: string, everyone: MentionEveryone | null): RichPart[] {
+  return splitCustomEmojis(text).flatMap((p) => (p.emoji ? [p] : splitMentions(p.text, everyone)))
+}
+
 export function messageParts(content: string, everyone: MentionEveryone | null): RichPart[] {
   const out: RichPart[] = []
   for (const part of linkify(content)) {
     if (part.href) out.push(part)
-    else if (part.text) out.push(...splitMentions(part.text, everyone))
+    else if (part.text) out.push(...textParts(part.text, everyone))
   }
   return out.length ? out : [{ text: content }]
 }

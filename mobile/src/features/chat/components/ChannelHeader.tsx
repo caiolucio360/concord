@@ -11,10 +11,12 @@ interface ChannelHeaderProps {
   onPressName?: () => void
   /** Chamada de voz privada (só na DM 1 a 1). Sem ele, não há botão de ligar. */
   onCall?: () => void
+  /** Canal de servidor: o ícone de membros no canto direito (como no Discord). */
+  onOpenMembers?: () => void
 }
 
 /** Topo do chat: voltar para a lista e o nome do canal. */
-export function ChannelHeader({ name, prefix = '#', onBack, onPressName, onCall }: ChannelHeaderProps) {
+export function ChannelHeader({ name, prefix = '#', onBack, onPressName, onCall, onOpenMembers }: ChannelHeaderProps) {
   const title = (
     <Text style={styles.name} numberOfLines={1}>
       {name}
@@ -34,6 +36,7 @@ export function ChannelHeader({ name, prefix = '#', onBack, onPressName, onCall 
         )}
       </View>
       {onCall ? <IconButton icon="call" label="Iniciar chamada de voz" onPress={onCall} /> : null}
+      {onOpenMembers ? <IconButton icon="people" label="Membros" onPress={onOpenMembers} /> : null}
     </View>
   )
 }

@@ -1,58 +1,7 @@
-import { useEffect, useState } from 'react'
-import { getScreenPreview } from '../../call/api/calls'
-import { ApiError } from '../../../shared/api/client'
-import {
-  previewDataUrl,
-  previewPollDelay,
-  PREVIEW_RETRY_MS,
-  type LiveTarget
-} from '../../call/lib/screenPreview'
-import LiveBadge from '../../call/components/LiveBadge'
-import { Skeleton } from '../../../shared/ui/skeleton/Skeleton'
+import { type LiveTarget } from '../../call/lib/screenPreview'
+import { useScreenPreview } from '../../call/hooks/useScreenPreview'
+import LivePreviewFrame from '../../call/components/LivePreviewFrame'
 import Button from '../../../shared/ui/Button'
-
-/**
- * Busca a foto da transmissão enquanto o cartão está aberto: rápido até a
- * primeira chegar, depois a cada 10 s. Ao fechar, para de buscar.
- */
-function useScreenPreview(callId: string, userId: string): { src: string | null; ended: boolean } {
-  const [src, setSrc] = useState<string | null>(null)
-  const [ended, setEnded] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-    let timer: ReturnType<typeof setTimeout> | undefined
-    let hasImage = false
-    let fastRetries = 0
-    const tick = async (): Promise<void> => {
-      try {
-        const { image } = await getScreenPreview(callId, userId)
-        if (cancelled) return
-        if (image) {
-          hasImage = true
-          setSrc(previewDataUrl(image))
-        }
-      } catch (err) {
-        if (cancelled) return
-        // Parou de transmitir ou não posso mais ver: não insiste.
-        if (err instanceof ApiError && (err.status === 404 || err.status === 403)) {
-          setEnded(true)
-          return
-        }
-      }
-      const delay = previewPollDelay(hasImage, fastRetries)
-      if (delay === PREVIEW_RETRY_MS) fastRetries++
-      timer = setTimeout(() => void tick(), delay)
-    }
-    void tick()
-    return () => {
-      cancelled = true
-      clearTimeout(timer)
-    }
-  }, [callId, userId])
-
-  return { src, ended }
-}
 
 interface LiveStreamPreviewProps {
   userId: string
@@ -72,27 +21,7 @@ function LiveStreamPreview({
 
   return (
     <div className="mt-3 overflow-hidden rounded-lg bg-black/30">
-      <div className="relative aspect-video w-full bg-black">
-        {src ? (
-          <img
-            src={src}
-            alt={`Prévia da transmissão de ${name}`}
-            draggable={false}
-            className="h-full w-full object-contain"
-          />
-        ) : ended ? (
-          <div className="flex h-full items-center justify-center text-ds-xs text-faint">
-            Transmissão encerrada
-          </div>
-        ) : (
-          <div role="status" aria-label="Carregando prévia…" className="h-full w-full">
-            <Skeleton className="h-full w-full rounded-none" />
-          </div>
-        )}
-        <span className="absolute left-2 top-2">
-          <LiveBadge />
-        </span>
-      </div>
+      <LivePreviewFrame src={src} ended={ended} name={name} />
       <div className="p-2">
         <Button type="button" variant="success" size="sm" onClick={onWatch} disabled={ended} className="w-full">
           Entrar na transmissão

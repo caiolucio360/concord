@@ -1,9 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 import { RemoteSubscriptions, type RemoteParticipantLike } from './remoteSubscriptions'
 
-const paused = (windowHidden: boolean, offscreen: string[] = []) => ({
+const paused = (windowHidden: boolean, offscreen: string[] = [], pip: string | null = null) => ({
   windowHidden,
-  offscreen: new Set(offscreen)
+  offscreen: new Set(offscreen),
+  pip
 })
 
 function publication(source: string, kind: 'audio' | 'video', desired = false) {
@@ -74,6 +75,8 @@ describe('RemoteSubscriptions', () => {
     expect(subs.setPause(paused(true, ['bia']))).toBe(true)
     expect(subs.setPause(paused(true, ['bia']))).toBe(false)
     expect(subs.setPause(paused(true, ['caio']))).toBe(true)
+    expect(subs.setPause(paused(true, ['caio'], 'caio'))).toBe(true)
+    expect(subs.setPause(paused(true, ['caio'], 'caio'))).toBe(false)
   })
 
   it('live fora de vista: pausa só o vídeo dela; som e câmera seguem', () => {

@@ -5,6 +5,7 @@ jest.mock('@expo/vector-icons', () => ({ Ionicons: Object.assign(() => null, { g
 jest.mock('expo-notifications', () => ({
   AndroidImportance: { HIGH: 4 },
   setNotificationHandler: jest.fn(),
+  scheduleNotificationAsync: jest.fn().mockResolvedValue('id-local'),
   setNotificationChannelAsync: jest.fn().mockResolvedValue(null),
   getPermissionsAsync: jest.fn().mockResolvedValue({ granted: true }),
   requestPermissionsAsync: jest.fn().mockResolvedValue({ granted: true }),
@@ -29,15 +30,39 @@ jest.mock('livekit-client', () => ({
 // O Skia é módulo nativo: no Jest vem de um mock que grava as chamadas (tests/mocks/skia.ts).
 jest.mock('@shopify/react-native-skia', () => require('./tests/mocks/skia'))
 
-// O Reanimated é módulo nativo: no Jest só o useSharedValue é usado (o efeito do perfil grava a picture nele).
-jest.mock('react-native-reanimated', () => ({
-  useSharedValue: (initial) => {
-    const { useRef } = require('react')
-    const ref = useRef(null)
-    if (ref.current === null) ref.current = { value: initial }
-    return ref.current
+// O Reanimated é módulo nativo: no Jest as shared values são objetos comuns, o estilo animado é
+// calculado uma vez e as animações vão direto ao valor final (efeito do perfil, zoom do lightbox).
+jest.mock('react-native-reanimated', () => {
+  const { useRef } = require('react')
+  const { View } = require('react-native')
+  return {
+    __esModule: true,
+    default: { View, createAnimatedComponent: (component) => component },
+    useSharedValue: (initial) => {
+      const ref = useRef(null)
+      if (ref.current === null) ref.current = { value: initial }
+      return ref.current
+    },
+    useAnimatedStyle: (style) => style(),
+    withTiming: (value) => value,
+    // Usados por dentro do gesture-handler (detector e eventos dos gestos).
+    isSharedValue: () => false,
+    useEvent: () => () => {},
+    useHandler: () => ({ context: {}, doDependenciesDiffer: false }),
+    useComposedEventHandler: () => () => {},
+    setGestureState: () => {}
   }
-}))
+})
+jest.mock('react-native-worklets', () => ({ scheduleOnRN: (fn, ...args) => fn(...args) }))
+
 
 // Áudio nativo não existe no Jest; o player de sons é testado com uma porta falsa (soundPlayer.test.ts).
 jest.mock('expo-audio', () => ({ createAudioPlayer: jest.fn(() => ({ seekTo: jest.fn(), play: jest.fn() })) }))
+
+// O notifee é módulo nativo: no Jest a lógica usa uma porta falsa (callForeground); aqui só para importar sem erro.
+jest.mock('@notifee/react-native', () => ({
+  __esModule: true,
+  default: { registerForegroundService: jest.fn(), createChannel: jest.fn(), displayNotification: jest.fn(), stopForegroundService: jest.fn() },
+  AndroidImportance: { LOW: 2 },
+  AndroidForegroundServiceType: { FOREGROUND_SERVICE_TYPE_MICROPHONE: 128 }
+}))

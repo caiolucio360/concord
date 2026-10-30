@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactionTooltip from './ReactionTooltip'
 import { AddReactionIcon } from '../../../shared/ui/icons'
+import ReactionEmoji, { useReactionLabel } from '../../emojis/components/ReactionEmoji'
 
 export interface ReactionSummary {
   emoji: string
@@ -39,7 +40,7 @@ function ReactionChip({
   const meReacted = meId ? reaction.user_ids.includes(meId) : false
   // Sem permissão ainda dá para tirar a própria reação.
   const locked = !canReact && !meReacted
-  const label = `${reaction.emoji}: ${reaction.count} ${reaction.count === 1 ? 'reação' : 'reações'}`
+  const label = `${useReactionLabel(reaction.emoji)}: ${reaction.count} ${reaction.count === 1 ? 'reação' : 'reações'}`
   return (
     <button
       type="button"
@@ -63,7 +64,7 @@ function ReactionChip({
     >
       {/* Emoji (ou imagem de emoji) sempre em 20px. */}
       <span className="flex h-5 min-w-5 items-center justify-center text-ds-lg leading-none [&>img]:h-5 [&>img]:w-5 [&>img]:object-contain">
-        {reaction.emoji}
+        <ReactionEmoji emoji={reaction.emoji} />
       </span>
       <span
         className={`min-w-[9px] text-ds-sm font-semibold tabular-nums ${

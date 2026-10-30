@@ -17,6 +17,8 @@ vi.mock('../../call/components/CallActivityBadge', () => ({
 }))
 
 vi.mock('../../activity/components/ActivityLine', () => ({ GameBadge: () => null }))
+// O "Assistir" da prévia do selo LIVE abre a chamada pelo router (o app inteiro).
+vi.mock('../../call/store/streamJoinStore', () => ({ requestWatchStream: vi.fn() }))
 
 // A janela de convidar amigos puxa lista de amigos e presença; aqui só importa o botão.
 vi.mock('../../call/components/InviteFriendsModal', () => ({ default: () => null }))

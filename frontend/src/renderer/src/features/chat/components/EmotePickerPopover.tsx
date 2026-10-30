@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { filterEmoteCategories } from '../lib/emotes'
+import EmojiPickerGrid from '../../emojis/components/EmojiPickerGrid'
 import { useEmotePickerPlacement } from '../hooks/useEmotePickerPlacement'
 import { useAnchoredPickerPlacement } from '../hooks/useAnchoredPickerPlacement'
 import { useEmotePickerDismiss } from '../hooks/useEmotePickerDismiss'
 import { useIsMobile } from '../../navigation/hooks/useIsMobile'
-import SectionHeader from '../../../shared/ui/SectionHeader'
 
 /** Classes comuns; a posição muda conforme a âncora (veja `PLACE_*`). */
 const BASE =
@@ -15,7 +14,7 @@ const PLACE_ROW = 'absolute right-4 top-8 z-30'
 /** "+" ao lado dos chips: solto na tela, posicionado pelo estilo (ao lado do botão). */
 const PLACE_ANCHORED = 'fixed z-50'
 
-/** Categorias de emoji, cada um um botão (vazio: "nenhum encontrado"). */
+/** Emojis (personalizados e o pack base), cada um um botão; a reação leva <:id> no personalizado. */
 function EmoteGrid({
   search,
   onPick
@@ -23,32 +22,9 @@ function EmoteGrid({
   search: string
   onPick: (emoji: string) => void
 }): React.JSX.Element {
-  const categories = filterEmoteCategories(search)
   return (
     <div className="max-h-56 min-h-0 overflow-y-auto overscroll-contain pr-1 max-md:max-h-[45dvh]">
-      {categories.map((category) => (
-        <div key={category.id} className="mb-2 last:mb-0">
-          <SectionHeader as="p" className="mb-1">
-            {category.name}
-          </SectionHeader>
-          <div className="grid grid-cols-6 gap-1 max-md:grid-cols-[repeat(auto-fill,minmax(2.75rem,1fr))]">
-            {category.items.map((item) => (
-              <button
-                key={item.emoji}
-                type="button"
-                title={item.label}
-                onClick={() => onPick(item.emoji)}
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-ds-lg transition-transform hover:scale-110 hover:bg-fg/10 max-md:size-11 max-md:text-ds-xl"
-              >
-                {item.emoji}
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
-      {categories.length === 0 && (
-        <div className="py-4 text-center text-ds-xs text-faint">Nenhum emote encontrado</div>
-      )}
+      <EmojiPickerGrid search={search} mode="reaction" onPick={onPick} />
     </div>
   )
 }

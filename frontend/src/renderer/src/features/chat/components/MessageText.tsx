@@ -3,6 +3,8 @@ import type { MentionEveryone } from '../api/messages'
 import { messageParts } from '../lib/linkify'
 import { mentionChipText, sameLabels, type MentionLabels } from '../lib/mentions'
 import MentionChip from './MentionChip'
+import CustomEmoji from '../../emojis/components/CustomEmoji'
+import { isEmojiOnly } from '../../emojis/lib/emojiToken'
 
 /** Host de verdade do link (em punycode: "аpple.com" cirílico aparece xn--…). */
 function hostOf(href: string): string {
@@ -14,9 +16,9 @@ function hostOf(href: string): string {
 }
 
 /**
- * Texto da mensagem: menções em chip e links clicáveis. É a única parte da
- * linha que dá para selecionar (o app inteiro é select-none); nome, hora e
- * botões continuam fora da seleção.
+ * Texto da mensagem: menções em chip, links clicáveis e emojis
+ * personalizados. É a única parte da linha que dá para selecionar (o app
+ * inteiro é select-none); nome, hora e botões continuam fora da seleção.
  *
  * O chip da menção mostra o nome da pessoa (`mentionLabels`), não o @nick; o
  * texto da mensagem continua "@nick".
@@ -37,6 +39,8 @@ function MessageText({
 }): React.JSX.Element {
   // Quebra o texto só quando ele muda (hover e reações re-renderizam a linha).
   const parts = useMemo(() => messageParts(content, everyone), [content, everyone])
+  // Só emojis personalizados: grandes, como no Discord.
+  const emojiSize = useMemo(() => (isEmojiOnly(parts) ? 'jumbo' : 'inline'), [parts])
   return (
     <p className="cursor-text select-text whitespace-pre-wrap break-words text-ds-chat text-normal">
       {parts.map((part, i) =>
@@ -55,6 +59,8 @@ function MessageText({
           >
             {part.text}
           </a>
+        ) : part.emoji ? (
+          <CustomEmoji key={i} id={part.emoji.id} name={part.emoji.name} size={emojiSize} />
         ) : part.mention ? (
           <MentionChip
             key={i}

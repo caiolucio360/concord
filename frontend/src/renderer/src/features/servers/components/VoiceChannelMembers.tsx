@@ -6,7 +6,7 @@ import { useUserAudioStore } from '../../call/store/userAudioStore'
 import { liveUserIds } from '../../call/lib/liveBadge'
 import { canMoveVoiceUser, VOICE_USER_DRAG } from '../../call/lib/voiceMove'
 import VoiceStateIcons from '../../call/components/VoiceStateIcons'
-import LiveBadge from '../../call/components/LiveBadge'
+import LiveBadgeWithPreview from '../../call/components/LiveBadgePreview'
 import ArrivalBadge from '../../call/components/ArrivalBadge'
 import CallActivityBadge from '../../call/components/CallActivityBadge'
 import { GameBadge } from '../../activity/components/ActivityLine'
@@ -39,8 +39,15 @@ function VoiceParticipantBadges({
   participant: p,
   connectedHere,
   live,
-  isMe
-}: ParticipantProps & { live: boolean; isMe: boolean }): React.JSX.Element {
+  isMe,
+  name,
+  canWatch
+}: ParticipantProps & {
+  live: boolean
+  isMe: boolean
+  name: string
+  canWatch: boolean
+}): React.JSX.Element {
   const mutedByMe = useUserAudioStore((s) => s.settings[p.user_id]?.muted ?? false)
   const selfMuted = useCallStore((s) => s.muted)
   const selfDeafened = useCallStore((s) => s.deafened)
@@ -55,7 +62,15 @@ function VoiceParticipantBadges({
       {connectedHere && <CallActivityBadge userId={p.user_id} arrival={false} />}
       <GameBadge userId={p.user_id} />
       {p.guest_of && <GuestBadge />}
-      {live && <LiveBadge />}
+      {live && (
+        <LiveBadgeWithPreview
+          userId={p.user_id}
+          name={name}
+          channelId={channelId}
+          connectedHere={connectedHere}
+          canWatch={canWatch}
+        />
+      )}
       {!isMe && mutedByMe && (
         <span title="Silenciado por você" className="text-muted">
           <VolumeOffIcon className="h-3.5 w-3.5" />
@@ -77,10 +92,12 @@ function VoiceParticipantItem({
   participant: p,
   connectedHere,
   live,
+  canWatch,
   movable,
   onDragEnd
 }: ParticipantProps & {
   live: boolean
+  canWatch: boolean
   movable: boolean
   onDragEnd: () => void
 }): React.JSX.Element {
@@ -129,6 +146,8 @@ function VoiceParticipantItem({
         connectedHere={connectedHere}
         live={live}
         isMe={isMe}
+        name={name}
+        canWatch={canWatch}
       />
     </div>
   )
@@ -194,6 +213,8 @@ function VoiceChannelMembers({
   if (participants.length === 0 && !maestroHere) return null
   const live = liveUserIds(entry, connectedHere ? screenSharers : [])
   const canMoveMembers = access.canInChannel(channelId, Perm.MOVE_MEMBERS)
+  // Prévia da live no selo: mesma regra do cartão de perfil (ver e entrar no canal).
+  const canWatch = access.canInChannel(channelId, Perm.VIEW_CHANNEL | Perm.CONNECT)
   return (
     <div className="mb-1 ml-4 flex flex-col gap-0.5">
       {participants.map((p) => (
@@ -203,6 +224,7 @@ function VoiceChannelMembers({
           participant={p}
           connectedHere={connectedHere}
           live={live.has(p.user_id)}
+          canWatch={canWatch}
           movable={canMoveVoiceUser({
             meId,
             targetId: p.user_id,

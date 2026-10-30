@@ -46,7 +46,7 @@ func entries(n int) []RankingEntry {
 
 func newRankingTest(store *fakeRankingStore) (*RankingService, *time.Time) {
 	now := t0
-	s := &RankingService{store: store, ttl: time.Minute, now: func() time.Time { return now }}
+	s := &RankingService{store: store, links: &fakeLinks{}, ttl: time.Minute, now: func() time.Time { return now }}
 	return s, &now
 }
 

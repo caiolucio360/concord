@@ -3,6 +3,7 @@ import { fetchChangelog, type ChangelogRelease } from '../api/changelog'
 import { ChangelogIcon } from '../../../shared/ui/icons'
 import { ChangelogSkeleton } from '../../../shared/ui/skeleton/layouts'
 import { formatReleaseDate, groupEntries } from '../lib/changelog'
+import { buildTimeline } from '../lib/timeline'
 
 interface ViewProps {
   releases: ChangelogRelease[]
@@ -34,7 +35,51 @@ function Group({
   )
 }
 
+function ReleaseCard({
+  release,
+  current
+}: {
+  release: ChangelogRelease
+  current: boolean
+}): React.JSX.Element {
+  const { features, fixes } = groupEntries(release)
+  return (
+    <section
+      data-current-release={current || undefined}
+      className={`rounded-xl border bg-surface p-4 ${current ? 'border-brand/60' : 'border-subtle'}`}
+    >
+      <div className="flex flex-wrap items-baseline gap-2">
+        <h2 className="text-ds-lg font-bold">v{release.version}</h2>
+        <span className="text-ds-xs text-muted">{formatReleaseDate(release.released_at)}</span>
+        {current && (
+          <span className="rounded-full bg-brand/30 px-2 py-0.5 text-ds-xs font-semibold text-brand">
+            Você está aqui
+          </span>
+        )}
+      </div>
+      {release.summary && <p className="mt-1 text-ds-sm text-muted">{release.summary}</p>}
+      <Group title="Novidades" items={features} tone="bg-success/20 text-success" />
+      <Group title="Correções" items={fixes} tone="bg-warning/20 text-warning" />
+      {features.length + fixes.length === 0 && (
+        <p className="mt-3 text-ds-sm text-faint">Sem notas para esta versão.</p>
+      )}
+    </section>
+  )
+}
+
+/** Versões seguidas sem nada a contar: "v0.6.4 a v0.6.2" ou só "v0.6.4". */
+function QuietRow({ versions }: { versions: string[] }): React.JSX.Element {
+  const label =
+    versions.length === 1 ? `v${versions[0]}` : `v${versions[0]} a v${versions[versions.length - 1]}`
+  return (
+    <p className="px-1 text-ds-xs text-faint">
+      {label} · sem mudanças visíveis
+    </p>
+  )
+}
+
 export function ChangelogView({ releases, current, loading, error }: ViewProps): React.JSX.Element {
+  const timeline = buildTimeline(releases, current)
   return (
     <div className="flex h-full w-full overflow-hidden bg-primary backdrop-blur-2xl text-strong">
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
@@ -49,37 +94,13 @@ export function ChangelogView({ releases, current, loading, error }: ViewProps):
             {!loading && !error && releases.length === 0 && (
               <p className="text-ds-sm text-muted">Nenhuma versão publicada ainda.</p>
             )}
-            {releases.map((rel) => {
-              const { features, fixes } = groupEntries(rel)
-              return (
-                <section
-                  key={rel.version}
-                  className="rounded-xl border border-subtle bg-surface p-4"
-                >
-                  <div className="flex flex-wrap items-baseline gap-2">
-                    <h2 className="text-ds-lg font-bold">v{rel.version}</h2>
-                    <span className="text-ds-xs text-muted">
-                      {formatReleaseDate(rel.released_at)}
-                    </span>
-                    {current === rel.version && (
-                      <span className="rounded-full bg-brand/30 px-2 py-0.5 text-ds-xs font-semibold text-brand">
-                        Você está aqui
-                      </span>
-                    )}
-                  </div>
-                  {rel.summary && <p className="mt-1 text-ds-sm text-muted">{rel.summary}</p>}
-                  <Group
-                    title="Novidades"
-                    items={features}
-                    tone="bg-success/20 text-success"
-                  />
-                  <Group title="Correções" items={fixes} tone="bg-warning/20 text-warning" />
-                  {features.length + fixes.length === 0 && (
-                    <p className="mt-3 text-ds-sm text-faint">Sem notas para esta versão.</p>
-                  )}
-                </section>
+            {timeline.map((item) =>
+              item.kind === 'quiet' ? (
+                <QuietRow key={item.versions[0]} versions={item.versions} />
+              ) : (
+                <ReleaseCard key={item.release.version} release={item.release} current={item.current} />
               )
-            })}
+            )}
           </div>
         </main>
       </div>
@@ -107,6 +128,12 @@ function Changelog(): React.JSX.Element {
       alive = false
     }
   }, [])
+
+  // Com muitas versões a atual fica abaixo da dobra: leva o usuário até ela.
+  useEffect(() => {
+    if (loading) return
+    document.querySelector('[data-current-release]')?.scrollIntoView({ block: 'center' })
+  }, [loading, releases, current])
 
   return <ChangelogView releases={releases} current={current} loading={loading} error={error} />
 }

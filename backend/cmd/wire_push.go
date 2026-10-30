@@ -29,7 +29,7 @@ func (a *app) wirePush() {
 	}
 	settings := notifysettings.NotifySettingsService(notifysettings.NotifySettingsRepository(a.db), a.permissionService, a.hub)
 	notifier := push.NewNotifier(push.Deps{
-		Presence: a.hub, Settings: settings, Directory: repo,
+		Presence: push.AppPresence{Mobile: a.mobileApps, Status: a.hub}, Settings: settings, Directory: repo,
 		Access: push.ViewAccess{Perms: a.permissionService}, Tokens: repo, Sender: client,
 	})
 	a.pushTap.Set(notifier)

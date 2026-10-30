@@ -8,6 +8,7 @@ import {
 import { useFriendStore } from '../../../friends/store/friendStore'
 import { Toggle } from '../Toggle'
 import { ActivityPrivacy } from './ActivityPrivacy'
+import { TelemetryPrivacyNote } from '../../../observability/components/TelemetryPrivacyNote'
 import { useSettingsStore } from '../../store/settingsStore'
 import { useUIStore } from '../../../../shared/store/uiStore'
 import { showToast } from '../../../../shared/store/toastStore'
@@ -132,6 +133,8 @@ export function PrivacySection(): React.JSX.Element {
       </section>
 
       <ActivityPrivacy />
+
+      <TelemetryPrivacyNote />
 
       <section>
         <SectionTitle>Usuários bloqueados</SectionTitle>

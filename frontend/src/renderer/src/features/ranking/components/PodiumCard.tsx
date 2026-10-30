@@ -1,7 +1,7 @@
 import Avatar from '../../../shared/ui/Avatar'
 import StyledName from '../../profile/components/StyledName'
 import { profileCardHandler } from '../../profile/store/profileCardStore'
-import { formatXp, positionLabel, type PodiumSlot } from '../lib/ranking'
+import { cardContact, formatXp, positionLabel, type PodiumSlot } from '../lib/ranking'
 import LevelChip from './LevelChip'
 
 // Por colocação: tamanho do avatar, altura do degrau e cor do destaque.
@@ -15,11 +15,18 @@ function PodiumCard({ slot }: { slot: PodiumSlot }): React.JSX.Element {
   const { entry, place } = slot
   const look = PLACE[place]
   const name = entry.display_name || entry.username
+  const contact = cardContact(entry)
   return (
     <li className="flex min-w-0 flex-1 flex-col items-center justify-end">
       <button
         type="button"
-        onClick={profileCardHandler(entry.user_id, name, entry.username, 'top')}
+        onClick={profileCardHandler(
+          entry.user_id,
+          name,
+          contact.username,
+          'top',
+          contact.relationship
+        )}
         className="flex w-full min-w-0 cursor-pointer flex-col items-center gap-1 rounded-xl px-1 py-2 transition-colors hover:bg-fg/5 focus-ring"
       >
         <span className={`rounded-full ring-2 ring-offset-2 ring-offset-transparent ${look.ring}`}>

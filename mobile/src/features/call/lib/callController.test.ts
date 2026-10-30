@@ -2,7 +2,8 @@ import { ApiError } from '../../../shared/api/client'
 import { useCallNoticeStore } from '../store/callNoticeStore'
 import { useCallSessionStore } from '../store/callSessionStore'
 import { useIncomingCallStore } from '../store/incomingCallStore'
-import { useParticipantsStore } from '../store/participantsStore'
+import { useParticipantsStore, voiceOf } from '../store/participantsStore'
+import { useCameraStore } from '../store/cameraStore'
 import { useScreenShareStore } from '../store/screenShareStore'
 import { useSpeakingStore } from '../store/speakingStore'
 import type { CallMedia, MediaConnection } from './callMedia'
@@ -19,15 +20,27 @@ function rig(over: Partial<ControllerDeps> = {}) {
   let connection: (s: MediaConnection) => void = () => {}
   let speakers: (ids: string[]) => void = () => {}
   let screens: (ids: string[]) => void = () => {}
+  let peers: (p: Record<string, string>) => void = () => {}
+  let cameras: (ids: string[]) => void = () => {}
   const media: jest.Mocked<CallMedia> = {
     connect: jest.fn().mockResolvedValue(undefined),
     disconnect: jest.fn().mockResolvedValue(undefined),
     setMicEnabled: jest.fn().mockResolvedValue(undefined),
     setListening: jest.fn(),
     setScreenShareEnabled: jest.fn().mockResolvedValue(undefined),
+    setCameraEnabled: jest.fn().mockResolvedValue(undefined),
+    flipCamera: jest.fn().mockResolvedValue(undefined),
+    onCameras: jest.fn((l) => {
+      cameras = l
+      return () => {}
+    }),
     watchScreen: jest.fn(),
     onScreens: jest.fn((l) => {
       screens = l
+      return () => {}
+    }),
+    onPeers: jest.fn((l) => {
+      peers = l
       return () => {}
     }),
     onSpeakers: jest.fn((l) => {
@@ -43,16 +56,18 @@ function rig(over: Partial<ControllerDeps> = {}) {
     api: {
       startCall: jest.fn().mockResolvedValue({ id: 'c1', type: 'channel', status: 'active' }),
       getCallToken: jest.fn().mockResolvedValue({ token: 'tok' }),
-      endCallRequest: jest.fn().mockResolvedValue({ message: 'ok' })
+      endCallRequest: jest.fn().mockResolvedValue({ message: 'ok' }),
+      getCallState: jest.fn().mockResolvedValue({ call: { id: 'c1', status: 'active' }, participants: [] })
     },
     media,
     ws: { send: jest.fn(), subscribe: jest.fn(), unsubscribe: jest.fn() },
     liveKitUrl: 'wss://sala.exemplo',
     controls: () => ({ muted: false, deafened: false }),
     ensureMicPermission: jest.fn().mockResolvedValue(true),
+    ensureCameraPermission: jest.fn().mockResolvedValue(true),
     ...over
   }
-  return { deps, media, controller: createCallController(deps), emitConnection: (s: MediaConnection) => connection(s), emitSpeakers: (ids: string[]) => speakers(ids), emitScreens: (ids: string[]) => screens(ids) }
+  return { deps, media, controller: createCallController(deps), emitConnection: (s: MediaConnection) => connection(s), emitSpeakers: (ids: string[]) => speakers(ids), emitScreens: (ids: string[]) => screens(ids), emitPeers: (p: Record<string, string>) => peers(p), emitCameras: (ids: string[]) => cameras(ids) }
 }
 
 beforeEach(() => {
@@ -62,6 +77,7 @@ beforeEach(() => {
   useCallNoticeStore.getState().dismiss()
   useSpeakingStore.getState().reset()
   useScreenShareStore.getState().reset()
+  useCameraStore.getState().reset()
 })
 
 describe('joinChannel', () => {
@@ -72,6 +88,28 @@ describe('joinChannel', () => {
     expect(deps.ws.subscribe).toHaveBeenCalledWith('call:c1')
     expect(media.connect).toHaveBeenCalledWith('wss://sala.exemplo', 'tok')
     expect(session()).toMatchObject({ phase: 'active', callId: 'c1', kind: 'channel', channelId: 'ch1', serverId: 's1', name: 'Geral' })
+  })
+
+  it('entrar numa chamada que já tem gente mostra quem está nela, com o estado de mudo (bug: a lista só vinha por evento)', async () => {
+    const { controller, deps } = rig({ meId: () => 'me' })
+    ;(deps.api.getCallState as jest.Mock).mockResolvedValue({
+      call: { id: 'c1', status: 'active' },
+      participants: [
+        { user_id: 'me', display_name: 'Eu' },
+        { user_id: 'u1', username: 'ana', display_name: 'Ana', avatar_url: null, muted: true }
+      ]
+    })
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    expect(deps.api.getCallState).toHaveBeenCalledWith('c1')
+    expect(useParticipantsStore.getState().people).toEqual([{ id: 'u1', username: 'ana', display_name: 'Ana', avatar_url: null }])
+    expect(voiceOf(useParticipantsStore.getState().voice, 'u1').muted).toBe(true)
+  })
+
+  it('falha ao buscar quem está na chamada não impede de entrar', async () => {
+    const { controller, deps } = rig()
+    ;(deps.api.getCallState as jest.Mock).mockRejectedValue(new Error('sem rede'))
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    expect(session().phase).toBe('active')
   })
 
   it('liga o microfone conforme o mudo local e avisa o servidor', async () => {
@@ -218,6 +256,20 @@ describe('leave e mídia', () => {
     expect(useCallNoticeStore.getState().message).toBe('A conexão com a chamada caiu.')
   })
 
+  // Regressão (mesma conta no celular e no desktop): o aparelho substituído chamava leave() e mandava call:leave, que
+  // tirava da chamada a conta inteira, inclusive o aparelho que acabou de entrar; os dois ficavam se derrubando.
+  it('substituído por outro aparelho da mesma conta: sai sem avisar o servidor e explica', async () => {
+    const { controller, emitConnection, deps, media } = rig()
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    jest.mocked(deps.ws.send).mockClear()
+    emitConnection('replaced')
+    await Promise.resolve()
+    expect(session().phase).toBe('idle')
+    expect(deps.ws.send).not.toHaveBeenCalledWith('call:leave', expect.anything())
+    expect(media.disconnect).toHaveBeenCalled()
+    expect(useCallNoticeStore.getState().message).toBe('Você entrou nesta chamada em outro aparelho.')
+  })
+
   it('quem fala vai para a store', async () => {
     const { controller, emitSpeakers } = rig()
     await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
@@ -245,6 +297,75 @@ describe('applyAudio', () => {
   })
 })
 
+describe('quem está na sala de mídia', () => {
+  it('o Maestro (só existe na mídia) aparece na chamada e some quando sai (bug: o app só mostrava o que vinha do backend)', async () => {
+    const { controller, emitPeers } = rig({ meId: () => 'me' })
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    emitPeers({ me: 'Eu', 'bot-music:ch1': 'Maestro' })
+    expect(useParticipantsStore.getState().people).toEqual([{ id: 'bot-music:ch1', username: '', display_name: 'Maestro', avatar_url: null, is_bot: true }])
+    emitPeers({ me: 'Eu' })
+    expect(useParticipantsStore.getState().people).toEqual([])
+  })
+
+  it('sem chamada (ocioso) o que chega da mídia é ignorado', () => {
+    const { emitPeers } = rig({ meId: () => 'me' })
+    emitPeers({ u9: 'Fantasma' })
+    expect(useParticipantsStore.getState().people).toEqual([])
+  })
+})
+
+describe('câmera', () => {
+  it('ligar pede a permissão, liga a câmera e guarda o estado; tocar de novo desliga', async () => {
+    const { controller, media, deps } = rig()
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    await controller.toggleCamera()
+    expect(deps.ensureCameraPermission).toHaveBeenCalled()
+    expect(media.setCameraEnabled).toHaveBeenLastCalledWith(true)
+    expect(useCameraStore.getState().on).toBe(true)
+    await controller.toggleCamera()
+    expect(media.setCameraEnabled).toHaveBeenLastCalledWith(false)
+    expect(useCameraStore.getState().on).toBe(false)
+  })
+
+  it('sem permissão da câmera: avisa e não liga', async () => {
+    const { controller, media } = rig({ ensureCameraPermission: jest.fn().mockResolvedValue(false) })
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    await controller.toggleCamera()
+    expect(media.setCameraEnabled).not.toHaveBeenCalled()
+    expect(useCameraStore.getState().on).toBe(false)
+    expect(useCallNoticeStore.getState().message).toMatch(/câmera/)
+  })
+
+  it('falha ao ligar: avisa, fica desligada e libera o que tiver começado', async () => {
+    const { controller, media } = rig()
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    media.setCameraEnabled.mockRejectedValueOnce(new Error('camera busy'))
+    await controller.toggleCamera()
+    expect(useCameraStore.getState().on).toBe(false)
+    expect(media.setCameraEnabled).toHaveBeenLastCalledWith(false)
+    expect(useCallNoticeStore.getState().message).toMatch(/câmera/)
+  })
+
+  it('quem está com a câmera ligada vai para a store; trocar de câmera chama a mídia', async () => {
+    const { controller, media, emitCameras } = rig()
+    emitCameras(['u1', 'me'])
+    expect(useCameraStore.getState().cameras).toEqual(['u1', 'me'])
+    await controller.flipCamera()
+    expect(media.flipCamera).toHaveBeenCalled()
+  })
+
+  it('sair com a câmera ligada desliga antes de desconectar e zera o estado', async () => {
+    const { controller, media } = rig()
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    await controller.toggleCamera()
+    media.setCameraEnabled.mockClear()
+    await controller.leave()
+    expect(media.setCameraEnabled).toHaveBeenCalledWith(false)
+    expect(media.setCameraEnabled.mock.invocationCallOrder[0]).toBeLessThan(media.disconnect.mock.invocationCallOrder.at(-1) as number)
+    expect(useCameraStore.getState()).toMatchObject({ on: false, cameras: [] })
+  })
+})
+
 describe('transmissão de tela', () => {
   it('ligar e desligar a minha transmissão: avisa a mídia, guarda o estado e toca o som ao ligar', async () => {
     const { controller, media } = rig()
@@ -255,6 +376,24 @@ describe('transmissão de tela', () => {
     await controller.toggleScreenShare()
     expect(media.setScreenShareEnabled).toHaveBeenLastCalledWith(false)
     expect(useScreenShareStore.getState().sharing).toBe(false)
+  })
+
+  // Regressão: o app transmitia sem avisar o servidor; quem clicava em "Assistir transmissão" recebia call:error e caía.
+  it('avisa o servidor (call:screen) ao começar e ao parar de transmitir, como o desktop', async () => {
+    const { controller, deps } = rig()
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    await controller.toggleScreenShare()
+    expect(deps.ws.send).toHaveBeenCalledWith('call:screen', { call_id: 'c1', active: true })
+    await controller.toggleScreenShare()
+    expect(deps.ws.send).toHaveBeenLastCalledWith('call:screen', { call_id: 'c1', active: false })
+  })
+
+  it('transmissão que falhou não é anunciada ao servidor', async () => {
+    const { controller, deps, media } = rig()
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    media.setScreenShareEnabled.mockRejectedValueOnce(new Error('NotAllowedError'))
+    await controller.toggleScreenShare()
+    expect(deps.ws.send).not.toHaveBeenCalledWith('call:screen', { call_id: 'c1', active: true })
   })
 
   it('captura de tela negada: avisa e fica desligada', async () => {

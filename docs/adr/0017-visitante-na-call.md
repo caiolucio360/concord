@@ -129,10 +129,61 @@ num "Você saiu da call" sem saída (o X do canto era o da janela). Decisões:
 - **Celular:** `/visitas/` é rota de conteúdo (abre na call, com o voltar);
   a lista mostra o trilho com a visita e a coluna da visita.
 
-Fica para depois: esconder no painel "Voz conectada" os botões que o
-visitante não usa (trancar, mesa de áudio, atividades); hoje o servidor
-recusa com um aviso. O painel tem complexidade 67 e precisa ser quebrado
-antes.
+~~Fica para depois: esconder no painel "Voz conectada" os botões que o
+visitante não usa.~~ Superado pela emenda de 2026-10-29: o visitante usa os
+três.
+
+## Emenda (2026-10-29): visitante tranca a sala, usa a mesa de áudio e atividades
+
+O dono decidiu que o visitante usa esses recursos na call do convite. Decisões:
+
+- **Sai o `guest.CallGate`.** Trancar/destrancar, aceitar ou recusar quem bate,
+  abrir/encerrar atividade e tocar a mesa de áudio já exigem estar na chamada
+  (`call.Service` confere o participante), então o visitante só age na call em
+  que está; nada fora dela. Aceitar quem bate vem junto com trancar (quem
+  tranca precisa poder abrir a porta). O app continua tratando `guest:refused`
+  (servidor antigo durante a atualização), mas o servidor não manda mais.
+- **Mesa de áudio:** toca os sons do servidor da call e os favoritos da própria
+  conta (a mesma regra do membro, `soundboardTarget.playable`). Permissão: o
+  visitante **herda o USE_SOUNDBOARD do @everyone naquele canal** (permissões do
+  @everyone no servidor com a sobrescrita do @everyone no canal; ver e entrar o
+  convite já dá). É a regra mais simples que respeita o canal: se o servidor
+  tirou a mesa de quem não tem cargo, o visitante também não usa.
+- **Lista de sons:** `GET /servers/:id/soundboard` aceita quem tem acesso de
+  visitante ativo no servidor (`HasGuestPass`); enviar, apagar e favoritar sons
+  do servidor seguem só de membro (o painel esconde "Adicionar som" na visita).
+- **Visitante sem conta:** o servidor aceita os três, mas a tela dedicada do
+  navegador não ganhou os botões (ele não tem token de mídia para ouvir os sons
+  da mesa). Fica para depois.
+
+## Emenda (2026-10-29): visitante que vira membro
+
+Quem entrava como visitante (com conta) e depois aceitava um convite do
+servidor ficava com o ícone duplicado no trilho (visita e servidor) e podia
+entrar na call pelos dois fluxos. Decisões:
+
+- **Virar membro encerra o acesso de visitante, sem tirar da call.** O
+  `guest.Service` escuta o `server.OnMemberJoined` (todo caminho de entrada
+  passa por ele: código de convite, convite por DM). O acesso daquele servidor
+  é gravado como encerrado (`ended_at`; não volta na subida) e sai do índice,
+  inclusive o já vencido que o sweep ainda não pegou (senão o sweep tiraria o
+  novo membro da call). Não chama `RemoveFromServerCalls`.
+- **Na chamada** (`call.GuestBecameMember`, em `call/guest.go`): reaplica as
+  permissões do servidor (`RevalidateServer`), que agora são as de membro; a
+  mesma conexão do LiveKit só tem o grant atualizado. Se, como membro, a pessoa
+  não pode estar naquele canal (canal privado ao @everyone), sai da call, como
+  qualquer membro que perde o acesso: as permissões de membro valem.
+- **Eventos:** `guest:ended` com o motivo `member` para os apps da conta (o
+  trilho tira a visita sem sair da call nem mostrar aviso, e relê a lista de
+  servidores para o ícone normal aparecer em todos os apps) e `guest:member`
+  (`call_id`, `server_id`, `user_id`) para a call e para quem vê o canal (tira o
+  selo "Visitante"; a lista do canal na barra lateral se corrige na próxima
+  leitura, a cada 10 s).
+- **Front:** o trilho nunca mostra visita de servidor de que a conta é membro;
+  `/visitas/<servidor>` de quem é membro (ou acabou de virar) redireciona para
+  `/servers/<id>/channels/<canal da call>`.
+- **O inverso já existia:** abrir um link de visitante sendo membro responde
+  `already_member` com o canal, e o app abre o canal.
 
 ## Modelo de ameaça (resumo)
 
@@ -141,7 +192,7 @@ antes.
 | Adivinhar links | 256 bits; prévia (60/10 min) e entrada (10/10 min) limitadas por IP; formato conferido antes do banco. |
 | Vazamento do banco expõe links | Só o hash do token fica salvo. |
 | Visitante sair do escopo (chat, outros canais, DMs, perfis) | Token `guest` recusado em toda rota fora da call (lista do que abre); WebSocket só nas salas próprias; a chamada só aceita o canal do acesso. Visitante com conta usa o token normal, mas não é membro: as rotas do servidor seguem 403. |
-| Visitante criar coisas ou moderar | Sem permissões de membro; `CallGate` recusa trancar/aceitar/atividade/mesa de áudio; não gera convites (exige ser membro). |
+| Visitante criar coisas ou moderar | Sem permissões de membro; trancar, aceitar quem bate, atividade e mesa de áudio só valem na call em que ele está (emenda de 2026-10-29); mesa só se o @everyone do canal pode; não gera convites (exige ser membro). |
 | Link vazado continua valendo | Prazo máximo de 1 dia, revogação a qualquer momento, limite de 10 pessoas; revogar e expulsar tiram da mídia na hora. |
 | Banido entrar como visitante | Conta banida não entra; visitante sem conta expulso não volta pelo mesmo acesso (para barrar o link, revogue). |
 | Nome para se passar por alguém | 2–32 caracteres, sem controle nem caracteres invisíveis/de direção; selo "Visitante" na call e na lista do canal. |

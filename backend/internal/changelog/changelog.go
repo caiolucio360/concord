@@ -15,16 +15,20 @@ const (
 	KindFeature = "feature"
 	KindFix     = "fix"
 
-	maxEntries   = 1000 // o next.md acumula entre deploys (ver dedup.go)
+	maxEntries   = 1000 // o deploy reenvia todos os arquivos de pending/ (ver dedup.go)
 	maxEntryText = 1000 // em caracteres (runas), não bytes: acento conta 1
 	maxSummary   = 500
+	maxSource    = 200
 )
 
 var versionRe = regexp.MustCompile(`^\d+\.\d+\.\d+$`)
 
+// Source identifica de onde a nota veio (o arquivo em changelog/pending/): é
+// ela, e não o texto, que diz se a nota já saiu numa release.
 type Entry struct {
-	Kind string `json:"kind"`
-	Text string `json:"text"`
+	Kind   string `json:"kind"`
+	Text   string `json:"text"`
+	Source string `json:"source,omitempty"`
 }
 
 type Release struct {
@@ -58,11 +62,15 @@ func (p *Publication) validate() error {
 	for i := range p.Entries {
 		e := &p.Entries[i]
 		e.Text = strings.TrimSpace(e.Text)
+		e.Source = strings.TrimSpace(e.Source)
 		if e.Kind != KindFeature && e.Kind != KindFix {
 			return errors.New("kind inválido")
 		}
 		if e.Text == "" || utf8.RuneCountInString(e.Text) > maxEntryText {
 			return errors.New("texto inválido")
+		}
+		if utf8.RuneCountInString(e.Source) > maxSource {
+			return errors.New("origem inválida")
 		}
 	}
 	return nil
