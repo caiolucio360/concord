@@ -17,17 +17,23 @@ mkdir -p "$ROOT/frontend/dist"
 
 # Helper da live pelo motor nativo (Rust, docs/adr/0031): compilado num Debian 12
 # (glibc antiga) e embutido no app em resources/concord-live. SKIP_NATIVE_LIVE=1
-# gera o app sem ele (a live segue só pelo Chromium).
-if [[ "${SKIP_NATIVE_LIVE:-}" != 1 ]]; then
-  docker build -q -t concord-live-linux "$ROOT/native/concord-live" >/dev/null
-  docker run --rm --platform linux/amd64 \
-    -v "$ROOT/native/concord-live:/src" \
-    -v concord-cargo-cache:/usr/local/cargo/registry \
-    -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" \
-    -w /src concord-live-linux \
-    bash -euo pipefail -c './build-release.sh; chown -R "$HOST_UID:$HOST_GID" target'
-  mkdir -p "$ROOT/frontend/resources/linux"
-  install -m 755 "$ROOT/native/concord-live/target/release/concord-live" "$ROOT/frontend/resources/linux/"
+# gera o app sem ele (a live segue só pelo Chromium). Se a compilação falhar, o
+# app sai sem o helper em vez de travar o release (o motor nativo é opcional).
+# Encadeado com && porque o set -e não vale dentro de um `if`.
+build_native_live() {
+  docker build -q -t concord-live-linux "$ROOT/native/concord-live" >/dev/null &&
+    docker run --rm --platform linux/amd64 \
+      -v "$ROOT/native/concord-live:/src" \
+      -v concord-cargo-cache:/usr/local/cargo/registry \
+      -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" \
+      -w /src concord-live-linux \
+      bash -euo pipefail -c './build-release.sh; chown -R "$HOST_UID:$HOST_GID" target' &&
+    mkdir -p "$ROOT/frontend/resources/linux" &&
+    install -m 755 "$ROOT/native/concord-live/target/release/concord-live" "$ROOT/frontend/resources/linux/"
+}
+if [[ "${SKIP_NATIVE_LIVE:-}" != 1 ]] && ! build_native_live; then
+  echo "AVISO: o helper concord-live não compilou; o app Linux sai sem o motor nativo da live." >&2
+  rm -f "$ROOT/frontend/resources/linux/concord-live"
 fi
 
 docker run --rm --platform linux/amd64 \
