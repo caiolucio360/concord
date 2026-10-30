@@ -19,9 +19,14 @@ interface ParticipantTileProps {
   avatarSize?: number
   /** Câmera ligada: o vídeo ocupa o tile no lugar da foto (vem da rota, que fala com o LiveKit). */
   video?: ReactNode
+  /** Silenciei essa pessoa só para mim. */
+  localMuted?: boolean
+  /** Toque no tile abre o volume dessa pessoa (não vale para o meu). */
+  onOpenAudio?: () => void
 }
 
-function stateOf(speaking: boolean, voice: VoiceState): string {
+function stateOf(speaking: boolean, voice: VoiceState, localMuted: boolean): string {
+  if (localMuted) return 'silenciado para você'
   if (voice.deafened || voice.serverDeafened) return 'ensurdecido'
   if (voice.muted || voice.serverMuted) return 'mudo'
   return speaking ? 'falando' : ''
@@ -46,25 +51,35 @@ function SpeakingRing({ active }: { active: boolean }) {
 }
 
 /** Uma pessoa na grade da chamada: foto grande (o GIF anima enquanto fala), nome em selo e estado de mudo ou fone. */
-export function ParticipantTile({ user, speaking, voice, live = false, onWatch, height, avatarSize = 64, video }: ParticipantTileProps) {
-  const state = stateOf(speaking, voice)
-  const off = state === 'mudo' || state === 'ensurdecido'
+export function ParticipantTile({ user, speaking, voice, live = false, onWatch, height, avatarSize = 64, video, localMuted = false, onOpenAudio }: ParticipantTileProps) {
+  const state = stateOf(speaking, voice, localMuted)
+  const off = state !== '' && state !== 'falando'
   const talking = speaking && !off
   return (
-    <View accessible accessibilityLabel={state ? `${user.display_name}, ${state}` : user.display_name} style={[styles.tile, height ? { height } : styles.compact]}>
+    <Pressable
+      accessible
+      accessibilityRole={onOpenAudio ? 'button' : undefined}
+      accessibilityLabel={state ? `${user.display_name}, ${state}` : user.display_name}
+      accessibilityHint={onOpenAudio ? `Ajustar o som de ${user.display_name}` : undefined}
+      disabled={!onOpenAudio}
+      onPress={onOpenAudio}
+      style={[styles.tile, height ? { height } : styles.compact]}
+    >
       <SpeakingRing active={talking} />
       {video ? <View style={styles.video}>{video}</View> : null}
       {video ? null : user.is_bot ? <MaestroAvatar size={avatarSize} /> : <CallAvatar name={user.display_name} uri={user.avatar_url} size={avatarSize} speaking={callAvatarAnimate({ speaking: talking })} />}
       <View style={styles.nameBadge}>
-        {off ? <Ionicons name={state === 'mudo' ? 'mic-off' : 'volume-mute'} size={14} color={colors.textDanger} /> : null}
+        {off ? <Ionicons name={OFF_ICON[state] ?? 'volume-mute'} size={14} color={colors.textDanger} /> : null}
         <Text style={styles.name} numberOfLines={1}>
           {user.display_name}
         </Text>
       </View>
       {live ? <LiveBadge name={user.display_name} onWatch={onWatch} /> : null}
-    </View>
+    </Pressable>
   )
 }
+
+const OFF_ICON: Record<string, keyof typeof Ionicons.glyphMap> = { mudo: 'mic-off', 'silenciado para você': 'volume-off' }
 
 /** "Ao vivo" de quem transmite a tela; com onWatch vira o botão Assistir. */
 function LiveBadge({ name, onWatch }: { name: string; onWatch?: () => void }) {

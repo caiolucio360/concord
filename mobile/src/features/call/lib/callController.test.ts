@@ -6,6 +6,7 @@ import { useParticipantsStore, voiceOf } from '../store/participantsStore'
 import { useCameraStore } from '../store/cameraStore'
 import { useScreenShareStore } from '../store/screenShareStore'
 import { useSpeakingStore } from '../store/speakingStore'
+import { useUserAudioStore } from '../store/userAudioStore'
 import type { CallMedia, MediaConnection } from './callMedia'
 import { createCallController, type ControllerDeps } from './callController'
 
@@ -27,6 +28,7 @@ function rig(over: Partial<ControllerDeps> = {}) {
     disconnect: jest.fn().mockResolvedValue(undefined),
     setMicEnabled: jest.fn().mockResolvedValue(undefined),
     setListening: jest.fn(),
+    setUserVolume: jest.fn(),
     setScreenShareEnabled: jest.fn().mockResolvedValue(undefined),
     setCameraEnabled: jest.fn().mockResolvedValue(undefined),
     flipCamera: jest.fn().mockResolvedValue(undefined),
@@ -143,6 +145,39 @@ describe('joinChannel', () => {
     expect(session().phase).toBe('active')
     expect(media.setMicEnabled).toHaveBeenLastCalledWith(false)
     expect(useCallNoticeStore.getState().message).toBe('Sem permissão do microfone. Você entrou mudo.')
+  })
+
+  // Regressão: o app fechava ao entrar no canal. A fase "connecting" ligava o serviço em primeiro plano de
+  // microfone antes de pedir a permissão, e o Android 14 derruba o app (SecurityException) quando o serviço de
+  // microfone sobe sem RECORD_AUDIO. A permissão agora vem antes de qualquer fase da chamada.
+  it('pede o microfone antes de entrar em qualquer fase da chamada (canal, DM e atender)', async () => {
+    const phases: string[] = []
+    const { controller, deps } = rig({
+      ensureMicPermission: jest.fn(async () => {
+        phases.push(session().phase)
+        return true
+      })
+    })
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    await controller.leave()
+    await controller.callDm({ id: 'dm1', name: 'Ana' })
+    await controller.leave()
+    useIncomingCallStore.getState().ring({ callId: 'c9', conversationId: 'dm1', initiator: ana })
+    await controller.acceptIncoming()
+    expect(phases).toEqual(['idle', 'idle', 'idle'])
+    expect(deps.ensureMicPermission).toHaveBeenCalledTimes(3)
+  })
+
+  it('microfone negado já fica marcado ao começar a chamada (o serviço de microfone não sobe)', async () => {
+    let deniedAtStart: boolean | null = null
+    const { controller, deps } = rig({ ensureMicPermission: jest.fn().mockResolvedValue(false) })
+    ;(deps.api.startCall as jest.Mock).mockImplementation(async () => {
+      deniedAtStart = session().micDenied
+      return { id: 'c1', type: 'channel', status: 'active' }
+    })
+    await controller.joinChannel({ id: 'ch1', name: 'Geral', serverId: 's1' })
+    expect(deniedAtStart).toBe(true)
+    expect(session().micDenied).toBe(true)
   })
 
   it('entrar no mesmo canal de novo não faz nada', async () => {
@@ -453,5 +488,20 @@ describe('transmissão de tela', () => {
     useScreenShareStore.getState().setSharing(true)
     await controller.leave()
     expect(useScreenShareStore.getState().sharing).toBe(false)
+  })
+})
+
+// Pedido do dono: não dava para abaixar nem silenciar o som de outra pessoa da chamada no app.
+describe('volume de cada pessoa (só para mim)', () => {
+  beforeEach(() => useUserAudioStore.getState().reset())
+
+  it('abaixar e silenciar alguém mudam o volume dessa pessoa na mídia', () => {
+    const { media } = rig()
+    useUserAudioStore.getState().setVolume('u1', 0.3)
+    expect(media.setUserVolume).toHaveBeenLastCalledWith('u1', 0.3)
+    useUserAudioStore.getState().toggleMuted('u1')
+    expect(media.setUserVolume).toHaveBeenLastCalledWith('u1', 0)
+    useUserAudioStore.getState().toggleMuted('u1')
+    expect(media.setUserVolume).toHaveBeenLastCalledWith('u1', 0.3)
   })
 })

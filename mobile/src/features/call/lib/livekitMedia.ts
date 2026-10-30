@@ -9,9 +9,12 @@ import { disableVideoStartBitrate } from './startBitrate'
 // desenha a transmissão). Ficam fora da cobertura do Jest (módulo nativo): a lógica toda está no callController,
 // testado com uma CallMedia falsa. Provado no aparelho (PR B); a transmissão de tela ainda não (ADR 0027).
 
-/** Volume 0 silencia quem chega sem sair da sala: é o "fone" do painel do usuário. */
+// Volume de cada pessoa escolhido por mim (0 a 1); quem não está aqui fica em 1.
+const userVolumes = new Map<string, number>()
+
+/** Volume 0 silencia quem chega sem sair da sala: é o "fone" do painel do usuário. Com fone, vale o de cada pessoa. */
 const setRemoteVolume = (room: Room, listening: boolean): void => {
-  room.remoteParticipants.forEach((p) => p.setVolume(listening ? 1 : 0))
+  room.remoteParticipants.forEach((p) => p.setVolume(listening ? (userVolumes.get(p.identity) ?? 1) : 0))
 }
 
 const screenOf = (p: RemoteParticipant): RemoteTrackPublication | undefined => p.getTrackPublication(Track.Source.ScreenShare)
@@ -202,6 +205,10 @@ export function createLiveKitMedia(): CallMedia {
     setListening(on) {
       listening = on
       if (room) setRemoteVolume(room, on)
+    },
+    setUserVolume(userId, volume) {
+      userVolumes.set(userId, volume)
+      if (room) setRemoteVolume(room, listening)
     },
     onSpeakers(listener) {
       speakerListeners.add(listener)

@@ -7,6 +7,7 @@ import { useCameraStore } from '../store/cameraStore'
 import { useScreenShareStore } from '../store/screenShareStore'
 import { useParticipantsStore } from '../store/participantsStore'
 import { useSpeakingStore } from '../store/speakingStore'
+import { useUserAudioStore } from '../store/userAudioStore'
 import { CallScreen } from './CallScreen'
 
 jest.mock('react-native-safe-area-context', () => ({ ...jest.requireActual('react-native-safe-area-context'), useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }) }))
@@ -167,5 +168,26 @@ describe('CallScreen: câmera', () => {
     expect(screen.getByText('câmera de me')).toBeOnTheScreen()
     await fireEvent.press(screen.getByRole('button', { name: 'Ligar câmera' }))
     expect(onToggleCamera).toHaveBeenCalled()
+  })
+})
+
+// Pedido do dono: não dava para abaixar nem silenciar o som de outra pessoa da chamada.
+describe('CallScreen: volume de cada pessoa', () => {
+  beforeEach(() => {
+    useUserAudioStore.getState().reset()
+    useParticipantsStore.getState().upsert(ana)
+  })
+
+  it('tocar em outra pessoa abre o volume dela; o meu tile não abre nada', async () => {
+    await render(<CallScreen onBack={jest.fn()} onLeave={jest.fn()} />)
+    expect(screen.queryByHintText('Ajustar o som de Eu')).toBeNull()
+    await fireEvent.press(screen.getByHintText('Ajustar o som de Ana'))
+    expect(screen.getByRole('adjustable', { name: 'Volume de Ana' })).toBeOnTheScreen()
+  })
+
+  it('quem eu silenciei aparece assim no tile', async () => {
+    useUserAudioStore.getState().toggleMuted('u1')
+    await render(<CallScreen onBack={jest.fn()} onLeave={jest.fn()} />)
+    expect(screen.getByLabelText('Ana, silenciado para você')).toBeOnTheScreen()
   })
 })

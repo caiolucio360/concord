@@ -6,11 +6,13 @@ import { useParticipantsStore, voiceOf } from '../store/participantsStore'
 import { useCameraStore } from '../store/cameraStore'
 import { useScreenShareStore } from '../store/screenShareStore'
 import { useSpeakingStore } from '../store/speakingStore'
+import { useUserAudioStore } from '../store/userAudioStore'
 import { callErrorMessage } from './callErrors'
 import { resyncCall } from './callResync'
 import { mergeMediaPeers } from './mediaPeers'
 import { playSound } from './sounds/soundPlayer'
 import type { CallMedia, MediaConnection } from './callMedia'
+import { outputVolume } from './userVolume'
 import { effectiveAudio, type LocalControls } from './voiceState'
 
 export interface ControllerDeps {
@@ -57,6 +59,12 @@ export function createCallController(deps: ControllerDeps) {
   deps.media.onScreens((ids) => onScreens(ids))
   deps.media.onPeers((peers) => onPeers(peers))
   deps.media.onCameras((ids) => useCameraStore.getState().setCameras(ids))
+  // Volume e silenciar de cada pessoa (só para mim): manda para a mídia só quem mudou.
+  useUserAudioStore.subscribe(({ settings }, prev) => {
+    for (const [userId, audio] of Object.entries(settings)) {
+      if (audio !== prev.settings[userId]) deps.media.setUserVolume(userId, outputVolume(audio))
+    }
+  })
 
   /** Muda a lista de quem transmite: toca o som de quando alguém abre ou encerra uma transmissão. */
   /** A sala de mídia manda quem está nela: o Maestro entra e sai da lista por aqui. */
@@ -107,9 +115,7 @@ export function createCallController(deps: ControllerDeps) {
     const { token } = await deps.api.getCallToken(callId)
     await deps.media.connect(deps.liveKitUrl, token)
     if (session().callId !== callId) return void (await deps.media.disconnect())
-    const permitted = await deps.ensureMicPermission()
-    session().setMicDenied(!permitted)
-    if (!permitted) notice('Sem permissão do microfone. Você entrou mudo.')
+    if (session().micDenied) notice('Sem permissão do microfone. Você entrou mudo.')
     session().setPhase('active')
     playSound('join')
     await applyAudio()
@@ -149,11 +155,20 @@ export function createCallController(deps: ControllerDeps) {
     return resyncCall({ getState: deps.api.getCallState, meId: deps.meId?.() ?? null, onEnded: () => void leave(false) }).catch(() => {})
   }
 
+  /**
+   * Pede o microfone antes de começar qualquer fase da chamada: o serviço em primeiro plano (tipo microfone) sobe
+   * com a fase, e subir sem a permissão faz o Android 14 derrubar o app. Devolve se foi negado.
+   */
+  async function askMic(): Promise<boolean> {
+    return !(await deps.ensureMicPermission())
+  }
+
   async function joinChannel(channel: ChannelTarget): Promise<void> {
     const s = session()
     if (isInCall(s) && s.channelId === channel.id) return
     if (session().phase !== 'idle') await leave()
-    session().begin({ callId: '', kind: 'channel', phase: 'connecting', channelId: channel.id, serverId: channel.serverId, name: channel.name })
+    const micDenied = await askMic()
+    session().begin({ callId: '', kind: 'channel', phase: 'connecting', channelId: channel.id, serverId: channel.serverId, name: channel.name, micDenied })
     try {
       const call = await deps.api.startCall({ type: 'channel', channel_id: channel.id })
       session().setCallId(call.id)
@@ -167,7 +182,8 @@ export function createCallController(deps: ControllerDeps) {
 
   async function callDm(dm: DmTarget): Promise<void> {
     if (session().phase !== 'idle') await leave()
-    session().begin({ callId: '', kind: 'dm', phase: 'outgoing', conversationId: dm.id, name: dm.name })
+    const micDenied = await askMic()
+    session().begin({ callId: '', kind: 'dm', phase: 'outgoing', conversationId: dm.id, name: dm.name, micDenied })
     try {
       const call = await deps.api.startCall({ type: 'dm', conversation_id: dm.id })
       session().setCallId(call.id)
@@ -193,12 +209,14 @@ export function createCallController(deps: ControllerDeps) {
     if (!incoming) return
     if (session().phase !== 'idle') await leave()
     useIncomingCallStore.getState().clear()
+    const micDenied = await askMic()
     session().begin({
       callId: incoming.callId,
       kind: 'dm',
       phase: 'connecting',
       conversationId: incoming.conversationId,
-      name: incoming.initiator.display_name
+      name: incoming.initiator.display_name,
+      micDenied
     })
     useParticipantsStore.getState().upsert(incoming.initiator)
     deps.ws.send('call:accept', { call_id: incoming.callId })
