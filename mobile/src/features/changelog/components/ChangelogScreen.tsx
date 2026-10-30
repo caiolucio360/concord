@@ -4,7 +4,7 @@ import { colors, fontSize, radius, spacing } from '../../../shared/theme/tokens'
 import { Button } from '../../../shared/ui/Button'
 import { IconButton } from '../../../shared/ui/IconButton'
 import { fetchChangelog, type ChangelogRelease } from '../api/changelog'
-import { formatReleaseDate, groupEntries } from '../lib/changelog'
+import { formatReleaseDate, groupEntries, withContent } from '../lib/changelog'
 
 function Group({ title, items, tone }: { title: string; items: string[]; tone: string }) {
   if (items.length === 0) return null
@@ -47,7 +47,7 @@ export function ChangelogScreen({ onBack }: { onBack: () => void }) {
     setLoading(true)
     setError(null)
     fetchChangelog()
-      .then(setReleases)
+      .then((all) => setReleases(withContent(all)))
       .catch(() => setError('Não foi possível carregar as novidades.'))
       .finally(() => setLoading(false))
   }, [])
