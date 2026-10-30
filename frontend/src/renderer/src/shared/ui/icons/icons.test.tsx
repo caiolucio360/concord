@@ -82,6 +82,7 @@ const LINE_GLYPHS = [
   'FullscreenExitIcon',
   'FullscreenIcon',
   'HashIcon',
+  'MinusIcon',
   'PaperclipIcon',
   'PlusIcon',
   'ReplyIcon',

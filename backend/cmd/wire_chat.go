@@ -40,6 +40,7 @@ func (a *app) wireChat() {
 	attachmentHandler := message.NewAttachmentHandler(messageRepository, uploads, a.uploadSpace, a.roomAccess, a.authService)
 	searchHandler := message.NewSearchHandler(messageRepository, a.permissionService, a.roomAccess)
 	a.wireTTS(messageRepository)
+	a.wireEmojis()
 
 	a.serverService.OnMemberJoined(func(ctx context.Context, serverID string, member server.ServerMember) {
 		welcomeMember(ctx, a.channelService, a.messageService, serverID, member)
