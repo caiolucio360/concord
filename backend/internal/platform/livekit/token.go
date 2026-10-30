@@ -95,3 +95,24 @@ func (t *TokenIssuer) IssueBot(room, identity, name string) (string, error) {
 		})
 	return token.ToJWT()
 }
+
+// IssueScreen é o token do participante "tela" (live pelo helper nativo,
+// docs/adr/0031): entra na sala e só publica a tela e o som dela — não
+// assina ninguém nem manda dados.
+func (t *TokenIssuer) IssueScreen(room, identity, name string) (string, error) {
+	canPublish, canSubscribe, canPublishData := true, false, false
+	grant := &auth.VideoGrant{
+		RoomJoin:       true,
+		Room:           room,
+		CanPublish:     &canPublish,
+		CanSubscribe:   &canSubscribe,
+		CanPublishData: &canPublishData,
+	}
+	grant.SetCanPublishSources([]lk.TrackSource{lk.TrackSource_SCREEN_SHARE, lk.TrackSource_SCREEN_SHARE_AUDIO})
+	token := auth.NewAccessToken(t.apiKey, t.apiSecret).
+		SetIdentity(identity).
+		SetName(name).
+		SetValidFor(tokenTTL).
+		SetVideoGrant(grant)
+	return token.ToJWT()
+}
