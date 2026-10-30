@@ -84,12 +84,20 @@ func (s *Snapshot) IsOwner(userID string) bool {
 	return userID != "" && userID == s.OwnerID
 }
 
-// Server: permissões do membro no servidor (0 se não é membro).
+// Server: permissões do membro no servidor (0 se não é membro). Roda a cada
+// checagem e por conexão no broadcast: soma os bits sem alocar.
 func (s *Snapshot) Server(userID string) int64 {
-	if !s.IsMember(userID) {
+	roleIDs, ok := s.MemberRoles[userID]
+	if !ok {
 		return 0
 	}
-	return Base(s.OwnerID, userID, s.Everyone.Permissions, s.RolesOf(userID))
+	var rolePerms int64
+	for _, id := range roleIDs {
+		if r, ok := s.Roles[id]; ok && !r.IsDefault {
+			rolePerms |= r.Permissions
+		}
+	}
+	return baseFrom(s.OwnerID, userID, s.Everyone.Permissions, rolePerms)
 }
 
 // Channel: permissões do membro no canal (0 se não é membro ou o canal não é

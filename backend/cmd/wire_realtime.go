@@ -17,7 +17,7 @@ import (
 func (a *app) wireRealtime() {
 	// "Fulano está digitando…": mesma regra de escrita das mensagens.
 	typing := websocket.NewTyping(a.hub, a.roomAccess, a.userService.FindByID)
-	wsHandler := websocket.WsHandler(a.hub, a.authService, a.permissionService, a.serverService, a.conversationService, a.callPresence.Router(a.callAFK.Router(a.callService)), typing).WithMobileApps(a.mobileApps)
+	wsHandler := websocket.WsHandler(a.hub, a.authService, a.permissionService, a.permissionService, a.conversationService, a.callPresence.Router(a.callAFK.Router(a.callService)), typing).WithMobileApps(a.mobileApps)
 	a.hub.SetDisconnectHandler(a.callService.HandleDisconnect)
 
 	a.route(func(router *gin.Engine, api *gin.RouterGroup) {

@@ -19,6 +19,9 @@ func newFakeStore() *fakeStore {
 	return &fakeStore{servers: map[string]Settings{}, channels: map[string]Settings{}}
 }
 
+func (f *fakeStore) AllFor(context.Context, []string) (map[string]All, error) {
+	return nil, nil
+}
 func (f *fakeStore) All(context.Context, string) (All, error) {
 	return All{Servers: f.servers, Channels: f.channels}, nil
 }

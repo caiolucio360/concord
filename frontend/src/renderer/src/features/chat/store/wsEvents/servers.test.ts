@@ -18,6 +18,10 @@ vi.mock('../../../servers/store/serverStore', () => ({
 }))
 vi.mock('../../../../shared/store/toastStore', () => ({ showToast: toast }))
 vi.mock('../../../../app/router', () => ({ router: nav }))
+const auth = vi.hoisted(() => ({ userId: 'ana' as string | null }))
+vi.mock('../../../auth/store/authStore', () => ({
+  useAuthStore: { getState: () => ({ user: auth.userId ? { id: auth.userId } : null }) }
+}))
 
 const { SERVER_HANDLERS, handleRoleEvent, lostChannelRoom, reconcileAfterPermissionChange } =
   await import('./servers')
@@ -104,10 +108,44 @@ describe('handleRoleEvent', () => {
     expect(toast.error).not.toHaveBeenCalled()
   })
 
-  it('server:permissions:invalidate relê os canais', async () => {
-    const { ctx, state } = fakeCtx({})
-    handleRoleEvent({ type: 'server:permissions:invalidate', payload: { server_id: 's1' } }, ctx)
-    await vi.waitFor(() => expect(state().fetchChannelsForServers).toHaveBeenCalledWith(['s1']))
+  it('server:permissions:invalidate relê os canais, espalhado em até 1,5 s', async () => {
+    vi.useFakeTimers()
+    try {
+      const { ctx, state } = fakeCtx({})
+      handleRoleEvent({ type: 'server:permissions:invalidate', payload: { server_id: 's1' } }, ctx)
+      expect(state().fetchChannelsForServers).not.toHaveBeenCalled()
+      await vi.advanceTimersByTimeAsync(1500)
+      expect(state().fetchChannelsForServers).toHaveBeenCalledWith(['s1'])
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('server:permissions:invalidate: saiu da conta antes da releitura, ela não sai', async () => {
+    vi.useFakeTimers()
+    try {
+      const { ctx, state } = fakeCtx({})
+      handleRoleEvent({ type: 'server:permissions:invalidate', payload: { server_id: 's7' } }, ctx)
+      auth.userId = 'bia' // outra conta entrou na mesma janela
+      await vi.advanceTimersByTimeAsync(1500)
+      expect(state().fetchChannelsForServers).not.toHaveBeenCalled()
+    } finally {
+      auth.userId = 'ana'
+      vi.useRealTimers()
+    }
+  })
+
+  it('server:permissions:invalidate esquece na hora a tela guardada do servidor', async () => {
+    const { serverViewCache } = await import('../../../servers/lib/serverViewCache')
+    serverViewCache.remember('ana', {
+      server: { id: 's9', name: 's9', owner_id: 'ana' },
+      members: [],
+      roles: [],
+      channels: []
+    })
+    const { ctx } = fakeCtx({})
+    handleRoleEvent({ type: 'server:permissions:invalidate', payload: { server_id: 's9' } }, ctx)
+    expect(serverViewCache.recall('ana', 's9')).toBeNull()
   })
 
   it('evento de outro tipo: false', () => {

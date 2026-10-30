@@ -31,7 +31,7 @@ func (a *app) wireChat() {
 	uploads := mustStore(a.uploadsDir, "uploads dir")
 
 	messageRepository := message.MessageRepository(a.db)
-	a.messageService = message.MessageService(messageRepository, push.WrapMessages(a.hub, a.pushTap), a.channelRepository, a.conversationRepository, uploads, a.permissionService)
+	a.messageService = message.MessageService(messageRepository, push.WrapMessages(a.hub, a.pushTap), a.cachedChannels(), a.conversationRepository, uploads, a.permissionService)
 	// Limpeza horária de arquivos sem dono (cascatas e uploads abandonados).
 	go message.NewJanitor(messageRepository, uploads).Run(a.ctx, time.Hour)
 	a.messageHandler = message.MessageHandler(a.messageService, a.channelService, a.conversationService, a.friendshipService, a.permissionService)
@@ -49,13 +49,13 @@ func (a *app) wireChat() {
 	// Mesa de áudio (Soundboard) compartilhada por servidor
 	soundboardUploads := mustStore(filepath.Join(a.uploadsDir, "soundboard"), "soundboard uploads dir")
 	a.soundboardRepository = soundboard.NewRepository(a.db)
-	soundboardHandler := soundboard.NewHandler(a.soundboardRepository, soundboardUploads, a.uploadSpace, a.serverService, a.permissionService, a.authService, a.hub)
+	soundboardHandler := soundboard.NewHandler(a.soundboardRepository, soundboardUploads, a.uploadSpace, a.permissionService, a.permissionService, a.authService, a.hub)
 	soundboardHandler.SetVisitors(appVisitors{a})
 
 	// Figurinhas (Stickers) compartilhadas por servidor
 	stickersUploads := mustStore(filepath.Join(a.uploadsDir, "stickers"), "stickers uploads dir")
 	stickerRepository := sticker.NewRepository(a.db)
-	stickerHandler := sticker.NewHandler(stickerRepository, stickersUploads, a.uploadSpace, a.serverService, a.permissionService, a.authService, a.hub)
+	stickerHandler := sticker.NewHandler(stickerRepository, stickersUploads, a.uploadSpace, a.permissionService, a.permissionService, a.authService, a.hub)
 	a.messageService.SetStickerChecker(stickerRepository)
 
 	giphyHandler := giphy.NewHandler(os.Getenv("GIPHY_API_KEY"))
@@ -82,7 +82,7 @@ func (a *app) wireChat() {
 		message.AttachmentRoutes(api, attachmentHandler, a.authMiddleware)
 		message.SearchRoutes(api, searchHandler, a.authMiddleware)
 		soundboard.Routes(api, soundboardHandler, a.authMiddleware)
-		soundboard.FavoriteRoutes(api, soundboard.NewFavoritesHandler(a.soundboardRepository, a.soundboardRepository, a.serverService), a.authMiddleware)
+		soundboard.FavoriteRoutes(api, soundboard.NewFavoritesHandler(a.soundboardRepository, a.soundboardRepository, a.permissionService), a.authMiddleware)
 		sticker.Routes(api, stickerHandler, a.authMiddleware)
 		giphy.Routes(api, giphyHandler, a.authMiddleware)
 	})

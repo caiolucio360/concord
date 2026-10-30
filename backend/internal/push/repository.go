@@ -32,6 +32,21 @@ func (r *Repository) Delete(ctx context.Context, token string) error {
 	return err
 }
 
+// TokensForUsers: os tokens de várias pessoas numa consulta (push de @all).
+func (r *Repository) TokensForUsers(ctx context.Context, userIDs []string) (map[string][]string, error) {
+	rows, err := r.db.Query(ctx, `SELECT user_id, token FROM push_tokens WHERE user_id = ANY($1)`, userIDs)
+	if err != nil {
+		return nil, err
+	}
+	out := make(map[string][]string, len(userIDs))
+	var userID, token string
+	_, err = pgx.ForEachRow(rows, []any{&userID, &token}, func() error {
+		out[userID] = append(out[userID], token)
+		return nil
+	})
+	return out, err
+}
+
 func (r *Repository) TokensForUser(ctx context.Context, userID string) ([]string, error) {
 	return r.strings(ctx, `SELECT token FROM push_tokens WHERE user_id = $1`, userID)
 }

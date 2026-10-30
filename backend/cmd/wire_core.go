@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
 	"gin-quickstart/backend/internal/auth"
 	"gin-quickstart/backend/internal/channel"
@@ -29,13 +30,8 @@ func (a *app) wireCore() {
 	a.userRepository = user.UserRepository(a.db)
 	a.userService = user.UserService(a.userRepository)
 	checkLoginIndexes(a.userService)
-	a.requireVerified = auth.RequireVerified(func(ctx context.Context, id string) (bool, error) {
-		u, err := a.userService.FindByID(ctx, id)
-		if err != nil {
-			return false, err
-		}
-		return u.EmailVerifiedAt != nil, nil
-	})
+	// Toda rota autenticada passa aqui: o "sim" fica em cache (trocar o e-mail esquece).
+	a.requireVerified = auth.RequireVerified(a.userRepository.IsVerified)
 
 	// WebSocket hub (criado antes dos serviços que publicam eventos)
 	a.hub = websocket.NewHub()
@@ -46,12 +42,16 @@ func (a *app) wireCore() {
 	// Permissões (cargos, @everyone, sobrescritas por canal)
 	a.permissionService = permission.PermissionService(permission.PermissionRepository(a.db))
 	a.hub.SetVisibility(a.permissionService)
+	// Movimento do cache de permissões no log (acertos, idas ao banco, invalidações).
+	go a.permissionService.LogStatsEvery(a.ctx, 10*time.Minute, log.Printf)
 
 	a.roleRepository = role.RoleRepository(a.db)
 	a.roleService = role.RoleService(a.roleRepository, a.permissionService, a.hub)
 	roleHandler := role.RoleHandler(a.roleService)
 
 	serverRepository := server.ServerRepository(a.db)
+	// Cache de permissões sem TTL: entrar no servidor, sair e apagá-lo invalidam.
+	serverRepository.SetPermissionCache(a.permissionService)
 	a.serverService = server.ServerService(serverRepository, a.hub, a.roleRepository)
 	// Online na prévia do link de convite (invisível conta como offline).
 	a.serverService.SetPresence(a.hub.PresenceMap)
@@ -64,6 +64,7 @@ func (a *app) wireCore() {
 
 	a.channelRepository = channel.ChannelRepository(a.db)
 	a.channelService = channel.ChannelService(a.channelRepository, a.hub)
+	a.channelService.SetPermissionCache(a.permissionService)
 	channelHandler := channel.ChannelHandler(a.channelService, a.permissionService)
 
 	a.conversationRepository = conversation.ConversationRepository(a.db)

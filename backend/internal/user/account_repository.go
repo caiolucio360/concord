@@ -48,6 +48,7 @@ func (r *Repository) SetUsername(ctx context.Context, id, username string, cutof
 
 // SetEmail troca o e-mail; sem keepVerified, a conta volta a "não confirmado".
 func (r *Repository) SetEmail(ctx context.Context, id, email string, keepVerified bool) (*User, error) {
+	defer r.verified.Forget(id)
 	return scanUser(r.db.QueryRow(
 		ctx,
 		`UPDATE users
