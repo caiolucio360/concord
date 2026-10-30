@@ -22,7 +22,7 @@
 
 ## Desempenho (pedido do usuário: sempre a solução mais performática)
 
-- **Pack base sem TTL:** a versão do emojibase é fixa (`16.0.3`), então o conteúdo nunca muda. O backend busca uma vez por processo (singleflight, aquecido em goroutine no boot), guarda os **bytes JSON já serializados** + ETag e serve com `Cache-Control: public, max-age=31536000, immutable`. Falha não é cacheada (próximo pedido tenta de novo). Trocar a versão = deploy.
+- **Pack base sem TTL:** a versão do emojibase é fixa (`16.0.3`), então o conteúdo nunca muda. O backend busca uma vez por processo (singleflight, aquecido em goroutine no boot), guarda os **bytes JSON já serializados** + ETag e serve com `Cache-Control: private, max-age=86400` (a URL não muda entre versões; ver ADR). Falha fica guardada 1 min. Trocar a versão = deploy.
 - **Arquivo do emoji imutável:** id novo a cada upload, arquivo nunca muda → `Cache-Control: private, max-age=31536000, immutable`. No app a URL de cada id é montada **uma vez por sessão** (mapa id→url no store, com o media token do momento) para o navegador reaproveitar cache e imagem decodificada em todas as mensagens; `<img>` com `width/height` fixos, `loading="lazy"`, `decoding="async"`.
 - **Seletor com ~1.900 emojis:** cada categoria só monta os botões quando chega perto da área visível (`IntersectionObserver` com placeholder de altura calculada; sem dependência), mais `content-visibility: auto`. Busca usa um `haystack` minúsculo/sem acento pré-calculado uma vez por emoji e devolve no máximo 200 resultados.
 - **Texto da mensagem:** `splitCustomEmojis` só roda se `content.includes('<:')`; regex global único, linear. `byId` é `Record` (O(1)); seletores zustand com referência estável.
@@ -42,6 +42,7 @@
 | Modal, nome inválido | `O nome precisa ter de 2 a 32 letras, números ou _.` |
 | Excluir (title) | `Excluir emoji` |
 | Toast ao falhar exclusão | `Não foi possível excluir o emoji.` |
+| Modal, erro técnico no envio | `Não foi possível enviar o emoji.` (pendente de aprovação) |
 | Erro: nome repetido (409) | `Já existe um emoji com esse nome neste servidor.` |
 | Erro: limite (409) | `Este servidor já tem 50 emojis.` |
 | Erro: permissão (403) | `Você não tem permissão para adicionar emojis neste servidor.` |

@@ -6,6 +6,27 @@ import { isValidEmojiName } from './emojiToken'
 export const ERROR_TOO_LARGE = 'Arquivo grande demais (máx. 256 KB).'
 export const ERROR_FORMAT = 'Só imagens PNG, JPEG, WEBP, AVIF ou GIF.'
 export const ERROR_NAME = 'O nome precisa ter de 2 a 32 letras, números ou _.'
+export const ERROR_GENERIC = 'Não foi possível enviar o emoji.'
+
+/** Erros do servidor que já são texto aprovado (backend/internal/emoji/model.go). */
+const SERVER_ERRORS = new Set([
+  ERROR_NAME,
+  ERROR_TOO_LARGE,
+  ERROR_FORMAT,
+  'Já existe um emoji com esse nome neste servidor.',
+  'Este servidor já tem 50 emojis.',
+  'Você não tem permissão para adicionar emojis neste servidor.'
+])
+
+/** Mensagem para quem envia: só texto aprovado (erros técnicos viram a genérica). */
+export function uploadErrorMessage(err: unknown): string {
+  const message = err instanceof Error ? err.message : ''
+  if (SERVER_ERRORS.has(message)) return message
+  const status = (err as { status?: number } | null)?.status
+  if (status === 413) return ERROR_TOO_LARGE
+  if (status === 415) return ERROR_FORMAT
+  return ERROR_GENERIC
+}
 
 const ACCEPTED = new Set(EMOJI_ACCEPT.split(','))
 
@@ -56,6 +77,6 @@ export async function sendEmoji(
     await upload(serverId, name, file)
     return null
   } catch (err) {
-    return err instanceof Error ? err.message : String(err)
+    return uploadErrorMessage(err)
   }
 }

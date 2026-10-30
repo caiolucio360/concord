@@ -30,6 +30,7 @@ interface EmojiState {
 }
 
 let loading: Promise<void> | null = null
+let again = false
 let loadingBase: Promise<void> | null = null
 
 function indexById(groups: ServerEmojis[]): Record<string, CustomEmoji> {
@@ -74,15 +75,25 @@ export const useEmojiStore = create<EmojiState>((set, get) => {
 
     ensureLoaded: () => {
       if (get().loaded) return Promise.resolve()
-      return get().reload()
+      return loading ?? get().reload()
     },
 
     reload: () => {
-      loading ??= fetchMyEmojis()
+      // Pediu de novo no meio de uma carga (ex.: emoji de um servidor novo):
+      // a carga atual pode já estar velha, então roda outra quando ela acabar.
+      if (loading) {
+        again = true
+        return loading
+      }
+      loading = fetchMyEmojis()
         .then((groups) => set({ ...withGroups(groups), loaded: true }))
         .catch(() => {})
         .finally(() => {
           loading = null
+          if (again) {
+            again = false
+            void get().reload()
+          }
         })
       return loading
     },
@@ -124,6 +135,7 @@ export const useEmojiStore = create<EmojiState>((set, get) => {
 /** Volta ao estado inicial (logout e testes). */
 export function resetEmojiStore(): void {
   loading = null
+  again = false
   loadingBase = null
   useEmojiStore.setState({ groups: [], byId: {}, loaded: false, base: null })
 }

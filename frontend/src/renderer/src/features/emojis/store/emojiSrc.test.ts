@@ -4,7 +4,7 @@ const token = vi.hoisted(() => ({ ensure: vi.fn() }))
 vi.mock('../../chat/store/mediaToken', () => ({ ensureMediaToken: token.ensure }))
 vi.mock('../../../shared/lib/config', () => ({ API_BASE_URL: 'https://api' }))
 
-import { cachedEmojiSrc, clearEmojiSrcs, loadEmojiSrc, subscribeEmojiSrc } from './emojiSrc'
+import { cachedEmojiSrc, clearEmojiSrcs, loadEmojiSrc, retryEmojiSrc, subscribeEmojiSrc } from './emojiSrc'
 
 describe('emojiSrc', () => {
   beforeEach(() => {
@@ -56,5 +56,20 @@ describe('emojiSrc', () => {
     subscribeEmojiSrc('e3', true, onSrc)
     await Promise.resolve()
     expect(onSrc).not.toHaveBeenCalled()
+  })
+
+  it('imagem falhou: refaz a URL com o token novo, uma vez por URL', async () => {
+    token.ensure.mockResolvedValueOnce('velho').mockResolvedValue('novo')
+    const old = await loadEmojiSrc('e1')
+    const onSrc = vi.fn()
+    retryEmojiSrc('e1', old, onSrc)
+    await vi.waitFor(() => expect(onSrc).toHaveBeenCalledWith('https://api/emojis/e1/file?token=novo'))
+    retryEmojiSrc('e1', old, onSrc)
+    const fresh = cachedEmojiSrc('e1') as string
+    retryEmojiSrc('e1', fresh, onSrc) // a nova também falhou: refaz uma vez (mesmo token)
+    await vi.waitFor(() => expect(onSrc).toHaveBeenCalledTimes(2))
+    retryEmojiSrc('e1', fresh, onSrc) // e para aqui
+    await new Promise((r) => setTimeout(r, 10))
+    expect(onSrc).toHaveBeenCalledTimes(2)
   })
 })

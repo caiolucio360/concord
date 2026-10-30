@@ -46,6 +46,20 @@ describe('emojiStore', () => {
     expect(useEmojiStore.getState().byId).toEqual({})
   })
 
+  it('reload no meio de uma carga roda outra depois (a primeira pode estar velha)', async () => {
+    let finish: (g: api.ServerEmojis[]) => void = () => {}
+    const fetch = vi
+      .spyOn(api, 'fetchMyEmojis')
+      .mockImplementationOnce(() => new Promise((r) => (finish = r)))
+      .mockResolvedValueOnce(groups)
+    const first = useEmojiStore.getState().reload()
+    void useEmojiStore.getState().reload()
+    finish([])
+    await first
+    await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(2))
+    await vi.waitFor(() => expect(useEmojiStore.getState().byId.e1).toBeDefined())
+  })
+
   it('pack base: usa o do servidor e, se falhar, o local', async () => {
     vi.spyOn(api, 'fetchBasePack').mockResolvedValueOnce({
       groups: [{ id: 0, name: 'sorrisos' }],

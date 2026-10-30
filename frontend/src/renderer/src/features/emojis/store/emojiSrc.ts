@@ -19,9 +19,10 @@ export async function loadEmojiSrc(id: string): Promise<string> {
   return urls.get(id) as string
 }
 
-/** Só para testes e troca de conta. */
+/** Troca de conta (as URLs levam o token da pessoa) e testes. */
 export function clearEmojiSrcs(): void {
   urls.clear()
+  retried.clear()
 }
 
 export function primeEmojiSrc(id: string, url: string): void {
@@ -51,4 +52,19 @@ export function subscribeEmojiSrc(
   return () => {
     active = false
   }
+}
+
+// URLs que já falharam e foram refeitas: cada uma tenta de novo uma vez só
+// (não membro ou emoji apagado continuam falhando, sem laço).
+const retried = new Set<string>()
+
+/**
+ * A imagem falhou (ex.: o media token da URL venceu antes de o <img> carregar):
+ * esquece a URL e entrega uma nova, com o token atual. Uma vez por URL.
+ */
+export function retryEmojiSrc(id: string, failedUrl: string, onSrc: (url: string) => void): void {
+  if (retried.has(failedUrl)) return
+  retried.add(failedUrl)
+  if (urls.get(id) === failedUrl) urls.delete(id)
+  subscribeEmojiSrc(id, true, onSrc)
 }

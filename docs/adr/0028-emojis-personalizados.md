@@ -61,6 +61,18 @@ Formato no texto da mensagem:
 - Sair do servidor tira os emojis dele do seletor e das mensagens dessa pessoa
   (viram `:nome:`), mesmo nas mensagens antigas.
 - Apagar o emoji deixa `:nome:` onde ele foi usado (o token fica no texto).
+- A reação guarda só `<:id>` (sem o nome, para caber na coluna). Quem não é
+  membro do servidor do emoji vê `:emoji:` na reação, não o nome: buscar o
+  nome custaria uma consulta a mais em toda listagem de reações.
+- O backend não confere se o `<:id>` de uma reação existe (só o formato, UUID
+  minúsculo); um id inventado aparece como `:emoji:`. Mesmo motivo: evita uma
+  consulta por reação.
+- O limite de 50 é garantido no banco (lock por servidor na transação do
+  INSERT), não só pela contagem antes do envio.
+- O pack base vai com ETag e `Cache-Control: private, max-age=86400`: a URL
+  `/emojis/base` é a mesma entre versões, então `immutable` deixaria o app com
+  o pack velho por um ano depois de um deploy que trocasse a versão. Falha do
+  CDN fica guardada 1 min (sem fila de pedidos esperando o CDN).
 
 ## Fontes
 

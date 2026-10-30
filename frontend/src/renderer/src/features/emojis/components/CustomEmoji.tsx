@@ -30,7 +30,7 @@ export default function CustomEmoji({
   useCustomEmojis()
   const known = useEmojiStore((s) => id in s.byId)
   const loaded = useEmojiStore((s) => s.loaded)
-  const src = useEmojiSrc(id, known)
+  const { src, onError } = useEmojiSrc(id, known)
   const label = `:${name}:`
   if (!known && loaded) return <>{label}</>
   if (!known || !src) {
@@ -46,6 +46,7 @@ export default function CustomEmoji({
       loading="lazy"
       decoding="async"
       draggable={false}
+      onError={onError}
       className={`inline-block object-contain ${SIZE_CLASS[size]}`}
     />
   )

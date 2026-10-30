@@ -1,13 +1,15 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
   ERROR_FORMAT,
+  ERROR_GENERIC,
   ERROR_NAME,
   ERROR_TOO_LARGE,
   emojiFileError,
   emojiNameError,
   emojiNameFromFile,
   pickEmojiFile,
-  sendEmoji
+  sendEmoji,
+  uploadErrorMessage
 } from './emojiUpload'
 
 describe('emojiUpload', () => {
@@ -62,6 +64,19 @@ describe('sendEmoji', () => {
     upload.mockRejectedValueOnce(new Error('Este servidor já tem 50 emojis.'))
     expect(await sendEmoji(upload, 's1', 'festa', file)).toBe('Este servidor já tem 50 emojis.')
     upload.mockRejectedValueOnce('falhou')
-    expect(await sendEmoji(upload, 's1', 'festa', file)).toBe('falhou')
+    expect(await sendEmoji(upload, 's1', 'festa', file)).toBe(ERROR_GENERIC)
+  })
+})
+
+describe('uploadErrorMessage', () => {
+  const apiErr = (status: number, message: string): Error => Object.assign(new Error(message), { status })
+  it('texto técnico do servidor nunca chega a quem envia', () => {
+    expect(uploadErrorMessage(apiErr(400, 'invalid multipart body'))).toBe(ERROR_GENERIC)
+    expect(uploadErrorMessage(apiErr(413, 'Upload failed: 413'))).toBe(ERROR_TOO_LARGE)
+    expect(uploadErrorMessage(apiErr(415, 'x'))).toBe(ERROR_FORMAT)
+    expect(uploadErrorMessage(null)).toBe(ERROR_GENERIC)
+  })
+  it('erro aprovado do servidor passa como veio', () => {
+    expect(uploadErrorMessage(apiErr(409, 'Este servidor já tem 50 emojis.'))).toBe('Este servidor já tem 50 emojis.')
   })
 })
