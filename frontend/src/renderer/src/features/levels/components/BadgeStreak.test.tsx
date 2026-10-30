@@ -17,7 +17,7 @@ describe('BadgeStreak', () => {
     const html = renderToStaticMarkup(<BadgeStreak streak={{ current: 4 }} isMe={false} />)
     expect(html).toContain('4 dias seguidos')
     expect(html).not.toContain('Recorde')
-    expect(html).not.toContain('Use o Salinha')
+    expect(html).not.toContain('Use a Salinha')
   })
 
   it('sem dados do servidor, não renderiza', () => {
