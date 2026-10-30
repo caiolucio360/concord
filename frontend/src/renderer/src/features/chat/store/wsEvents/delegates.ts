@@ -14,6 +14,7 @@ import { useBadgeStore } from '../../../levels/store/badgeStore'
 import { useProposalStore } from '../../../proposals/store/proposalStore'
 import { useNotifySettingsStore } from '../../../notifications/store/notifySettingsStore'
 import { handleGuestWsEvent } from '../../../guests/store/guestWsEvents'
+import { useEmojiStore } from '../../../emojis/store/emojiStore'
 import { proposalMentionNotification } from '../../../notifications/lib/notifications'
 import { showToast } from '../../../../shared/store/toastStore'
 
@@ -54,7 +55,8 @@ export const DELEGATES: Array<[Match, Delegate]> = [
   [is('proposal:mention'), handleProposalMention],
   [prefix('notification-settings:'), (e) => useNotifySettingsStore.getState().handleWsEvent(e)],
   [prefix('proposal:'), (e) => useProposalStore.getState().handleWsEvent(e)],
-  [prefix('guest:'), handleGuestWsEvent]
+  [prefix('guest:'), handleGuestWsEvent],
+  [prefix('emoji:'), (e) => useEmojiStore.getState().handleWsEvent(e)]
 ]
 
 /** Repassa o evento ao store dono. true = era de outra feature. */

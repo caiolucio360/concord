@@ -1,9 +1,11 @@
+import { useShallow } from 'zustand/react/shallow'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useCallStore } from '../../call/store/callStore'
 import { voiceServerId } from '../../call/lib/voiceServer'
 import ServerRailItem from '../../servers/components/ServerRailItem'
+import { useServerStore } from '../../servers/store/serverStore'
 import { GUEST_COPY } from '../lib/guestCopy'
-import { visitPath } from '../lib/guestVisits'
+import { visitPath, visitsOutsideServers } from '../lib/guestVisits'
 import { useLiveVisits } from '../hooks/useGuestVisits'
 
 const noop = (): void => {}
@@ -15,7 +17,10 @@ const noop = (): void => {}
 function GuestVisitsRail(): React.JSX.Element | null {
   const location = useLocation()
   const navigate = useNavigate()
-  const visits = useLiveVisits()
+  const live = useLiveVisits()
+  const memberOf = useServerStore(useShallow((s) => s.servers.map((srv) => srv.id)))
+  // Virou membro: só o ícone normal do servidor, sem o da visita.
+  const visits = visitsOutsideServers(live, memberOf)
   const voiceSrvId = useCallStore((s) => voiceServerId(s))
   if (visits.length === 0) return null
 

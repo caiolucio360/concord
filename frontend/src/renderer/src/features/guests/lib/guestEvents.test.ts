@@ -34,6 +34,12 @@ describe('eventos de visitante (WS)', () => {
     ).toEqual({ kind: 'refused', message: 'Não pode.' })
   })
 
+  it('guest:member: alguém da call virou membro (tira o selo)', () => {
+    expect(
+      guestEventAction({ type: 'guest:member', payload: { call_id: 'c', server_id: 's', user_id: 'u' } })
+    ).toEqual({ kind: 'member', userId: 'u' })
+  })
+
   it('outros eventos não são de visitante', () => {
     expect(guestEventAction({ type: 'guest:outro', payload: {} })).toBeNull()
   })
