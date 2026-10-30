@@ -1,0 +1,12 @@
+--- a/src/vaapi/vaapi_h264_encoder_wrapper.cpp
++++ b/src/vaapi/vaapi_h264_encoder_wrapper.cpp
+@@ -185,7 +185,8 @@
+     bs->buffer[pos] = (bs->buffer[pos] << size_in_bits | val);
+   } else {
+     size_in_bits -= bit_left;
+-    bs->buffer[pos] = (bs->buffer[pos] << bit_left) | (val >> size_in_bits);
++    // bit_left == 32: deslocar 32 bits é indefinido em C++.
++    bs->buffer[pos] = (bit_left == 32 ? 0 : (bs->buffer[pos] << bit_left)) | (val >> size_in_bits);
+     bs->buffer[pos] = va_swap32(bs->buffer[pos]);
+ 
+     if (pos + 1 == bs->max_size_in_dword) {
