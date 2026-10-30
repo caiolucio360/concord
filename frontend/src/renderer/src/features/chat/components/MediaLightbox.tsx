@@ -46,7 +46,7 @@ function MediaLightbox({
       ref={stageRef}
       role="dialog"
       aria-label={alt}
-      className="fixed inset-0 z-[60] flex touch-none select-none items-center justify-center overflow-hidden bg-black/80"
+      className="fixed inset-0 z-[60] flex touch-none select-none overscroll-contain items-center justify-center overflow-hidden bg-black/80"
       onClick={onBackdropClick}
       onContextMenu={onContextMenu}
       {...zoom.handlers}
