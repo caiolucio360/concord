@@ -25,7 +25,7 @@ function OverwriteEditorFooter({
         Remover regras
       </Button>
       <Button variant="success" disabled={busy || !canSave} onClick={onSave}>
-        {busy ? 'Salvando...' : 'Salvar'}
+        {busy ? 'Salvando…' : 'Salvar'}
       </Button>
     </div>
   )

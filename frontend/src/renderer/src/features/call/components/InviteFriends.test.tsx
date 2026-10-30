@@ -120,7 +120,7 @@ describe('InviteFriendsForm', () => {
 
   it('enviando, o botão mostra o carregamento', () => {
     inviteState.phase = 'loading'
-    expect(renderToStaticMarkup(<InviteFriendsForm callId="c1" />)).toContain('Enviando...')
+    expect(renderToStaticMarkup(<InviteFriendsForm callId="c1" />)).toContain('Enviando…')
   })
 })
 

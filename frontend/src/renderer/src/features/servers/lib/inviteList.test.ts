@@ -10,7 +10,7 @@ import {
 describe('acceptLabel', () => {
   it('troca o rótulo enquanto entra', () => {
     expect(acceptLabel(false)).toBe('Aceitar')
-    expect(acceptLabel(true)).toBe('Entrando...')
+    expect(acceptLabel(true)).toBe('Entrando…')
   })
 })
 

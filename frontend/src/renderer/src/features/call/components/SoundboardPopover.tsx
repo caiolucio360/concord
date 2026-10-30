@@ -69,7 +69,7 @@ function SoundboardPopover({
     <div
       ref={ref}
       role="dialog"
-      aria-label="Mesa de Áudio"
+      aria-label="Mesa de áudio"
       style={{ width, left, bottom }}
       className="fixed z-50 flex max-h-[460px] gap-3 rounded-xl border border-subtle bg-floating p-3 shadow-2xl"
     >
@@ -113,7 +113,7 @@ function SoundboardPopover({
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <div className="mb-3">
-          <p className="text-ds-sm font-bold text-strong">Mesa de Áudio · {current.label}</p>
+          <p className="text-ds-sm font-bold text-strong">Mesa de áudio · {current.label}</p>
           <p className="text-ds-xs text-muted">{current.subtitle}</p>
         </div>
         {section === 'sounds' ? (

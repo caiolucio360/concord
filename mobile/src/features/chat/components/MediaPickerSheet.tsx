@@ -14,9 +14,9 @@ type TabId = 'emojis' | 'gifs' | 'stickers'
 
 // Mesmas abas, ícones e textos do seletor do desktop.
 const TABS: { id: TabId; icon: string; label: string; placeholder: string }[] = [
-  { id: 'emojis', icon: '😊', label: 'Emojis', placeholder: 'Buscar emoji...' },
-  { id: 'gifs', icon: '👾', label: 'GIFs', placeholder: 'Buscar GIFs no GIPHY...' },
-  { id: 'stickers', icon: '💟', label: 'Figurinhas', placeholder: 'Filtrar figurinhas...' }
+  { id: 'emojis', icon: '😊', label: 'Emojis', placeholder: 'Buscar emoji…' },
+  { id: 'gifs', icon: '👾', label: 'GIFs', placeholder: 'Buscar GIFs no GIPHY…' },
+  { id: 'stickers', icon: '💟', label: 'Figurinhas', placeholder: 'Filtrar figurinhas…' }
 ]
 
 interface MediaPickerSheetProps {

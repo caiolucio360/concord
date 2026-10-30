@@ -116,7 +116,7 @@ export default function StickersTab({
             className="flex items-center gap-1 rounded-md bg-brand/30 px-2 py-1 text-ds-xs font-medium text-brand transition-colors hover:bg-brand/50 cursor-pointer"
           >
             <PlusIcon className="h-3 w-3" />
-            <span>Nova Figurinha</span>
+            <span>Nova figurinha</span>
           </button>
         )}
       </div>

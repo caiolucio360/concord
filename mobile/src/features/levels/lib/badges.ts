@@ -39,7 +39,7 @@ export function badgeLabel(b: Pick<Badge, 'name' | 'tier_name'>): string {
 const HOUR = 3600
 
 const FOUNDER_TEXT = 'Chegou nas primeiras semanas'
-const DEV_TEXT = 'Dev do Salinha'
+const DEV_TEXT = 'Dev da Salinha'
 const DEV_ONLY = 'Só para os devs'
 /** O nome da escolha de cada badge do segundo turno (categoria -> "Fez o L"). */
 export const VOTE_NAME: Record<string, string> = {
@@ -55,7 +55,7 @@ function voteName(category: string | undefined): string {
 function voteText(category: string | undefined): string {
   return `${voteName(category)} no segundo turno`
 }
-const BIRTHDAY_TEXT = 'Comemorou o aniversário no Salinha'
+const BIRTHDAY_TEXT = 'Comemorou o aniversário na Salinha'
 
 function birthdayText(value: number): string {
   return value > 0 ? 'Hoje é o seu aniversário!' : BIRTHDAY_TEXT

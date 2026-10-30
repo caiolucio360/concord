@@ -22,7 +22,7 @@ describe('StatusModal', () => {
     expect(html).toContain('Ausente')
     expect(html).toContain('Não perturbe')
     expect(html).toContain('Invisível')
-    expect(html).toContain('Você aparecerá offline, mas terá acesso total ao Salinha')
+    expect(html).toContain('Você aparecerá offline, mas terá acesso total à Salinha')
   })
 
   it('marca a opção atualmente selecionada', () => {

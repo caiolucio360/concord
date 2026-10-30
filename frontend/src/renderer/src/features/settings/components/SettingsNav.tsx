@@ -101,7 +101,7 @@ function SettingsNav({
             disabled={loggingOut}
             className="block w-full cursor-pointer rounded-md px-2 py-1.5 text-left text-ds-md font-medium text-danger transition-colors hover:bg-danger/10 disabled:opacity-50"
           >
-            {loggingOut ? 'Saindo...' : 'Sair'}
+            {loggingOut ? 'Saindo…' : 'Sair'}
           </button>
         </div>
       </nav>

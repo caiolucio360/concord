@@ -252,7 +252,7 @@ describe('VoiceChannelRow', () => {
     inCall([participant('ana')], { locked: true })
     setCall({ knock: { channelId: 'v1', callId: 'c1', status: 'pending' } })
     const pending = render()
-    expect(pending).toContain('Pedido enviado...')
+    expect(pending).toContain('Pedido enviado…')
     // O "Cancelar pedido" fica no canto do balão do chat: ele sai enquanto isso.
     expect(pending).not.toContain('Abrir chat')
     setCall({ knock: { channelId: 'v1', callId: 'c1', status: 'declined' } })

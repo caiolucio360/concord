@@ -29,7 +29,7 @@ export const STATUS_META: Record<
     label: 'Invisível',
     color: 'var(--text-faint)',
     textColor: 'var(--text-muted)',
-    description: 'Você aparecerá offline, mas terá acesso total ao Salinha'
+    description: 'Você aparecerá offline, mas terá acesso total à Salinha'
   },
   offline: { label: 'Offline', color: 'var(--text-faint)', textColor: 'var(--text-muted)' }
 }

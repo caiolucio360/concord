@@ -28,7 +28,7 @@ describe('EmailVerifyBanner', () => {
     const html = renderToStaticMarkup(<EmailVerifyBanner />)
     expect(html).toContain('Confirme seu e-mail (ana@salinha.app)')
     expect(html).toContain('Reenviar e-mail')
-    expect(html).toContain('aria-label="Dispensar aviso"')
+    expect(html).toContain('aria-label="Fechar aviso"')
     expect(html).not.toContain('✕')
     expect(html).toContain('<svg')
   })

@@ -7,7 +7,7 @@ describe('CardMemberSince', () => {
     const html = renderToStaticMarkup(<CardMemberSince createdAt="2026-10-25T12:00:00Z" />)
     expect(html).toContain('Membro desde')
     expect(html).toContain('2026')
-    expect(html).toContain('no Salinha')
+    expect(html).toContain('na Salinha')
   })
   it('sem data (ou inválida): nada', () => {
     expect(renderToStaticMarkup(<CardMemberSince />)).toBe('')

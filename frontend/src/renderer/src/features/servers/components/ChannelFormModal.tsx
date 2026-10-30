@@ -215,7 +215,7 @@ function ChannelFormDialog({
 }
 
 function submitLabel(saving: boolean, editing: boolean): string {
-  if (saving) return 'Salvando...'
+  if (saving) return 'Salvando…'
   return editing ? 'Salvar' : 'Criar canal'
 }
 

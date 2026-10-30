@@ -203,7 +203,7 @@ export default function PinnedMessagesPopover({
       <div className="flex shrink-0 items-center justify-between border-b border-subtle px-4 py-3">
         <div className="flex items-center gap-2">
           <PinIcon className="h-4 w-4 text-warning" />
-          <h3 className="text-ds-sm font-semibold text-strong">Mensagens Fixadas</h3>
+          <h3 className="text-ds-sm font-semibold text-strong">Mensagens fixadas</h3>
           <span className="rounded bg-fg/10 px-1.5 py-0.5 text-ds-xs font-medium text-secondary">
             {pins.length}/50
           </span>

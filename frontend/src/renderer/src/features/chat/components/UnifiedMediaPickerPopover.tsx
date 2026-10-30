@@ -17,9 +17,9 @@ const TABS: {
   label: string
   placeholder: string
 }[] = [
-  { id: 'emojis', icon: SmileyIcon, label: 'Emojis', placeholder: 'Buscar emoji...' },
-  { id: 'gifs', icon: GifIcon, label: 'GIFs', placeholder: 'Buscar GIFs no GIPHY...' },
-  { id: 'stickers', icon: StickerIcon, label: 'Figurinhas', placeholder: 'Filtrar figurinhas...' }
+  { id: 'emojis', icon: SmileyIcon, label: 'Emojis', placeholder: 'Buscar emoji…' },
+  { id: 'gifs', icon: GifIcon, label: 'GIFs', placeholder: 'Buscar GIFs no GIPHY…' },
+  { id: 'stickers', icon: StickerIcon, label: 'Figurinhas', placeholder: 'Filtrar figurinhas…' }
 ]
 
 interface UnifiedMediaPickerPopoverProps {

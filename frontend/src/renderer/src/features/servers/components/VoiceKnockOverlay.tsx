@@ -25,7 +25,7 @@ function VoiceKnockOverlay({
       <div className="absolute inset-0 z-10 flex items-center justify-between rounded-lg bg-black/80 px-2.5 backdrop-blur-sm border border-warning/40 animate-in on-media fade-in duration-150">
         <div className="flex items-center gap-1.5 min-w-0">
           <span className="h-2 w-2 shrink-0 animate-ping rounded-full bg-warning" />
-          <span className="truncate text-ds-xs font-semibold text-warning">Pedido enviado...</span>
+          <span className="truncate text-ds-xs font-semibold text-warning">Pedido enviado…</span>
         </div>
         <button
           onClick={(e) => {

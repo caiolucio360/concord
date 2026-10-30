@@ -46,10 +46,10 @@ function EmailVerifyBanner(): React.JSX.Element | null {
           disabled={status === 'sending'}
           className="shrink-0 cursor-pointer font-semibold text-warning underline-offset-2 hover:underline disabled:opacity-50"
         >
-          {status === 'sending' ? 'Enviando...' : 'Reenviar e-mail'}
+          {status === 'sending' ? 'Enviando…' : 'Reenviar e-mail'}
         </button>
       )}
-      <CloseButton label="Dispensar aviso" size="sm" onClick={() => setDismissed(true)} />
+      <CloseButton label="Fechar aviso" size="sm" onClick={() => setDismissed(true)} />
     </div>
   )
 }

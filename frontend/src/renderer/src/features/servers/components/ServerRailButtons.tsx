@@ -33,7 +33,7 @@ export function RailHomeButton({
         to="/friends"
         onClick={onClick}
         aria-label="Início"
-        title="Mensagens Diretas e Amigos"
+        title="Mensagens diretas e amigos"
         className={`group/home relative flex h-12 w-12 items-center justify-center font-bold text-ds-lg shadow-lg transition-all duration-200 ${
           isHome
             ? 'rounded-xl bg-gradient-brand text-white shadow-brand/30'

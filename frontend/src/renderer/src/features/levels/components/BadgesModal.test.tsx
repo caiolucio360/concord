@@ -176,7 +176,7 @@ describe('BadgesModal', () => {
       store.modal = { userId: 'me', name: 'Eu', avatarUrl: null }
       store.byUser = { me: { badges: [] } }
       const html = renderToStaticMarkup(<BadgesModal />)
-      expect(html).toContain('Nenhum badge ainda. Eles aparecem conforme você usa o Salinha.')
+      expect(html).toContain('Nenhum badge ainda. Eles aparecem conforme você usa a Salinha.')
     })
   })
 })

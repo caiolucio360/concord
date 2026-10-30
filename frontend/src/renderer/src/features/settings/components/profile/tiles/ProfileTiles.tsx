@@ -117,7 +117,7 @@ function TextTiles({ user, onOpen }: { user: User; onOpen: Open }): React.JSX.El
       </TileSection>
       <TileSection title="Sobre mim">
         <TileRow
-          label="Editar Sobre mim"
+          label="Editar sobre mim"
           value={textSummary(draft.bio)}
           empty={SPOT_PLACEHOLDER.bio}
           onClick={() => onOpen('bio')}

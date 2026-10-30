@@ -70,7 +70,7 @@ function CreateServerForm({
           Cancelar
         </Button>
         <Button type="submit" variant="primary" disabled={creating || !serverName.trim()}>
-          {creating ? 'Criando...' : 'Criar servidor'}
+          {creating ? 'Criando…' : 'Criar servidor'}
         </Button>
       </div>
     </form>
@@ -110,7 +110,7 @@ function JoinServerForm({ onDone }: { onDone: (serverId: string) => void }): Rea
           className="font-mono"
         />
         <Button type="submit" variant="success" disabled={joining || !joinCode.trim()}>
-          {joining ? 'Entrando...' : 'Entrar'}
+          {joining ? 'Entrando…' : 'Entrar'}
         </Button>
       </div>
     </form>

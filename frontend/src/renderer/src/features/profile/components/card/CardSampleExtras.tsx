@@ -16,7 +16,7 @@ export function CardMemberSince({ createdAt }: { createdAt?: string }): React.JS
         Membro desde
       </SectionHeader>
       <p className="text-ds-xs text-normal">
-        {since} <span className="text-faint">· no Salinha</span>
+        {since} <span className="text-faint">· na Salinha</span>
       </p>
     </div>
   )

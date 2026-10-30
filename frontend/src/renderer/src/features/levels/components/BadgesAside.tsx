@@ -52,7 +52,7 @@ function BadgesAside({
         </div>
         <p className="mt-1.5 text-ds-sm leading-snug text-muted">
           {isMe
-            ? 'Os badges aparecem conforme você usa o Salinha.'
+            ? 'Os badges aparecem conforme você usa a Salinha.'
             : `Explore os badges de ${target.name} ou veja os seus.`}
         </p>
 
@@ -65,7 +65,7 @@ function BadgesAside({
         ) : (
           <p className="mt-5 text-ds-sm text-faint">
             {isMe
-              ? 'Nenhum badge ainda. Eles aparecem conforme você usa o Salinha.'
+              ? 'Nenhum badge ainda. Eles aparecem conforme você usa a Salinha.'
               : 'Nenhum badge ainda.'}
           </p>
         )}

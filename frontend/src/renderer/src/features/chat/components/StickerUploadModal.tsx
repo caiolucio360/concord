@@ -93,7 +93,7 @@ export default function StickerUploadModal({
   }
 
   return (
-    <Modal open={open} title="Nova Figurinha" onClose={handleClose}>
+    <Modal open={open} title="Nova figurinha" onClose={handleClose}>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {error && (
           <div className="rounded-lg border border-danger/20 bg-danger/10 p-2.5 text-ds-xs text-danger">
@@ -147,7 +147,7 @@ export default function StickerUploadModal({
             variant="primary"
             disabled={submitting || !file || !name.trim()}
           >
-            {submitting ? 'Enviando...' : 'Adicionar Figurinha'}
+            {submitting ? 'Enviando…' : 'Adicionar figurinha'}
           </Button>
         </div>
       </form>

@@ -60,7 +60,7 @@ export function ChannelActions({
           <button
             type="button"
             onClick={onTogglePins}
-            title="Mensagens Fixadas"
+            title="Mensagens fixadas"
             aria-label="Mensagens fixadas"
             aria-expanded={pinsOpen}
             className={`flex size-10 items-center justify-center rounded-lg border transition md:size-8 ${

@@ -36,7 +36,7 @@ export default function ActiveNow({ friends }: { friends: PublicUser[] }): React
       <h2 className="text-ds-lg font-bold text-strong">Ativo agora</h2>
       {inVoice.length === 0 ? (
         <div className="mt-4 text-center">
-          <p className="text-ds-md font-semibold text-strong">Por enquanto está tudo quieto...</p>
+          <p className="text-ds-md font-semibold text-strong">Por enquanto está tudo quieto…</p>
           <p className="mt-1 text-ds-sm text-muted">
             Quando um amigo entrar numa conversa de voz, ele aparece aqui.
           </p>

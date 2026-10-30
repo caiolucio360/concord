@@ -143,7 +143,7 @@ describe('morePinsLabel', () => {
 
 describe('composerPlaceholder', () => {
   it('respondendo: chama a pessoa', () => {
-    expect(composerPlaceholder(true, 'ana', 'Mensagem para #geral')).toBe('Responder a @ana...')
+    expect(composerPlaceholder(true, 'ana', 'Mensagem para #geral')).toBe('Responder a @ana…')
   })
 
   it('sem resposta: o texto da tela', () => {
@@ -155,8 +155,8 @@ describe('composerPlaceholder', () => {
 
 describe('submitLabel', () => {
   it('subindo arquivo, enviando ou pronto', () => {
-    expect(submitLabel(true, true)).toBe('Enviando arquivos...')
-    expect(submitLabel(false, true)).toBe('Enviando...')
+    expect(submitLabel(true, true)).toBe('Enviando arquivos…')
+    expect(submitLabel(false, true)).toBe('Enviando…')
     expect(submitLabel(false, false)).toBe('Enviar')
   })
 })

@@ -45,9 +45,9 @@ export const T17 = {
 }
 export const T18 = {
   tag: 'BOT',
-  remove: 'Remover Maestro',
+  remove: 'Remover maestro',
   confirm: 'Remover o Maestro deste servidor? Você pode adicioná-lo de novo nas configurações.',
-  add: 'Adicionar Maestro'
+  add: 'Adicionar maestro'
 }
 export const T20 = {
   watch: 'Ver vídeo',

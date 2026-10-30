@@ -119,7 +119,7 @@ function ServerInviteModal({ server }: { server: Server }): React.JSX.Element {
                       disabled={isInviting}
                       onClick={() => handleInvite(f.id, f.username)}
                     >
-                      {isInviting ? 'Convidando...' : 'Convidar'}
+                      {isInviting ? 'Convidando…' : 'Convidar'}
                     </Button>
                   )}
                 </div>

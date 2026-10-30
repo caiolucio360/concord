@@ -131,7 +131,7 @@ export function SoundUploadActions({
         Cancelar
       </Button>
       <Button type="submit" disabled={!file || !name.trim() || submitting}>
-        {submitting ? 'Enviando…' : 'Salvar na Mesa'}
+        {submitting ? 'Enviando…' : 'Salvar na mesa'}
       </Button>
     </div>
   )

@@ -60,7 +60,7 @@ export function CropFooter({
         disabled={busy || !canApply}
         className="cursor-pointer rounded-md bg-brand px-5 py-2 text-ds-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
       >
-        {busy ? 'Aplicando...' : 'Aplicar'}
+        {busy ? 'Aplicando…' : 'Aplicar'}
       </button>
     </div>
   )

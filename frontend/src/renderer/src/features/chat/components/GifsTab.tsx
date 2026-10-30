@@ -13,7 +13,7 @@ export default function GifsTab({
   if (loading || gifs.length === 0) {
     return (
       <div className="flex h-48 items-center justify-center text-ds-xs text-faint">
-        {loading ? 'Carregando GIFs...' : 'Nenhum GIF encontrado.'}
+        {loading ? 'Carregando GIFs…' : 'Nenhum GIF encontrado.'}
       </div>
     )
   }

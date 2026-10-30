@@ -24,7 +24,7 @@ describe('CommentComposer', () => {
   it('respondendo: barra com o autor e a prévia, e a dica cita a pessoa', () => {
     const html = renderToStaticMarkup(<CommentComposer proposalId="p1" replyingTo={reply} onCancelReply={noop} />)
     expect(html).toContain('data-reply-bar')
-    expect(html).toContain('placeholder="Responder a @ana..."')
+    expect(html).toContain('placeholder="Responder a @ana…"')
   })
 })
 

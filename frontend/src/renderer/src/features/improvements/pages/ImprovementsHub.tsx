@@ -37,7 +37,7 @@ export function ImprovementsHubView({ proposalsStat, rankStat }: ViewProps): Rea
                 to={CHANGELOG_PATH}
                 icon={<ChangelogIcon className="size-7" />}
                 title="Novidades"
-                description="O que mudou em cada versão do Salinha."
+                description="O que mudou em cada versão da Salinha."
                 stat={null}
                 tone={{ glow: 'bg-success', icon: 'text-success' }}
               />
@@ -45,7 +45,7 @@ export function ImprovementsHubView({ proposalsStat, rankStat }: ViewProps): Rea
                 to={RANKING_PATH}
                 icon={<CrownIcon className="size-7" />}
                 title="Rank global"
-                description="Os 100 maiores níveis do Salinha."
+                description="Os 100 maiores níveis da Salinha."
                 stat={rankStat}
                 tone={{ glow: 'bg-warning', icon: 'text-warning' }}
               />

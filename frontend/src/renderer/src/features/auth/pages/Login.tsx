@@ -139,7 +139,7 @@ function Login(): React.JSX.Element {
         </div>
         <LoginError error={error} />
         <Button type="submit" className="w-full py-2.5" disabled={loading}>
-          {loading ? 'Entrando...' : 'Entrar'}
+          {loading ? 'Entrando…' : 'Entrar'}
         </Button>
       </form>
       <p className="mt-4 text-ds-sm text-muted">

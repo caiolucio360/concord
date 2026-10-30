@@ -91,7 +91,7 @@ describe('setupToasts', () => {
     expect(h.state.writes).toEqual([])
   })
 
-  it('Concord.lnk antigo com o nosso AUMID é apagado: só sobra o Salinha', async () => {
+  it('Concord.lnk antigo com o nosso AUMID é apagado: só sobra a Salinha', async () => {
     h.state.links[join(programs, 'Concord.lnk')] = {
       target: '/apps/concord/Concord.exe',
       appUserModelId: 'com.concord.app'

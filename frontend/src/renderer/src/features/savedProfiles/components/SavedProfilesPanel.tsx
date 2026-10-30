@@ -116,7 +116,7 @@ export default function SavedProfilesPanel(): React.JSX.Element | null {
           className="flex min-h-10 items-center gap-1.5"
         >
           <PlusIcon className="size-4" />
-          {view.busy === SAVING_NEW ? 'Salvando...' : 'Salvar perfil atual'}
+          {view.busy === SAVING_NEW ? 'Salvando…' : 'Salvar perfil atual'}
         </Button>
       </div>
 

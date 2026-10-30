@@ -136,7 +136,7 @@ function SoundboardUploadModal({
   }
 
   return (
-    <Modal open title="Adicionar Som à Mesa de Áudio" onClose={onClose}>
+    <Modal open title="Adicionar som à mesa de áudio" onClose={onClose}>
       <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
         <SoundFileField
           fileInputRef={fileInputRef}

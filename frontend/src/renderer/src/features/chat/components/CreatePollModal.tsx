@@ -151,7 +151,7 @@ function CreatePollModal({ open, onClose, onCreate }: CreatePollModalProps): Rea
             Cancelar
           </Button>
           <Button type="submit" disabled={Boolean(error) || saving} title={error ?? undefined}>
-            {saving ? 'Publicando...' : 'Publicar'}
+            {saving ? 'Publicando…' : 'Publicar'}
           </Button>
         </div>
       </form>

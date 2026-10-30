@@ -107,7 +107,7 @@ export function morePinsLabel(count: number): string | null {
 
 /** Texto do campo vazio: respondendo, chama a pessoa; senão, o da tela. */
 export function composerPlaceholder(replying: boolean, author: string, fallback: string): string {
-  return replying ? `Responder a @${author}...` : fallback
+  return replying ? `Responder a @${author}…` : fallback
 }
 
 /**
@@ -130,8 +130,8 @@ export function jumpEventTarget(e: Event): string | null {
 
 /** Rótulo do botão de enviar. */
 export function submitLabel(uploading: boolean, sending: boolean): string {
-  if (uploading) return 'Enviando arquivos...'
-  return sending ? 'Enviando...' : 'Enviar'
+  if (uploading) return 'Enviando arquivos…'
+  return sending ? 'Enviando…' : 'Enviar'
 }
 
 /** Comandos do "/" no campo: Maestro só em canal de servidor; /tts com a permissão. */

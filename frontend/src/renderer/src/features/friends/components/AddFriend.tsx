@@ -42,7 +42,7 @@ export default function AddFriend(): React.JSX.Element {
     <section className="border-b border-subtle pb-5">
       <h2 className="text-ds-lg font-semibold text-strong">Adicionar amigo</h2>
       <p className="mt-1 text-ds-sm text-muted">
-        Você pode adicionar amigos com o nome de usuário deles no Salinha.
+        Você pode adicionar amigos com o nome de usuário deles na Salinha.
       </p>
       <form
         onSubmit={submit}

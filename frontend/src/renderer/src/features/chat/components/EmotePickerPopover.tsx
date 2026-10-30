@@ -102,7 +102,7 @@ function EmotePickerPanel({
         type="text"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Buscar emote..."
+        placeholder="Buscar emote…"
         aria-label="Buscar emote"
         className="mb-2 w-full rounded-md border border-subtle bg-input px-2.5 py-1 text-ds-xs text-strong max-md:py-2 max-md:text-ds-md placeholder:text-faint outline-none focus:border-brand/50"
       />

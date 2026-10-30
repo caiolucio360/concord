@@ -47,7 +47,7 @@ function DeleteChannelDialog({
           Cancelar
         </Button>
         <Button variant="danger" disabled={busy} onClick={() => void confirm()}>
-          {busy ? 'Deletando...' : 'Deletar canal'}
+          {busy ? 'Deletando…' : 'Deletar canal'}
         </Button>
       </div>
     </Modal>
@@ -85,7 +85,7 @@ function DeleteServerDialog({ server }: { server: Server }): React.JSX.Element {
           Cancelar
         </Button>
         <Button variant="danger" disabled={busy} onClick={() => void confirm()}>
-          {busy ? 'Deletando...' : 'Deletar servidor'}
+          {busy ? 'Deletando…' : 'Deletar servidor'}
         </Button>
       </div>
     </Modal>
