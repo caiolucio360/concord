@@ -59,3 +59,55 @@ export function formatMemberSince(iso: string | undefined): string | null {
   if (Number.isNaN(date.getTime())) return null
   return date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' })
 }
+
+/** Largura do cartão de perfil (px). */
+export const PROFILE_CARD_WIDTH = 300
+
+/**
+ * Estilo do cartão: escondido fora da tela até medir, depois na posição
+ * calculada. "fixed" ganha do relative da moldura (o tema troca o padding-box).
+ */
+export function cardPlacementStyle(pos: { left: number; top: number } | null): {
+  width: number
+  left: number
+  top: number
+  visibility: 'visible' | 'hidden'
+  position: 'fixed'
+} {
+  return {
+    width: PROFILE_CARD_WIDTH,
+    left: pos?.left ?? -9999,
+    top: pos?.top ?? 0,
+    visibility: pos ? 'visible' : 'hidden',
+    position: 'fixed'
+  }
+}
+
+/** O suficiente de um nó do DOM para saber onde o clique caiu. */
+interface ClickNode {
+  closest?: (selector: string) => unknown
+}
+interface Container {
+  contains: (node: never) => boolean
+}
+
+/**
+ * Clique que não fecha o cartão: no próprio cartão, no item que o abriu ou num
+ * menu de contexto aberto a partir dele (configs, "Mais").
+ */
+export function keepsCardOpen(
+  node: object,
+  card: Container | null,
+  anchor: Container | undefined
+): boolean {
+  if (card?.contains(node as never) || anchor?.contains(node as never)) return true
+  return Boolean((node as ClickNode).closest?.('[data-user-context-menu]'))
+}
+
+/** O menu "Mais" aberto pelo cartão desta pessoa: fecha junto com o cartão. */
+export function isCardMenu(
+  menu: { userId: string; anchorEl?: unknown } | null,
+  userId: string | undefined
+): boolean {
+  return Boolean(menu && menu.userId === userId && menu.anchorEl)
+}
