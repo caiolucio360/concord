@@ -16,7 +16,7 @@ describe('readOverlayTheme', () => {
     '--text-muted': '',
     '--brand': '#5865f2',
     '--green': 'rgb(69, 163, 102)',
-    '--color-red-400': 'oklch(70.4% 0.191 22.216)'
+    '--text-danger': 'oklch(70.4% 0.191 22.216)'
   }
   const toHex = (css: string): string | null =>
     css.startsWith('#') ? css : css.startsWith('rgb') ? '#45a366' : css.startsWith('oklch(70') ? '#ff6467' : null
@@ -41,6 +41,6 @@ describe('readOverlayTheme', () => {
 
   it('usa os mesmos tokens da página do overlay', () => {
     expect(OVERLAY_THEME_VARS.floating).toBe('--bg-floating')
-    expect(OVERLAY_THEME_VARS.danger).toBe('--color-red-400')
+    expect(OVERLAY_THEME_VARS.danger).toBe('--text-danger')
   })
 })

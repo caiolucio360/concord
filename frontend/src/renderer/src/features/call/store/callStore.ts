@@ -58,8 +58,7 @@ import {
 import { loadAudioPrefs, resolveDeviceId, saveAudioPrefs } from '../lib/audioDevices'
 import { useChatStore } from '../../chat/store/chatStore'
 import { useAuthStore } from '../../auth/store/authStore'
-import { useServerStore } from '../../servers/store/serverStore'
-import { serverDisplayName } from '../../servers/lib/serverNames'
+import { callName, upsertParticipant } from './callPeople'
 import { showToast } from '../../../shared/store/toastStore'
 import { useConnectionStore } from '../../../shared/store/connectionStore'
 import {
@@ -67,6 +66,7 @@ import {
   callConnectionReducer,
   describeDisconnect,
   describeJoinError,
+  LK_DISCONNECT,
   describeTokenError,
   IDLE_CALL_CONNECTION,
   type CallConnection,
@@ -147,19 +147,6 @@ interface EndedPayload {
   call_id: string
 }
 
-/** Nome de quem está na call: numa call de canal, com o apelido daquele servidor. */
-function callName(
-  state: { type: CallKind | null; serverId: string | null },
-  user: { id: string; display_name?: string | null; username?: string | null } | undefined,
-  fallback?: string
-): string {
-  const nickname =
-    state.type === 'channel' && state.serverId && user
-      ? useServerStore.getState().nicknames?.[state.serverId]?.[user.id]
-      : undefined
-  return serverDisplayName({ nickname }, user, fallback)
-}
-
 /** Meu pedido para entrar numa sala trancada. */
 export interface KnockState {
   channelId: string
@@ -179,10 +166,6 @@ export class CallLockedError extends Error {
 
 // Aviso com instruções de instalação (portal de tela no Linux): dá tempo de ler.
 const SETUP_TOAST_MS = 20000
-
-function upsertParticipant(list: CallUserInfo[], user: CallUserInfo): CallUserInfo[] {
-  return list.some((p) => p.id === user.id) ? list : [...list, user]
-}
 
 /** Contexto que o handleWsEvent entrega ao handler do tipo do evento. */
 interface WsContext {
@@ -689,6 +672,13 @@ export const useCallStore = create<CallState>()((set, get) => {
     }, CALL_FAILED_AUTO_LEAVE_MS)
   }
 
+  /** A mesma conta entrou na chamada em outro aparelho: sai só daqui, sem call:leave (senão o servidor tira os dois). */
+  const replacedByOtherDevice = (): void => {
+    showToast.info(describeDisconnect(LK_DISCONNECT.DUPLICATE_IDENTITY, true))
+    cleanup()
+    bumpList()
+  }
+
   /** Reações da sala de mídia; só valem enquanto `self` ainda é a conexão da chamada. */
   const mediaHandlers = (self: () => CallMedia): CallMediaHandlers => {
     const live = (): boolean => media === self()
@@ -698,6 +688,7 @@ export const useCallStore = create<CallState>()((set, get) => {
       },
       onConnectionLost: (reason) => {
         if (!live()) return
+        if (reason === LK_DISCONNECT.DUPLICATE_IDENTITY) return replacedByOtherDevice()
         failMedia(self(), describeDisconnect(reason, browserOnline()))
       },
       onReconnecting: () => {

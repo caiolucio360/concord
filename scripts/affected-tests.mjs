@@ -1,7 +1,7 @@
 // Pipeline de testes otimizada: roda só o que o diff afeta.
 //
 //   node scripts/affected-tests.mjs loop   # a cada ciclo TDD: testes afetados
-//   node scripts/affected-tests.mjs pr     # antes do PR: afetados + vet/typecheck + estrutura + CRAP
+//   node scripts/affected-tests.mjs pr     # antes do PR: afetados + vet/typecheck + estrutura + design + CRAP
 //                                          # (vira `full` se tocou código compartilhado)
 //   node scripts/affected-tests.mjs full   # suíte inteira + vet/typecheck + CRAP
 //   opção: --base <ref> (padrão origin/develop, senão origin/main)
@@ -15,7 +15,7 @@ const backend = path.join(ROOT, 'backend')
 const frontend = path.join(ROOT, 'frontend')
 const mobile = path.join(ROOT, 'mobile')
 // Notas da próxima release: o deploy recusa o PUT se passarem do limite.
-const NOTES = 'changelog/next.md'
+const NOTES = 'changelog/pending'
 const GO_LIST = '{{.ImportPath}}|{{join .Imports ","}}|{{join .TestImports ","}}|{{join .XTestImports ","}}'
 
 // goAffected: pacotes alterados + quem importa deles, no formato do go test.
@@ -41,7 +41,9 @@ function loop(files) {
 }
 
 function checkNotes(files) {
-  return files.includes(NOTES) ? [run('node', ['scripts/publish-changelog.mjs', '--check', NOTES])] : []
+  return files.some((file) => file.startsWith(`${NOTES}/`))
+    ? [run('node', ['scripts/publish-changelog.mjs', '--check', NOTES])]
+    : []
 }
 
 function checks(files, base) {
@@ -52,6 +54,7 @@ function checks(files, base) {
   if (mob.length) codes.push(run('npm', ['run', 'typecheck'], mobile))
   codes.push(...checkNotes(files))
   codes.push(run('node', ['scripts/check-structure.mjs', '--base', base]))
+  codes.push(run('node', ['scripts/check-design.mjs', '--base', base]))
   codes.push(run('node', ['scripts/crap.mjs', '--base', base]))
   return codes
 }
@@ -76,7 +79,13 @@ function main() {
   let codes
   if (mode === 'full' || (mode === 'pr' && shared)) {
     if (mode === 'pr') console.log('Diff toca código compartilhado: rodando a suíte inteira.')
-    codes = [...full(), ...checkNotes(files), run('node', ['scripts/check-structure.mjs', '--base', base]), run('node', ['scripts/crap.mjs', '--base', base])]
+    codes = [
+      ...full(),
+      ...checkNotes(files),
+      run('node', ['scripts/check-structure.mjs', '--base', base]),
+      run('node', ['scripts/check-design.mjs', '--base', base]),
+      run('node', ['scripts/crap.mjs', '--base', base])
+    ]
   } else if (mode === 'pr') {
     codes = [...loop(files), ...checks(files, base)]
   } else {

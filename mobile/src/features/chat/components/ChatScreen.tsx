@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { colors } from '../../../shared/theme/tokens'
+import { MembersSheet } from '../../servers/components/MembersSheet'
 import { useRoomMessages, type ChatTarget } from '../hooks/useRoomMessages'
 import { useActiveRoomStore } from '../store/activeRoomStore'
 import { useConversationsStore } from '../store/conversationsStore'
@@ -52,6 +53,9 @@ export function ChatScreen({ variant, id, title, serverId, peerId, onOpenProfile
   // O layout do app tem paddingTop (área segura): o KeyboardAvoidingView mede a posição relativa ao pai
   // e não a conta, então sem este deslocamento o campo de envio ficava atrás do teclado.
   const { top } = useSafeAreaInsets()
+  // Membros do servidor (canal de servidor): o ícone no canto do cabeçalho abre a lista.
+  const [membersOpen, setMembersOpen] = useState(false)
+  const membersServer = variant === 'channel' ? serverId : undefined
   return (
     <KeyboardAvoidingView
       style={styles.screen}
@@ -60,6 +64,7 @@ export function ChatScreen({ variant, id, title, serverId, peerId, onOpenProfile
     >
       <ChannelHeader name={title} prefix={prefix} onBack={onBack} onPressName={peerId && onOpenProfile ? () => onOpenProfile(peerId) : undefined}
         onCall={variant === 'dm' ? onCall : undefined}
+        onOpenMembers={membersServer ? () => setMembersOpen(true) : undefined}
       />
       <MessageList
         messages={messages}
@@ -70,6 +75,16 @@ export function ChatScreen({ variant, id, title, serverId, peerId, onOpenProfile
         onOpenProfile={onOpenProfile}
         maestro={target === 'channel' ? { room: `channel:${id}`, serverId: serverId ?? null } : undefined}
       />
+      {membersOpen && membersServer ? (
+        <MembersSheet
+          serverId={membersServer}
+          onClose={() => setMembersOpen(false)}
+          onOpenProfile={(userId) => {
+            setMembersOpen(false)
+            onOpenProfile?.(userId)
+          }}
+        />
+      ) : null}
       <Composer label={label(title)} room={`${target}:${id}`} serverId={serverId} onSend={send} forbiddenNotice={variant === 'channel' ? NO_PERMISSION : undefined} />
     </KeyboardAvoidingView>
   )

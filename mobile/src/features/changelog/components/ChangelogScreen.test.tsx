@@ -27,6 +27,13 @@ describe('ChangelogScreen', () => {
     expect(screen.getByText('Notificações em segundo plano')).toBeOnTheScreen()
   })
 
+  it('não lista versões sem notas', async () => {
+    fetchMock.mockResolvedValue([{ ...release, version: '1.5.0', summary: '', entries: [] }, release])
+    await render(<ChangelogScreen onBack={() => {}} />)
+    expect(await screen.findByText('v1.4.0')).toBeOnTheScreen()
+    expect(screen.queryByText('v1.5.0')).not.toBeOnTheScreen()
+  })
+
   it('sem versões publicadas, avisa', async () => {
     fetchMock.mockResolvedValue([])
     await render(<ChangelogScreen onBack={() => {}} />)

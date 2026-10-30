@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { Attachment } from '../api/messages'
 import {
   acceptFiles,
-  attachmentLabel,
+  attachmentPreview,
   canCopyImage,
   canSubmit,
   classifyFile,
@@ -83,14 +83,16 @@ describe('anexos', () => {
     expect(formatDuration(65_000)).toBe('1:05')
     expect(formatDuration(300_000)).toBe('5:00')
   })
-  it('rótulos de prévia', () => {
-    expect(attachmentLabel([])).toBeNull()
-    expect(attachmentLabel([{ kind: 'image' }])).toBe('🖼️ Imagem')
-    expect(attachmentLabel([{ kind: 'video' }])).toBe('🎬 Vídeo')
-    expect(attachmentLabel([{ kind: 'audio' }])).toBe('🎤 Áudio')
-    expect(attachmentLabel([{ kind: 'image' }, { kind: 'audio' }, { kind: 'image' }])).toBe(
-      '📎 3 anexos'
-    )
+  it('prévia: ícone pelo tipo e o rótulo, sem emoji no texto', () => {
+    expect(attachmentPreview([])).toBeNull()
+    expect(attachmentPreview(null)).toBeNull()
+    expect(attachmentPreview([{ kind: 'image' }])).toEqual({ icon: 'image', text: 'Imagem' })
+    expect(attachmentPreview([{ kind: 'video' }])).toEqual({ icon: 'video', text: 'Vídeo' })
+    expect(attachmentPreview([{ kind: 'audio' }])).toEqual({ icon: 'audio', text: 'Áudio' })
+    expect(attachmentPreview([{ kind: 'image' }, { kind: 'audio' }, { kind: 'image' }])).toEqual({
+      icon: 'attachment',
+      text: '3 anexos'
+    })
   })
   it('mensagens de erro do upload por status', () => {
     expect(uploadErrorMessage(413)).toBe('Arquivo maior que 25 MB.')

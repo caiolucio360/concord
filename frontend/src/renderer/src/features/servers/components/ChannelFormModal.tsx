@@ -28,18 +28,18 @@ function ChannelTypePicker({
 }): React.JSX.Element {
   return (
     <div>
-      <p className="mb-1 block text-ds-sm font-medium text-gray-400">Tipo do canal</p>
+      <p className="mb-1 block text-ds-sm font-medium text-muted">Tipo do canal</p>
       <div className="grid grid-cols-2 gap-2">
         <button
           type="button"
           onClick={() => onChange('text')}
           className={`${TYPE_BUTTON} ${
             type === 'text'
-              ? 'border-violet-500 bg-violet-600/20 text-strong'
-              : 'border-subtle text-gray-400 hover:bg-fg/5'
+              ? 'border-brand bg-brand/20 text-strong'
+              : 'border-subtle text-muted hover:bg-fg/5'
           }`}
         >
-          <span className="text-base leading-none">#</span>
+          <span className="text-ds-md leading-none">#</span>
           Texto
         </button>
         <button
@@ -48,7 +48,7 @@ function ChannelTypePicker({
           className={`${TYPE_BUTTON} ${
             type === 'voice'
               ? 'border-success bg-success/15 text-strong'
-              : 'border-subtle text-gray-400 hover:bg-fg/5'
+              : 'border-subtle text-muted hover:bg-fg/5'
           }`}
         >
           <VolumeIcon className="h-4 w-4" />
@@ -72,16 +72,16 @@ export function PrivateRolesPicker({
   const choosable = roles.filter((r) => !r.is_default)
   return (
     <div className="mt-3 border-t border-subtle pt-3">
-      <p className="mb-2 text-ds-sm font-medium text-gray-400">Quem pode ver</p>
+      <p className="mb-2 text-ds-sm font-medium text-muted">Quem pode ver</p>
       {choosable.length === 0 ? (
-        <p className="text-ds-sm text-gray-500">
+        <p className="text-ds-sm text-faint">
           Nenhum cargo ainda: só você e o dono vão ver. Crie cargos em Configurações do servidor.
         </p>
       ) : (
         <ul className="flex max-h-40 flex-col gap-1 overflow-y-auto">
           {choosable.map((r) => (
             <li key={r.id}>
-              <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-ds-md text-gray-200 hover:bg-fg/5">
+              <label className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-ds-md text-normal hover:bg-fg/5">
                 <input
                   type="checkbox"
                   checked={roleIds.includes(r.id)}
@@ -117,7 +117,7 @@ function PrivateChannelFields({
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-ds-md font-medium text-strong">Canal privado</p>
-          <p className="text-ds-sm text-gray-400">
+          <p className="text-ds-sm text-muted">
             {type === 'voice'
               ? 'Só os cargos escolhidos (e você) veem e entram neste canal.'
               : 'Só os cargos escolhidos (e você) veem este canal.'}
@@ -179,7 +179,7 @@ function ChannelFormDialog({
     >
       <form onSubmit={submit} className="space-y-4">
         <div>
-          <label className="mb-1 block text-ds-sm font-medium text-gray-400" htmlFor="channel-name">
+          <label className="mb-1 block text-ds-sm font-medium text-muted" htmlFor="channel-name">
             Nome do canal
           </label>
           <Input
@@ -215,7 +215,7 @@ function ChannelFormDialog({
 }
 
 function submitLabel(saving: boolean, editing: boolean): string {
-  if (saving) return 'Salvando...'
+  if (saving) return 'Salvando…'
   return editing ? 'Salvar' : 'Criar canal'
 }
 

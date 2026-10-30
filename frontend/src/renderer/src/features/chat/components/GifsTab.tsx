@@ -12,8 +12,8 @@ export default function GifsTab({
 }): React.JSX.Element {
   if (loading || gifs.length === 0) {
     return (
-      <div className="flex h-48 items-center justify-center text-xs text-gray-500">
-        {loading ? 'Carregando GIFs...' : 'Nenhum GIF encontrado.'}
+      <div className="flex h-48 items-center justify-center text-ds-xs text-faint">
+        {loading ? 'Carregando GIFs…' : 'Nenhum GIF encontrado.'}
       </div>
     )
   }

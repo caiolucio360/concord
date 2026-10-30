@@ -113,7 +113,7 @@ function RolesSection(): React.JSX.Element {
                 />
                 <span className="min-w-0 flex-1 truncate">{role.name}</span>
                 {!role.is_default && (
-                  <span className="shrink-0 text-[11px] text-gray-500">{counts[role.id] ?? 0}</span>
+                  <span className="shrink-0 text-ds-xs text-gray-500">{counts[role.id] ?? 0}</span>
                 )}
               </button>
               {!role.is_default && !role.is_system && (

@@ -61,7 +61,7 @@ function StickerItem({
             onDelete(sticker)
           }}
           title="Excluir figurinha"
-          className="absolute right-1 top-1 rounded-md bg-black/80 p-1 text-red-400 opacity-80 hover:opacity-100 focus-visible:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-80"
+          className="absolute right-1 top-1 rounded-md bg-black/80 p-1 text-danger opacity-80 hover:opacity-100 focus-visible:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-80"
         >
           <TrashIcon className="h-3 w-3" />
         </button>
@@ -93,7 +93,7 @@ export default function StickersTab({
 
   if (!serverId) {
     return (
-      <div className="flex h-48 flex-col items-center justify-center text-center p-4 text-xs text-gray-500">
+      <div className="flex h-48 flex-col items-center justify-center text-center p-4 text-ds-xs text-faint">
         <span>Figurinhas ficam disponíveis em canais de servidores.</span>
       </div>
     )
@@ -108,27 +108,27 @@ export default function StickersTab({
   return (
     <div>
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-[11px] text-gray-400">{stickers.length} / 60 figurinhas</span>
+        <span className="text-ds-xs text-muted">{stickers.length} / 60 figurinhas</span>
         {canAdd && (
           <button
             type="button"
             onClick={onAdd}
-            className="flex items-center gap-1 rounded-md bg-violet-600/30 px-2 py-1 text-[11px] font-medium text-violet-300 transition-colors hover:bg-violet-600/50 cursor-pointer"
+            className="flex items-center gap-1 rounded-md bg-brand/30 px-2 py-1 text-ds-xs font-medium text-brand transition-colors hover:bg-brand/50 cursor-pointer"
           >
             <PlusIcon className="h-3 w-3" />
-            <span>Nova Figurinha</span>
+            <span>Nova figurinha</span>
           </button>
         )}
       </div>
 
       {stickers.length === 0 ? (
-        <div className="flex h-40 flex-col items-center justify-center text-center p-4 text-xs text-gray-500">
+        <div className="flex h-40 flex-col items-center justify-center text-center p-4 text-ds-xs text-faint">
           <span className="mb-2">Nenhuma figurinha no servidor ainda.</span>
           {canAdd && (
             <button
               type="button"
               onClick={onAdd}
-              className="rounded-lg bg-white/10 px-3 py-1.5 text-xs text-white transition-colors hover:bg-white/20 cursor-pointer"
+              className="rounded-lg bg-white/10 px-3 py-1.5 text-ds-xs text-white transition-colors hover:bg-white/20 cursor-pointer"
             >
               Adicionar a primeira
             </button>

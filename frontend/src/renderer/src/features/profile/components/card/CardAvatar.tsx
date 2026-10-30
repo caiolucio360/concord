@@ -46,7 +46,7 @@ export default function CardAvatar({
           type="button"
           onClick={onEditProfile}
           aria-label="Editar perfil"
-          className="absolute inset-1.5 flex cursor-pointer flex-col items-center justify-center gap-0.5 rounded-full bg-black/60 text-[10px] font-bold uppercase text-white opacity-0 transition-opacity hover:opacity-100 focus-visible:opacity-100 on-media"
+          className="absolute inset-1.5 flex cursor-pointer flex-col items-center justify-center gap-0.5 rounded-full bg-black/60 text-ds-xxs font-bold uppercase text-white opacity-0 transition-opacity hover:opacity-100 focus-visible:opacity-100 on-media"
         >
           <PencilIcon className="h-4 w-4" />
           Editar perfil
@@ -58,7 +58,7 @@ export default function CardAvatar({
           onClick={onEdit}
           aria-label="Alterar avatar"
           title="Alterar avatar"
-          className="group/avatar absolute inset-1.5 cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-brand"
+          className="group/avatar absolute inset-1.5 cursor-pointer rounded-full outline-none focus-ring"
         >
           {/* Com mouse: o véu com o lápis no hover/foco. No toque: o lápis no canto, sempre. */}
           <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition-opacity [@media(hover:hover)]:group-hover/avatar:opacity-100 [@media(hover:hover)]:group-focus-visible/avatar:opacity-100">

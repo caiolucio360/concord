@@ -30,7 +30,7 @@ function MemberIdentity({
     <span className="flex min-w-40 flex-1 items-center gap-3">
       <Avatar userId={member.user_id} name={name} avatarUrl={member.avatar_url} size={32} />
       <span className="min-w-0">
-        <span className="block truncate text-sm font-semibold text-strong">
+        <span className="block truncate text-ds-sm font-semibold text-strong">
           {name}
           {isOwner && (
             <span className="ml-1.5 inline-flex align-[-2px]">
@@ -38,7 +38,7 @@ function MemberIdentity({
             </span>
           )}
         </span>
-        {member.username && <span className="block text-xs text-gray-400">@{member.username}</span>}
+        {member.username && <span className="block text-ds-xs text-muted">@{member.username}</span>}
       </span>
     </span>
   )
@@ -61,19 +61,19 @@ function MemberModeration({
       {access.nickname && (
         <Button
           variant="ghost"
-          className="px-3 py-1 text-ds-xs"
+          size="sm"
           onClick={() => askNickname({ ...target, ...nicknameNames(member, name), self: isMe })}
         >
           Apelido
         </Button>
       )}
       {access.kick && (
-        <Button variant="ghost" className="px-3 py-1 text-xs" onClick={() => askKick(target)}>
+        <Button variant="ghost" size="sm" onClick={() => askKick(target)}>
           Expulsar
         </Button>
       )}
       {access.ban && (
-        <Button variant="danger" className="px-3 py-1 text-xs" onClick={() => askBan(target)}>
+        <Button variant="danger" size="sm" onClick={() => askBan(target)}>
           Banir
         </Button>
       )}

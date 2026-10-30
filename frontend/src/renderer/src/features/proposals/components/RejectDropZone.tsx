@@ -12,10 +12,10 @@ function RejectDropZone(): React.JSX.Element {
     <div
       ref={setNodeRef}
       data-dropzone="rejected"
-      className={`pointer-events-auto absolute inset-x-6 bottom-4 z-10 flex h-16 items-center justify-center rounded-2xl border-2 border-dashed text-sm font-semibold backdrop-blur-sm transition-colors ${
+      className={`pointer-events-auto absolute inset-x-6 bottom-4 z-10 flex h-16 items-center justify-center rounded-xl border-2 border-dashed text-ds-sm font-semibold backdrop-blur-sm transition-colors ${
         isOver
-          ? 'border-red-400 bg-red-500/25 text-red-100'
-          : 'border-red-400/40 bg-surface text-red-200/80'
+          ? 'border-danger bg-danger/25 text-danger'
+          : 'border-danger/40 bg-surface text-danger/80'
       }`}
     >
       Solte aqui para recusar

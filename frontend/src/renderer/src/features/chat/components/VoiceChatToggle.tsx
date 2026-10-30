@@ -25,12 +25,12 @@ function VoiceChatToggle({ channelId }: { channelId: string }): React.JSX.Elemen
       className={`relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border transition-colors ${
         open
           ? 'border-brand/50 bg-brand/15 text-strong'
-          : 'border-subtle bg-floating text-gray-300 hover:text-strong'
+          : 'border-subtle bg-floating text-secondary hover:text-strong'
       }`}
     >
       <ChatBubbleIcon className="h-5 w-5" />
       {!open && badge && (
-        <span className="absolute -right-1 -top-1 rounded-full bg-red-500 px-1.5 text-[10px] font-bold leading-4 text-white">
+        <span className="absolute -right-1 -top-1 rounded-full bg-danger px-1.5 text-ds-xxs font-bold leading-4 text-white">
           {badge.label}
         </span>
       )}

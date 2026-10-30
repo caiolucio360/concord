@@ -11,7 +11,7 @@ import ParticipantStrip from './ParticipantStrip'
 import ParticipantTile from './ParticipantTile'
 
 const overlayButton =
-  'flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-black/60 text-gray-200 backdrop-blur-sm transition-colors hover:bg-black/80 hover:text-white on-media'
+  'flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-black/60 text-normal backdrop-blur-sm transition-colors hover:bg-black/80 hover:text-white on-media'
 
 /**
  * Foco grande (estilo Go Live): a transmissão em destaque em cima e, embaixo,

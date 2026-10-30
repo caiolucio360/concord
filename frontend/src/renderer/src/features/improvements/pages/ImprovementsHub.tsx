@@ -13,15 +13,15 @@ interface ViewProps {
 /** Tela inicial da aba do diamante: três cards, um para cada assunto. */
 export function ImprovementsHubView({ proposalsStat, rankStat }: ViewProps): React.JSX.Element {
   return (
-    <div className="flex h-full w-full overflow-hidden bg-primary backdrop-blur-2xl text-gray-100">
+    <div className="flex h-full w-full overflow-hidden bg-primary backdrop-blur-2xl text-strong">
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="flex h-14 shrink-0 items-center gap-3 border-b border-subtle px-4">
-          <DiamondIcon className="h-6 w-6 text-violet-400" />
-          <h1 className="text-base font-bold tracking-wide text-strong">Melhorias</h1>
+          <DiamondIcon className="h-6 w-6 text-brand" />
+          <h1 className="text-ds-md font-bold tracking-wide text-strong">Melhorias</h1>
         </header>
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div className="mx-auto flex max-w-5xl flex-col gap-6">
-            <p className="text-sm text-gray-400">
+            <p className="text-ds-sm text-muted">
               Ajude a decidir o que vem por aí, veja o que mudou e confira quem manda nas calls.
             </p>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -31,23 +31,23 @@ export function ImprovementsHubView({ proposalsStat, rankStat }: ViewProps): Rea
                 title="Propostas de melhorias"
                 description="Sugira ideias e vote no que o time deve construir."
                 stat={proposalsStat}
-                tone={{ glow: 'bg-violet-500', icon: 'text-violet-400' }}
+                tone={{ glow: 'bg-brand', icon: 'text-brand' }}
               />
               <HubCard
                 to={CHANGELOG_PATH}
                 icon={<ChangelogIcon className="size-7" />}
                 title="Novidades"
-                description="O que mudou em cada versão do Salinha."
+                description="O que mudou em cada versão da Salinha."
                 stat={null}
-                tone={{ glow: 'bg-emerald-500', icon: 'text-emerald-400' }}
+                tone={{ glow: 'bg-success', icon: 'text-success' }}
               />
               <HubCard
                 to={RANKING_PATH}
                 icon={<CrownIcon className="size-7" />}
                 title="Rank global"
-                description="Os 100 maiores níveis do Salinha."
+                description="Os 100 maiores níveis da Salinha."
                 stat={rankStat}
-                tone={{ glow: 'bg-amber-400', icon: 'text-amber-300' }}
+                tone={{ glow: 'bg-warning', icon: 'text-warning' }}
               />
             </div>
           </div>

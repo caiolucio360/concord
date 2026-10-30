@@ -22,11 +22,11 @@ function DeviceSelect({
 }): React.JSX.Element {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-ds-sm font-medium text-gray-400">{label}</span>
+      <span className="text-ds-sm font-medium text-muted">{label}</span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="glass-input !py-2 text-sm"
+        className="glass-input !py-2 text-ds-sm"
       >
         {options.map((o) => (
           <option key={o.id} value={o.id} className="bg-floating">
@@ -79,7 +79,7 @@ function VoiceSettings(): React.JSX.Element {
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-ds-sm font-medium text-strong">Detecção de voz</p>
-            <p className="text-xs text-gray-400">
+            <p className="text-ds-xs text-muted">
               Envia sua voz só quando ela passa da sensibilidade.
             </p>
           </div>
@@ -90,7 +90,7 @@ function VoiceSettings(): React.JSX.Element {
           />
         </div>
         <label className="flex flex-col gap-1.5">
-          <span className="flex items-center justify-between text-ds-sm font-medium text-gray-400">
+          <span className="flex items-center justify-between text-ds-sm font-medium text-muted">
             Sensibilidade
             <span className="text-strong">{Math.round(threshold)} dB</span>
           </span>
@@ -102,11 +102,11 @@ function VoiceSettings(): React.JSX.Element {
             onChange={(e) => setSensitivity(Number(e.target.value))}
             className="w-full cursor-pointer accent-brand"
           />
-          <span className="text-xs text-gray-400">Mais à direita, capta vozes mais baixas.</span>
+          <span className="text-ds-xs text-muted">Mais à direita, capta vozes mais baixas.</span>
         </label>
         <SensitivityMeter thresholdDb={threshold} />
         {!rnnoiseAvailable && (
-          <p className="text-xs text-warning">
+          <p className="text-ds-xs text-warning">
             O volume de entrada e a detecção de voz precisam do RNNoise, que não carregou neste
             computador.
           </p>

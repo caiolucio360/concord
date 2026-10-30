@@ -10,7 +10,7 @@ const render = (gifs: GiphyItem[], loading: boolean): string =>
 
 describe('GifsTab', () => {
   it('carregando, vazio e com GIFs', () => {
-    expect(render([gif], true)).toContain('Carregando GIFs...')
+    expect(render([gif], true)).toContain('Carregando GIFs…')
     expect(render([], false)).toContain('Nenhum GIF encontrado.')
     const html = render([gif], false)
     expect(html).toContain('title="Gato"')

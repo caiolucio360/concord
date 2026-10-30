@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict'
 import { spawn, spawnSync } from 'node:child_process'
 import { createServer } from 'node:http'
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
-import { EMPTY_NOTES, MAX_ENTRIES, MAX_ENTRY_TEXT, parseNotes, publishError } from './publish-changelog.mjs'
+import { EMPTY_NOTES, MAX_ENTRIES, MAX_ENTRY_TEXT, MAX_SOURCE, parseNotes, publishError, readPending } from './publish-changelog.mjs'
 
 test('separa novidades e correções, na ordem do arquivo', () => {
   const md = [
@@ -60,45 +60,89 @@ test('falha no PUT mostra o motivo que o servidor deu', async () => {
   )
 })
 
-test('--check valida o arquivo sem publicar (roda no affected-tests pr)', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'changelog-'))
-  const file = join(dir, 'next.md')
-  const run = () => spawnSync(process.execPath, ['scripts/publish-changelog.mjs', '--check', file], { encoding: 'utf8' })
-  writeFileSync(file, '## Novidades\n- Curta\n')
-  assert.equal(run().status, 0)
-  writeFileSync(file, `## Novidades\n- ${'x'.repeat(MAX_ENTRY_TEXT + 1)}\n`)
-  const longa = run()
-  assert.equal(longa.status, 1)
-  assert.match(longa.stderr, /1001 caracteres/)
-  assert.match(readFileSync(file, 'utf8'), /x{1001}/) // não esvaziou
+/** Pasta de notas num diretório temporário: { 'a.md': '...' }. */
+function pendingDir(files) {
+  const dir = join(mkdtempSync(join(tmpdir(), 'changelog-')), 'pending')
+  mkdirSync(dir)
+  for (const [name, content] of Object.entries(files)) writeFileSync(join(dir, name), content)
+  return dir
+}
+
+test('parseNotes marca cada nota com o arquivo de origem', () => {
+  assert.deepEqual(parseNotes('## Correções\n- Som', '2026-10-30-som.md').entries, [
+    { kind: 'fix', text: 'Som', source: '2026-10-30-som.md' }
+  ])
 })
 
-test('--check sem arquivo mostra o uso', () => {
+// Regressão: o next.md acumulava e a identidade da nota era o texto; agora é o arquivo.
+test('readPending lê a pasta, do arquivo mais novo para o mais antigo, ignorando o README', () => {
+  const dir = pendingDir({
+    '2026-10-28-velha.md': '## Novidades\n- Velha\n',
+    '2026-10-30-nova.md': '## Novidades\n- Nova\n\n## Correções\n- Bug\n',
+    'README.md': '## Novidades\n- Isto é doc\n',
+    'notas.txt': 'ignorado'
+  })
+  const { entries, names } = readPending(dir)
+  assert.deepEqual(names, ['2026-10-30-nova.md', '2026-10-28-velha.md'])
+  assert.deepEqual(entries, [
+    { kind: 'feature', text: 'Nova', source: '2026-10-30-nova.md' },
+    { kind: 'fix', text: 'Bug', source: '2026-10-30-nova.md' },
+    { kind: 'feature', text: 'Velha', source: '2026-10-28-velha.md' }
+  ])
+})
+
+test('readPending de pasta vazia não tem entradas', () => {
+  assert.deepEqual(readPending(pendingDir({})), { entries: [], names: [] })
+})
+
+test('erro numa nota diz de qual arquivo ela é', () => {
+  const dir = pendingDir({ 'quebrado.md': '- solto\n' })
+  assert.throws(() => readPending(dir), /quebrado\.md: bullet fora de uma seção/)
+})
+
+test('nome de arquivo maior que o limite do servidor é erro antes do deploy', () => {
+  const dir = pendingDir({ [`${'a'.repeat(MAX_SOURCE)}.md`]: '## Novidades\n- x\n' })
+  assert.throws(() => readPending(dir), /nome de arquivo/)
+})
+
+test('--check valida a pasta sem publicar (roda no affected-tests pr)', () => {
+  const dir = pendingDir({ 'a.md': '## Novidades\n- Curta\n' })
+  const run = () => spawnSync(process.execPath, ['scripts/publish-changelog.mjs', '--check', dir], { encoding: 'utf8' })
+  assert.equal(run().status, 0)
+  writeFileSync(join(dir, 'b.md'), `## Novidades\n- ${'x'.repeat(MAX_ENTRY_TEXT + 1)}\n`)
+  const longa = run()
+  assert.equal(longa.status, 1)
+  assert.match(longa.stderr, /b\.md: nota com 1001 caracteres/)
+})
+
+test('--check sem pasta mostra o uso', () => {
   const r = spawnSync(process.execPath, ['scripts/publish-changelog.mjs', '--check'], { encoding: 'utf8' })
   assert.equal(r.status, 1)
   assert.match(r.stderr, /uso:.*--check/)
 })
 
-// O esvaziamento só acontecia no runner do CI e nunca voltava ao git: dava a
-// falsa ideia de que a próxima versão começava do zero. Quem tira as notas já
-// publicadas é o servidor, então o arquivo fica como está.
-test('publicar não mexe no arquivo de notas', async () => {
-  const server = createServer((req, res) => req.resume().on('end', () => res.writeHead(204).end()))
+// Os arquivos publicados ficam no git (o CI não os apaga): o envio não mexe neles
+// e leva a origem de cada nota para o servidor decidir o que já saiu.
+test('publicar envia a origem de cada nota e não mexe nos arquivos', async () => {
+  let body = ''
+  const server = createServer((req, res) => {
+    req.on('data', (chunk) => (body += chunk))
+    req.on('end', () => res.writeHead(204).end())
+  })
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
-  const dir = mkdtempSync(join(tmpdir(), 'changelog-'))
-  const file = join(dir, 'next.md')
   const notes = '## Novidades\n- Curta\n'
-  writeFileSync(file, notes)
-  const child = spawn(process.execPath, ['scripts/publish-changelog.mjs', '0.6.46', file, `http://127.0.0.1:${server.address().port}`], {
+  const dir = pendingDir({ 'a.md': notes })
+  const child = spawn(process.execPath, ['scripts/publish-changelog.mjs', '0.6.46', dir, `http://127.0.0.1:${server.address().port}`], {
     env: { ...process.env, CHANGELOG_TOKEN: 'tok' }
   })
   const status = await new Promise((resolve) => child.on('exit', resolve))
   server.close()
   assert.equal(status, 0)
-  assert.equal(readFileSync(file, 'utf8'), notes)
+  assert.deepEqual(JSON.parse(body), { entries: [{ kind: 'feature', text: 'Curta', source: 'a.md' }] })
+  assert.equal(readFileSync(join(dir, 'a.md'), 'utf8'), notes)
 })
 
-test('arquivo acumulado de vários deploys cabe no limite', () => {
+test('muitos arquivos juntos cabem no limite', () => {
   const bullets = Array.from({ length: 500 }, (_, i) => `- nota ${i}`)
   assert.equal(parseNotes(['## Novidades', ...bullets].join('\n')).entries.length, 500)
 })

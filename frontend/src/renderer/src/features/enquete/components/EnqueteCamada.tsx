@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { initialFocusTarget, trapTab } from '../../../shared/lib/focusTrap'
 import { XIcon } from '../../../shared/ui/icons'
 import '../../../assets/enquete.css'
+import IconButton from '../../../shared/ui/IconButton'
 
 interface Props {
   /** id do título dentro de `children` (aria-labelledby). */
@@ -57,17 +58,10 @@ function EnqueteCamada({ titleId, onFechar, children }: Props): React.JSX.Elemen
         aria-modal="true"
         aria-labelledby={titleId}
         onClick={(e) => e.stopPropagation()}
-        className="enquete-card relative my-auto w-full max-w-sm rounded-2xl border border-subtle bg-primary p-6 text-center text-gray-200 shadow-2xl"
+        className="enquete-card relative my-auto w-full max-w-sm rounded-xl border border-subtle bg-primary p-6 text-center text-normal shadow-2xl"
       >
         {onFechar && (
-          <button
-            type="button"
-            onClick={onFechar}
-            aria-label="Fechar"
-            className="absolute right-1 top-1 flex h-11 w-11 cursor-pointer touch-manipulation items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-violet-400"
-          >
-            <XIcon className="h-5 w-5" />
-          </button>
+          <IconButton icon={XIcon} label="Fechar" onClick={onFechar} size="lg" className="absolute right-1 top-1 touch-manipulation" />
         )}
         {children}
       </div>

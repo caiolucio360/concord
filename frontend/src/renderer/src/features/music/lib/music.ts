@@ -30,10 +30,11 @@ export const isMaestroQuiet = (
   channels.some((c) => c.id === message.channel_id && isMaestroChannel(c))
 
 // Textos aprovados (spec, seção 7). Não alterar sem aprovação.
-export const T14_LABEL = '👁️ Só você vê esta mensagem'
+// O olho (T14) e a lupa (T16) são ícones desenhados no MusicEphemeralList.
+export const T14_LABEL = 'Só você vê esta mensagem'
 export const T14_DISMISS = 'Dispensar'
 export const T16_TITLE = (q: string): string =>
-  `🔎 Resultados para "${q}": clique para adicionar à fila`
+  `Resultados para "${q}": clique para adicionar à fila`
 export const T17 = {
   title: 'Tocando agora',
   next: 'Próximas',
@@ -44,9 +45,9 @@ export const T17 = {
 }
 export const T18 = {
   tag: 'BOT',
-  remove: 'Remover Maestro',
+  remove: 'Remover maestro',
   confirm: 'Remover o Maestro deste servidor? Você pode adicioná-lo de novo nas configurações.',
-  add: 'Adicionar Maestro'
+  add: 'Adicionar maestro'
 }
 export const T20 = {
   watch: 'Ver vídeo',

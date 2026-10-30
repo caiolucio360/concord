@@ -139,7 +139,7 @@ export function BackgroundControls({ value, onChange }: Props): React.JSX.Elemen
         />
       </div>
       {value.background !== 'default' && (
-        <p className="text-xs text-gray-400">
+        <p className="text-ds-xs text-muted">
           O texto fica claro ou escuro sozinho, para dar para ler em qualquer cor.
         </p>
       )}
@@ -189,7 +189,7 @@ export function EffectControls({ value, onChange }: Props): React.JSX.Element {
             <button
               type="button"
               onClick={() => onChange({ ...value, effect_color: '' })}
-              className="min-h-10 cursor-pointer rounded-lg px-2 text-xs text-link hover:underline"
+              className="min-h-10 cursor-pointer rounded-lg px-2 text-ds-xs text-link hover:underline"
             >
               Usar a cor original
             </button>

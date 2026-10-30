@@ -9,6 +9,8 @@ import BackgroundPicker from '../../../call/components/BackgroundPicker'
 import VideoPreview from '../../../call/components/VideoPreview'
 import { useBackgroundUpload } from '../../../call/hooks/useBackgroundUpload'
 import { useVideoPreview } from '../../../call/hooks/useVideoPreview'
+import SectionHeader from '../../../../shared/ui/SectionHeader'
+import Button from '../../../../shared/ui/Button'
 
 /** Configurações → Vídeo: câmera, prévia ao vivo e fundo (como no Discord). */
 export function VideoSection(): React.JSX.Element {
@@ -38,11 +40,11 @@ export function VideoSection(): React.JSX.Element {
   return (
     <div className="space-y-4 rounded-xl border border-subtle bg-fg/5 p-4">
       <label className="flex flex-col gap-1.5">
-        <span className="text-ds-sm font-medium text-gray-400">Câmera</span>
+        <span className="text-ds-sm font-medium text-muted">Câmera</span>
         <select
           value={checkedId}
           onChange={(e) => void setCameraDevice(e.target.value)}
-          className="glass-input !py-2 text-sm"
+          className="glass-input !py-2 text-ds-sm"
         >
           {cameras.map((c) => (
             <option key={c.id} value={c.id} className="bg-floating">
@@ -60,23 +62,19 @@ export function VideoSection(): React.JSX.Element {
           idle="Clique em “Testar vídeo” para ver como você aparece."
         />
         {effectFailed && (
-          <p className="text-xs text-warning">
+          <p className="text-ds-xs text-warning">
             Não foi possível aplicar o fundo neste computador. O vídeo segue normal.
           </p>
         )}
-        <button
-          type="button"
-          onClick={() => setTesting((v) => !v)}
-          className="cursor-pointer rounded-lg bg-brand px-4 py-2 text-ds-sm font-medium text-white transition-colors hover:bg-brand-hover"
-        >
+        <Button type="button" onClick={() => setTesting((v) => !v)}>
           {testing ? 'Parar teste' : 'Testar vídeo'}
-        </button>
+        </Button>
       </div>
 
       <div className="flex items-center justify-between gap-3 border-t border-subtle pt-4">
         <div>
           <p className="text-ds-sm font-medium text-strong">Sempre ver prévia do vídeo</p>
-          <p className="text-xs text-gray-400">
+          <p className="text-ds-xs text-muted">
             Mostra a prévia antes de ligar a câmera em uma chamada.
           </p>
         </div>
@@ -88,9 +86,9 @@ export function VideoSection(): React.JSX.Element {
       </div>
 
       <div className="space-y-2 border-t border-subtle pt-4">
-        <p className="text-ds-xs font-bold uppercase tracking-[0.02em] text-gray-400">
+        <SectionHeader as="p">
           Fundo do vídeo
-        </p>
+        </SectionHeader>
         <BackgroundPicker
           value={background}
           customs={customs}
@@ -99,7 +97,7 @@ export function VideoSection(): React.JSX.Element {
           onUpload={upload}
           onRemoveCustom={removeCustom}
         />
-        <p className="text-xs text-gray-400">
+        <p className="text-ds-xs text-muted">
           A separação do fundo roda no seu computador: o vídeo original não sai dele.
         </p>
       </div>

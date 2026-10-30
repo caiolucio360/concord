@@ -41,16 +41,19 @@ describe('GroupMemberRow', () => {
     const html = render()
     expect(html).toContain('data-avatar')
     expect(html).toContain('Ana Souza')
-    expect(html).toContain('text-gray-200')
+    expect(html).toContain('text-normal')
   })
 
   it('offline fica mais apagado', () => {
     state.status = 'offline'
-    expect(render()).toContain('text-gray-500')
+    expect(render()).toContain('text-faint')
   })
 
   it('o dono do grupo leva a coroa', () => {
-    expect(render({ isOwner: true })).toContain('Dono do grupo')
+    const html = render({ isOwner: true })
+    expect(html).toContain('Dono do grupo')
+    expect(html).not.toContain('👑')
+    expect(html).toMatch(/title="Dono do grupo"[^>]*><svg/)
     expect(render()).not.toContain('Dono do grupo')
   })
 

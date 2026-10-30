@@ -82,7 +82,7 @@ function ImageCropModal({
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="px-5 pt-5">
-          <h2 className="text-lg font-bold text-strong">Editar imagem</h2>
+          <h2 className="text-ds-lg font-bold text-strong">Editar imagem</h2>
         </div>
         <CropViewport
           round={kind === 'avatar'}
@@ -97,7 +97,7 @@ function ImageCropModal({
           onImageError={() => setError('Não foi possível abrir essa imagem.')}
         />
         <ZoomSlider zoom={zoom} onZoom={setZoom} />
-        {error && <p className="px-6 pt-3 text-xs text-danger">{error}</p>}
+        {error && <p className="px-6 pt-3 text-ds-xs text-danger">{error}</p>}
         <CropFooter
           busy={busy}
           canApply={natural !== null}

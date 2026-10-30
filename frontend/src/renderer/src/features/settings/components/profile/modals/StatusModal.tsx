@@ -45,9 +45,9 @@ export default function StatusModal({
                 <StatusIcon status={s} size={14} />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-sm font-semibold text-strong">{meta.label}</span>
+                <span className="block text-ds-sm font-semibold text-strong">{meta.label}</span>
                 {meta.description && (
-                  <span className="mt-0.5 block text-xs leading-relaxed text-muted">
+                  <span className="mt-0.5 block text-ds-xs leading-relaxed text-muted">
                     {meta.description}
                   </span>
                 )}

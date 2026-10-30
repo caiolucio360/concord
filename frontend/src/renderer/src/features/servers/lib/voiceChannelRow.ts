@@ -67,7 +67,7 @@ export function voiceRowClass(look: VoiceRowLook): string {
   // "Convidar amigos" (quem está conectado) ganha mais um botão à esquerda do balão.
   const buttons = look.hasMenu ? (look.hasInvite ? 'pr-20' : 'pr-12') : look.hasInvite ? 'pr-14' : 'pr-7'
   const pad = `${buttons} ${look.hasPeople ? 'sm:pr-2.5' : `sm:${buttons}`}`
-  let tone = 'text-gray-400 hover:bg-fg/6 hover:text-gray-200'
+  let tone = 'text-muted hover:bg-fg/6 hover:text-normal'
   if (look.dropActive) tone = 'bg-brand/25 text-strong ring-2 ring-brand'
   else if (look.connectedHere) tone = 'text-strong hover:bg-fg/6'
   return `flex w-full items-start gap-2 rounded-lg py-1 pl-2.5 text-left text-ds-md font-medium transition-all cursor-pointer ${dim} ${pad} ${tone}`

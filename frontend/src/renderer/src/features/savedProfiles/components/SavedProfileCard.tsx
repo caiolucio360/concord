@@ -6,7 +6,7 @@ import { DEFAULT_BANNER, profileMediaSrc } from '../../profile/lib/profileMedia'
 import type { SavedProfile } from '../lib/savedProfiles'
 
 const ICON_BUTTON =
-  'flex size-10 cursor-pointer items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand disabled:cursor-wait disabled:opacity-50'
+  'flex size-10 cursor-pointer items-center justify-center rounded-lg text-muted transition-colors hover:bg-fg/10 hover:text-strong focus-ring disabled:cursor-wait disabled:opacity-50'
 
 /** A faixa do banner (imagem, cor ou o degradê padrão) atrás do avatar. */
 function BannerStrip({ item }: { item: SavedProfile }): React.JSX.Element {
@@ -54,7 +54,7 @@ export default function SavedProfileCard({
         onClick={onApply}
         disabled={busy || current}
         aria-label={current ? `${item.name} (em uso)` : `Usar o perfil ${item.name}`}
-        className="flex w-full min-w-0 cursor-pointer flex-col items-start gap-1 px-3 pb-2.5 pt-3.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand disabled:cursor-default"
+        className="flex w-full min-w-0 cursor-pointer flex-col items-start gap-1 px-3 pb-2.5 pt-3.5 text-left focus-ring-inset disabled:cursor-default"
       >
         <BannerStrip item={item} />
         <span className="relative rounded-full border-4 border-[var(--bg-floating)]">
@@ -63,12 +63,12 @@ export default function SavedProfileCard({
         <span className="flex w-full min-w-0 items-center gap-2 pr-20">
           <span className="min-w-0 truncate text-ds-sm font-semibold text-strong">{item.name}</span>
           {current && (
-            <span className="shrink-0 rounded-md bg-brand/20 px-1.5 py-0.5 text-[11px] font-semibold text-strong">
+            <span className="shrink-0 rounded-md bg-brand/20 px-1.5 py-0.5 text-ds-xs font-semibold text-strong">
               Em uso
             </span>
           )}
         </span>
-        <span className="w-full min-w-0 truncate text-xs text-gray-400">
+        <span className="w-full min-w-0 truncate text-ds-xs text-muted">
           <StyledName name={shown} style={item.fields.name_style} />
         </span>
       </button>
@@ -89,7 +89,7 @@ export default function SavedProfileCard({
           title="Excluir"
           disabled={busy}
           onClick={onDelete}
-          className={`${ICON_BUTTON} hover:text-red-400`}
+          className={`${ICON_BUTTON} hover:text-danger`}
         >
           <TrashIcon className="size-4" />
         </button>

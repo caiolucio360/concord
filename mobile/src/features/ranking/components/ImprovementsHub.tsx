@@ -70,8 +70,8 @@ export function ImprovementsHub({ onBack, onOpenRanking, onOpenChangelog }: Impr
       </View>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.intro}>Ajude a decidir o que vem por aí, veja o que mudou e confira quem manda nas calls.</Text>
-        <HubCard title="Novidades" description="O que mudou em cada versão do Salinha." tone={TONES.novidades} paths={SPARKLE_PATHS} onPress={onOpenChangelog} />
-        <HubCard title="Rank global" description="Os 100 maiores níveis do Salinha." stat={stat} tone={TONES.rank} paths={CROWN_PATHS} onPress={onOpenRanking} />
+        <HubCard title="Novidades" description="O que mudou em cada versão da Salinha." tone={TONES.novidades} paths={SPARKLE_PATHS} onPress={onOpenChangelog} />
+        <HubCard title="Rank global" description="Os 100 maiores níveis da Salinha." stat={stat} tone={TONES.rank} paths={CROWN_PATHS} onPress={onOpenRanking} />
       </ScrollView>
     </View>
   )

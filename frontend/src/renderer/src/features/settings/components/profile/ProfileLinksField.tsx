@@ -2,6 +2,7 @@ import { MAX_LINKS, detectProvider, normalizeLink } from '../../../profile/lib/p
 import LinkIcon from '../../../profile/components/LinkIcon'
 import { PlusIcon, XIcon } from '../../../../shared/ui/icons'
 import { Field, SecondaryButton, inputClass } from './ProfileField'
+import IconButton from '../../../../shared/ui/IconButton'
 
 function LinkRow({
   link,
@@ -21,7 +22,7 @@ function LinkRow({
     <div>
       <div className="flex items-center gap-2">
         <span
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-fg/5 text-gray-300"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-fg/5 text-secondary"
           title={provider.label}
         >
           <LinkIcon provider={provider.id} />
@@ -33,16 +34,9 @@ function LinkRow({
           className={inputClass}
           aria-label={`Link ${index + 1}`}
         />
-        <button
-          type="button"
-          onClick={onRemove}
-          aria-label={`Remover link ${index + 1}`}
-          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong"
-        >
-          <XIcon className="h-4 w-4" />
-        </button>
+        <IconButton icon={XIcon} label={`Remover link ${index + 1}`} onClick={onRemove} size="sm" />
       </div>
-      {error && <p className="ml-11 mt-1 text-xs text-danger">{error}</p>}
+      {error && <p className="ml-11 mt-1 text-ds-xs text-danger">{error}</p>}
     </div>
   )
 }
@@ -84,7 +78,7 @@ export default function ProfileLinksField({
               Adicionar link
             </span>
           </SecondaryButton>
-          {full && <span className="ml-3 text-xs text-gray-500">Máximo de {MAX_LINKS} links.</span>}
+          {full && <span className="ml-3 text-ds-xs text-faint">Máximo de {MAX_LINKS} links.</span>}
         </div>
       </div>
     </Field>

@@ -144,13 +144,13 @@ describe('Aniversariante (ganho no dia do aniversário)', () => {
 
   it('no dia, depois do dia e antes de ganhar', () => {
     expect(statText(b({ value: 1, tier: 1 }))).toBe('Hoje é o seu aniversário!')
-    expect(statText(b({ value: 0, tier: 1 }))).toBe('Comemorou o aniversário no Salinha')
+    expect(statText(b({ value: 0, tier: 1 }))).toBe('Comemorou o aniversário na Salinha')
     expect(formatThreshold('birthday', 1)).toBe('No dia do aniversário')
     expect(remainingText(b({ next_threshold: 1 }))).toBe('Chega no dia do seu aniversário')
   })
 
   it('no perfil dos outros não mostra a data nem número', () => {
-    expect(publicStatText(b({ tier: 1 }))).toBe('Comemorou o aniversário no Salinha')
+    expect(publicStatText(b({ tier: 1 }))).toBe('Comemorou o aniversário na Salinha')
   })
 })
 

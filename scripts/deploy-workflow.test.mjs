@@ -40,7 +40,7 @@ test('a release usa o token do Actions e o script do repo, sem ação de terceir
   assert.match(text, /GH_REPO: \$\{\{ github\.repository \}\}/)
   assert.match(
     text,
-    /node scripts\/github-release\.mjs "\$\{\{ steps\.version\.outputs\.version \}\}" backend\/updates changelog\/next\.md/
+    /node scripts\/github-release\.mjs "\$\{\{ steps\.version\.outputs\.version \}\}" backend\/updates changelog\/pending/
   )
   assert.doesNotMatch(text, /uses:/)
 })

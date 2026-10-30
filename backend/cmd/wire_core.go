@@ -35,6 +35,7 @@ func (a *app) wireCore() {
 
 	// WebSocket hub (criado antes dos serviços que publicam eventos)
 	a.hub = websocket.NewHub()
+	a.mobileApps = websocket.NewMobileApps()
 	a.hub.SetStatusLookup(a.userRepository.GetStatus)
 	a.hub.SetAudience(websocket.NewSQLAudience(a.db))
 

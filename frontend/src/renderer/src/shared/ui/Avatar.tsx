@@ -66,7 +66,7 @@ function Avatar({
   animate = 'hover',
   status,
   cutoutColor = 'var(--bg-floating)',
-  fallbackClassName = 'bg-violet-600',
+  fallbackClassName = 'bg-brand',
   className = ''
 }: AvatarProps): React.JSX.Element {
   const look = useUserLook(userId, { name, avatarUrl })
@@ -87,7 +87,7 @@ function Avatar({
       {maestro ? (
         <MaestroImage className="h-full w-full rounded-full bg-accent object-cover" />
       ) : salinhaBot ? (
-        <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-brand to-[#8b5cf6] text-white">
+        <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-brand text-white">
           <SalinhaMarkIcon className="h-[72%] w-[72%]" />
         </div>
       ) : showImage ? (

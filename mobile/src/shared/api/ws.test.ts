@@ -54,7 +54,8 @@ describe('WsClient', () => {
   it('conecta com o token na URL e assina a sala do usuário', () => {
     const { client, onOpen } = makeClient()
     client.connect()
-    expect(last().url).toBe('ws://localhost:8080/ws?token=tok')
+    // O servidor só manda push quando o app do celular não está aberto: ele se identifica com client=mobile.
+    expect(last().url).toBe('ws://localhost:8080/ws?token=tok&client=mobile')
     last().open()
     expect(JSON.parse(last().sent[0])).toEqual({ type: 'subscribe', payload: { room: 'user:u1' } })
     expect(onOpen).toHaveBeenCalledWith(false)
@@ -134,6 +135,46 @@ describe('WsClient', () => {
     client.connect()
     last().open()
     client.retryNow()
+    expect(FakeSocket.instances).toHaveLength(1)
+  })
+
+  it('suspend fecha a conexão sem reconectar (o servidor passa a ver a pessoa offline e manda push)', () => {
+    const { client, onLost } = makeClient()
+    client.connect()
+    last().open()
+    const socket = last()
+    client.suspend()
+    expect(socket.readyState).toBe(3)
+    socket.drop(1000)
+    jest.advanceTimersByTime(120_000)
+    expect(FakeSocket.instances).toHaveLength(1)
+    expect(onLost).not.toHaveBeenCalled()
+    expect(client.isConnected()).toBe(false)
+  })
+
+  it('suspenso, nem retryNow (volta da rede) nem o backoff reabrem; resume reabre, reassina e avisa que reconectou', () => {
+    const { client, onOpen } = makeClient()
+    client.connect()
+    last().open()
+    client.subscribe('channel:c1')
+    client.suspend()
+    client.retryNow()
+    expect(FakeSocket.instances).toHaveLength(1)
+    client.resume()
+    expect(FakeSocket.instances).toHaveLength(2)
+    last().open()
+    const rooms = last().sent.map((raw) => JSON.parse(raw).payload.room)
+    expect(rooms).toEqual(expect.arrayContaining(['user:u1', 'channel:c1']))
+    expect(onOpen).toHaveBeenLastCalledWith(true)
+  })
+
+  it('suspend cancela a reconexão que estava agendada', () => {
+    const { client } = makeClient()
+    client.connect()
+    last().open()
+    last().drop()
+    client.suspend()
+    jest.advanceTimersByTime(120_000)
     expect(FakeSocket.instances).toHaveLength(1)
   })
 

@@ -8,8 +8,11 @@ import { composerCommands } from '../lib/chatPaneView'
 import UnifiedMediaPickerPopover from './UnifiedMediaPickerPopover'
 import VoiceRecordButton from './VoiceRecordButton'
 import MobileSheet from '../../../shared/ui/MobileSheet'
-import { messagePreview } from '../lib/polls'
+import CloseButton from '../../../shared/ui/CloseButton'
+import { messagePreviewParts } from '../lib/polls'
+import PreviewText from './PreviewText'
 import { submitLabel } from '../lib/chatPaneView'
+import IconButton from '../../../shared/ui/IconButton'
 
 // Peças do campo de mensagem do ChatPane: cada uma decide sozinha se aparece.
 
@@ -22,7 +25,7 @@ export function ComposerGate({
   children: ReactNode
 }): React.JSX.Element {
   return disabledReason ? (
-    <div className="rounded-xl border border-subtle bg-input px-4 py-3 text-center text-sm text-gray-400">
+    <div className="rounded-xl border border-subtle bg-input px-4 py-3 text-center text-ds-sm text-muted">
       {disabledReason}
     </div>
   ) : (
@@ -42,19 +45,17 @@ export function ReplyBar({
 }): React.JSX.Element | null {
   if (!replyingTo) return null
   return (
-    <div className="mb-1.5 flex items-center justify-between gap-2 rounded-lg border border-subtle bg-floating px-3 py-1.5 text-ds-sm text-gray-300">
+    <div className="mb-1.5 flex items-center justify-between gap-2 rounded-lg border border-subtle bg-floating px-3 py-1.5 text-ds-sm text-secondary">
       <div className="min-w-0 truncate">
         Respondendo a <span className="font-semibold text-strong">@{authorName}</span>
-        <span className="ml-2 text-gray-400">{messagePreview(replyingTo)}</span>
+        <PreviewText preview={messagePreviewParts(replyingTo)} className="ml-2 text-muted" />
       </div>
-      <button
-        type="button"
-        onClick={onCancel}
+      <CloseButton
+        label="Cancelar resposta"
         title="Cancelar resposta (Esc)"
-        className="shrink-0 cursor-pointer rounded px-1.5 py-0.5 text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong"
-      >
-        ✕
-      </button>
+        size="sm"
+        onClick={onCancel}
+      />
     </div>
   )
 }
@@ -123,45 +124,21 @@ export function AttachButton({
 }): React.JSX.Element | null {
   if (!show) return null
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      title="Anexar arquivo"
-      aria-label="Anexar arquivo"
-      className="shrink-0 cursor-pointer rounded-md p-1 text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong max-md:p-2"
-    >
-      <PaperclipIcon className="h-5 w-5" />
-    </button>
+    <IconButton icon={PaperclipIcon} label="Anexar arquivo" onClick={onClick} className="max-md:p-2" />
   )
 }
 
 /** Abre o modal de criar enquete. */
 export function PollButton({ onClick }: { onClick: () => void }): React.JSX.Element {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      title="Criar enquete"
-      aria-label="Criar enquete"
-      className="shrink-0 cursor-pointer rounded-md p-1 text-gray-400 transition-colors hover:bg-fg/10 hover:text-strong max-md:p-2"
-    >
-      <PollIcon className="h-5 w-5" />
-    </button>
+    <IconButton icon={PollIcon} label="Criar enquete" onClick={onClick} className="max-md:p-2" />
   )
 }
 
 /** Abre e fecha o seletor de emojis, GIFs e figurinhas. */
 export function MediaPickerButton({ onClick }: { onClick: () => void }): React.JSX.Element {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      title="Emojis, GIFs e Figurinhas"
-      aria-label="Emojis, GIFs e Figurinhas"
-      className="shrink-0 cursor-pointer rounded-md p-1 text-gray-400 transition-colors hover:bg-white/10 hover:text-white max-md:p-2"
-    >
-      <SmileyIcon className="h-5 w-5" />
-    </button>
+    <IconButton icon={SmileyIcon} label="Emojis, GIFs e Figurinhas" onClick={onClick} className="max-md:p-2" />
   )
 }
 

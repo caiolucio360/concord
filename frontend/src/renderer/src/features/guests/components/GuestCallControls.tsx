@@ -31,7 +31,7 @@ function ControlButton({
     ? 'bg-danger text-white hover:bg-danger/80'
     : active
       ? 'bg-fg/20 text-strong'
-      : 'bg-secondary text-gray-200 hover:bg-fg/10'
+      : 'bg-secondary text-normal hover:bg-fg/10'
   return (
     <button
       type="button"
@@ -40,7 +40,7 @@ function ControlButton({
       aria-pressed={danger ? undefined : active}
       disabled={disabled}
       onClick={onClick}
-      className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-subtle shadow-lg transition-colors focus-visible:ring-2 focus-visible:ring-brand disabled:cursor-not-allowed disabled:opacity-40 ${tone}`}
+      className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-subtle shadow-lg transition-colors focus-ring disabled:cursor-not-allowed disabled:opacity-40 ${tone}`}
     >
       {children}
     </button>

@@ -24,7 +24,7 @@ function EntranceSoundSettings(): React.JSX.Element {
 
   return (
     <div>
-      <p className="text-ds-sm text-gray-400">
+      <p className="text-ds-sm text-muted">
         Toca para quem já está na call quando você entra. Um áudio de até 5 segundos (MP3, WAV, OGG,
         M4A ou WebM, até 2 MB).
       </p>
@@ -51,10 +51,10 @@ function EntranceSoundSettings(): React.JSX.Element {
           </button>
         )}
       </div>
-      <p className="mt-2 text-ds-xs text-gray-500" aria-live="polite">
+      <p className="mt-2 text-ds-xs text-faint" aria-live="polite">
         {status}
       </p>
-      {error && <p className="mt-1 text-xs text-danger">{error}</p>}
+      {error && <p className="mt-1 text-ds-xs text-danger">{error}</p>}
       <input
         ref={input}
         type="file"

@@ -1,35 +1,20 @@
 import { useNavigate } from 'react-router-dom'
 import type { SearchResult, SearchScope } from '../api/search'
+import ResultItem from './SearchResultItem'
 import {
-  highlightParts,
   highlightTerms,
   resultCountLabel,
   SORT_LABELS,
   type SearchSort
 } from '../lib/messageSearch'
-import { messagePreview } from '../lib/polls'
-import { serverDisplayName } from '../../servers/lib/serverNames'
 import { SEARCH_PAGE_SIZE, searchScopeKey, useSearchStore } from '../store/searchStore'
-import { useServerMemberColor, useServerNicknames } from '../../servers/hooks/useServerNames'
-import Avatar from '../../../shared/ui/Avatar'
-import { HashIcon, SearchIcon, XIcon } from '../../../shared/ui/icons'
+import { useServerNicknames } from '../../servers/hooks/useServerNames'
+import { SearchIcon, XIcon } from '../../../shared/ui/icons'
 
 interface SearchResultsPanelProps {
   scope: SearchScope
   /** Canal aberto agora (servidor): resultado de outro canal navega até ele. */
   currentChannelId?: string
-}
-
-function formatDateTime(iso: string): string {
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return iso
-  return d.toLocaleString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
 }
 
 /** Painel da direita com os resultados da busca do servidor/DM aberto. */
@@ -177,74 +162,5 @@ export default function SearchResultsPanel({
         </nav>
       )}
     </aside>
-  )
-}
-
-function ResultItem({
-  result,
-  terms,
-  serverId,
-  nickname,
-  onOpen
-}: {
-  result: SearchResult
-  terms: string[]
-  serverId?: string
-  nickname?: string
-  onOpen: () => void
-}): React.JSX.Element {
-  const name = serverDisplayName({ nickname }, result.author, 'Usuário')
-  const color = useServerMemberColor(serverId, result.author_id)
-  const text = result.content || messagePreview(result)
-  const parts = highlightParts(text, result.content ? terms : [])
-  const extra = result.content ? messagePreview({ ...result, content: '' }) : ''
-
-  return (
-    <button
-      type="button"
-      onClick={onOpen}
-      title="Ir para a mensagem"
-      className="group w-full cursor-pointer rounded-lg border border-subtle bg-floating p-3 text-left transition hover:border-normal hover:bg-surface focus-visible:outline-2 focus-visible:outline-brand"
-    >
-      {result.channel_name && (
-        <span className="mb-1.5 flex items-center gap-1 text-[11px] font-semibold text-gray-400">
-          <HashIcon className="h-3 w-3" />
-          {result.channel_name}
-        </span>
-      )}
-      <span className="flex items-start gap-2.5">
-        <Avatar
-          userId={result.author_id}
-          name={name}
-          avatarUrl={result.author?.avatar_url}
-          size={32}
-        />
-        <span className="min-w-0 flex-1">
-          <span className="flex items-baseline gap-2">
-            <span
-              style={color ? { color } : undefined}
-              className={`truncate text-ds-sm font-semibold ${color ? '' : 'text-strong'}`}
-            >
-              {name}
-            </span>
-            <time dateTime={result.created_at} className="shrink-0 text-[11px] text-gray-500">
-              {formatDateTime(result.created_at)}
-            </time>
-          </span>
-          <span className="mt-0.5 line-clamp-6 block whitespace-pre-wrap break-words text-ds-sm text-gray-200">
-            {parts.map((p, i) =>
-              p.match ? (
-                <mark key={i} className="rounded-sm bg-amber-400/30 px-0.5 text-amber-100">
-                  {p.text}
-                </mark>
-              ) : (
-                <span key={i}>{p.text}</span>
-              )
-            )}
-          </span>
-          {extra && <span className="mt-1 block text-ds-xs text-gray-400">{extra}</span>}
-        </span>
-      </span>
-    </button>
   )
 }

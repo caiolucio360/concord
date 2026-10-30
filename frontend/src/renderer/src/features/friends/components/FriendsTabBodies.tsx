@@ -11,6 +11,7 @@ import ServerInviteList from '../../servers/components/ServerInviteList'
 import AddFriend from './AddFriend'
 import EmptyState from './EmptyState'
 import { BlockedRow, FriendRow, PendingRow } from './FriendRows'
+import SectionHeader from '../../../shared/ui/SectionHeader'
 
 interface TabBodyProps {
   filterText: string
@@ -18,9 +19,9 @@ interface TabBodyProps {
 
 function SectionTitle({ label, count }: { label: string; count: number }): React.JSX.Element {
   return (
-    <h3 className="mb-2 mt-4 text-ds-sm font-medium text-gray-400">
-      {label} — {count}
-    </h3>
+    <SectionHeader count={count} className="mb-2 mt-4">
+      {label}
+    </SectionHeader>
   )
 }
 

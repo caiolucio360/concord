@@ -14,7 +14,7 @@ export function formatInviteDate(dateStr?: string): string {
 export function inviteSubtitle(
   invite: Pick<ServerInvite, 'inviter_username' | 'created_at'>
 ): string {
-  const when = invite.created_at ? ` • ${formatInviteDate(invite.created_at)}` : ''
+  const when = invite.created_at ? ` · ${formatInviteDate(invite.created_at)}` : ''
   return `@${invite.inviter_username} convidou você${when}`
 }
 
@@ -24,7 +24,7 @@ export function serverInitial(name?: string): string {
 }
 
 /** Rótulo do botão Aceitar enquanto o convite está sendo aceito. */
-export const acceptLabel = (busy: boolean): string => (busy ? 'Entrando...' : 'Aceitar')
+export const acceptLabel = (busy: boolean): string => (busy ? 'Entrando…' : 'Aceitar')
 
 /** "Convites pendentes — 3"; enquanto carrega, sem número. */
 export function pendingInvitesLabel(loading: boolean, count: number): string {

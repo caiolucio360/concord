@@ -10,6 +10,8 @@
 
    Use sempre os tokens, nunca hex solto. Em CSS: var(--bg-primary). Em
    Tailwind: as classes da coluna da direita (aceitam /opacidade: bg-brand/20).
+   Regras de design (ícones, raio, texto, foco) e a catraca que as confere:
+   docs/ai/exemplos/design.md.
 
    Fundos
      --bg-app            fundo da janela (opaco; base para compor os translúcidos)
@@ -60,7 +62,7 @@
      --shadow            cor da sombra
      --decor-opacity     brilho do fundo animado (0 = sem)
    Classe .on-media: texto claro por cima de vídeo/imagem/véu preto, em qualquer tema.
-   Os cinzas do Tailwind (text-gray-50…600) também seguem o tema: ver main.css.
+   Texto: use text-strong/normal/secondary/muted/faint (text-gray-* é legado).
 
    Fonte do Discord Claro: variáveis públicas do cliente web
    (https://discord.com/app, build 649389, arquivo
@@ -175,7 +177,8 @@
   --decor-opacity: 0;
 }
 
-/* Os tons claros do Tailwind (text-amber-300, text-violet-400…) foram pensados
+/* LEGADO (lote 7): sai quando os últimos arquivos com cor crua migrarem (a catraca
+   de design lista quais são). Os tons claros do Tailwind (text-amber-300, text-violet-400…) foram pensados
    para fundo escuro: no tema claro viram os tons 700/800 do mesmo matiz. */
 [data-theme='discord-light'] {
   --color-red-50: oklch(44.4% 0.177 26.899); /* red-800 */
@@ -582,7 +585,17 @@
   --color-warning: var(--yellow);
   --color-fg: var(--fg);
 
-  /* Nomes antigos, mantidos para não quebrar quem usa. */
+  /* Degradês e cores decorativas (fundo animado, capa de convite). O degradê
+     da marca parte do --brand do tema; o hero é fixo (arte, não tema). */
+  --background-image-gradient-brand: linear-gradient(to bottom right, var(--brand), #8b5cf6);
+  --background-image-gradient-hero: linear-gradient(to bottom right, #4c1d95, #312e81, #0e7490);
+  --color-hero-1: #5b21b6;
+  --color-hero-2: #4338ca;
+  --color-hero-3: #0e7490;
+  --color-hero-4: #9d174d;
+
+  /* LEGADO: nomes antigos e cinzas, só para os arquivos que ainda não migraram
+     (ver a catraca). Código novo usa os tokens. */
   --color-discord-violet: var(--brand);
   --color-discord-violet-hover: var(--brand-hover);
   --color-discord-green: var(--green);

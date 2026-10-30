@@ -20,7 +20,7 @@ const tile = (selected: boolean): string =>
   `${BASE_TILE} ${
     selected
       ? 'border-brand text-strong'
-      : 'border-transparent text-gray-300 hover:border-fg/20 hover:text-strong'
+      : 'border-transparent text-secondary hover:border-fg/20 hover:text-strong'
   }`
 
 /**
@@ -106,7 +106,7 @@ function BackgroundPicker({
                   className="absolute inset-0 h-full w-full object-cover"
                 />
                 {c.animated && (
-                  <span className="absolute left-1 top-1 rounded bg-black/70 px-1 text-[10px] font-bold text-white">
+                  <span className="absolute left-1 top-1 rounded bg-black/70 px-1 text-ds-xxs font-bold text-white">
                     GIF
                   </span>
                 )}
@@ -143,7 +143,7 @@ function BackgroundPicker({
         })}
       </div>
       {error && (
-        <p role="alert" className="text-xs text-warning">
+        <p role="alert" className="text-ds-xs text-warning">
           {error}
         </p>
       )}

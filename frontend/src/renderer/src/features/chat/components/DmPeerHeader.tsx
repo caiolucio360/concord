@@ -38,7 +38,7 @@ function DmPeerHeader({
           <p className="truncate text-ds-md font-semibold text-strong">
             <StyledName name={name} userId={userId} style={other?.name_style} />
           </p>
-          {handle && <p className="truncate text-ds-xs text-gray-400">@{handle}</p>}
+          {handle && <p className="truncate text-ds-xs text-muted">@{handle}</p>}
         </div>
       </div>
       <span className="shrink-0 text-ds-xs font-semibold max-sm:hidden" style={{ color: STATUS_META[status].textColor }}>

@@ -26,8 +26,8 @@ function GuestEnded({ reason }: { reason: string }): React.JSX.Element {
   return (
     <GuestCard>
       <h1 className="text-ds-lg font-bold text-strong">{texts.title}</h1>
-      <p className="mt-2 text-ds-sm text-gray-300">{texts.body}</p>
-      <p className="mt-4 text-ds-sm text-gray-400">{GUEST_COPY.finalPitch}</p>
+      <p className="mt-2 text-ds-sm text-secondary">{texts.body}</p>
+      <p className="mt-4 text-ds-sm text-muted">{GUEST_COPY.finalPitch}</p>
       <div className="mt-6 flex flex-col gap-2">
         <Button className="min-h-10 w-full" onClick={() => go('/register')}>
           {GUEST_COPY.createAccount}

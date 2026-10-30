@@ -36,7 +36,7 @@ describe('ServerRailItem', () => {
     const html = render({ dimmed: true, badge: 120, voice: null }, { isActive: true })
     expect(html).toContain('99+')
     expect(html).toContain('opacity-50')
-    expect(html).toContain('bg-violet-600 text-white')
+    expect(html).toContain('bg-brand text-white')
   })
 
   it('selo de voz diferencia a minha call da call alheia', () => {

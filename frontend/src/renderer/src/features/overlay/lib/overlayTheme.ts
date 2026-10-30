@@ -7,15 +7,15 @@ export interface OverlayTheme {
   floating: string
   /** Nome de quem fala (text-strong). */
   strong: string
-  /** Nome dos outros e a dica da edição (text-gray-200 = text-normal). */
+  /** Nome dos outros e a dica da edição (text-normal = text-normal). */
   normal: string
-  /** Etiqueta "você" (text-gray-400 = text-muted). */
+  /** Etiqueta "você" (text-muted = text-muted). */
   muted: string
   /** Avatar sem foto e moldura da edição (brand). */
   brand: string
   /** Anel de quem fala (ring-success). */
   speaking: string
-  /** Microfone/fone cortados (text-red-400). */
+  /** Microfone/fone cortados (text-danger). */
   danger: string
 }
 
@@ -27,7 +27,7 @@ export const OVERLAY_THEME_VARS: Record<keyof OverlayTheme, string> = {
   muted: '--text-muted',
   brand: '--brand',
   speaking: '--green',
-  danger: '--color-red-400'
+  danger: '--text-danger'
 }
 
 const HEX = /^#[0-9a-f]{6}$/

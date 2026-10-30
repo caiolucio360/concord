@@ -7,6 +7,7 @@ import { useOpenCallInvite } from '../hooks/useOpenCallInvite'
 import { cardView } from '../lib/callInviteCard'
 import { INVITE_COPY } from '../lib/callInviteCopy'
 import { useInviteValidity, useInviteValidityStore } from '../store/inviteValidityStore'
+import Button from '../../../shared/ui/Button'
 
 const CARD = 'mt-1 w-full max-w-sm rounded-xl border border-subtle bg-secondary p-3'
 
@@ -18,10 +19,10 @@ function InvalidInvite(): React.JSX.Element {
         <EnvelopeIcon className="h-5 w-5" />
       </span>
       <div className="min-w-0">
-        <p className="break-words text-sm font-semibold text-danger">
+        <p className="break-words text-ds-sm font-semibold text-danger">
           {INVITE_COPY.cardInvalidTitle}
         </p>
-        <p className="break-words text-xs text-gray-400">{INVITE_COPY.cardInvalidHint}</p>
+        <p className="break-words text-ds-xs text-muted">{INVITE_COPY.cardInvalidHint}</p>
       </div>
     </div>
   )
@@ -65,7 +66,7 @@ function CallInviteCard({ message }: { message: Message }): React.JSX.Element | 
 
   return (
     <div role="group" aria-label={view.title} className={`${CARD} flex flex-col gap-3`}>
-      <p className="flex min-w-0 items-center gap-1.5 text-xs text-gray-400">
+      <p className="flex min-w-0 items-center gap-1.5 text-ds-xs text-muted">
         <VolumeIcon className="h-4 w-4 shrink-0" />
         <span className="truncate" title={view.place}>
           {view.place}
@@ -73,7 +74,7 @@ function CallInviteCard({ message }: { message: Message }): React.JSX.Element | 
         <ChevronRightIcon className="h-3.5 w-3.5 shrink-0" />
       </p>
       <div className="flex items-center justify-between gap-3 rounded-lg bg-success/10 p-3">
-        <p className="min-w-0 break-words text-base font-bold text-strong">{view.title}</p>
+        <p className="min-w-0 break-words text-ds-md font-bold text-strong">{view.title}</p>
         <Avatar
           userId={message.author_id}
           name={authorName}
@@ -83,14 +84,15 @@ function CallInviteCard({ message }: { message: Message }): React.JSX.Element | 
         />
       </div>
       {view.button !== 'none' && (
-        <button
+        <Button
           type="button"
+          variant="success"
           disabled={view.button === 'loading' || busy}
           onClick={open}
-          className="min-h-10 w-full cursor-pointer rounded-lg bg-success-strong px-3 text-sm font-medium text-white transition-colors hover:bg-success-strong-hover disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-violet-400"
+          className="w-full"
         >
           {INVITE_COPY.cardOpen}
-        </button>
+        </Button>
       )}
     </div>
   )

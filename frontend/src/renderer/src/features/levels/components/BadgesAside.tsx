@@ -37,7 +37,7 @@ function BadgesAside({
   return (
     <aside className="flex max-h-[50%] w-full shrink-0 flex-col bg-secondary md:max-h-none md:w-[290px]">
       <div className="min-h-0 flex-1 overflow-y-auto p-6">
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 max-md:pr-10">
           {!isMe && (
             <Avatar
               userId={target.userId}
@@ -46,13 +46,13 @@ function BadgesAside({
               size={28}
             />
           )}
-          <h2 id={titleId} className="min-w-0 truncate text-xl font-bold text-strong">
+          <h2 id={titleId} className="min-w-0 truncate text-ds-lg font-bold text-strong">
             {isMe ? 'Seus badges' : `Badges de ${target.name}`}
           </h2>
         </div>
-        <p className="mt-1.5 text-sm leading-snug text-gray-400">
+        <p className="mt-1.5 text-ds-sm leading-snug text-muted">
           {isMe
-            ? 'Os badges aparecem conforme você usa o Salinha.'
+            ? 'Os badges aparecem conforme você usa a Salinha.'
             : `Explore os badges de ${target.name} ou veja os seus.`}
         </p>
 
@@ -63,9 +63,9 @@ function BadgesAside({
             <BadgeGrid badges={earned} selected={selected?.category} onSelect={onSelect} />
           </div>
         ) : (
-          <p className="mt-5 text-sm text-gray-500">
+          <p className="mt-5 text-ds-sm text-faint">
             {isMe
-              ? 'Nenhum badge ainda. Eles aparecem conforme você usa o Salinha.'
+              ? 'Nenhum badge ainda. Eles aparecem conforme você usa a Salinha.'
               : 'Nenhum badge ainda.'}
           </p>
         )}
@@ -76,7 +76,7 @@ function BadgesAside({
           <button
             type="button"
             onClick={onViewMine}
-            className="w-full cursor-pointer rounded-lg bg-fg/10 px-3 py-2 text-sm font-semibold text-strong transition-colors hover:bg-fg/15"
+            className="w-full cursor-pointer rounded-lg bg-fg/10 px-3 py-2 text-ds-sm font-semibold text-strong transition-colors hover:bg-fg/15"
           >
             Ver seus badges
           </button>

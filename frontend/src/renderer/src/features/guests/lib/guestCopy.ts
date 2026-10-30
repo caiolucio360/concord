@@ -13,7 +13,7 @@ export const GUEST_COPY = {
   canSpeak: 'Falar',
   canStream: 'Câmera e tela',
   generate: 'Gerar link',
-  generating: 'Gerando...',
+  generating: 'Gerando…',
   linkReady: 'Link pronto. Ele só aparece agora: copie e envie para a pessoa.',
   copy: 'Copiar link',
   newLink: 'Gerar outro link',
@@ -40,7 +40,7 @@ export const GUEST_COPY = {
   namePlaceholder: 'Como querem te chamar?',
   nameHint: 'De 2 a 32 caracteres.',
   join: 'Entrar na call',
-  joining: 'Entrando...',
+  joining: 'Entrando…',
   unavailableTitle: 'Link indisponível',
   unavailable: 'Este link não existe mais, foi revogado ou já expirou.',
   goHome: 'Ir para a Salinha',
@@ -74,7 +74,7 @@ export const GUEST_COPY = {
   leftFinalTitle: 'Você saiu da call',
   leftFinalBody: 'Seu acesso de visitante foi encerrado neste navegador.',
   finalPitch: 'Com uma conta, você guarda amigos, servidores e conversas.',
-  createAccount: 'Criar conta no Salinha',
+  createAccount: 'Criar conta na Salinha',
   signIn: 'Entrar',
   // Quem tem conta: a visita dentro do app
   confirmTitle: (channel: string, server: string): string =>

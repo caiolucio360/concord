@@ -79,7 +79,7 @@ function ServerSettingsContent(): React.JSX.Element | null {
       ariaLabel="Configurações do servidor"
       sectionKey={current}
       title={label}
-      titleClassName="text-xl font-bold text-strong"
+      titleClassName="text-ds-lg font-bold text-strong"
       contentClassName="max-w-[860px]"
       closeLabel="Fechar configurações do servidor"
       onClose={close}

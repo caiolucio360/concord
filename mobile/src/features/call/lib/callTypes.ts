@@ -4,6 +4,8 @@ export interface CallUser {
   username: string
   display_name: string
   avatar_url?: string | null
+  /** O Maestro (bot de música): só existe na sala de mídia, não na lista do backend. */
+  is_bot?: boolean
 }
 
 export type CallKind = 'dm' | 'channel'

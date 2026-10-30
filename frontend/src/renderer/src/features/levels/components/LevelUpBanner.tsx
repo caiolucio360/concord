@@ -2,7 +2,8 @@ import { useEffect, useMemo } from 'react'
 import { useCallStore } from '../../call/store/callStore'
 import { levelUpEffects, type LevelTier } from '../lib/levels'
 import { oncePerKey, playSound } from '../../call/lib/sounds'
-import LevelBadge from './LevelBadge'
+import { bannerShadow } from '../lib/levelUpBanner'
+import LevelUpBannerContent from './LevelUpBannerContent'
 import { useScreenCelebration } from '../hooks/useScreenCelebration'
 
 /** Emblema da faixa (80+): escudo com estrela, nas cores da faixa. */
@@ -81,52 +82,15 @@ function LevelUpBanner(): React.JSX.Element | null {
 
   if (!celebration || !fx) return null
 
-  const { tier, milestone } = fx
+  const { tier } = fx
   const vars = {
     '--level-color': tier.color,
     '--level-accent': tier.accent,
     '--level-fade-ms': `${fx.durationMs}ms`,
     '--shake': `${fx.shake}px`
   } as React.CSSProperties
-  // Brilho da faixa: maior e mais forte a cada nível.
-  const glowPx = Math.round(18 + 42 * fx.glow)
-  const glowAlpha = Math.round(0x40 + 0x80 * Math.min(1, fx.glow))
-    .toString(16)
-    .padStart(2, '0')
-  const shadow = `0 0 ${glowPx}px ${tier.color}${glowAlpha}`
-
-  const who = celebration.name ?? 'Essa pessoa'
-  const headline = celebration.own
-    ? milestone
-      ? `Marco ${milestone.level} alcançado!`
-      : 'Você subiu de nível!'
-    : milestone
-      ? `${who} chegou ao marco ${milestone.level}`
-      : `${who} está no nível ${celebration.level}`
-
-  const content = (
-    <>
-      <span
-        aria-hidden="true"
-        className="level-motion absolute inset-y-0 w-1/3"
-        style={{
-          background: `linear-gradient(90deg, transparent, ${tier.color}33, transparent)`,
-          animation: 'level-shimmer 1.4s ease-in-out 300ms 2 both'
-        }}
-      />
-      <span className="relative text-xl" aria-hidden="true">
-        {fx.stage === 5 ? '👑' : milestone ? '🏆' : '⬆️'}
-      </span>
-      <div className="relative leading-tight">
-        <p className="max-w-[280px] truncate text-sm font-bold text-strong">{headline}</p>
-        <p className="text-[11px] text-gray-400">
-          Faixa {tier.name}
-          {milestone ? ` · ${milestone.title}` : ''}
-        </p>
-      </div>
-      <LevelBadge userId={celebration.userId} size="md" className="relative" />
-    </>
-  )
+  const shadow = bannerShadow(fx)
+  const content = <LevelUpBannerContent celebration={celebration} fx={fx} />
 
   return (
     <div
@@ -164,7 +128,7 @@ function LevelUpBanner(): React.JSX.Element | null {
             // Borda girando: um quadrado de gradiente maior que a faixa gira
             // atrás do conteúdo e só os 2px da borda aparecem.
             <div
-              className="relative overflow-hidden rounded-2xl p-[2px]"
+              className="relative overflow-hidden rounded-xl p-[2px]"
               style={{ boxShadow: shadow }}
             >
               <span
@@ -181,7 +145,7 @@ function LevelUpBanner(): React.JSX.Element | null {
             </div>
           ) : (
             <div
-              className="relative flex items-center gap-3 overflow-hidden rounded-2xl border bg-floating px-4 py-2.5 shadow-2xl backdrop-blur-xl"
+              className="relative flex items-center gap-3 overflow-hidden rounded-xl border bg-floating px-4 py-2.5 shadow-2xl backdrop-blur-xl"
               style={{ borderColor: `${tier.color}66`, boxShadow: shadow }}
             >
               {content}
@@ -211,7 +175,7 @@ function LevelUpBanner(): React.JSX.Element | null {
 
       {fx.tierReveal && (
         <p
-          className="rounded-full border px-3 py-1 text-xs font-extrabold uppercase tracking-[0.18em] text-white shadow-lg"
+          className="rounded-full border px-3 py-1 text-ds-xs font-bold uppercase tracking-[0.18em] text-white shadow-lg"
           style={{
             borderColor: `${tier.color}88`,
             background: `linear-gradient(90deg, ${tier.accent}cc, ${tier.color}cc)`,

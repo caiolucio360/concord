@@ -83,6 +83,6 @@ describe('SavedProfilesPanel', () => {
 
   it('salvando mostra o andamento', () => {
     state.view = view({ busy: 'new' })
-    expect(render()).toContain('Salvando...')
+    expect(render()).toContain('Salvando…')
   })
 })

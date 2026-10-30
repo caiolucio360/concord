@@ -2,14 +2,15 @@ import { realtime } from '../../../shared/api/realtime'
 import { LIVEKIT_URL } from '../../../shared/lib/config'
 import { useAuthStore } from '../../auth/store/authStore'
 import { useVoiceControlsStore } from '../../voice/store/voiceControlsStore'
-import { endCallRequest, getCallToken, startCall } from '../api/calls'
+import { endCallRequest, getCallState, getCallToken, startCall } from '../api/calls'
 import { createCallController } from './callController'
 import { createLiveKitMedia } from './livekitMedia'
+import { ensureCameraPermission } from './cameraPermission'
 import { ensureMicPermission } from './micPermission'
 
 /** A chamada do app, com a mídia, a API e o WebSocket reais. Um só objeto: telas e hooks falam com ele. */
 export const callController = createCallController({
-  api: { startCall, getCallToken, endCallRequest },
+  api: { startCall, getCallToken, endCallRequest, getCallState },
   media: createLiveKitMedia(),
   ws: {
     send: (type, payload) => realtime.sendEvent(type, payload),
@@ -22,5 +23,6 @@ export const callController = createCallController({
     return { muted, deafened }
   },
   ensureMicPermission,
+  ensureCameraPermission,
   meId: () => useAuthStore.getState().user?.id ?? null
 })

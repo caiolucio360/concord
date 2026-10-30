@@ -105,10 +105,10 @@ describe('showVoicePanel / voicePanelHeading', () => {
     expect(showVoicePanel('ringing')).toBe(false)
   })
 
-  it('título: o estado da conexão de voz na chamada, "Chamando..." antes de atenderem', () => {
+  it('título: o estado da conexão de voz na chamada, "Chamando…" antes de atenderem', () => {
     expect(voicePanelHeading('active', 'Voz conectada')).toBe('Voz conectada')
     expect(voicePanelHeading('active', 'Reconectando à chamada…')).toBe('Reconectando à chamada…')
-    expect(voicePanelHeading('outgoing', 'Conectando à chamada…')).toBe('Chamando...')
+    expect(voicePanelHeading('outgoing', 'Conectando à chamada…')).toBe('Chamando…')
   })
 })
 

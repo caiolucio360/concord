@@ -9,7 +9,7 @@ var baseCategories = []Category{
 		// entre os míticos, é o que aparece na frente.
 		Key:         "top10",
 		Name:        "Top 10 do Nível 100",
-		Description: "Um dos 10 primeiros a chegar no nível 100. Só 10 pessoas no Salinha vão ter este badge.",
+		Description: "Um dos 10 primeiros a chegar no nível 100. Só 10 pessoas na Salinha vão ter este badge.",
 		Unit:        UnitRank,
 		Tiers: []Tier{
 			{"Panteão", 1, RarityMythic},
@@ -33,7 +33,7 @@ var baseCategories = []Category{
 	{
 		Key:         "conta",
 		Name:        "Idade da conta",
-		Description: "Continue com a sua conta no Salinha. O tempo faz o resto.",
+		Description: "Continue com a sua conta na Salinha. O tempo faz o resto.",
 		Unit:        UnitMonths,
 		Tiers: []Tier{
 			{"Semente", 1, RarityCommon},
@@ -193,7 +193,7 @@ var baseCategories = []Category{
 		// somando os bugs reportados. Como o Fundador, some se a linha sair.
 		Key:         "bugs",
 		Name:        "Caçador de bugs",
-		Description: "Reporte bugs para o time do Salinha. Concedido pelo time a cada bug confirmado.",
+		Description: "Reporte bugs para o time da Salinha. Concedido pelo time a cada bug confirmado.",
 		Unit:        UnitBugs,
 		Tiers: []Tier{
 			{"Olho Vivo", 1, RarityCommon},
@@ -246,7 +246,7 @@ var baseCategories = []Category{
 		// Desfazer não tira o tier já conquistado.
 		Key:         "amigos",
 		Name:        "Amigos",
-		Description: "Faça amizades no Salinha. Contam os pedidos de amizade aceitos com contas de e-mail confirmado.",
+		Description: "Faça amizades na Salinha. Contam os pedidos de amizade aceitos com contas de e-mail confirmado.",
 		Unit:        UnitFriends,
 		Tiers: []Tier{
 			{"Enturmado", 5, RarityCommon},

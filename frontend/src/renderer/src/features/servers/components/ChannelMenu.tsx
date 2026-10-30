@@ -8,6 +8,7 @@ import { showToast } from '../../../shared/store/toastStore'
 import {
   ChevronDownIcon,
   ChevronUpIcon,
+  DotsIcon,
   LockIcon,
   PencilIcon,
   StarIcon,
@@ -35,13 +36,13 @@ export function ChannelMenuButton({
       data-channel-menu-button=""
       aria-label="Opções do canal"
       title="Opções do canal"
-      className={`absolute right-1.5 top-1.5 z-10 flex h-5 items-center rounded-md px-0.5 text-gray-500 [@media(pointer:coarse)]:right-0 [@media(pointer:coarse)]:top-0 [@media(pointer:coarse)]:h-9 [@media(pointer:coarse)]:px-2.5 transition-[color,background-color,opacity] hover:bg-fg/10 hover:text-strong cursor-pointer ${
+      className={`absolute right-1.5 top-1.5 z-10 flex h-5 items-center rounded-md px-0.5 text-faint [@media(pointer:coarse)]:right-0 [@media(pointer:coarse)]:top-0 [@media(pointer:coarse)]:h-9 [@media(pointer:coarse)]:px-2.5 transition-[color,background-color,opacity] hover:bg-fg/10 hover:text-strong cursor-pointer ${
         onHover && !open
           ? '[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/voicech:opacity-100 focus-visible:opacity-100'
           : ''
       }`}
     >
-      <span className="text-[10px] leading-none">•••</span>
+      <DotsIcon size={16} />
     </button>
   )
 }
@@ -57,7 +58,7 @@ const LOOK: Record<
   'move-down': { label: 'Mover para baixo', icon: <ChevronDownIcon className={ICON} /> },
   'make-primary': {
     label: 'Definir como principal',
-    icon: <StarIcon className={`${ICON} text-amber-400`} />
+    icon: <StarIcon className={`${ICON} text-warning`} />
   },
   edit: { label: 'Editar canal', icon: <PencilIcon className={ICON} /> },
   permissions: { label: 'Permissões', icon: <LockIcon className={ICON} /> },

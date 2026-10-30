@@ -5,11 +5,24 @@ export const MESSAGES_CHANNEL = 'mensagens'
 /** Canal das chamadas de DM recebidas (o backend manda `channel_id: chamadas`). */
 export const CALLS_CHANNEL = 'chamadas'
 
-/** Com o app aberto a pessoa já vê a mensagem na tela: não mostra banner por cima. */
+/**
+ * Com o app aberto só aparece o aviso que o próprio app cria (`in_app`: DM ou menção fora da conversa aberta);
+ * um push que chegue nesse meio tempo fica quieto, porque o aviso local já cobre a mesma mensagem.
+ */
+export function foregroundBehavior(data: Record<string, unknown> | undefined): Notifications.NotificationBehavior {
+  const show = data?.in_app === true
+  return { shouldShowBanner: show, shouldShowList: show, shouldPlaySound: show, shouldSetBadge: false }
+}
+
 export function silenceForeground(): void {
   Notifications.setNotificationHandler({
-    handleNotification: async () => ({ shouldShowBanner: false, shouldShowList: false, shouldPlaySound: false, shouldSetBadge: false })
+    handleNotification: async (notification) => foregroundBehavior(notification.request.content.data as Record<string, unknown> | undefined)
   })
+}
+
+/** Mostra agora o aviso do app aberto, no canal das mensagens (o toque usa a mesma rota do push). */
+export async function presentInApp(n: { title: string; body: string; data: Record<string, unknown> }): Promise<void> {
+  await Notifications.scheduleNotificationAsync({ content: { title: n.title, body: n.body, data: n.data }, trigger: { channelId: MESSAGES_CHANNEL } })
 }
 
 async function requestPermission(): Promise<boolean> {

@@ -1,6 +1,7 @@
 import type { DraftAttachment } from '../lib/attachments'
 import { formatBytes } from '../lib/attachments'
 import { MicIcon, PlayIcon } from '../../../shared/ui/icons'
+import CloseButton from '../../../shared/ui/CloseButton'
 
 /** Fileira de anexos acima do campo de texto, com progresso e erro. */
 function ComposerAttachments({
@@ -18,10 +19,10 @@ function ComposerAttachments({
         <div
           key={d.localId}
           className={`relative flex w-40 shrink-0 flex-col gap-1 rounded-lg border bg-input p-2 ${
-            d.status === 'error' ? 'border-red-500/50' : 'border-subtle'
+            d.status === 'error' ? 'border-danger/50' : 'border-subtle'
           }`}
         >
-          <div className="relative flex h-20 items-center justify-center overflow-hidden rounded-md bg-fg/5 text-gray-400">
+          <div className="relative flex h-20 items-center justify-center overflow-hidden rounded-md bg-fg/5 text-muted">
             {d.kind === 'image' && d.previewUrl ? (
               <img src={d.previewUrl} alt="" className="h-full w-full object-cover" />
             ) : d.kind === 'video' && d.previewUrl ? (
@@ -38,28 +39,26 @@ function ComposerAttachments({
               <MicIcon className="h-8 w-8" />
             )}
           </div>
-          <p className="truncate text-xs text-gray-200" title={d.file.name}>
+          <p className="truncate text-ds-xs text-normal" title={d.file.name}>
             {d.file.name}
           </p>
-          <p className="text-[10px] text-gray-500">{formatBytes(d.file.size)}</p>
+          <p className="text-ds-xxs text-faint">{formatBytes(d.file.size)}</p>
           {d.status === 'uploading' && (
             <div className="h-1 overflow-hidden rounded-full bg-fg/10">
               <div
-                className="h-full rounded-full bg-violet-400 transition-[width]"
+                className="h-full rounded-full bg-brand transition-[width]"
                 style={{ width: `${Math.round(d.progress * 100)}%` }}
               />
             </div>
           )}
-          {d.status === 'error' && <p className="text-[10px] text-red-400">{d.error}</p>}
-          <button
-            type="button"
+          {d.status === 'error' && <p className="text-ds-xxs text-danger">{d.error}</p>}
+          <CloseButton
+            label="Remover anexo"
+            size="xs"
+            variant="media"
+            className="absolute right-1 top-1"
             onClick={() => onRemove(d.localId)}
-            title="Remover"
-            aria-label="Remover anexo"
-            className="absolute right-1 top-1 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-black/70 text-xs text-gray-300 hover:bg-red-500 hover:text-white on-media"
-          >
-            ×
-          </button>
+          />
         </div>
       ))}
     </div>

@@ -1,6 +1,7 @@
 import Avatar from '../../../../../shared/ui/Avatar'
 import StyledName from '../../../../profile/components/StyledName'
 import type { NameStyle } from '../../../../profile/lib/nameStyle'
+import SectionHeader from '../../../../../shared/ui/SectionHeader'
 
 /** Uma mensagem de exemplo no chat, com o nome do jeito que vai aparecer. */
 export default function MessagePreview({
@@ -14,9 +15,9 @@ export default function MessagePreview({
 }): React.JSX.Element {
   return (
     <div className="rounded-xl border border-subtle bg-primary p-3">
-      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+      <SectionHeader as="p" className="mb-2">
         No chat
-      </p>
+      </SectionHeader>
       <div className="flex min-w-0 gap-3">
         <Avatar name={name} avatarUrl={avatarUrl} size={40} animate="always" />
         <div className="min-w-0">
@@ -24,7 +25,7 @@ export default function MessagePreview({
             <span className="min-w-0 truncate text-ds-md font-medium text-strong">
               <StyledName name={name} style={style} />
             </span>
-            <span className="shrink-0 text-xs text-gray-500">Hoje às 12:34</span>
+            <span className="shrink-0 text-ds-xs text-faint">Hoje às 12:34</span>
           </p>
           <p className="break-words text-ds-md text-normal">Olha só o meu nome novo!</p>
         </div>

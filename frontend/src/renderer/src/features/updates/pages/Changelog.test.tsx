@@ -31,12 +31,39 @@ describe('ChangelogView', () => {
   })
 
   it('marca a versão em uso', () => {
-    expect(render({ current: '0.6.1' })).toContain('Você está aqui')
-    expect(render({ current: null })).not.toContain('Você está aqui')
+    const html = render({ current: '0.6.2' })
+    expect(html).toContain('Você está aqui')
+    expect(html.split('Você está aqui')).toHaveLength(2)
   })
 
-  it('release sem entradas avisa que não há notas', () => {
-    expect(render()).toContain('Sem notas para esta versão')
+  // Regressão: a versão instalada sem notas sumia da lista.
+  it('mostra a versão em uso mesmo sem notas', () => {
+    const html = render({ current: '0.6.1' })
+    expect(html).toContain('v0.6.1')
+    expect(html).toContain('Você está aqui')
+    expect(html).toContain('Sem notas para esta versão')
+  })
+
+  it('na web (sem versão instalada) a mais nova é a atual', () => {
+    const html = render({ current: null })
+    expect(html.indexOf('Você está aqui')).toBeGreaterThan(html.indexOf('v0.6.2'))
+    expect(html.indexOf('Você está aqui')).toBeLessThan(html.indexOf('Mensagens fixadas'))
+  })
+
+  it('versões sem notas que não são a atual viram uma linha só', () => {
+    const quiet = [
+      releases[0],
+      { ...releases[1], version: '0.6.1' },
+      { ...releases[1], version: '0.6.0' }
+    ]
+    const html = render({ releases: quiet })
+    expect(html).toContain('v0.6.1 a v0.6.0')
+    expect(html).toContain('sem mudanças visíveis')
+    expect(html).not.toContain('Sem notas para esta versão')
+  })
+
+  it('marca a atual e rola até ela depois de carregar', () => {
+    expect(render({ current: '0.6.2' })).toContain('data-current-release')
   })
 
   it('carregando, com erro e vazio', () => {

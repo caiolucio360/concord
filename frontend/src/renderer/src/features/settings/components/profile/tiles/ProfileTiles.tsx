@@ -27,7 +27,7 @@ function BannerColorTile({ color, onOpen }: { color: string | null; onOpen: Open
     <TileSection title="Cor do banner">
       <Tile label="Mudar a cor do banner" onClick={() => onOpen('banner_color')} className="h-11 w-full px-3">
         <span aria-hidden="true" className="absolute inset-0" style={{ background: color ?? DEFAULT_BANNER }} />
-        <span className="relative rounded-md bg-black/45 px-1.5 py-0.5 font-mono text-xs text-white">
+        <span className="relative rounded-md bg-black/45 px-1.5 py-0.5 font-mono text-ds-xs text-white">
           {color ?? 'Padrão'}
         </span>
       </Tile>
@@ -49,7 +49,7 @@ function ThemeTile({ user, onOpen }: { user: User; onOpen: Open }): React.JSX.El
         >
           {/* Um cartão em miniatura: o banner e o avatar por cima da moldura. */}
           <span className="block h-4" style={{ background: banner }} />
-          <span className="absolute left-1.5 top-2 size-4 rounded-full border-2 border-[var(--bg-floating)] bg-gray-400" />
+          <span className="absolute left-1.5 top-2 size-4 rounded-full border-2 border-[var(--bg-floating)] bg-[var(--text-muted)]" />
         </ProfileCardFrame>
         <span className="min-w-0 truncate text-ds-sm font-medium text-strong">{themeName(theme)}</span>
       </Tile>
@@ -67,10 +67,10 @@ function NameTile({ user, onOpen }: { user: User; onOpen: Open }): React.JSX.Ele
         onClick={() => onOpen('name')}
         className="w-full flex-col items-start gap-0.5 px-3 py-2.5 pr-9"
       >
-        <span className="w-full min-w-0 truncate text-lg font-bold text-strong">
+        <span className="w-full min-w-0 truncate text-ds-lg font-bold text-strong">
           <StyledName name={display_name || user.username} style={name_style} />
         </span>
-        <span className="text-xs text-gray-400">{nameStyleSummary(name_style)}</span>
+        <span className="text-ds-xs text-muted">{nameStyleSummary(name_style)}</span>
       </Tile>
     </TileSection>
   )
@@ -117,7 +117,7 @@ function TextTiles({ user, onOpen }: { user: User; onOpen: Open }): React.JSX.El
       </TileSection>
       <TileSection title="Sobre mim">
         <TileRow
-          label="Editar Sobre mim"
+          label="Editar sobre mim"
           value={textSummary(draft.bio)}
           empty={SPOT_PLACEHOLDER.bio}
           onClick={() => onOpen('bio')}

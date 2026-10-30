@@ -14,7 +14,7 @@ export default function MessageGif({ gifUrl, metadata }: MessageGifProps): React
 
   if (failed) {
     return (
-      <div className="my-1 flex h-32 w-48 items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/5 p-2 text-center text-xs text-gray-500">
+      <div className="my-1 flex h-32 w-48 items-center justify-center rounded-xl border border-dashed border-white/10 bg-white/5 p-2 text-center text-ds-xs text-faint">
         GIF indisponível
       </div>
     )
@@ -56,7 +56,7 @@ export default function MessageGif({ gifUrl, metadata }: MessageGifProps): React
         onError={() => setFailed(true)}
         className="h-full w-full rounded-xl object-cover"
       />
-      <span className="pointer-events-none absolute bottom-2 left-2 rounded bg-black/70 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-white uppercase backdrop-blur-md">
+      <span className="pointer-events-none absolute bottom-2 left-2 rounded bg-black/70 px-1.5 py-0.5 text-ds-xxs font-bold tracking-wider text-white uppercase backdrop-blur-md">
         GIF
       </span>
     </div>

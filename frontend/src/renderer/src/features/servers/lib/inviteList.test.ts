@@ -10,7 +10,7 @@ import {
 describe('acceptLabel', () => {
   it('troca o rótulo enquanto entra', () => {
     expect(acceptLabel(false)).toBe('Aceitar')
-    expect(acceptLabel(true)).toBe('Entrando...')
+    expect(acceptLabel(true)).toBe('Entrando…')
   })
 })
 
@@ -30,7 +30,7 @@ describe('inviteSubtitle', () => {
   })
   it('acrescenta a data quando existe', () => {
     const text = inviteSubtitle({ inviter_username: 'ana', created_at: '2026-10-26T12:00:00Z' })
-    expect(text).toMatch(/^@ana convidou você • .*2026/)
+    expect(text).toMatch(/^@ana convidou você · .*2026/)
   })
 })
 

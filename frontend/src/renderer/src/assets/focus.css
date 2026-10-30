@@ -1,0 +1,45 @@
+/* Foco por teclado: um anel só no app inteiro, na cor da marca
+   (docs/ai/exemplos/design.md). Só aparece com teclado (:focus-visible).
+
+   focus-ring        anel por fora do elemento (padrão)
+   focus-ring-inset  anel por dentro, para quem fica num contêiner com overflow
+                     escondido (o anel de fora seria cortado)
+
+   A regra base dá o mesmo anel a todo botão, link e controle com role, mesmo
+   sem classe: nada fica sem foco visível. outline-none tira esse anel; só use
+   junto de um substituto (focus-ring, focus-within no contêiner...). */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+}
+
+@utility focus-ring-inset {
+  &:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: -2px;
+  }
+}
+
+@layer base {
+  :where(
+      button,
+      a[href],
+      summary,
+      input[type='checkbox'],
+      input[type='radio'],
+      input[type='range'],
+      [role='button'],
+      [role='switch'],
+      [role='tab'],
+      [role='menuitem'],
+      [role='menuitemradio'],
+      [role='menuitemcheckbox'],
+      [role='option'],
+      [tabindex]:not([tabindex='-1'])
+    ):focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+}

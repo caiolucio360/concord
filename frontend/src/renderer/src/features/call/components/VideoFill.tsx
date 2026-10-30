@@ -48,7 +48,7 @@ export default function VideoFill({
         autoPlay
         playsInline
         muted
-        className={`absolute inset-0 h-full w-full ${square ? '' : 'rounded-2xl'} ${
+        className={`absolute inset-0 h-full w-full ${square ? '' : 'rounded-xl'} ${
           fit === 'contain' ? 'bg-black object-contain' : 'object-cover'
         } ${mirror ? '-scale-x-100' : ''}`}
       />

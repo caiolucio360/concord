@@ -24,7 +24,7 @@ function SandboxNotice(): React.JSX.Element | null {
       role="status"
       className="pointer-events-auto w-full rounded-xl border border-warning/40 bg-floating p-4 shadow-2xl backdrop-blur"
     >
-      <p className="text-sm text-strong">
+      <p className="text-ds-sm text-strong">
         Proteção do navegador (sandbox) desativada neste sistema —{' '}
         <a
           href={SANDBOX_HELP_URL}

@@ -106,10 +106,10 @@ function QualityCard(): React.JSX.Element {
       aria-busy={pending !== null}
       className="w-64 rounded-xl border border-subtle bg-floating p-3 shadow-2xl"
     >
-      <p className="text-sm font-bold text-strong">Qualidade da transmissão</p>
+      <p className="text-ds-sm font-bold text-strong">Qualidade da transmissão</p>
       <ScreenQualityControls compact value={pending ?? applied} onChange={update} />
       <AdaptStatus />
-      <p className="mt-2 text-xs text-gray-500">
+      <p className="mt-2 text-ds-xs text-faint">
         {pending ? 'Aplicando…' : 'Não interrompe quem está assistindo.'}
       </p>
     </div>
@@ -121,7 +121,7 @@ function AdaptStatus(): React.JSX.Element | null {
   const text = useScreenAdaptStore((s) => adaptStatusText(s.view))
   if (!text) return null
   return (
-    <p role="status" className="mt-2 text-xs font-semibold text-warning">
+    <p role="status" className="mt-2 text-ds-xs font-semibold text-warning">
       {text}
     </p>
   )

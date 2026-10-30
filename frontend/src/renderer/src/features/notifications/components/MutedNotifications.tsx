@@ -45,13 +45,13 @@ export default function MutedNotifications(): React.JSX.Element | null {
         {serverRows.map((r) => (
           <li key={r.id} className="flex items-center justify-between gap-3 rounded-lg px-2 py-1.5">
             <div className="min-w-0">
-              <div className="truncate text-ds-sm text-gray-200">{r.name}</div>
-              <div className="text-ds-xs text-gray-500">{summary(r.s, now)}</div>
+              <div className="truncate text-ds-sm text-normal">{r.name}</div>
+              <div className="text-ds-xs text-faint">{summary(r.s, now)}</div>
             </div>
             <button
               type="button"
               onClick={() => openModal({ serverId: r.id, name: r.name })}
-              className="shrink-0 cursor-pointer rounded-md bg-fg/10 px-3 py-1 text-ds-sm text-gray-200 hover:bg-fg/20"
+              className="shrink-0 cursor-pointer rounded-md bg-fg/10 px-3 py-1 text-ds-sm text-normal hover:bg-fg/20"
             >
               Editar
             </button>
@@ -60,18 +60,18 @@ export default function MutedNotifications(): React.JSX.Element | null {
         {channelRows.map((r) => (
           <li key={r.id} className="flex items-center justify-between gap-3 rounded-lg px-2 py-1.5">
             <div className="min-w-0">
-              <div className="truncate text-ds-sm text-gray-200">
+              <div className="truncate text-ds-sm text-normal">
                 {r.name}
-                {r.server && <span className="text-gray-500"> · {r.server}</span>}
+                {r.server && <span className="text-faint"> · {r.server}</span>}
               </div>
-              <div className="text-ds-xs text-gray-500">{summary(r.s, now)}</div>
+              <div className="text-ds-xs text-faint">{summary(r.s, now)}</div>
             </div>
             <button
               type="button"
               onClick={() =>
                 openModal({ serverId: r.serverId, channelId: r.id, name: r.name.slice(1) })
               }
-              className="shrink-0 cursor-pointer rounded-md bg-fg/10 px-3 py-1 text-ds-sm text-gray-200 hover:bg-fg/20"
+              className="shrink-0 cursor-pointer rounded-md bg-fg/10 px-3 py-1 text-ds-sm text-normal hover:bg-fg/20"
             >
               Editar
             </button>

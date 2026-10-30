@@ -5,6 +5,8 @@
 @import './theme.css';
 /* Celular: altura visível, safe areas e animações de gaveta. */
 @import './mobile.css';
+/* Foco por teclado: utilitários focus-ring e o anel padrão dos interativos. */
+@import './focus.css';
 
 @theme {
   /* Vidro dos painéis: seguem o tema (no AMOLED ficam translúcidos sobre o brilho). */

@@ -31,7 +31,7 @@ describe('SoundboardPopover', () => {
     const html = render(1280, 600)
     expect(html).toContain('width:480px')
     expect(html).toContain('left:380px')
-    expect(html).toContain('Mesa de Áudio · Sons')
+    expect(html).toContain('Mesa de áudio · Sons')
     expect(html).toContain('sons')
   })
 

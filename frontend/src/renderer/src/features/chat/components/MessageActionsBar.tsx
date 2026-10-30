@@ -4,7 +4,7 @@ import { AddReactionIcon, MoreIcon, ReplyIcon } from '../../../shared/ui/icons'
 import MessageMoreMenu from './MessageMoreMenu'
 
 const iconButton =
-  'flex h-8 w-8 cursor-pointer items-center justify-center rounded text-gray-300 transition-colors hover:bg-fg/10 hover:text-strong focus-visible:outline-2 focus-visible:outline-brand'
+  'flex h-8 w-8 cursor-pointer items-center justify-center rounded text-secondary transition-colors hover:bg-fg/10 hover:text-strong focus-ring'
 
 interface MessageActionsBarProps {
   canReact: boolean
@@ -67,7 +67,7 @@ function ReactionButtons({
           onClick={() => onReact(emoji)}
           title={`Reagir com ${emoji}`}
           aria-label={`Reagir com ${emoji}`}
-          className={`${iconButton} text-[20px] leading-none hover:scale-110`}
+          className={`${iconButton} text-ds-lg leading-none hover:scale-110`}
         >
           {emoji}
         </button>

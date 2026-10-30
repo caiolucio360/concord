@@ -5,7 +5,7 @@ function TTSBadge({ show }: { show?: boolean }): React.JSX.Element | null {
   if (!show) return null
   return (
     <span
-      className="flex items-center self-center text-gray-500"
+      className="flex items-center self-center text-faint"
       title="Mensagem TTS: lida em voz para quem estava em call"
       aria-label="Mensagem TTS"
     >

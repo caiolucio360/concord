@@ -1,14 +1,15 @@
 import type { ComponentType } from 'react'
 import type { IconProps } from '../../../../shared/ui/icons'
+import SectionHeader from '../../../../shared/ui/SectionHeader'
 
 // Controles compactos do editor de perfil: chips de escolha única, amostra
 // de cor, régua curta e o bloco de seção. Alvo de toque ≥ 40 px.
 
 const chipClass = (active: boolean): string =>
-  `flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${
+  `flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-2.5 text-ds-xs font-medium transition-colors focus-ring ${
     active
       ? 'border-brand bg-brand/15 text-strong'
-      : 'border-subtle bg-fg/5 text-gray-300 hover:bg-fg/10 hover:text-strong'
+      : 'border-subtle bg-fg/5 text-secondary hover:bg-fg/10 hover:text-strong'
   }`
 
 export interface ChipOption {
@@ -78,7 +79,7 @@ export function ColorSwatch({
   onChange: (color: string) => void
 }): React.JSX.Element {
   return (
-    <label className="flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border border-subtle bg-fg/5 py-1 pl-1 pr-2.5 text-xs text-gray-300 transition-colors hover:bg-fg/10 focus-within:ring-2 focus-within:ring-brand">
+    <label className="flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border border-subtle bg-fg/5 py-1 pl-1 pr-2.5 text-ds-xs text-secondary transition-colors hover:bg-fg/10 focus-within:ring-2 focus-within:ring-brand">
       <span
         className="relative size-8 shrink-0 overflow-hidden rounded-md border border-normal"
         style={{ background: value }}
@@ -115,10 +116,10 @@ export function RangeField({
   onChange: (value: number) => void
 }): React.JSX.Element {
   return (
-    <label className="flex min-w-0 flex-col gap-1 text-xs text-gray-400">
+    <label className="flex min-w-0 flex-col gap-1 text-ds-xs text-muted">
       <span className="flex items-baseline justify-between gap-2">
         <span>{label}</span>
-        <span className="font-medium text-gray-300">{display}</span>
+        <span className="font-medium text-secondary">{display}</span>
       </span>
       <input
         type="range"
@@ -151,7 +152,7 @@ export function EditorSection({
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="text-ds-sm font-semibold text-strong">{title}</h3>
-          {description && <p className="mt-0.5 text-xs text-gray-400">{description}</p>}
+          {description && <p className="mt-0.5 text-ds-xs text-muted">{description}</p>}
         </div>
         {aside}
       </div>
@@ -162,7 +163,5 @@ export function EditorSection({
 
 /** Subtítulo pequeno dentro de uma seção. */
 export function SubLabel({ children }: { children: React.ReactNode }): React.JSX.Element {
-  return (
-    <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">{children}</p>
-  )
+  return <SectionHeader as="p">{children}</SectionHeader>
 }

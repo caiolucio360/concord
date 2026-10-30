@@ -22,7 +22,7 @@ function HubCard({
   return (
     <Link
       to={to}
-      className="group relative flex min-h-44 flex-col gap-3 overflow-hidden rounded-2xl border border-subtle bg-surface p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-normal hover:shadow-lg focus-visible:outline-2 focus-visible:outline-violet-400"
+      className="group relative flex min-h-44 flex-col gap-3 overflow-hidden rounded-xl border border-subtle bg-surface p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-normal hover:shadow-lg focus-ring"
     >
       <div
         aria-hidden="true"
@@ -34,12 +34,12 @@ function HubCard({
         {icon}
       </div>
       <div className="relative min-w-0 flex-1">
-        <h2 className="text-lg font-bold text-strong">{title}</h2>
-        <p className="mt-1 text-sm text-gray-400">{description}</p>
+        <h2 className="text-ds-lg font-bold text-strong">{title}</h2>
+        <p className="mt-1 text-ds-sm text-muted">{description}</p>
       </div>
       <div className="relative flex items-center justify-between gap-2">
-        <span className="min-w-0 truncate text-xs font-semibold text-gray-300">{stat ?? ' '}</span>
-        <ChevronRightIcon className="size-5 shrink-0 text-gray-500 transition-transform group-hover:translate-x-1 group-hover:text-strong" />
+        <span className="min-w-0 truncate text-ds-xs font-semibold text-secondary">{stat ?? ' '}</span>
+        <ChevronRightIcon className="size-5 shrink-0 text-faint transition-transform group-hover:translate-x-1 group-hover:text-strong" />
       </div>
     </Link>
   )

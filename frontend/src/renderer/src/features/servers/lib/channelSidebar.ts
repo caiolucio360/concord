@@ -93,6 +93,6 @@ export function textRowClass(look: TextRowLook): string {
   const pad = look.canOpenMenu ? 'pr-7' : 'pr-2.5'
   const tone = look.active
     ? 'bg-fg/10 text-strong shadow-sm'
-    : 'text-gray-400 hover:bg-fg/6 hover:text-gray-200'
+    : 'text-muted hover:bg-fg/6 hover:text-normal'
   return `flex w-full items-start gap-2 rounded-lg py-1 pl-2.5 text-left text-ds-md font-medium transition-all cursor-pointer ${pad} ${tone} ${look.dim ? 'opacity-50' : ''}`
 }

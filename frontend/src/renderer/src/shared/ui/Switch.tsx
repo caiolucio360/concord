@@ -2,11 +2,13 @@
 function Switch({
   checked,
   onChange,
-  label
+  label,
+  disabled = false
 }: {
   checked: boolean
   onChange: (checked: boolean) => void
   label: string
+  disabled?: boolean
 }): React.JSX.Element {
   return (
     <button
@@ -14,8 +16,9 @@ function Switch({
       role="switch"
       aria-checked={checked}
       aria-label={label}
+      disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={`relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors ${
+      className={`focus-ring relative h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
         checked ? 'bg-brand' : 'bg-fg/20'
       }`}
     >

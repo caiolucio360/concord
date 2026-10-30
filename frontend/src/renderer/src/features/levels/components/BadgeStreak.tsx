@@ -22,15 +22,15 @@ function BadgeStreak({
       <div className="flex items-center gap-3">
         <FlameIcon
           size={24}
-          className={alive ? 'shrink-0 text-warning' : 'shrink-0 text-gray-500'}
+          className={alive ? 'shrink-0 text-warning' : 'shrink-0 text-faint'}
         />
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-strong">{lines.main}</p>
-          {lines.record && <p className="text-xs text-gray-400">{lines.record}</p>}
+          <p className="text-ds-sm font-semibold text-strong">{lines.main}</p>
+          {lines.record && <p className="text-ds-xs text-muted">{lines.record}</p>}
         </div>
       </div>
       {lines.warning && (
-        <p className="mt-2 text-xs font-medium text-warning" role="status">
+        <p className="mt-2 text-ds-xs font-medium text-warning" role="status">
           {lines.warning}
         </p>
       )}

@@ -49,5 +49,5 @@ export function CloseToTrayCard({
 
 export function NothingToConfigure({ show }: { show: boolean }): React.JSX.Element | null {
   if (!show) return null
-  return <p className="text-ds-md text-gray-400">Nada para configurar aqui nesta plataforma.</p>
+  return <p className="text-ds-md text-muted">Nada para configurar aqui nesta plataforma.</p>
 }

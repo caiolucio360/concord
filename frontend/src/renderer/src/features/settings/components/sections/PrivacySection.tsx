@@ -14,6 +14,7 @@ import { useUIStore } from '../../../../shared/store/uiStore'
 import { showToast } from '../../../../shared/store/toastStore'
 import router from '../../../../app/router'
 import { SettingsSectionsSkeleton } from '../../../../shared/ui/skeleton/layouts'
+import SectionHeader from '../../../../shared/ui/SectionHeader'
 
 const POLICIES: { id: FriendRequestPolicy; title: string; description: string }[] = [
   { id: 'everyone', title: 'Todos', description: 'Qualquer pessoa com seu nome de usuário.' },
@@ -31,7 +32,11 @@ const POLICIES: { id: FriendRequestPolicy; title: string; description: string }[
 ]
 
 function SectionTitle({ children }: { children: React.ReactNode }): React.JSX.Element {
-  return <h2 className="mb-3 text-ds-sm font-medium text-gray-400">{children}</h2>
+  return (
+    <SectionHeader as="h2" className="mb-3">
+      {children}
+    </SectionHeader>
+  )
 }
 
 function blockedLabel(count: number): string {
@@ -109,7 +114,7 @@ export function PrivacySection(): React.JSX.Element {
                 />
                 <span className="min-w-0">
                   <span className="block text-ds-md font-medium text-strong">{p.title}</span>
-                  <span className="block text-ds-sm text-gray-400">{p.description}</span>
+                  <span className="block text-ds-sm text-muted">{p.description}</span>
                 </span>
               </label>
             )
@@ -134,7 +139,7 @@ export function PrivacySection(): React.JSX.Element {
       <section>
         <SectionTitle>Usuários bloqueados</SectionTitle>
         <div className="flex items-center justify-between gap-4">
-          <p className="text-ds-md text-gray-300">{blockedLabel(blockedCount)}</p>
+          <p className="text-ds-md text-secondary">{blockedLabel(blockedCount)}</p>
           <button
             type="button"
             onClick={openBlocked}

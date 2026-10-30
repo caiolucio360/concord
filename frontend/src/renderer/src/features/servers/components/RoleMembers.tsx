@@ -55,7 +55,7 @@ function RoleMembers({
           {term && (
             <ul className="mt-2 divide-y divide-subtle rounded-lg border border-subtle">
               {candidates.length === 0 && (
-                <li className="px-3 py-2 text-xs text-gray-500">Ninguém encontrado.</li>
+                <li className="px-3 py-2 text-ds-xs text-faint">Ninguém encontrado.</li>
               )}
               {candidates.map((m) => (
                 <li key={m.user_id} className="flex items-center justify-between gap-3 px-3 py-2">
@@ -66,11 +66,11 @@ function RoleMembers({
                       avatarUrl={m.avatar_url}
                       size={24}
                     />
-                    <span className="truncate text-sm text-strong">{nameOf(m)}</span>
+                    <span className="truncate text-ds-sm text-strong">{nameOf(m)}</span>
                   </span>
                   <Button
                     variant="secondary"
-                    className="px-3 py-1 text-xs"
+                    size="sm"
                     onClick={() => void run(() => addMemberRole(serverId, m.user_id, role.id))}
                   >
                     Adicionar
@@ -83,24 +83,24 @@ function RoleMembers({
       )}
 
       <div>
-        <h3 className="mb-2 text-ds-sm font-medium text-gray-400">
+        <h3 className="mb-2 text-ds-sm font-medium text-muted">
           Com este cargo — {withRole.length}
         </h3>
         {withRole.length === 0 ? (
-          <p className="text-sm text-gray-500">Ninguém tem este cargo ainda.</p>
+          <p className="text-ds-sm text-faint">Ninguém tem este cargo ainda.</p>
         ) : (
           <ul className="divide-y divide-subtle rounded-lg border border-subtle">
             {withRole.map((m) => (
               <li key={m.user_id} className="flex items-center justify-between gap-3 px-3 py-2">
                 <span className="flex min-w-0 items-center gap-2">
                   <Avatar userId={m.user_id} name={nameOf(m)} avatarUrl={m.avatar_url} size={24} />
-                  <span className="truncate text-sm text-strong">{nameOf(m)}</span>
+                  <span className="truncate text-ds-sm text-strong">{nameOf(m)}</span>
                 </span>
                 {manageable && !role.is_system && access.canEditRolesOf(m.user_id) && (
                   <button
                     type="button"
                     onClick={() => void run(() => removeMemberRole(serverId, m.user_id, role.id))}
-                    className="cursor-pointer text-xs font-semibold text-red-400 hover:text-red-300"
+                    className="cursor-pointer text-ds-xs font-semibold text-danger hover:text-danger"
                   >
                     Remover
                   </button>

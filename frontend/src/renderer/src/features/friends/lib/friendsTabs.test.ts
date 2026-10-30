@@ -4,7 +4,7 @@ import { addTabClass, parseFriendsTab, tabBadge, tabClass, tabHasSearch } from '
 describe('classes das abas', () => {
   it('aba ativa destacada, inativa discreta', () => {
     expect(tabClass(true)).toContain('text-strong')
-    expect(tabClass(false)).toContain('text-gray-400')
+    expect(tabClass(false)).toContain('text-muted')
   })
   it('"Adicionar amigo" é verde cheio fechado e texto verde aberto', () => {
     expect(addTabClass(false)).toContain('bg-success-strong')
