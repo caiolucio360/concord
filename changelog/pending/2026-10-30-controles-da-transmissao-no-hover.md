@@ -1,3 +1,3 @@
 ## Correções
 
-- Transmissões: os botões sobre a tela (Desenhar, Ao vivo, quem está assistindo, estatísticas e janela flutuante) agora só aparecem com o mouse em cima, como a barra de volume.
+- Transmissões: os botões em cima da tela (Desenhar, Ao vivo e quem está assistindo) agora aparecem só quando você passa o mouse, como a barra de volume.
