@@ -106,12 +106,12 @@ function permissionRow(label: string, c: AuditChange): PermissionRow {
 }
 
 /**
- * Na criação só há o "depois". Na edição, o "antes" ausente é o vazio (o
+ * Na criação só há o "depois". Nas outras, o "antes" ausente é o vazio (o
  * backend não manda valor nulo: sem cor, sem apelido).
  */
 function valueRow(e: AuditEntry, label: string, format: (v: unknown) => string, c: AuditChange): ValueRow {
   const row: ValueRow = { label }
-  if ('before' in c || actionInfo(e.action).tone !== 'create') row.before = format(c.before)
+  if (actionInfo(e.action).tone !== 'create') row.before = format(c.before)
   row.after = format(c.after)
   return row
 }

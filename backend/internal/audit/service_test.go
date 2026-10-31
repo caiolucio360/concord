@@ -8,6 +8,11 @@ import (
 	"gin-quickstart/backend/internal/permission"
 )
 
+const (
+	srv1 = "11111111-1111-4111-8111-111111111111"
+	srv2 = "22222222-2222-4222-8222-222222222222"
+)
+
 // fakePerms: só quem está em allowed tem VIEW_AUDIT_LOG; outro servidor = não membro.
 type fakePerms struct {
 	server  string
@@ -42,7 +47,7 @@ func (l *fakeLister) List(_ context.Context, serverID string, f Filter) ([]Entry
 
 func newTestService(l *fakeLister) *Service {
 	perms := fakePerms{
-		server:  "s1",
+		server:  srv1,
 		allowed: map[string]bool{"auditor": true},
 		members: map[string]bool{"auditor": true, "comum": true},
 	}
@@ -54,10 +59,11 @@ func TestServiceListAutorizacao(t *testing.T) {
 		name, server, user string
 		want               error
 	}{
-		{"com permissão", "s1", "auditor", nil},
-		{"membro sem permissão", "s1", "comum", permission.ErrMissingPermission},
-		{"de fora", "s1", "zeca", permission.ErrNotMember},
-		{"servidor de outro", "s2", "auditor", permission.ErrNotMember},
+		{"com permissão", srv1, "auditor", nil},
+		{"membro sem permissão", srv1, "comum", permission.ErrMissingPermission},
+		{"de fora", srv1, "zeca", permission.ErrNotMember},
+		{"servidor de outro", srv2, "auditor", permission.ErrNotMember},
+		{"id que não é de servidor", "", "auditor", permission.ErrNotMember},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -75,7 +81,7 @@ func TestServiceListAutorizacao(t *testing.T) {
 
 func TestServiceListPagina(t *testing.T) {
 	l := &fakeLister{entries: []Entry{{ID: 9}, {ID: 7}, {ID: 4}}}
-	page, err := newTestService(l).List(context.Background(), "s1", "auditor", Filter{Limit: 2})
+	page, err := newTestService(l).List(context.Background(), srv1, "auditor", Filter{Limit: 2})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,14 +93,14 @@ func TestServiceListPagina(t *testing.T) {
 	}
 
 	l = &fakeLister{entries: []Entry{{ID: 2}}}
-	page, _ = newTestService(l).List(context.Background(), "s1", "auditor", Filter{Limit: 2})
+	page, _ = newTestService(l).List(context.Background(), srv1, "auditor", Filter{Limit: 2})
 	if page.NextBefore != nil || len(page.Entries) != 1 {
 		t.Fatalf("última página: %+v next=%v", page.Entries, page.NextBefore)
 	}
 }
 
 func TestServiceListSemLinhasDevolveListaVazia(t *testing.T) {
-	page, err := newTestService(&fakeLister{}).List(context.Background(), "s1", "auditor", Filter{})
+	page, err := newTestService(&fakeLister{}).List(context.Background(), srv1, "auditor", Filter{})
 	if err != nil || page.Entries == nil {
 		t.Fatalf("entries = %#v err=%v, quer [] (o app lê como lista)", page.Entries, err)
 	}

@@ -31,13 +31,13 @@ func TestHandlerList(t *testing.T) {
 		status            int
 		code              string
 	}{
-		{"sem login", "", "/api/servers/s1/audit-log", http.StatusUnauthorized, ""},
-		{"sem permissão", "comum", "/api/servers/s1/audit-log", http.StatusForbidden, "missing_permission"},
-		{"servidor de outro", "auditor", "/api/servers/s2/audit-log", http.StatusForbidden, "not_member"},
-		{"cursor inválido", "auditor", "/api/servers/s1/audit-log?before=abc", http.StatusBadRequest, "invalid_filter"},
-		{"limite inválido", "auditor", "/api/servers/s1/audit-log?limit=x", http.StatusBadRequest, "invalid_filter"},
-		{"ação desconhecida", "auditor", "/api/servers/s1/audit-log?action=x", http.StatusBadRequest, "invalid_filter"},
-		{"ok", "auditor", "/api/servers/s1/audit-log?action=member.kick&before=10&limit=5", http.StatusOK, ""},
+		{"sem login", "", "/api/servers/" + srv1 + "/audit-log", http.StatusUnauthorized, ""},
+		{"sem permissão", "comum", "/api/servers/" + srv1 + "/audit-log", http.StatusForbidden, "missing_permission"},
+		{"servidor de outro", "auditor", "/api/servers/" + srv2 + "/audit-log", http.StatusForbidden, "not_member"},
+		{"cursor inválido", "auditor", "/api/servers/" + srv1 + "/audit-log?before=abc", http.StatusBadRequest, "invalid_filter"},
+		{"limite inválido", "auditor", "/api/servers/" + srv1 + "/audit-log?limit=x", http.StatusBadRequest, "invalid_filter"},
+		{"ação desconhecida", "auditor", "/api/servers/" + srv1 + "/audit-log?action=x", http.StatusBadRequest, "invalid_filter"},
+		{"ok", "auditor", "/api/servers/" + srv1 + "/audit-log?action=member.kick&before=10&limit=5", http.StatusOK, ""},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -56,12 +56,12 @@ func TestHandlerList(t *testing.T) {
 
 func TestHandlerListRepassaFiltro(t *testing.T) {
 	l := &fakeLister{}
-	w := auditRequest(t, l, "auditor", "/api/servers/s1/audit-log?action=member.ban&actor_id=6f1c1d1e-8a3b-4b8e-9f00-0123456789ab&before=42&limit=10")
+	w := auditRequest(t, l, "auditor", "/api/servers/"+srv1+"/audit-log?action=member.ban&actor_id=6f1c1d1e-8a3b-4b8e-9f00-0123456789ab&before=42&limit=10")
 	if w.Code != http.StatusOK {
 		t.Fatalf("status = %d", w.Code)
 	}
 	want := Filter{ActorID: "6f1c1d1e-8a3b-4b8e-9f00-0123456789ab", Action: MemberBan, Before: 42, Limit: 11}
-	if l.serverID != "s1" || l.filter != want {
+	if l.serverID != srv1 || l.filter != want {
 		t.Fatalf("filtro = %+v no servidor %s, quer %+v", l.filter, l.serverID, want)
 	}
 }

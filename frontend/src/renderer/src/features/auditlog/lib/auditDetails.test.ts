@@ -113,14 +113,19 @@ describe('detalhes do que mudou', () => {
       })
     )
     expect(rows.slice(0, 5)).toEqual([
-      { label: 'Duração', before: '—', after: '1 h 30 min' },
-      { label: 'Repetição', before: '—', after: 'Toda semana' },
+      { label: 'Duração', after: '1 h 30 min' },
+      { label: 'Repetição', after: 'Toda semana' },
       { label: 'Duração do link', after: '1 dia' },
       { label: 'Câmera e tela', after: 'Não' },
       { label: 'Ações nos eventos', after: 'Criar, Editar' }
     ])
-    expect(rows[5]).toMatchObject({ label: 'Início', before: '—' })
+    expect(rows[5]).toMatchObject({ label: 'Início' })
+    expect(rows[5]).not.toHaveProperty('before')
     expect(rows[5] && 'after' in rows[5] && rows[5].after).toMatch(/2026/)
+    // Editar mostra o antes, mesmo vazio.
+    expect(
+      describeChanges(entry({ action: 'event.update', changes: [{ field: 'duration_minutes', before: 60, after: 90 }] }))
+    ).toEqual([{ label: 'Duração', before: '1 h', after: '1 h 30 min' }])
   })
 
   it('o que já está na frase não repete; o motivo entra no fim', () => {

@@ -38,6 +38,9 @@ func NewService(entries lister, perms PermissionChecker) *Service {
 // List devolve uma página do mais recente para o mais antigo. Sem permissão
 // (ou servidor de outro) nem chega no banco.
 func (s *Service) List(ctx context.Context, serverID, userID string, f Filter) (Page, error) {
+	if uuid.Validate(serverID) != nil {
+		return Page{}, permission.ErrNotMember // id que nem é de servidor: como o de outro
+	}
 	if err := s.perms.Require(ctx, serverID, userID, permission.ViewAuditLog); err != nil {
 		return Page{}, err
 	}
