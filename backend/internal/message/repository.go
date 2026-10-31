@@ -106,6 +106,24 @@ func (r *Repository) Create(ctx context.Context, msg *Message) error {
 }
 
 func (r *Repository) FindByID(ctx context.Context, id string) (*Message, error) {
+	msg, err := r.findOne(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	msgs := []Message{*msg}
+	if err := r.attachReactions(ctx, msgs); err != nil {
+		return nil, err
+	}
+	return &msgs[0], nil
+}
+
+// FindNewByID relê uma mensagem que acabou de ser gravada: sem buscar as
+// reações, que ela ainda não pode ter (uma consulta a menos por envio).
+func (r *Repository) FindNewByID(ctx context.Context, id string) (*Message, error) {
+	return r.findOne(ctx, id)
+}
+
+func (r *Repository) findOne(ctx context.Context, id string) (*Message, error) {
 	row := r.db.QueryRow(
 		ctx,
 		`
@@ -119,11 +137,7 @@ func (r *Repository) FindByID(ctx context.Context, id string) (*Message, error) 
 	if err != nil {
 		return nil, err
 	}
-	msgs := []Message{msg}
-	if err := r.attachReactions(ctx, msgs); err != nil {
-		return nil, err
-	}
-	return &msgs[0], nil
+	return &msg, nil
 }
 
 // listBeforeCondition é o cursor "before" (id da mensagem mais antiga já
