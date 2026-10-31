@@ -6,6 +6,8 @@ import (
 	"slices"
 	"time"
 
+	"gin-quickstart/backend/internal/eventobjective"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -80,8 +82,20 @@ func (r *Repository) Create(ctx context.Context, e *Event, reminders []ReminderR
 		if err != nil {
 			return err
 		}
-		return insertReminders(ctx, tx, e.ID, reminders)
+		if err := insertReminders(ctx, tx, e.ID, reminders); err != nil {
+			return err
+		}
+		return eventobjective.ReplaceTx(ctx, tx, e.ID, inputsOf(e.Objectives))
 	})
+}
+
+// inputsOf devolve os objetivos do evento como o repositório dos objetivos os grava.
+func inputsOf(objectives []eventobjective.Objective) []eventobjective.Input {
+	out := make([]eventobjective.Input, len(objectives))
+	for i, o := range objectives {
+		out[i] = eventobjective.Input{Kind: o.Kind, Difficulty: o.Difficulty, Minutes: o.Minutes}
+	}
+	return out
 }
 
 // Update troca os campos do evento vivo e refaz os avisos pendentes (os já
@@ -105,7 +119,10 @@ func (r *Repository) Update(ctx context.Context, e *Event, reminders []ReminderR
 		if err := deletePendingReminders(ctx, tx, e.ID); err != nil {
 			return err
 		}
-		return insertReminders(ctx, tx, e.ID, reminders)
+		if err := insertReminders(ctx, tx, e.ID, reminders); err != nil {
+			return err
+		}
+		return eventobjective.ReplaceTx(ctx, tx, e.ID, inputsOf(e.Objectives))
 	})
 }
 
@@ -141,7 +158,11 @@ func (r *Repository) Find(ctx context.Context, serverID, eventID string) (*Event
 	if err != nil {
 		return nil, err
 	}
-	return &e, nil
+	one := []Event{e}
+	if err := r.attachObjectives(ctx, "", one); err != nil {
+		return nil, err
+	}
+	return &one[0], nil
 }
 
 // ListUpcoming: os eventos vivos do servidor, do mais próximo ao mais distante.
@@ -164,7 +185,29 @@ func (r *Repository) ListUpcoming(ctx context.Context, serverID, userID string) 
 		}
 		events = append(events, e)
 	}
-	return events, rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return events, r.attachObjectives(ctx, userID, events)
+}
+
+// attachObjectives carrega os objetivos (e o meu progresso na ocorrência atual) dos eventos lidos.
+func (r *Repository) attachObjectives(ctx context.Context, userID string, events []Event) error {
+	refs := make([]eventobjective.EventRef, len(events))
+	for i, e := range events {
+		refs[i] = eventobjective.EventRef{EventID: e.ID, Occurrence: e.NextStartAt}
+	}
+	byEvent, err := eventobjective.LoadFor(ctx, r.db, userID, refs)
+	if err != nil {
+		return err
+	}
+	for i := range events {
+		events[i].Objectives = byEvent[events[i].ID]
+		if events[i].Objectives == nil {
+			events[i].Objectives = []eventobjective.Objective{}
+		}
+	}
+	return nil
 }
 
 func insertReminders(ctx context.Context, tx pgx.Tx, eventID string, rows []ReminderRow) error {

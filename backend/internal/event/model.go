@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"time"
+
+	"gin-quickstart/backend/internal/eventobjective"
 )
 
 // Antecedências que o moderador pode escolher (minutos). O aviso na hora de
@@ -59,6 +61,8 @@ type Event struct {
 	DurationMinutes int       `json:"duration_minutes"`
 	// GameName: o jogo do evento (nome do catálogo ou digitado); nulo = sem jogo.
 	GameName *string `json:"game_name"`
+	// Objectives: os objetivos do evento, com o meu progresso na ocorrência atual (nunca nulo).
+	Objectives []eventobjective.Objective `json:"objectives"`
 	// A sala da ocorrência em andamento (voz e texto); nil fora do horário do evento.
 	VoiceChannelID  *string    `json:"voice_channel_id"`
 	TextChannelID   *string    `json:"text_channel_id"`
@@ -91,10 +95,12 @@ type Input struct {
 	// 0 = DefaultDuration; senão, uma das AllowedDurations.
 	DurationMinutes int `json:"duration_minutes"`
 	// GameName: vazio = sem jogo.
-	GameName        string     `json:"game_name"`
-	Recurrence      Recurrence `json:"recurrence"`
-	RecurrenceUntil *time.Time `json:"recurrence_until"`
-	RecurrenceCount *int       `json:"recurrence_count"`
+	GameName string `json:"game_name"`
+	// Objectives: até 3 objetivos (vazio = sem objetivos).
+	Objectives      []eventobjective.Input `json:"objectives"`
+	Recurrence      Recurrence             `json:"recurrence"`
+	RecurrenceUntil *time.Time             `json:"recurrence_until"`
+	RecurrenceCount *int                   `json:"recurrence_count"`
 	// nil = padrão [10, 5]; lista vazia = só o aviso na hora.
 	ReminderOffsets []int `json:"reminder_offsets"`
 }

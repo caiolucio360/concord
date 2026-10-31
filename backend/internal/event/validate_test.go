@@ -5,6 +5,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"gin-quickstart/backend/internal/eventobjective"
 )
 
 func validInput(now time.Time) Input {
@@ -123,5 +125,40 @@ func TestCleanTextValidatesTheGameToo(t *testing.T) {
 	in := Input{Title: "Noite", GameName: strings.Repeat("j", 65)}
 	if _, err := in.cleanText(); !errors.Is(err, ErrInvalidGame) {
 		t.Fatalf("erro = %v, esperava ErrInvalidGame", err)
+	}
+}
+
+func objective(k eventobjective.Kind, d eventobjective.Difficulty, minutes int) eventobjective.Input {
+	return eventobjective.Input{Kind: k, Difficulty: d, Minutes: minutes}
+}
+
+func TestNormalizeValidatesObjectives(t *testing.T) {
+	now := time.Date(2026, 11, 1, 12, 0, 0, 0, time.UTC)
+	easy := objective(eventobjective.KindTime, eventobjective.Easy, 15)
+	cases := []struct {
+		name string
+		edit func(*Input)
+	}{
+		{"jogo sem jogo no evento", func(i *Input) {
+			i.Objectives = []eventobjective.Input{objective(eventobjective.KindGame, eventobjective.Easy, 30)}
+		}},
+		{"meta maior que a duração", func(i *Input) {
+			i.DurationMinutes = 30
+			i.Objectives = []eventobjective.Input{objective(eventobjective.KindTime, eventobjective.Easy, 60)}
+		}},
+		{"quatro objetivos", func(i *Input) { i.Objectives = []eventobjective.Input{easy, easy, easy, easy} }},
+	}
+	for _, c := range cases {
+		in := validInput(now)
+		c.edit(&in)
+		if _, err := in.normalize(now); !errors.Is(err, eventobjective.ErrInvalidObjective) {
+			t.Errorf("%s: erro %v, esperava ErrInvalidObjective", c.name, err)
+		}
+	}
+	ok := validInput(now)
+	ok.GameName = "Minecraft"
+	ok.Objectives = []eventobjective.Input{objective(eventobjective.KindGame, eventobjective.Hard, 60), easy}
+	if _, err := ok.normalize(now); err != nil {
+		t.Errorf("objetivo de jogo com jogo deveria passar: %v", err)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"gin-quickstart/backend/internal/eventobjective"
 	"strings"
 	"testing"
 	"time"
@@ -629,5 +630,52 @@ func TestRunningEventGameIsLocked(t *testing.T) {
 	}
 	if got := e.store.events[created.ID]; got.Title != "Novo título" || got.GameName == nil || *got.GameName != "Minecraft" {
 		t.Fatalf("evento = %+v", got)
+	}
+}
+
+func objectiveInput(game string, minutes int) Input {
+	in := gameInput(game)
+	in.Objectives = []eventobjective.Input{{Kind: eventobjective.KindTime, Difficulty: eventobjective.Easy, Minutes: minutes}}
+	return in
+}
+
+func TestCreateKeepsTheObjectives(t *testing.T) {
+	e := newEnv()
+	created, err := e.svc.Create(context.Background(), "s1", "mod", objectiveInput("", 30))
+	if err != nil || len(created.Objectives) != 1 || created.Objectives[0].Minutes != 30 ||
+		created.Objectives[0].Kind != eventobjective.KindTime {
+		t.Fatalf("evento = %+v err=%v", created, err)
+	}
+	if _, err := e.svc.Create(context.Background(), "s1", "mod", gameInputWithBadObjective()); !errors.Is(err, eventobjective.ErrInvalidObjective) {
+		t.Fatalf("erro = %v, esperava ErrInvalidObjective", err)
+	}
+}
+
+func gameInputWithBadObjective() Input {
+	in := goodInput() // sem jogo
+	in.Objectives = []eventobjective.Input{{Kind: eventobjective.KindGame, Difficulty: eventobjective.Easy, Minutes: 30}}
+	return in
+}
+
+// Com o evento em andamento os objetivos ficam travados, como o horário.
+func TestRunningEventObjectivesAreLocked(t *testing.T) {
+	e := newEnv()
+	created, err := e.svc.Create(context.Background(), "s1", "mod", objectiveInput("", 30))
+	if err != nil {
+		t.Fatal(err)
+	}
+	e.store.events[created.ID].NextStartAt = testNow.Add(-10 * time.Minute)
+
+	if _, err := e.svc.Update(context.Background(), "s1", created.ID, "mod", objectiveInput("", 60)); !errors.Is(err, ErrEventRunning) {
+		t.Errorf("trocar a meta com o evento em andamento: %v", err)
+	}
+	none := goodInput()
+	if _, err := e.svc.Update(context.Background(), "s1", created.ID, "mod", none); !errors.Is(err, ErrEventRunning) {
+		t.Errorf("tirar os objetivos com o evento em andamento: %v", err)
+	}
+	same := objectiveInput("", 30)
+	same.Title = "Novo título"
+	if _, err := e.svc.Update(context.Background(), "s1", created.ID, "mod", same); err != nil {
+		t.Fatalf("manter os objetivos e mudar só o título: %v", err)
 	}
 }

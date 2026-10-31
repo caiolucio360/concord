@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"gin-quickstart/backend/internal/audit"
+	"gin-quickstart/backend/internal/eventobjective"
 
 	"github.com/google/uuid"
 )
@@ -127,6 +128,16 @@ func (e *Event) apply(in Input) {
 	e.DurationMinutes, e.GameName = in.DurationMinutes, gamePtr(in.GameName)
 	e.Recurrence, e.RecurrenceUntil, e.RecurrenceCount = in.Recurrence, in.RecurrenceUntil, in.RecurrenceCount
 	e.ReminderOffsets = in.ReminderOffsets
+	e.Objectives = objectivesOf(in.Objectives)
+}
+
+// objectivesOf passa os objetivos do pedido para o evento (o repositório os grava).
+func objectivesOf(in []eventobjective.Input) []eventobjective.Objective {
+	out := make([]eventobjective.Objective, len(in))
+	for i, o := range in {
+		out[i] = eventobjective.Objective{Kind: o.Kind, Difficulty: o.Difficulty, Minutes: o.Minutes}
+	}
+	return out
 }
 
 // Update troca os dados do evento vivo. Mudar o evento recomeça da primeira
@@ -267,7 +278,23 @@ func sameSchedule(e *Event, in Input) error {
 		!slices.Equal(offsets, e.ReminderOffsets) {
 		return ErrEventRunning
 	}
+	if !sameObjectives(e.Objectives, in.Objectives) {
+		return ErrEventRunning
+	}
 	return nil
+}
+
+// sameObjectives: o pedido repete os objetivos do evento (tipo, dificuldade e meta, na ordem).
+func sameObjectives(have []eventobjective.Objective, want []eventobjective.Input) bool {
+	if len(have) != len(want) {
+		return false
+	}
+	for i, o := range have {
+		if o.Kind != want[i].Kind || o.Difficulty != want[i].Difficulty || o.Minutes != want[i].Minutes {
+			return false
+		}
+	}
+	return true
 }
 
 // gamePtr: o nome do jogo como o evento o guarda (vazio = nil, sem jogo).

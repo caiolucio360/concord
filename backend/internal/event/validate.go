@@ -7,6 +7,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"gin-quickstart/backend/internal/eventobjective"
+
 	"github.com/google/uuid"
 )
 
@@ -25,6 +27,9 @@ func (in Input) normalize(now time.Time) (Input, error) {
 		return in, err
 	}
 	in.DurationMinutes = duration
+	if err := eventobjective.Validate(in.Objectives, duration, in.GameName != ""); err != nil {
+		return in, err
+	}
 	if err := in.checkRecurrence(); err != nil {
 		return in, err
 	}

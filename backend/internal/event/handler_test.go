@@ -10,6 +10,8 @@ import (
 	"testing"
 	"time"
 
+	"gin-quickstart/backend/internal/eventobjective"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -151,6 +153,7 @@ func TestDomainErrorsBecomeStatusAndCode(t *testing.T) {
 		{ErrEventRunning, http.StatusConflict, "event_running"},
 		{ErrInvalidBanner, http.StatusBadRequest, "invalid_banner"},
 		{ErrInvalidGame, http.StatusBadRequest, "invalid_game"},
+		{eventobjective.ErrInvalidObjective, http.StatusBadRequest, "invalid_objective"},
 		{ErrRoleNotFound, http.StatusNotFound, "role_not_found"},
 	}
 	for _, c := range cases {

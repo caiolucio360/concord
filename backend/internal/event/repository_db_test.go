@@ -3,6 +3,7 @@ package event
 import (
 	"context"
 	"errors"
+	"gin-quickstart/backend/internal/eventobjective"
 	"os"
 	"testing"
 	"time"
@@ -280,5 +281,59 @@ func TestRepositoryStoresTheGame(t *testing.T) {
 	}
 	if got, _ := repo.Find(ctx, server, withGame.ID); *got.GameName != "VALORANT" {
 		t.Fatalf("UpdateBasics não pode trocar o jogo: %v", *got.GameName)
+	}
+}
+
+func TestRepositoryStoresAndReadsObjectives(t *testing.T) {
+	db, ctx := eventDB(t)
+	repo := NewRepository(db)
+	owner, server := seedUserAndServer(t, db, "Objetivos")
+	start := time.Now().Add(2 * time.Hour).Truncate(time.Second)
+
+	e := newTestEvent(server, owner, start)
+	game := "Minecraft"
+	e.GameName = &game
+	e.Objectives = []eventobjective.Objective{
+		{Kind: eventobjective.KindTime, Difficulty: eventobjective.Easy, Minutes: 30},
+		{Kind: eventobjective.KindGame, Difficulty: eventobjective.Hard, Minutes: 60},
+	}
+	if err := repo.Create(ctx, e, nil); err != nil {
+		t.Fatal(err)
+	}
+	list, err := repo.ListUpcoming(ctx, server, owner)
+	if err != nil || len(list) != 1 || len(list[0].Objectives) != 2 {
+		t.Fatalf("lista = %+v (%v)", list, err)
+	}
+	if got := list[0].Objectives[1]; got.Kind != eventobjective.KindGame || got.XP != 6000 || got.ID == "" {
+		t.Errorf("segundo objetivo = %+v", got)
+	}
+	found, err := repo.Find(ctx, server, e.ID)
+	if err != nil || len(found.Objectives) != 2 {
+		t.Fatalf("Find = %+v (%v)", found, err)
+	}
+
+	// Editar troca o conjunto.
+	e.Objectives = []eventobjective.Objective{{Kind: eventobjective.KindTime, Difficulty: eventobjective.Medium, Minutes: 15}}
+	if err := repo.Update(ctx, e, nil); err != nil {
+		t.Fatal(err)
+	}
+	found, _ = repo.Find(ctx, server, e.ID)
+	if len(found.Objectives) != 1 || found.Objectives[0].Difficulty != eventobjective.Medium {
+		t.Fatalf("depois de editar = %+v", found.Objectives)
+	}
+}
+
+func TestEventWithoutObjectivesCarriesAnEmptyList(t *testing.T) {
+	db, ctx := eventDB(t)
+	repo := NewRepository(db)
+	owner, server := seedUserAndServer(t, db, "Sem objetivos")
+	e := newTestEvent(server, owner, time.Now().Add(time.Hour).Truncate(time.Second))
+	if err := repo.Create(ctx, e, nil); err != nil {
+		t.Fatal(err)
+	}
+	found, _ := repo.Find(ctx, server, e.ID)
+	list, _ := repo.ListUpcoming(ctx, server, owner)
+	if found.Objectives == nil || list[0].Objectives == nil {
+		t.Error("Objectives deveria ser lista vazia (JSON []), não nil")
 	}
 }
