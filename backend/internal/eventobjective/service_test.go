@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -33,6 +34,7 @@ type fakeAnnouncer struct{ calls int }
 func (f *fakeAnnouncer) Announce(string, int64, int64, int64, string, *string) { f.calls++ }
 
 type fakeStore struct {
+	mu        sync.Mutex
 	rooms     []Room
 	roomCalls int
 	minutes   map[string]int // objectiveID|userID → total
@@ -44,8 +46,17 @@ type fakeStore struct {
 }
 
 func (f *fakeStore) RunningRooms(context.Context) ([]Room, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	f.roomCalls++
 	return f.rooms, nil
+}
+
+// queried: quantas vezes as salas foram consultadas (seguro entre goroutines).
+func (f *fakeStore) queried() int {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return f.roomCalls
 }
 
 func (f *fakeStore) AddMinutes(_ context.Context, obj, user string, _ time.Time, m int) (int, error) {
@@ -184,6 +195,55 @@ func TestTickSkipsTheDatabaseWithoutChannelCalls(t *testing.T) {
 	ticks(s, tStart, 3)
 	if st.roomCalls != 0 || len(st.minutes) != 0 {
 		t.Errorf("call de DM não consulta salas nem gera progresso: consultas=%d minutos=%v", st.roomCalls, st.minutes)
+	}
+}
+
+// Run olha as calls a cada intervalo e para quando o contexto acaba.
+func TestRunTicksUntilTheContextEnds(t *testing.T) {
+	st := &fakeStore{rooms: oneRoom()}
+	s, _, _ := newTestService(st, anaInTheRoom())
+	s.every = 5 * time.Millisecond
+
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+	go func() {
+		s.Run(ctx)
+		close(done)
+	}()
+
+	deadline := time.After(2 * time.Second)
+	for {
+		if st.queried() > 0 {
+			break
+		}
+		select {
+		case <-deadline:
+			cancel()
+			t.Fatal("o Run não consultou as salas")
+		case <-time.After(time.Millisecond):
+		}
+	}
+	cancel()
+	select {
+	case <-done:
+	case <-time.After(2 * time.Second):
+		t.Fatal("o Run deveria parar quando o contexto acaba")
+	}
+}
+
+func TestRunStopsRightAwayWithACanceledContext(t *testing.T) {
+	s, _, _ := newTestService(&fakeStore{}, nil)
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	done := make(chan struct{})
+	go func() {
+		s.Run(ctx)
+		close(done)
+	}()
+	select {
+	case <-done:
+	case <-time.After(2 * time.Second):
+		t.Fatal("o Run não parou")
 	}
 }
 

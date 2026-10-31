@@ -43,6 +43,8 @@ type Service struct {
 	pub     Publisher
 	level   Announcer
 	tracker *tracker
+	// every: de quanto em quanto tempo o Run olha as calls (tickInterval; os testes encurtam).
+	every time.Duration
 	// retry: pagamentos que falharam (a pessoa pode já ter saído da sala).
 	retry map[key]Payment
 }
@@ -54,13 +56,13 @@ func NewService(repo *Repository, calls CallSource, real RealAccounts, games Gam
 func newService(st store, calls CallSource, real RealAccounts, games GameSource, pub Publisher, level Announcer, start time.Time) *Service {
 	return &Service{
 		store: st, calls: calls, real: real, games: games, pub: pub, level: level,
-		tracker: newTracker(start), retry: make(map[key]Payment),
+		tracker: newTracker(start), every: tickInterval, retry: make(map[key]Payment),
 	}
 }
 
 // Run conta o tempo dos objetivos até ctx acabar.
 func (s *Service) Run(ctx context.Context) {
-	ticker := time.NewTicker(tickInterval)
+	ticker := time.NewTicker(s.every)
 	defer ticker.Stop()
 	for {
 		select {
