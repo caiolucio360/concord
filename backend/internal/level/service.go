@@ -156,7 +156,13 @@ func (s *Service) give(ctx context.Context, g grant) {
 		log.Printf("[level] add xp for %s: %v", userID, err)
 		return
 	}
+	s.Announce(userID, totalXP, totalSeconds, xp, g.activity.CallID, g.activity.ServerID)
+}
 
+// Announce avisa o app do XP que a pessoa acabou de ganhar (level:update) e, se
+// isso fez o nível subir, da subida (level:up) para a call, o servidor e ela.
+// Serve ao XP de voz e ao bônus dos eventos.
+func (s *Service) Announce(userID string, totalXP, totalSeconds, xp int64, callID string, serverID *string) {
 	progress := newProgress(userID, totalXP, totalSeconds)
 	s.publisher.SendToUser(userID, marshalEvent("level:update", progress))
 
@@ -168,12 +174,12 @@ func (s *Service) give(ctx context.Context, g grant) {
 		UserID:        userID,
 		Level:         progress.Level,
 		PreviousLevel: previous,
-		CallID:        g.activity.CallID,
-		ServerID:      g.activity.ServerID,
+		CallID:        callID,
+		ServerID:      serverID,
 	})
-	s.publisher.BroadcastToCall(g.activity.CallID, event)
-	if g.activity.ServerID != nil {
-		s.publisher.BroadcastToRoom("server:"+*g.activity.ServerID, event)
+	s.publisher.BroadcastToCall(callID, event)
+	if serverID != nil {
+		s.publisher.BroadcastToRoom("server:"+*serverID, event)
 	}
 	s.publisher.SendToUser(userID, event)
 }

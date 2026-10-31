@@ -41,7 +41,9 @@ func mustExec(t *testing.T, db *pgxpool.Pool, sql string, args ...any) {
 func seedEvent(t *testing.T, db *pgxpool.Pool) (userID, serverID, eventID string) {
 	t.Helper()
 	userID, serverID, eventID = uuid.NewString(), uuid.NewString(), uuid.NewString()
-	mustExec(t, db, `INSERT INTO users (id, username, display_name, email, password_hash) VALUES ($1, $2, $2, $3, 'x')`,
+	// Conta real (e-mail confirmado): o XP do servidor só soma para elas (ADR 0016).
+	mustExec(t, db, `INSERT INTO users (id, username, display_name, email, password_hash, email_verified_at)
+		VALUES ($1, $2, $2, $3, 'x', NOW())`,
 		userID, "u"+userID[:8], userID[:8]+"@teste.dev")
 	mustExec(t, db, `INSERT INTO servers (id, name, owner_id) VALUES ($1, $2, $3)`, serverID, "S"+serverID[:8], userID)
 	mustExec(t, db, `INSERT INTO server_members (server_id, user_id) VALUES ($1, $2)`, serverID, userID)

@@ -12,12 +12,14 @@ const (
 	SourceStream   = "live"
 	SourceWatch    = "espectador"
 	SourcePresence = "presenca"
+	// SourceEvent: objetivo de evento cumprido (internal/eventobjective). Não é de tempo.
+	SourceEvent = "evento"
 )
 
 // Sources: todas as fontes, na ordem do detalhamento.
 var Sources = []string{
 	SourceMembers, SourceMessages, SourceStickers, SourceSounds,
-	SourceVoice, SourceStream, SourceWatch, SourcePresence,
+	SourceVoice, SourceStream, SourceWatch, SourcePresence, SourceEvent,
 }
 
 // xpPerMinute: XP por minuto completo das fontes de tempo. O teto diário de

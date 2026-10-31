@@ -94,6 +94,43 @@ func TestXPOnlyForCompleteMinutes(t *testing.T) {
 	}
 }
 
+// Announce serve ao XP de voz e ao bônus dos eventos: avisa a pessoa do XP novo
+// e, se o nível subiu, a call, o servidor e ela da subida.
+func TestAnnounceSendsUpdateAndLevelUp(t *testing.T) {
+	s, _, pub, _ := newTestService()
+	serverID := "server-1"
+	// 400 XP é o nível 3 (começa em 375); 900 é o nível 4 (começa em 670).
+	s.Announce("ana", 900, 120, 500, "call-1", &serverID)
+
+	want := map[string]bool{
+		"user:ana level:update":    false,
+		"call:call-1 level:up":     false,
+		"server:server-1 level:up": false,
+		"user:ana level:up":        false,
+	}
+	for _, sent := range pub.sent {
+		if _, ok := want[sent]; ok {
+			want[sent] = true
+		}
+	}
+	for sent, ok := range want {
+		if !ok {
+			t.Errorf("faltou o aviso %q em %v", sent, pub.sent)
+		}
+	}
+	if len(pub.levelUps) != 1 || pub.levelUps[0].Level != 4 || pub.levelUps[0].PreviousLevel != 3 {
+		t.Errorf("subida = %+v", pub.levelUps)
+	}
+}
+
+func TestAnnounceWithoutLevelUpOnlyUpdatesTheOwner(t *testing.T) {
+	s, _, pub, _ := newTestService()
+	s.Announce("ana", 910, 120, 10, "call-1", nil)
+	if len(pub.sent) != 1 || pub.sent[0] != "user:ana level:update" {
+		t.Fatalf("avisos = %v, esperava só o level:update", pub.sent)
+	}
+}
+
 func TestMutingLosesThePartialMinute(t *testing.T) {
 	s, store, _, voice := newTestService("ana")
 
