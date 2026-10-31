@@ -1,6 +1,9 @@
 package event
 
-import "context"
+import (
+	"context"
+	"log"
+)
 
 // liveEvent: o evento, se quem pede é membro e ele ainda não terminou.
 func (s *Service) liveEvent(ctx context.Context, serverID, eventID, userID string) (*Event, error) {
@@ -26,7 +29,11 @@ func (s *Service) SetRSVP(ctx context.Context, serverID, eventID, userID string,
 	if err != nil {
 		return err
 	}
-	return s.store.SetRSVP(ctx, e.ID, userID, e.NextStartAt, going)
+	if err := s.store.SetRSVP(ctx, e.ID, userID, e.NextStartAt, going); err != nil {
+		return err
+	}
+	s.publishGoingCount(ctx, e)
+	return nil
 }
 
 // ClearRSVP tira a resposta da ocorrência atual (sem resposta = sem aviso).
@@ -35,7 +42,26 @@ func (s *Service) ClearRSVP(ctx context.Context, serverID, eventID, userID strin
 	if err != nil {
 		return err
 	}
-	return s.store.ClearRSVP(ctx, e.ID, userID, e.NextStartAt)
+	if err := s.store.ClearRSVP(ctx, e.ID, userID, e.NextStartAt); err != nil {
+		return err
+	}
+	s.publishGoingCount(ctx, e)
+	return nil
+}
+
+// publishGoingCount avisa o servidor inteiro de quantos vão agora, para a
+// contagem dos cartões mudar sem recarregar. Falhar aqui não desfaz a resposta.
+func (s *Service) publishGoingCount(ctx context.Context, e *Event) {
+	going, err := s.store.ListGoing(ctx, e.ID, e.NextStartAt)
+	if err != nil {
+		log.Printf("[eventos] contar quem vai no evento %s: %v", e.ID, err)
+		return
+	}
+	s.broadcast(e.ServerID, "event:rsvp", map[string]any{
+		"server_id":   e.ServerID,
+		"event_id":    e.ID,
+		"going_count": len(going),
+	})
 }
 
 // ListGoing: quem vai na ocorrência atual.

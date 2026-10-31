@@ -61,8 +61,9 @@ Erros vêm com `code`: `missing_permission`, `not_member`, `event_not_found`,
 
 ## Tempo real
 
-`event:create`, `event:update` e `event:delete` na sala `server:<id>`
-(`delete` leva `{server_id, event_id}`).
+`event:create`, `event:update`, `event:delete` e `event:rsvp` na sala `server:<id>`.
+`delete` leva `{server_id, event_id}`; `rsvp` leva `{server_id, event_id,
+going_count}` (quantos vão agora na ocorrência atual, sem dizer quem).
 
 ## Fora de escopo (por enquanto)
 

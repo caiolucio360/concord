@@ -260,6 +260,29 @@ func TestRSVPUsesCurrentOccurrenceAndNeedsMembership(t *testing.T) {
 	}
 }
 
+func TestRSVPPublishesTheNewGoingCount(t *testing.T) {
+	e := newEnv()
+	created, _ := e.svc.Create(context.Background(), "s1", "mod", goodInput())
+	if err := e.svc.SetRSVP(context.Background(), "s1", created.ID, "membro", true); err != nil {
+		t.Fatal(err)
+	}
+	assertGoingCount(t, e.pub, created.ID, 1)
+	if err := e.svc.ClearRSVP(context.Background(), "s1", created.ID, "membro"); err != nil {
+		t.Fatal(err)
+	}
+	assertGoingCount(t, e.pub, created.ID, 0)
+}
+
+func assertGoingCount(t *testing.T, pub *fakePublisher, eventID string, want float64) {
+	t.Helper()
+	last := pub.sent[len(pub.sent)-1]
+	payload, _ := last.event["payload"].(map[string]any)
+	if last.room != "server:s1" || last.event["type"] != "event:rsvp" ||
+		payload["event_id"] != eventID || payload["going_count"] != want {
+		t.Fatalf("publicado = %+v, esperava event:rsvp com going_count %v", last, want)
+	}
+}
+
 func TestRSVPOnEndedOrCanceledEvent(t *testing.T) {
 	e := newEnv()
 	created, _ := e.svc.Create(context.Background(), "s1", "mod", goodInput())
