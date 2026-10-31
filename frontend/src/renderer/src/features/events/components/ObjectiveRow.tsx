@@ -79,7 +79,14 @@ export default function ObjectiveRow({
             ))}
           </select>
         </label>
-        {!disabled && <IconButton icon={TrashIcon} label="Remover objetivo" onClick={onRemove} />}
+        {!disabled && (
+          <IconButton
+            icon={TrashIcon}
+            label="Remover objetivo"
+            className="self-end md:self-auto"
+            onClick={onRemove}
+          />
+        )}
       </div>
       {!hasGame && <p className="text-ds-xs text-muted">Escolha um jogo para o evento.</p>}
       {objective.kind === 'game' && (
