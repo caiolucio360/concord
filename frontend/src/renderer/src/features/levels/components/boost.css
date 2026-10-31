@@ -1,4 +1,4 @@
-/* --- Buff de XP de voz (ranks A/S/SS/SSS; ver lib/boost.ts) --- */
+/* --- Buff de XP de voz (ranks D a SSS; ver lib/boost.ts) --- */
 
 /* Letra do rank entra "batendo": grande, encolhe passando do ponto e assenta. */
 @keyframes boost-slam {
@@ -72,19 +72,19 @@
   animation: boost-slam 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
 }
 
-.boost-letter[data-stage='2'] {
+.boost-letter[data-stage='5'] {
   animation:
     boost-slam 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both,
     boost-pulse 1.8s ease-in-out 0.5s infinite;
 }
 
-.boost-letter[data-stage='3'] {
+.boost-letter[data-stage='6'] {
   animation:
     boost-slam 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both,
     boost-pulse 1.2s ease-in-out 0.5s infinite;
 }
 
-.boost-letter[data-stage='4'] {
+.boost-letter[data-stage='7'] {
   animation:
     boost-slam 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both,
     boost-pulse 0.9s ease-in-out 0.5s infinite,
