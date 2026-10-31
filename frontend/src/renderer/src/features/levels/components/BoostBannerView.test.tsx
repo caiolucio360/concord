@@ -4,9 +4,7 @@ import { boostRank } from '../lib/boost'
 import BoostBannerView from './BoostBannerView'
 
 const render = (percent: number, eligible = 4): string =>
-  renderToStaticMarkup(
-    <BoostBannerView celebrationKey={1} eligible={eligible} rank={boostRank(percent)!} />
-  )
+  renderToStaticMarkup(<BoostBannerView eligible={eligible} rank={boostRank(percent)!} />)
 const count = (html: string, needle: string): number => html.split(needle).length - 1
 
 describe('BoostBannerView', () => {

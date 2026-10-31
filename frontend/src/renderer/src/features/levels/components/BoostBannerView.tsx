@@ -4,7 +4,6 @@ import BoostSparks from './BoostSparks'
 import './boost.css'
 
 interface BoostBannerViewProps {
-  celebrationKey: number
   eligible: number
   rank: BoostRank
 }
@@ -14,11 +13,7 @@ interface BoostBannerViewProps {
  * (lib/boost.ts): D a A só deslizam a letra; S pisca as bordas; SS solta onda
  * de choque e faíscas; SSS também faz flash dourado de tela cheia e glitch.
  */
-function BoostBannerView({
-  celebrationKey,
-  eligible,
-  rank
-}: BoostBannerViewProps): React.JSX.Element {
+function BoostBannerView({ eligible, rank }: BoostBannerViewProps): React.JSX.Element {
   const vars = {
     '--boost-color': rank.color,
     '--boost-accent': rank.accent
@@ -26,7 +21,6 @@ function BoostBannerView({
 
   return (
     <div
-      key={celebrationKey}
       role="status"
       aria-label={`Buff de XP ${rank.label}: ${rank.text}`}
       className="pointer-events-none fixed inset-0 z-50"

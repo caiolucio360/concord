@@ -15,12 +15,7 @@ function BoostBanner(): React.JSX.Element | null {
   return (
     <>
       <BoostBannerEffects key={celebration.key} celebrationKey={celebration.key} rank={rank} />
-      <BoostBannerView
-        key={celebration.key}
-        celebrationKey={celebration.key}
-        eligible={celebration.eligible}
-        rank={rank}
-      />
+      <BoostBannerView key={celebration.key} eligible={celebration.eligible} rank={rank} />
     </>
   )
 }
