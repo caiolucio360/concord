@@ -11,7 +11,8 @@ Primeira de quatro fases. Cada uma tem spec, plano e PR próprios:
 ## Objetivo
 
 Quem tem a permissão **Gerenciar eventos** cria eventos num servidor, com banner,
-título, descrição, canal de voz, horário e recorrência opcional. Os membros
+título, descrição, horário, duração e recorrência opcional. Na hora do início o evento
+abre a própria sala (voz e texto), só para quem confirmou, e a apaga no fim. Os membros
 respondem **Vou** ou **Não vou**. Quem respondeu **Vou** recebe, na DM, avisos do
 Salinha Bot nas antecedências escolhidas (no máximo 2) e sempre na hora de começar.
 
@@ -26,8 +27,12 @@ Salinha Bot nas antecedências escolhidas (no máximo 2) e sempre na hora de com
 | Respostas | Vou / Não vou (sem resposta = sem aviso) | Pedido original. "Talvez" fica fora. |
 | Lembretes | Lista fixa: 1 dia, 1 h, 30, 15, 10, 5 min; **no máximo 2** por evento; padrão 10 e 5 min. Na hora de começar: sempre | Validação simples e textos iguais para todos. |
 | Entrega | DM do Salinha Bot (`GetOrCreateBotDM` + `CreateConversationMessage`) | Caminho que o bot já usa nas propostas; o push de DM existente cobre quem está fora do app. |
-| Local | Canal de voz do servidor, obrigatório | A Fase 3 precisa saber qual call é a do evento. |
-| Voz restrita (opcional) | Opção por evento, desligada por padrão: "Só quem confirmou presença entra na voz". Ligada, durante a janela do evento (do início até 3 h depois) só entra no canal quem respondeu Vou, e quem tem Gerenciar eventos, Administrador ou é dono. Fora da janela o canal volta ao normal. Quem já estava no canal quando o evento começa não é tirado. | Pedido do usuário. A regra é checada no servidor, em `call.requireConnect` (entrar, iniciar, convite de amigo e prévia de tela), por um gancho `EntryGate`; falha do banco libera a entrada (não é fronteira de segurança). Bots (Maestro) entram sempre. |
+| Local | **Sala própria do evento**: um canal de voz e um de texto, criados na hora do início e apagados no fim da duração (com o histórico do chat). O evento não aponta para um canal que já existe. | Pedido do usuário (2026-10-30), no lugar do canal escolhido. A Fase 3 sabe qual call é a do evento (a voz da sala) e dá o bônus só a quem confirmou. |
+| Quem entra na sala | Só quem respondeu **Vou** e o organizador (quem criou). Dono e Administrador veem tudo, como em qualquer canal privado. Quem confirma depois da sala abrir entra na hora; quem desiste (Não vou ou tirar a resposta) sai. O organizador nunca perde o acesso. | Pedido do usuário: quem não participa não entra no chat de voz do evento. A sala é privada por construção (o @everyone não vê; cada confirmado ganha acesso), sem regra nova no `call`. |
+| Duração | Campo "Duração" no formulário: 30 min, 1 h, 2 h, 3 h ou 4 h (padrão 2 h). A ocorrência acaba em início + duração. | Sem fim definido não há quando apagar a sala. |
+| Fim da sala | Quem está na chamada é desconectado (`call.CloseChannelCall`) e os dois canais são apagados. Evento cancelado fecha a sala na hora; falha ao fechar é tentada de novo a cada rodada. | Apagar o canal sozinho não derruba a chamada. |
+| Evento em andamento | Não se edita (`event_running`); cancelar pode. | Editar horário ou duração com a sala aberta deixaria a sala fora do horário. |
+
 | Agendamento | Ticker de ~30 s sobre a tabela `event_reminders` com `FOR UPDATE SKIP LOCKED` | Mesmo padrão do aniversário, sobrevive a restart, sem dependência nova. Alternativas descartadas: timers em memória (perdem aviso, estado duplicado) e River (dependência com schema próprio, pesado para ~3 avisos). Sem ADR, pois segue o padrão do repo. |
 | Banner | Upload próprio, pasta `event-media` (fora dos anexos do chat), até 10 MB, imagem estática, exibido em 16:9 | Mesmo cuidado de `ProfileMediaDir`: a limpeza de anexos não pode apagá-lo. |
 | Escopo no modelo | Coluna `scope` (`server`; a Fase 4 acrescenta `global`) | Evita migration quebrada depois. Nesta fase só existe `server`. |
@@ -48,15 +53,16 @@ responder só exige ser membro.
 `message` nem em god stores.
 
 ### Migration `000177_create_server_events`
-- `server_events`: `id`, `server_id`, `channel_id` (voz), `scope`, `title`,
-  `description`, `banner_id` (id do arquivo; servido por `GET /event-banners/:bannerId?token=`), `starts_at`, `next_start_at`, `recurrence`
+- `server_events`: `id`, `server_id`, `scope`, `title`,
+  `description`, `banner_id` (id do arquivo; servido por `GET /event-banners/:bannerId?token=`), `starts_at`, `next_start_at`, `duration_minutes`, `voice_channel_id` e
+  `text_channel_id` (a sala da ocorrência em andamento; `ON DELETE SET NULL`), `recurrence`
   (`none|daily|weekly|monthly`), `recurrence_until`, `recurrence_count`,
   `occurrences_done`, `reminder_offsets` (0 a 2 valores da lista fixa),
   `created_by`, `canceled_at`, `finished_at` (evento sem repetição ou com a repetição acabada), `created_at`, `updated_at`.
 - `event_rsvps`: (`event_id`, `user_id`, `occurrence_start`) como chave, `going`.
 - `event_reminders`: `event_id`, `occurrence_start`, `offset_minutes` (0 = na hora),
   `due_at`, `sent_at`; índice parcial em `due_at` onde `sent_at IS NULL`.
-- Remoção em cascata com servidor, canal (cancela o evento) e membro (some a resposta).
+- Remoção em cascata com servidor e membro (some a resposta). Apagar à mão um canal da sala só zera a coluna dele.
 
 ### Frontend: `frontend/src/renderer/src/features/events/`
 `components/` (`EventsPanel`, `EventCard`, `EventForm`, `ReminderPicker`),
@@ -68,7 +74,7 @@ com `ManageEvents`.
 
 ### Criar e editar
 1. `POST /servers/:id/events` valida permissão, título (até 100 caracteres), descrição
-   (até 1000), início no futuro, canal de voz do servidor e até 2 antecedências da lista.
+   (até 1000), início no futuro, duração da lista e até 2 antecedências da lista.
 2. Grava o evento e cria as linhas de `event_reminders` da ocorrência atual na mesma
    transação; emite `event:create` em `server:<id>`.
 3. `PATCH` que muda horário ou antecedências recalcula, na mesma transação, as linhas
@@ -91,8 +97,7 @@ atual; `DELETE` remove a resposta. `GET …/rsvps` lista quem vai.
 
 ### Erros
 Com `code`: `missing_permission`, `event_in_past`, `invalid_reminder`,
-`too_many_reminders`, `invalid_channel`, `event_not_found`. Canal de voz apagado
-cancela o evento. Quem perde o cargo ou sai continua tendo o evento no servidor; quem
+`too_many_reminders`, `invalid_duration`, `event_running`, `event_not_found`. Quem perde o cargo ou sai continua tendo o evento no servidor; quem
 tem `ManageEvents` edita.
 
 ### API
@@ -107,13 +112,15 @@ tem `ManageEvents` edita.
 
 Tempo real: `event:create|update|delete|rsvp` na sala `server:<id>` (`rsvp` leva só `going_count`, a contagem nova de quem vai).
 
-## Textos aprovados
+## Textos (DM do Salinha Bot)
 
-DM do Salinha Bot (aprovados em 2026-10-30):
+Os textos de 2026-10-30 foram trocados quando o evento ganhou sala própria (antes da
+hora o canal ainda não existe). **Aguardam a aprovação do usuário**:
 
-- Antecedência: `🔔 O evento "{título}" começa em {N} minutos em #{canal}, no servidor {servidor}.`
+- Antecedência: `🔔 O evento "{título}" começa em {N} minutos, no servidor {servidor}. A sala abre na hora de começar.`
   ({N} minutos vira "1 hora" ou "1 dia" nessas antecedências.)
-- Começou: `📅 O evento "{título}" está começando agora em #{canal}, no servidor {servidor}.`
+- Começou: `📅 O evento "{título}" está começando agora. Entre na sala #{canal}, no servidor {servidor}.`
+- Começou, se a sala não abriu: `📅 O evento "{título}" está começando agora, no servidor {servidor}.`
 
 Os demais textos de UI (botões, rótulos, mensagens de erro) seguem o vocabulário do app
 e passam por aprovação no PR, conforme o AGENTS.md.
@@ -131,8 +138,9 @@ e passam por aprovação no PR, conforme o AGENTS.md.
 ## Testes
 
 - Go: próxima ocorrência (diária, semanal, mensal em mês curto, fim por data e por
-  contagem); validações (máximo 2 antecedências, início no passado, canal de outro
-  servidor); permissão negada e permitida; ticker (só quem disse Vou, idempotente,
+  contagem); validações (máximo 2 antecedências, início no passado, duração);
+  salas (privadas, só quem confirmou entra, acesso muda com a resposta, fechar apaga os dois
+  canais, com canal e permissão de verdade contra o Postgres); permissão negada e permitida; ticker (só quem disse Vou, idempotente,
   descarta aviso velho, uma DM com falha não bloqueia as outras); repositório contra
   Postgres de teste; vetores de permissão.
 - Frontend (Vitest): `recurrence.ts`, `reminders.ts`, o store e o formulário (limite
@@ -147,7 +155,7 @@ resposta "talvez", exportar para calendário, banner animado.
 ## Verificação de ponta a ponta
 
 1. Com um cargo com Gerenciar eventos, criar um evento semanal daqui a ~12 min, com
-   antecedências de 10 e 5 min, num canal de voz. Sem o cargo, o botão "Criar evento"
+   antecedências de 10 e 5 min e duração de 30 min. Sem o cargo, o botão "Criar evento"
    não aparece e o `POST` volta `missing_permission`.
 2. Com duas contas: uma responde Vou, a outra Não vou. A contagem muda em tempo real
    na outra aba.
@@ -155,6 +163,10 @@ resposta "talvez", exportar para calendário, banner animado.
    reiniciar o backend entre os avisos não duplica nem perde nenhum.
 4. Passada a ocorrência, o evento mostra a semana seguinte e as respostas voltam zeradas.
 5. Editar o horário recalcula os avisos; cancelar o evento cancela os avisos pendentes.
-6. 360 / 768 / 1280 px: painel, cartão e formulário sem rolagem horizontal, alvos de
+   Com o evento em andamento, editar volta `event_running`.
+6. Na hora do início aparecem dois canais novos (voz e texto) só para quem disse Vou; quem
+   não confirmou não os vê nem entra. Quem confirma depois entra; quem desiste sai da
+   chamada. No fim da duração a chamada cai e os dois canais somem.
+7. 360 / 768 / 1280 px: painel, cartão e formulário sem rolagem horizontal, alvos de
    toque ≥ 44 px, uso completo só com teclado.
-7. `node scripts/affected-tests.mjs pr` verde.
+8. `node scripts/affected-tests.mjs pr` verde.

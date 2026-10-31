@@ -1,7 +1,7 @@
 # Eventos do servidor
 
 Quem tem **Gerenciar eventos** marca um evento no servidor (banner, título,
-descrição, canal de voz, horário e repetição). Os membros respondem **Vou** ou
+descrição, horário, duração e repetição). Os membros respondem **Vou** ou
 **Não vou**, e quem foi de **Vou** recebe, na DM, avisos do Salinha Bot antes e
 na hora de começar. Spec:
 [2026-10-30-eventos-do-servidor-design.md](superpowers/specs/2026-10-30-eventos-do-servidor-design.md).
@@ -11,8 +11,15 @@ na hora de começar. Spec:
 - **Permissão**: `ManageEvents` (bit 14, o único livre abaixo de 2^31: o app faz
   bitwise em 32 bits, ver [CARGOS.md](CARGOS.md)). Fora do @everyone; dono e
   Administrador têm sempre. Ver e responder só exige ser membro.
-- **Local**: um canal de voz do mesmo servidor, obrigatório. Se o canal for
-  apagado, o evento some junto.
+- **Sala própria**: o evento não usa um canal que já existe. Na hora do início o
+  agendador cria um canal de voz e um de texto (`evento-<título>` e
+  `evento-<título>-chat`), **privados**: o @everyone não vê; veem só quem respondeu
+  **Vou** e o organizador (dono e Administrador veem tudo, como em qualquer canal
+  privado). Quem confirma depois entra na hora; quem desiste sai (o organizador nunca
+  sai). No fim da **duração** (30 min a 4 h, padrão 2 h) a chamada é derrubada
+  (`call.CloseChannelCall`) e os dois canais são apagados, com o histórico do chat.
+  Em evento recorrente, cada ocorrência abre e apaga a sua. Evento em andamento não se
+  edita (`event_running`); cancelar fecha a sala na hora. Código: `event/rooms.go`.
 - **Repetição**: não repete, todo dia, toda semana ou todo mês, com fim opcional
   (data ou número de vezes). O mês sem o dia (ex.: 31) usa o último dia. Só a
   regra fica guardada; `next_start_at` é a ocorrência atual e `occurrences_done`
@@ -37,8 +44,11 @@ na hora de começar. Spec:
    disse Vou. Falha com uma pessoa não barra as outras.
 3. Aviso de antecedência atrasado mais de 10 min (o servidor ficou fora do ar) é
    descartado; o "começou" ainda sai até 1 h depois do início.
-4. Com a ocorrência encerrada (3 h depois do início), o ticker avança o evento
-   para a próxima e cria os avisos dela; sem próxima, o evento é encerrado.
+4. Cada rodada do ticker faz, nesta ordem: fecha as salas que acabaram (ou de evento
+   cancelado), abre as que chegaram na hora, manda os avisos devidos (o "começou" já
+   encontra a sala aberta) e avança as ocorrências que acabaram e já fecharam a sala
+   (início + duração); sem próxima, o evento é encerrado. Abrir ou fechar uma sala
+   emite `event:update` para o app recarregar.
 
 Os textos das DMs estão em `event/texts.go`.
 
@@ -57,15 +67,15 @@ Os textos das DMs estão em `event/texts.go`.
 Erros vêm com `code`: `missing_permission`, `not_member`, `event_not_found`,
 `event_ended`, `event_in_past`, `invalid_title`, `invalid_description`,
 `invalid_recurrence`, `invalid_reminder`, `too_many_reminders`,
-`invalid_channel`, `invalid_banner`.
+`invalid_duration`, `event_running`, `invalid_banner`.
 
 ## Tempo real
 
-`event:create`, `event:update`, `event:delete` e `event:rsvp` na sala `server:<id>`.
+`event:create`, `event:update` (também quando a sala abre ou fecha), `event:delete` e `event:rsvp` na sala `server:<id>`.
 `delete` leva `{server_id, event_id}`; `rsvp` leva `{server_id, event_id,
 going_count}` (quantos vão agora na ocorrência atual, sem dizer quem).
 
 ## Fora de escopo (por enquanto)
 
-Jogo associado ao evento, objetivos e XP na call (fases 2 e 3), evento global
+Jogo associado ao evento (o bônus de XP da fase 3 só vale para quem confirmou presença), objetivos e XP na call (fases 2 e 3), evento global
 aberto a todo o Salinha (fase 4), resposta "talvez" e app mobile.

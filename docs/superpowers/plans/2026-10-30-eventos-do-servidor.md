@@ -1465,3 +1465,24 @@ git commit -m "docs(eventos): nota de changelog e spec alinhada ao plano"
 - **Placeholders:** nenhum `TBD`. As partes de UI da T12 descrevem estrutura, tokens e comportamento em vez de JSX completo porque o JSX depende dos componentes `shared/ui` (que o implementador lê no repo); cada comportamento tem teste.
 - **Consistência de tipos:** `Input`/`Event`/`ReminderRow`/`DueReminder`, `NewService(store, perms, members, pub)`, `Routes(api, h, b, authMiddleware)` e os nomes das rotas batem entre T3–T9 e o cliente da T10.
 - **Ordem:** a T1 (permissão) e a T2 (puras) não dependem do resto; a T3 antes do repositório; a T9 só depois das T4–T8; o app (T10–T13) depende só dos contratos da T6/T7 e pode ser feito em paralelo ao backend depois da T3.
+
+---
+
+## Mudança de rumo (2026-10-30, durante a execução)
+
+O usuário pediu que **o evento crie a própria sala de voz e de texto, apagada no fim**, no lugar de
+apontar para um canal de voz existente (e que só quem participa entre). Decidido no mesmo PR, com
+campo de duração e sala criada na hora do início. Isto **substitui** a escolha do canal (Tasks 3, 5,
+8, 9, 12) e acrescentou, depois das Tasks 1 a 14:
+
+- **Task 15, `call.CloseChannelCall`** (`call/channel_close.go`): derruba a chamada do canal antes de apagá-lo.
+- **Task 16, modelo e esquema**: migration 000177 editada (sem `channel_id`; com `duration_minutes`,
+  `voice_channel_id`, `text_channel_id`); validação de duração (30/60/120/180/240, padrão 120).
+- **Task 17, salas** (`event/rooms.go`): `Open` cria voz e texto privados (@everyone sem ver; confirmados e
+  organizador com acesso), `Close` derruba a chamada e apaga os canais, `Allow` libera ou tira o acesso de
+  quem confirma ou desiste. Testado com canal e permissão reais contra o Postgres (`rooms_db_test.go`).
+- **Task 18, agendador**: a rodada passa a fechar salas, abrir salas, avisar e avançar, nessa ordem; evento
+  em andamento não se edita; cancelar fecha a sala; `event:update` avisa o app.
+- **Task 19, app**: sai o seletor de canal; entram o campo "Duração" e o texto da sala no detalhe.
+
+Os textos da DM mudaram (antes da hora a sala não existe) e **aguardam aprovação**.
