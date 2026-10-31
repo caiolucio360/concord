@@ -30,6 +30,7 @@ export interface ToastOptions {
   title: string
   body: string
   icon: string
+  silent: boolean
 }
 
 /** O pedaço da Notification do Electron que o aviso usa. */
@@ -54,8 +55,12 @@ export interface NotifyDeps<W extends NotifyWindow> {
 /** Notificações vivas: sem referência o GC do Windows as coleta e o clique some. */
 const activeToasts = new Set<NativeToast>()
 
+/**
+ * Sempre sem o som do sistema: o renderer toca o som que a pessoa escolheu
+ * (Configurações → Notificações), então tocar o do Windows seria som dobrado.
+ */
 export function toastOptions(payload: NotifyPayload, icon: string): ToastOptions {
-  return { title: payload.title, body: payload.body, icon }
+  return { title: payload.title, body: payload.body, icon, silent: true }
 }
 
 function showToast<W extends NotifyWindow>(win: W, payload: NotifyPayload, deps: NotifyDeps<W>): void {

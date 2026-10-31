@@ -37,6 +37,11 @@ describe('toastOptions', () => {
   it('leva título, texto e ícone', () => {
     expect(toastOptions(payload, 'i.png')).toMatchObject({ title: 'Ana', body: 'oi', icon: 'i.png' })
   })
+
+  it('sai sem o som do sistema: quem toca o som escolhido é o app', () => {
+    expect(toastOptions(payload, 'i.png').silent).toBe(true)
+    expect(toastOptions({ ...payload, urgent: true }, 'i.png').silent).toBe(true)
+  })
 })
 
 describe('handleNotify', () => {

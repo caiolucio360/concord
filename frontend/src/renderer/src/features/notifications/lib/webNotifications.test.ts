@@ -121,4 +121,10 @@ describe('browserNotificationOptions', () => {
     })
     expect(browserNotificationOptions(desktopPayload(message, prefs), 'i.png').requireInteraction).toBe(false)
   })
+
+  it('sai sem o som do sistema: quem toca o som escolhido é o app', () => {
+    const prefs = DEFAULT_NOTIFICATION_PREFS
+    expect(browserNotificationOptions(desktopPayload(message, prefs), 'i.png').silent).toBe(true)
+    expect(browserNotificationOptions(desktopPayload(call, prefs), 'i.png').silent).toBe(true)
+  })
 })
