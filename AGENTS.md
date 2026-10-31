@@ -121,7 +121,8 @@ só faz deploy a cada merge na `main`: **quem garante os testes é você, localm
   `hotfix:` para a `main`, commit estrutural separado, confirmação antes de push, PR,
   merge e deploy): [.claude/rules/git-flow.md](.claude/rules/git-flow.md). Leia antes de
   commitar, dar push ou abrir PR.
-- Texto que o usuário final lê (UI, bot, e-mail) precisa de aprovação humana.
+- Texto que o usuário final lê (UI, bot, e-mail) precisa de aprovação humana. A nota de
+  changelog (`changelog/pending/`) é exceção: escreva e siga, sem pedir aprovação.
 - Peça confirmação antes de qualquer coisa difícil de desfazer.
 
 ## Pegadinhas do ambiente (Windows)
