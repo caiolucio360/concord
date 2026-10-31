@@ -85,7 +85,7 @@ func errCode(t *testing.T, w *httptest.ResponseRecorder) string {
 	return body["code"]
 }
 
-const eventBody = `{"channel_id":"voz","title":"Noite","starts_at":"2026-12-01T20:00:00Z","recurrence":"weekly","reminder_offsets":[10,5]}`
+const eventBody = `{"title":"Noite","starts_at":"2026-12-01T20:00:00Z","duration_minutes":120,"recurrence":"weekly","reminder_offsets":[10,5]}`
 
 func TestCreateReturns201WithTheEvent(t *testing.T) {
 	svc := &fakeService{}
@@ -131,7 +131,8 @@ func TestDomainErrorsBecomeStatusAndCode(t *testing.T) {
 		{ErrInvalidRecurrence, http.StatusBadRequest, "invalid_recurrence"},
 		{ErrInvalidReminder, http.StatusBadRequest, "invalid_reminder"},
 		{ErrTooManyReminders, http.StatusBadRequest, "too_many_reminders"},
-		{ErrInvalidChannel, http.StatusBadRequest, "invalid_channel"},
+		{ErrInvalidDuration, http.StatusBadRequest, "invalid_duration"},
+		{ErrEventRunning, http.StatusConflict, "event_running"},
 		{ErrInvalidBanner, http.StatusBadRequest, "invalid_banner"},
 	}
 	for _, c := range cases {

@@ -3,6 +3,7 @@ package event
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"gin-quickstart/backend/internal/permission"
@@ -17,7 +18,6 @@ type store interface {
 	Cancel(ctx context.Context, serverID, eventID string) error
 	Find(ctx context.Context, serverID, eventID string) (*Event, error)
 	ListUpcoming(ctx context.Context, serverID, userID string) ([]Event, error)
-	IsVoiceChannel(ctx context.Context, serverID, channelID string) (bool, error)
 	SetRSVP(ctx context.Context, eventID, userID string, occurrence time.Time, going bool) error
 	ClearRSVP(ctx context.Context, eventID, userID string, occurrence time.Time) error
 	ListGoing(ctx context.Context, eventID string, occurrence time.Time) ([]Going, error)
@@ -35,16 +35,30 @@ type publisher interface {
 	BroadcastToRoom(room string, event []byte)
 }
 
+// roomControl é o que o service pede às salas dos eventos (rooms.go).
+type roomControl interface {
+	Close(ctx context.Context, ref RoomRef) error
+	Allow(ctx context.Context, e *Event, userID string, allowed bool)
+}
+
 type Service struct {
 	store   store
 	perms   permChecker
 	members memberChecker
 	pub     publisher
 	now     func() time.Time
+	rooms   roomControl
 }
 
 func NewService(s store, p permChecker, m memberChecker, pub publisher) *Service {
 	return &Service{store: s, perms: p, members: m, pub: pub, now: time.Now}
+}
+
+// WithRooms liga as salas próprias dos eventos (sem elas, cancelar e responder
+// presença só mexem no evento).
+func (s *Service) WithRooms(r roomControl) *Service {
+	s.rooms = r
+	return s
 }
 
 // requireManage: quem pode criar, editar e cancelar (o Administrador e o dono
@@ -60,17 +74,6 @@ func (s *Service) requireManage(ctx context.Context, serverID, userID string) er
 	return nil
 }
 
-func (s *Service) checkChannel(ctx context.Context, serverID, channelID string) error {
-	ok, err := s.store.IsVoiceChannel(ctx, serverID, channelID)
-	if err != nil {
-		return fmt.Errorf("conferir canal: %w", err)
-	}
-	if !ok {
-		return ErrInvalidChannel
-	}
-	return nil
-}
-
 // Create cria o evento (e os avisos da primeira ocorrência) de quem tem
 // Gerenciar eventos.
 func (s *Service) Create(ctx context.Context, serverID, actorID string, in Input) (*Event, error) {
@@ -79,9 +82,6 @@ func (s *Service) Create(ctx context.Context, serverID, actorID string, in Input
 	}
 	in, err := in.normalize(s.now())
 	if err != nil {
-		return nil, err
-	}
-	if err := s.checkChannel(ctx, serverID, in.ChannelID); err != nil {
 		return nil, err
 	}
 	e := newEvent(serverID, actorID, in)
@@ -100,8 +100,9 @@ func newEvent(serverID, actorID string, in Input) *Event {
 
 // apply passa o pedido já limpo para o evento e volta à primeira ocorrência.
 func (e *Event) apply(in Input) {
-	e.ChannelID, e.Title, e.Description, e.BannerID = in.ChannelID, in.Title, in.Description, in.BannerID
+	e.Title, e.Description, e.BannerID = in.Title, in.Description, in.BannerID
 	e.StartsAt, e.NextStartAt, e.OccurrencesDone = in.StartsAt, in.StartsAt, 0
+	e.DurationMinutes = in.DurationMinutes
 	e.Recurrence, e.RecurrenceUntil, e.RecurrenceCount = in.Recurrence, in.RecurrenceUntil, in.RecurrenceCount
 	e.ReminderOffsets = in.ReminderOffsets
 }
@@ -116,11 +117,11 @@ func (s *Service) Update(ctx context.Context, serverID, eventID, actorID string,
 	if err != nil {
 		return nil, err
 	}
+	if !s.now().Before(e.NextStartAt) {
+		return nil, ErrEventRunning
+	}
 	in, err = in.normalize(s.now())
 	if err != nil {
-		return nil, err
-	}
-	if err := s.checkChannel(ctx, serverID, in.ChannelID); err != nil {
 		return nil, err
 	}
 	e.apply(in)
@@ -148,12 +149,14 @@ func (s *Service) Cancel(ctx context.Context, serverID, eventID, actorID string)
 	if err := s.requireManage(ctx, serverID, actorID); err != nil {
 		return err
 	}
-	if _, err := s.editable(ctx, serverID, eventID); err != nil {
+	e, err := s.editable(ctx, serverID, eventID)
+	if err != nil {
 		return err
 	}
 	if err := s.store.Cancel(ctx, serverID, eventID); err != nil {
 		return fmt.Errorf("cancelar evento: %w", err)
 	}
+	s.closeRoom(ctx, e)
 	s.broadcast(serverID, "event:delete", map[string]string{"server_id": serverID, "event_id": eventID})
 	return nil
 }
@@ -180,5 +183,17 @@ func (s *Service) requireMember(ctx context.Context, serverID, userID string) er
 func (s *Service) broadcast(serverID, typ string, payload any) {
 	if s.pub != nil {
 		s.pub.BroadcastToRoom("server:"+serverID, marshalEvent(typ, payload))
+	}
+}
+
+// closeRoom fecha a sala do evento cancelado. Se falhar, o agendador tenta de
+// novo (RoomsToClose também traz os eventos cancelados com sala aberta).
+func (s *Service) closeRoom(ctx context.Context, e *Event) {
+	if s.rooms == nil || (e.VoiceChannelID == nil && e.TextChannelID == nil) {
+		return
+	}
+	ref := RoomRef{EventID: e.ID, ServerID: e.ServerID, VoiceID: e.VoiceChannelID, TextID: e.TextChannelID}
+	if err := s.rooms.Close(ctx, ref); err != nil {
+		log.Printf("[eventos] fechar a sala do evento %s: %v", e.ID, err)
 	}
 }

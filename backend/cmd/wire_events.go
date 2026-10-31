@@ -15,12 +15,15 @@ var _ event.Notifier = salinhaBotNotifier{}
 // Bot (docs/EVENTOS.md). O ticker para junto com o contexto do app.
 func (a *app) wireEvents() {
 	repo := event.NewRepository(a.db)
-	service := event.NewService(repo, a.permissionService, a.permissionService, a.hub)
+	// Cada evento abre a própria sala (voz e texto, só para quem confirmou) na hora
+	// de começar e a apaga no fim.
+	rooms := event.NewRooms(a.channelService, a.permissionService, a.callService, repo)
+	service := event.NewService(repo, a.permissionService, a.permissionService, a.hub).WithRooms(rooms)
 	banners := mustStore(filepath.Join(a.uploadsDir, event.BannerDir), "event banners dir")
 	bannerHandler := event.NewBannerHandler(banners, a.uploadSpace, a.permissionService, a.permissionService, a.authService, repo)
 
 	notifier := salinhaBotNotifier{conversations: a.conversationService, messages: a.messageService}
-	go event.NewScheduler(repo, notifier).Run(a.ctx)
+	go event.NewScheduler(repo, notifier, rooms, a.hub).Run(a.ctx)
 
 	a.route(func(_ *gin.Engine, api *gin.RouterGroup) {
 		event.Routes(api, event.NewHandler(service), bannerHandler, a.authMiddleware)

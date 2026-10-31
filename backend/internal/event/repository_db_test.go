@@ -74,9 +74,9 @@ func TestReminderRows(t *testing.T) {
 	}
 }
 
-func newTestEvent(serverID, channelID, owner string, start time.Time) *Event {
+func newTestEvent(serverID, owner string, start time.Time) *Event {
 	return &Event{
-		ID: uuid.NewString(), ServerID: serverID, ChannelID: channelID, Scope: "server",
+		ID: uuid.NewString(), ServerID: serverID, Scope: "server", DurationMinutes: 120,
 		Title: "Noite", StartsAt: start, NextStartAt: start, Recurrence: RecWeekly,
 		ReminderOffsets: []int{10, 5}, CreatedBy: &owner,
 	}
@@ -86,22 +86,11 @@ func TestRepositoryEventsAndRSVP(t *testing.T) {
 	db, ctx := eventDB(t)
 	repo := NewRepository(db)
 	owner, server := seedUserAndServer(t, db, "Servidor de eventos")
-	channel := seedChannel(t, db, server, owner, "voice")
-	text := seedChannel(t, db, server, owner, "text")
 	start := time.Now().Add(2 * time.Hour).Truncate(time.Second)
 
-	e := newTestEvent(server, channel, owner, start)
+	e := newTestEvent(server, owner, start)
 	if err := repo.Create(ctx, e, reminderRows(start, e.ReminderOffsets, time.Now())); err != nil {
 		t.Fatal(err)
-	}
-	if ok, _ := repo.IsVoiceChannel(ctx, server, channel); !ok {
-		t.Error("o canal criado é de voz")
-	}
-	if ok, _ := repo.IsVoiceChannel(ctx, server, text); ok {
-		t.Error("canal de texto não serve para evento")
-	}
-	if ok, _ := repo.IsVoiceChannel(ctx, server, "nao-e-uuid"); ok {
-		t.Error("id inválido não é canal de voz")
 	}
 	if err := repo.SetRSVP(ctx, e.ID, owner, start, true); err != nil {
 		t.Fatal(err)
@@ -140,9 +129,8 @@ func TestRepositoryFindIsScopedToServer(t *testing.T) {
 	repo := NewRepository(db)
 	owner, server := seedUserAndServer(t, db, "A")
 	_, other := seedUserAndServer(t, db, "B")
-	channel := seedChannel(t, db, server, owner, "voice")
 	start := time.Now().Add(time.Hour).Truncate(time.Second)
-	e := newTestEvent(server, channel, owner, start)
+	e := newTestEvent(server, owner, start)
 	if err := repo.Create(ctx, e, nil); err != nil {
 		t.Fatal(err)
 	}
@@ -161,9 +149,8 @@ func TestRepositoryUpdateReplacesPendingReminders(t *testing.T) {
 	db, ctx := eventDB(t)
 	repo := NewRepository(db)
 	owner, server := seedUserAndServer(t, db, "Servidor")
-	channel := seedChannel(t, db, server, owner, "voice")
 	start := time.Now().Add(3 * time.Hour).Truncate(time.Second)
-	e := newTestEvent(server, channel, owner, start)
+	e := newTestEvent(server, owner, start)
 	if err := repo.Create(ctx, e, reminderRows(start, e.ReminderOffsets, time.Now())); err != nil {
 		t.Fatal(err)
 	}

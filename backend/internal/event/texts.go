@@ -12,12 +12,16 @@ const (
 	maxStartLate = time.Hour
 )
 
-// reminderText é a DM do Salinha Bot (textos aprovados em 2026-10-30).
+// reminderText é a DM do Salinha Bot. Antes de começar a sala ainda não existe;
+// na hora, o aviso diz onde entrar (textos aguardando aprovação).
 func reminderText(d DueReminder) string {
-	if d.OffsetMinutes == 0 {
-		return fmt.Sprintf(`📅 O evento "%s" está começando agora em #%s, no servidor %s.`, d.Title, d.ChannelName, d.ServerName)
+	if d.OffsetMinutes > 0 {
+		return fmt.Sprintf(`🔔 O evento "%s" começa em %s, no servidor %s. A sala abre na hora de começar.`, d.Title, spanText(d.OffsetMinutes), d.ServerName)
 	}
-	return fmt.Sprintf(`🔔 O evento "%s" começa em %s em #%s, no servidor %s.`, d.Title, spanText(d.OffsetMinutes), d.ChannelName, d.ServerName)
+	if d.ChannelName == "" {
+		return fmt.Sprintf(`📅 O evento "%s" está começando agora, no servidor %s.`, d.Title, d.ServerName)
+	}
+	return fmt.Sprintf(`📅 O evento "%s" está começando agora. Entre na sala #%s, no servidor %s.`, d.Title, d.ChannelName, d.ServerName)
 }
 
 // spanText: "10 minutos", "1 hora", "1 dia".

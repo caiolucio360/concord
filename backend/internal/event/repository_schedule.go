@@ -14,14 +14,15 @@ import (
 func (r *Repository) ClaimDue(ctx context.Context, now time.Time, limit int) ([]DueReminder, error) {
 	rows, err := r.db.Query(ctx, `
 		UPDATE event_reminders r SET sent_at = $1
-		FROM server_events e, servers s, channels c
+		FROM server_events e
+		JOIN servers s ON s.id = e.server_id
+		LEFT JOIN channels c ON c.id = e.voice_channel_id
 		WHERE r.id IN (
 		        SELECT id FROM event_reminders
 		        WHERE sent_at IS NULL AND due_at <= $1
 		        ORDER BY due_at LIMIT $2 FOR UPDATE SKIP LOCKED)
 		  AND e.id = r.event_id AND e.canceled_at IS NULL
-		  AND s.id = e.server_id AND c.id = e.channel_id
-		RETURNING r.id, e.id, s.id, s.name, c.name, e.title, r.occurrence_start, r.due_at, r.offset_minutes`,
+		RETURNING r.id, e.id, s.id, s.name, COALESCE(c.name, ''), e.title, r.occurrence_start, r.due_at, r.offset_minutes`,
 		now, limit)
 	if err != nil {
 		return nil, err
@@ -71,13 +72,13 @@ type dueEvent struct {
 	offsets []int
 }
 
-// AdvanceDue avança os eventos cuja ocorrência atual acabou (começou há mais
-// de `grace`): vai para a próxima ocorrência, com os avisos dela, ou encerra
-// o evento se a recorrência acabou. Devolve quantos avançou.
-func (r *Repository) AdvanceDue(ctx context.Context, now time.Time, grace time.Duration, loc *time.Location, limit int) (int, error) {
+// AdvanceDue avança os eventos cuja ocorrência atual acabou (início + duração) e
+// que já fecharam a sala: vai para a próxima ocorrência, com os avisos dela, ou
+// encerra o evento se a recorrência acabou. Devolve quantos avançou.
+func (r *Repository) AdvanceDue(ctx context.Context, now time.Time, loc *time.Location, limit int) (int, error) {
 	advanced := 0
 	err := pgx.BeginFunc(ctx, r.db, func(tx pgx.Tx) error {
-		events, err := lockEnded(ctx, tx, now.Add(-grace), limit)
+		events, err := lockEnded(ctx, tx, now, limit)
 		if err != nil {
 			return err
 		}
@@ -92,14 +93,16 @@ func (r *Repository) AdvanceDue(ctx context.Context, now time.Time, grace time.D
 	return advanced, err
 }
 
-// lockEnded trava os eventos vivos cuja ocorrência começou antes de `cutoff`.
-func lockEnded(ctx context.Context, tx pgx.Tx, cutoff time.Time, limit int) ([]dueEvent, error) {
+// lockEnded trava os eventos vivos, sem sala aberta, cuja ocorrência já acabou.
+func lockEnded(ctx context.Context, tx pgx.Tx, now time.Time, limit int) ([]dueEvent, error) {
 	rows, err := tx.Query(ctx, `
 		SELECT id, starts_at, recurrence, recurrence_until, recurrence_count, occurrences_done, reminder_offsets
 		FROM server_events
-		WHERE canceled_at IS NULL AND finished_at IS NULL AND next_start_at <= $1
+		WHERE canceled_at IS NULL AND finished_at IS NULL
+		  AND voice_channel_id IS NULL AND text_channel_id IS NULL
+		  AND next_start_at + duration_minutes * INTERVAL '1 minute' <= $1
 		ORDER BY next_start_at LIMIT $2
-		FOR UPDATE SKIP LOCKED`, cutoff, limit)
+		FOR UPDATE SKIP LOCKED`, now, limit)
 	if err != nil {
 		return nil, err
 	}

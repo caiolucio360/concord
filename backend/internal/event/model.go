@@ -16,6 +16,12 @@ var DefaultOffsets = []int{10, 5}
 // MaxOffsets: no máximo 2 antecedências por evento.
 const MaxOffsets = 2
 
+// Durações que o moderador pode escolher (minutos): a sala do evento fecha
+// quando a duração acaba. Sem escolha, vale DefaultDuration.
+var AllowedDurations = []int{30, 60, 120, 180, 240}
+
+const DefaultDuration = 120
+
 const (
 	MaxTitleRunes       = 100
 	MaxDescriptionRunes = 1000
@@ -31,22 +37,26 @@ var (
 	ErrInvalidRecurrence  = errors.New("repetição inválida")
 	ErrInvalidReminder    = errors.New("antecedência de aviso inválida")
 	ErrTooManyReminders   = errors.New("escolha no máximo 2 antecedências de aviso")
-	ErrInvalidChannel     = errors.New("escolha um canal de voz deste servidor")
+	ErrInvalidDuration    = errors.New("duração do evento inválida")
+	ErrEventRunning       = errors.New("este evento está em andamento: espere ele acabar para editar (ou cancele)")
 	ErrInvalidBanner      = errors.New("banner inválido")
 	ErrEventEnded         = errors.New("este evento já terminou")
 )
 
 // Event é o evento como o app o recebe.
 type Event struct {
-	ID              string     `json:"id"`
-	ServerID        string     `json:"server_id"`
-	ChannelID       string     `json:"channel_id"`
-	Scope           string     `json:"scope"`
-	Title           string     `json:"title"`
-	Description     string     `json:"description"`
-	BannerID        *string    `json:"banner_id"`
-	StartsAt        time.Time  `json:"starts_at"`
-	NextStartAt     time.Time  `json:"next_start_at"`
+	ID              string    `json:"id"`
+	ServerID        string    `json:"server_id"`
+	Scope           string    `json:"scope"`
+	Title           string    `json:"title"`
+	Description     string    `json:"description"`
+	BannerID        *string   `json:"banner_id"`
+	StartsAt        time.Time `json:"starts_at"`
+	NextStartAt     time.Time `json:"next_start_at"`
+	DurationMinutes int       `json:"duration_minutes"`
+	// A sala da ocorrência em andamento (voz e texto); nil fora do horário do evento.
+	VoiceChannelID  *string    `json:"voice_channel_id"`
+	TextChannelID   *string    `json:"text_channel_id"`
 	Recurrence      Recurrence `json:"recurrence"`
 	RecurrenceUntil *time.Time `json:"recurrence_until"`
 	RecurrenceCount *int       `json:"recurrence_count"`
@@ -69,11 +79,12 @@ type Going struct {
 
 // Input é o que o moderador manda para criar ou editar.
 type Input struct {
-	ChannelID       string     `json:"channel_id"`
-	Title           string     `json:"title"`
-	Description     string     `json:"description"`
-	BannerID        *string    `json:"banner_id"`
-	StartsAt        time.Time  `json:"starts_at"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	BannerID    *string   `json:"banner_id"`
+	StartsAt    time.Time `json:"starts_at"`
+	// 0 = DefaultDuration; senão, uma das AllowedDurations.
+	DurationMinutes int        `json:"duration_minutes"`
 	Recurrence      Recurrence `json:"recurrence"`
 	RecurrenceUntil *time.Time `json:"recurrence_until"`
 	RecurrenceCount *int       `json:"recurrence_count"`

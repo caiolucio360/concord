@@ -17,13 +17,12 @@ type fakeStore struct {
 	events    map[string]*Event
 	reminders map[string][]ReminderRow
 	rsvps     map[string]bool
-	voice     map[string]bool
 }
 
 func newFakeStore() *fakeStore {
 	return &fakeStore{
 		events: map[string]*Event{}, reminders: map[string][]ReminderRow{},
-		rsvps: map[string]bool{}, voice: map[string]bool{"voz": true},
+		rsvps: map[string]bool{},
 	}
 }
 
@@ -73,10 +72,6 @@ func (f *fakeStore) ListUpcoming(_ context.Context, serverID, _ string) ([]Event
 		}
 	}
 	return out, nil
-}
-
-func (f *fakeStore) IsVoiceChannel(_ context.Context, _, channelID string) (bool, error) {
-	return f.voice[channelID], nil
 }
 
 func (f *fakeStore) SetRSVP(_ context.Context, eventID, userID string, occ time.Time, going bool) error {
@@ -143,7 +138,7 @@ func newEnv() env {
 
 func goodInput() Input {
 	return Input{
-		ChannelID: "voz", Title: "Noite", StartsAt: testNow.Add(time.Hour),
+		Title: "Noite", StartsAt: testNow.Add(time.Hour),
 		Recurrence: RecWeekly, ReminderOffsets: []int{10, 5},
 	}
 }
@@ -173,15 +168,6 @@ func TestCreateStoresEventRemindersAndPublishes(t *testing.T) {
 	}
 	if len(e.pub.sent) != 1 || e.pub.sent[0].room != "server:s1" || e.pub.sent[0].event["type"] != "event:create" {
 		t.Errorf("publicado = %+v", e.pub.sent)
-	}
-}
-
-func TestCreateRejectsChannelThatIsNotVoice(t *testing.T) {
-	e := newEnv()
-	in := goodInput()
-	in.ChannelID = "texto"
-	if _, err := e.svc.Create(context.Background(), "s1", "mod", in); !errors.Is(err, ErrInvalidChannel) {
-		t.Fatalf("erro = %v, esperava ErrInvalidChannel", err)
 	}
 }
 
@@ -307,5 +293,97 @@ func TestListNeedsMembership(t *testing.T) {
 	list, err := e.svc.List(context.Background(), "s1", "membro")
 	if err != nil || len(list) != 1 {
 		t.Fatalf("lista = %+v err=%v", list, err)
+	}
+}
+
+// fakeRooms registra o que o service pede às salas.
+type fakeRooms struct {
+	closed  []RoomRef
+	allowed []string // "evento|pessoa|true/false"
+}
+
+func (f *fakeRooms) Close(_ context.Context, ref RoomRef) error {
+	f.closed = append(f.closed, ref)
+	return nil
+}
+
+func (f *fakeRooms) Allow(_ context.Context, e *Event, userID string, allowed bool) {
+	f.allowed = append(f.allowed, e.ID+"|"+userID+"|"+map[bool]string{true: "true", false: "false"}[allowed])
+}
+
+func envWithRooms() (env, *fakeRooms) {
+	e := newEnv()
+	rooms := &fakeRooms{}
+	e.svc.WithRooms(rooms)
+	return e, rooms
+}
+
+func TestCreateStoresTheDuration(t *testing.T) {
+	e := newEnv()
+	in := goodInput()
+	got, err := e.svc.Create(context.Background(), "s1", "mod", in)
+	if err != nil || got.DurationMinutes != DefaultDuration {
+		t.Fatalf("sem duração: %+v err=%v", got, err)
+	}
+	in.DurationMinutes = 60
+	got, err = e.svc.Create(context.Background(), "s1", "mod", in)
+	if err != nil || got.DurationMinutes != 60 {
+		t.Fatalf("1 h: %+v err=%v", got, err)
+	}
+}
+
+func TestUpdateWhileTheEventIsRunningIsRejected(t *testing.T) {
+	e := newEnv()
+	created, _ := e.svc.Create(context.Background(), "s1", "mod", goodInput())
+	e.store.events[created.ID].NextStartAt = testNow.Add(-10 * time.Minute) // já começou
+	if _, err := e.svc.Update(context.Background(), "s1", created.ID, "mod", goodInput()); !errors.Is(err, ErrEventRunning) {
+		t.Fatalf("erro = %v, esperava ErrEventRunning", err)
+	}
+}
+
+func TestCancelClosesTheOpenRoom(t *testing.T) {
+	e, rooms := envWithRooms()
+	created, _ := e.svc.Create(context.Background(), "s1", "mod", goodInput())
+	voice, text := "voz-1", "txt-1"
+	e.store.events[created.ID].VoiceChannelID = &voice
+	e.store.events[created.ID].TextChannelID = &text
+
+	if err := e.svc.Cancel(context.Background(), "s1", created.ID, "mod"); err != nil {
+		t.Fatal(err)
+	}
+	if len(rooms.closed) != 1 || rooms.closed[0].EventID != created.ID || *rooms.closed[0].VoiceID != "voz-1" || *rooms.closed[0].TextID != "txt-1" {
+		t.Fatalf("salas fechadas = %+v", rooms.closed)
+	}
+}
+
+func TestCancelWithoutARoomDoesNotCloseAnything(t *testing.T) {
+	e, rooms := envWithRooms()
+	created, _ := e.svc.Create(context.Background(), "s1", "mod", goodInput())
+	if err := e.svc.Cancel(context.Background(), "s1", created.ID, "mod"); err != nil {
+		t.Fatal(err)
+	}
+	if len(rooms.closed) != 0 {
+		t.Fatalf("não havia sala: %+v", rooms.closed)
+	}
+}
+
+func TestRSVPGivesAndTakesAccessToTheRoom(t *testing.T) {
+	e, rooms := envWithRooms()
+	created, _ := e.svc.Create(context.Background(), "s1", "mod", goodInput())
+	steps := []struct {
+		do   func() error
+		want string
+	}{
+		{func() error { return e.svc.SetRSVP(context.Background(), "s1", created.ID, "membro", true) }, created.ID + "|membro|true"},
+		{func() error { return e.svc.SetRSVP(context.Background(), "s1", created.ID, "membro", false) }, created.ID + "|membro|false"},
+		{func() error { return e.svc.ClearRSVP(context.Background(), "s1", created.ID, "membro") }, created.ID + "|membro|false"},
+	}
+	for i, step := range steps {
+		if err := step.do(); err != nil {
+			t.Fatal(err)
+		}
+		if got := rooms.allowed[len(rooms.allowed)-1]; got != step.want || len(rooms.allowed) != i+1 {
+			t.Fatalf("passo %d: %v, esperava terminar em %q", i, rooms.allowed, step.want)
+		}
 	}
 }

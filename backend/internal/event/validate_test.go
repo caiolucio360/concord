@@ -9,7 +9,7 @@ import (
 
 func validInput(now time.Time) Input {
 	return Input{
-		ChannelID: "canal", Title: "Noite de jogos", StartsAt: now.Add(time.Hour),
+		Title: "Noite de jogos", StartsAt: now.Add(time.Hour),
 		Recurrence: RecNone, ReminderOffsets: []int{10, 5},
 	}
 }
@@ -34,6 +34,8 @@ func TestNormalizeRejects(t *testing.T) {
 			i.Recurrence = RecWeekly
 		}, ErrInvalidRecurrence},
 		{"banner que não é um id de arquivo", func(i *Input) { b := "../../etc/passwd"; i.BannerID = &b }, ErrInvalidBanner},
+		{"duração fora da lista", func(i *Input) { i.DurationMinutes = 45 }, ErrInvalidDuration},
+		{"duração negativa", func(i *Input) { i.DurationMinutes = -30 }, ErrInvalidDuration},
 		{"antecedência fora da lista", func(i *Input) { i.ReminderOffsets = []int{7} }, ErrInvalidReminder},
 		{"mais de 2 antecedências", func(i *Input) { i.ReminderOffsets = []int{30, 10, 5} }, ErrTooManyReminders},
 	}
@@ -75,5 +77,21 @@ func TestNormalizeDefaultsOffsets(t *testing.T) {
 	got, _ = in.normalize(now)
 	if len(got.ReminderOffsets) != 0 {
 		t.Errorf("lista vazia explícita = só o aviso na hora, veio %v", got.ReminderOffsets)
+	}
+}
+
+func TestNormalizeDuration(t *testing.T) {
+	now := time.Date(2026, 11, 1, 12, 0, 0, 0, time.UTC)
+	in := validInput(now)
+	got, err := in.normalize(now)
+	if err != nil || got.DurationMinutes != DefaultDuration {
+		t.Fatalf("sem duração deve valer %d, veio %d (%v)", DefaultDuration, got.DurationMinutes, err)
+	}
+	for _, minutes := range AllowedDurations {
+		in.DurationMinutes = minutes
+		got, err := in.normalize(now)
+		if err != nil || got.DurationMinutes != minutes {
+			t.Errorf("%d min: veio %d (%v)", minutes, got.DurationMinutes, err)
+		}
 	}
 }

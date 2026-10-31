@@ -44,7 +44,8 @@ var errorTable = []struct {
 	{ErrInvalidRecurrence, http.StatusBadRequest, "invalid_recurrence"},
 	{ErrInvalidReminder, http.StatusBadRequest, "invalid_reminder"},
 	{ErrTooManyReminders, http.StatusBadRequest, "too_many_reminders"},
-	{ErrInvalidChannel, http.StatusBadRequest, "invalid_channel"},
+	{ErrInvalidDuration, http.StatusBadRequest, "invalid_duration"},
+	{ErrEventRunning, http.StatusConflict, "event_running"},
 	{ErrInvalidBanner, http.StatusBadRequest, "invalid_banner"},
 }
 

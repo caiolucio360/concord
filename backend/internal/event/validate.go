@@ -26,6 +26,11 @@ func (in Input) normalize(now time.Time) (Input, error) {
 	if !in.StartsAt.After(now) {
 		return in, ErrInPast
 	}
+	duration, err := cleanDuration(in.DurationMinutes)
+	if err != nil {
+		return in, err
+	}
+	in.DurationMinutes = duration
 	if err := in.checkRecurrence(); err != nil {
 		return in, err
 	}
@@ -48,6 +53,17 @@ func (in Input) checkRecurrence() error {
 		return ErrInvalidRecurrence
 	}
 	return nil
+}
+
+// cleanDuration: sem escolha vale o padrão; senão, uma das durações da lista.
+func cleanDuration(minutes int) (int, error) {
+	if minutes == 0 {
+		return DefaultDuration, nil
+	}
+	if !slices.Contains(AllowedDurations, minutes) {
+		return 0, ErrInvalidDuration
+	}
+	return minutes, nil
 }
 
 func cleanOffsets(raw []int) ([]int, error) {

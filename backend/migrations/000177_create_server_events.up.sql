@@ -4,13 +4,18 @@
 CREATE TABLE server_events (
     id UUID PRIMARY KEY,
     server_id UUID NOT NULL REFERENCES servers (id) ON DELETE CASCADE,
-    channel_id UUID NOT NULL REFERENCES channels (id) ON DELETE CASCADE,
     scope VARCHAR(16) NOT NULL DEFAULT 'server' CHECK (scope IN ('server')),
     title VARCHAR(100) NOT NULL,
     description TEXT NOT NULL DEFAULT '',
     banner_id UUID,
     starts_at TIMESTAMPTZ NOT NULL,
     next_start_at TIMESTAMPTZ NOT NULL,
+    -- A ocorrência dura duration_minutes a partir de next_start_at; no fim, a sala fecha.
+    duration_minutes INT NOT NULL DEFAULT 120 CHECK (duration_minutes BETWEEN 15 AND 720),
+    -- A sala da ocorrência em andamento (voz e texto, criados na hora do início e
+    -- apagados no fim). Apagar o canal à mão zera a coluna (SET NULL).
+    voice_channel_id UUID REFERENCES channels (id) ON DELETE SET NULL,
+    text_channel_id UUID REFERENCES channels (id) ON DELETE SET NULL,
     recurrence VARCHAR(8) NOT NULL DEFAULT 'none' CHECK (recurrence IN ('none', 'daily', 'weekly', 'monthly')),
     recurrence_until TIMESTAMPTZ,
     recurrence_count INT CHECK (recurrence_count IS NULL OR recurrence_count >= 1),
@@ -28,6 +33,10 @@ CREATE INDEX idx_server_events_server ON server_events (server_id, next_start_at
     WHERE canceled_at IS NULL AND finished_at IS NULL;
 CREATE INDEX idx_server_events_active ON server_events (next_start_at)
     WHERE canceled_at IS NULL AND finished_at IS NULL;
+
+-- Quem tem sala aberta (para o agendador fechar as que acabaram).
+CREATE INDEX idx_server_events_rooms ON server_events (next_start_at)
+    WHERE voice_channel_id IS NOT NULL OR text_channel_id IS NOT NULL;
 
 -- O banner é servido pelo id do arquivo; este índice acha o evento dono dele.
 CREATE INDEX idx_server_events_banner ON server_events (banner_id) WHERE banner_id IS NOT NULL;

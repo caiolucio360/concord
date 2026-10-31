@@ -44,8 +44,8 @@ func reminderRows(occurrence time.Time, offsets []int, now time.Time) []Reminder
 // eventSelect lê o evento com a contagem de "vou" e a resposta de quem pede
 // ($2) na ocorrência atual. O filtro (WHERE) vem de quem usa.
 const eventSelect = `
-	SELECT e.id, e.server_id, e.channel_id, e.scope, e.title, e.description, e.banner_id,
-	       e.starts_at, e.next_start_at, e.recurrence, e.recurrence_until, e.recurrence_count,
+	SELECT e.id, e.server_id, e.scope, e.title, e.description, e.banner_id,
+	       e.starts_at, e.next_start_at, e.duration_minutes, e.voice_channel_id, e.text_channel_id, e.recurrence, e.recurrence_until, e.recurrence_count,
 	       e.occurrences_done, e.reminder_offsets, e.created_by, e.canceled_at, e.finished_at, e.created_at,
 	       COALESCE((SELECT COUNT(*) FROM event_rsvps r
 	                 WHERE r.event_id = e.id AND r.occurrence_start = e.next_start_at AND r.going), 0),
@@ -56,8 +56,8 @@ const eventSelect = `
 func scanEvent(row pgx.Row) (Event, error) {
 	var e Event
 	var rule string
-	err := row.Scan(&e.ID, &e.ServerID, &e.ChannelID, &e.Scope, &e.Title, &e.Description, &e.BannerID,
-		&e.StartsAt, &e.NextStartAt, &rule, &e.RecurrenceUntil, &e.RecurrenceCount,
+	err := row.Scan(&e.ID, &e.ServerID, &e.Scope, &e.Title, &e.Description, &e.BannerID,
+		&e.StartsAt, &e.NextStartAt, &e.DurationMinutes, &e.VoiceChannelID, &e.TextChannelID, &rule, &e.RecurrenceUntil, &e.RecurrenceCount,
 		&e.OccurrencesDone, &e.ReminderOffsets, &e.CreatedBy, &e.CanceledAt, &e.FinishedAt, &e.CreatedAt,
 		&e.GoingCount, &e.MyRSVP)
 	e.Recurrence = Recurrence(rule)
@@ -68,13 +68,13 @@ func scanEvent(row pgx.Row) (Event, error) {
 func (r *Repository) Create(ctx context.Context, e *Event, reminders []ReminderRow) error {
 	return pgx.BeginFunc(ctx, r.db, func(tx pgx.Tx) error {
 		err := tx.QueryRow(ctx, `
-			INSERT INTO server_events (id, server_id, channel_id, scope, title, description, banner_id,
-				starts_at, next_start_at, recurrence, recurrence_until, recurrence_count,
+			INSERT INTO server_events (id, server_id, scope, title, description, banner_id,
+				starts_at, next_start_at, duration_minutes, recurrence, recurrence_until, recurrence_count,
 				occurrences_done, reminder_offsets, created_by)
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
 			RETURNING created_at`,
-			e.ID, e.ServerID, e.ChannelID, e.Scope, e.Title, e.Description, e.BannerID,
-			e.StartsAt, e.NextStartAt, string(e.Recurrence), e.RecurrenceUntil, e.RecurrenceCount,
+			e.ID, e.ServerID, e.Scope, e.Title, e.Description, e.BannerID,
+			e.StartsAt, e.NextStartAt, e.DurationMinutes, string(e.Recurrence), e.RecurrenceUntil, e.RecurrenceCount,
 			e.OccurrencesDone, e.ReminderOffsets, e.CreatedBy,
 		).Scan(&e.CreatedAt)
 		if err != nil {
@@ -89,12 +89,12 @@ func (r *Repository) Create(ctx context.Context, e *Event, reminders []ReminderR
 func (r *Repository) Update(ctx context.Context, e *Event, reminders []ReminderRow) error {
 	return pgx.BeginFunc(ctx, r.db, func(tx pgx.Tx) error {
 		tag, err := tx.Exec(ctx, `
-			UPDATE server_events SET channel_id = $3, title = $4, description = $5, banner_id = $6,
-				starts_at = $7, next_start_at = $8, recurrence = $9, recurrence_until = $10,
+			UPDATE server_events SET title = $3, description = $4, banner_id = $5,
+				starts_at = $6, next_start_at = $7, duration_minutes = $8, recurrence = $9, recurrence_until = $10,
 				recurrence_count = $11, occurrences_done = $12, reminder_offsets = $13, updated_at = NOW()
 			WHERE id = $1 AND server_id = $2 AND canceled_at IS NULL AND finished_at IS NULL`,
-			e.ID, e.ServerID, e.ChannelID, e.Title, e.Description, e.BannerID,
-			e.StartsAt, e.NextStartAt, string(e.Recurrence), e.RecurrenceUntil,
+			e.ID, e.ServerID, e.Title, e.Description, e.BannerID,
+			e.StartsAt, e.NextStartAt, e.DurationMinutes, string(e.Recurrence), e.RecurrenceUntil,
 			e.RecurrenceCount, e.OccurrencesDone, e.ReminderOffsets)
 		if err != nil {
 			return err
@@ -165,18 +165,6 @@ func (r *Repository) ListUpcoming(ctx context.Context, serverID, userID string) 
 		events = append(events, e)
 	}
 	return events, rows.Err()
-}
-
-// IsVoiceChannel diz se o canal existe, é de voz e é deste servidor.
-func (r *Repository) IsVoiceChannel(ctx context.Context, serverID, channelID string) (bool, error) {
-	if uuid.Validate(serverID) != nil || uuid.Validate(channelID) != nil {
-		return false, nil
-	}
-	var ok bool
-	err := r.db.QueryRow(ctx, `
-		SELECT EXISTS (SELECT 1 FROM channels WHERE id = $1 AND server_id = $2 AND type = 'voice')`,
-		channelID, serverID).Scan(&ok)
-	return ok, err
 }
 
 func insertReminders(ctx context.Context, tx pgx.Tx, eventID string, rows []ReminderRow) error {

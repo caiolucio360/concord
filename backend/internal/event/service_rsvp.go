@@ -32,6 +32,7 @@ func (s *Service) SetRSVP(ctx context.Context, serverID, eventID, userID string,
 	if err := s.store.SetRSVP(ctx, e.ID, userID, e.NextStartAt, going); err != nil {
 		return err
 	}
+	s.allowInRoom(ctx, e, userID, going)
 	s.publishGoingCount(ctx, e)
 	return nil
 }
@@ -45,6 +46,7 @@ func (s *Service) ClearRSVP(ctx context.Context, serverID, eventID, userID strin
 	if err := s.store.ClearRSVP(ctx, e.ID, userID, e.NextStartAt); err != nil {
 		return err
 	}
+	s.allowInRoom(ctx, e, userID, false)
 	s.publishGoingCount(ctx, e)
 	return nil
 }
@@ -71,4 +73,12 @@ func (s *Service) ListGoing(ctx context.Context, serverID, eventID, userID strin
 		return nil, err
 	}
 	return s.store.ListGoing(ctx, e.ID, e.NextStartAt)
+}
+
+// allowInRoom libera (Vou) ou tira (Não vou, sem resposta) o acesso da pessoa à
+// sala do evento, se ela já estiver aberta.
+func (s *Service) allowInRoom(ctx context.Context, e *Event, userID string, allowed bool) {
+	if s.rooms != nil {
+		s.rooms.Allow(ctx, e, userID, allowed)
+	}
 }
