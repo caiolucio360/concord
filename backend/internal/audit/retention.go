@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-// Retenção: o registro guarda 90 dias, como o do Discord. A limpeza roda no
-// boot e uma vez por dia.
+// Retenção: o registro guarda 90 dias (o Discord guarda 45; ver ADR 0036). A
+// limpeza roda no boot e uma vez por dia.
 const (
 	retentionDays     = 90
 	retentionInterval = 24 * time.Hour
