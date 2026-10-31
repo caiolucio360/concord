@@ -1,6 +1,6 @@
 # 0037. Objetivos do evento: tempo contado em memória e pagamento em transação única
 
-- Status: proposto
+- Status: aceito
 - Data: 2026-10-31
 - Complementa: [0016](0016-nivel-do-servidor.md) (mesmo molde de contar tempo e mesmo teto diário no XP do servidor)
 

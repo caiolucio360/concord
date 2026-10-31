@@ -42,6 +42,22 @@ na hora de começar. Spec:
   não muda (`event_running`, como o horário). No detalhe, quem confirmou e está jogando esse
   jogo agora ganha o selo "Jogando" (compara o nome sem acento nem maiúsculas com a atividade
   de presença; só durante a ocorrência). Código: `event/validate.go`, `frontend/.../events/lib/eventGame.ts`.
+- **Objetivos** (opcional, até 3 por evento, fase 3): quem cria ou edita o evento cadastra, no
+  formulário, cada objetivo com **tipo**, **dificuldade** e **meta** em minutos. Tipos: `time`
+  ("Ficar N min na sala do evento") e `game` ("Jogar <jogo> por N min", só com jogo no evento).
+  Metas: 15, 30, 45, 60, 90 ou 120 min, sem passar da duração. Não há texto livre: o título é
+  gerado no app. Quem cumpre, na **sala do evento**, ganha XP **pessoal** e uma parte para o
+  **servidor** (5%): Fácil 1.000 / 50, Médio 3.000 / 150, Difícil 6.000 / 300. Só pontua quem
+  tem **Vou** na ocorrência atual, é conta real (e-mail confirmado) e está num minuto elegível
+  do XP de voz (sem mute, sem surdez, mais alguém ouvindo, sem AFK); no tipo `game`, a
+  atividade detectada também tem que ser o jogo do evento (sem acento nem maiúsculas), o que
+  só existe no Electron para Windows. O tempo **acumula** (não precisa ser seguido) e cada
+  ocorrência recomeça do zero. Um objetivo paga **uma vez** por pessoa por ocorrência. Os
+  objetivos **travam com o evento em andamento** (`event_running`). Tetos: **6.000 XP pessoal
+  por pessoa por dia** (dia de Brasília, somando todos os eventos) e, no servidor, a fonte
+  `evento` com **300 por pessoa por dia**; estourou, paga o que cabe e o objetivo conta como
+  cumprido. Código: `backend/internal/eventobjective/`, ADR
+  [0037](adr/0037-objetivos-do-evento-pagos-em-transacao-unica.md).
 - **Banner**: PNG, JPEG ou WEBP de até 10 MB, em `uploads/event-media/<id>`
   (fora da limpeza dos anexos do chat). O evento guarda só o `banner_id`; o app
   monta a URL com o token de mídia (`GET /event-banners/:bannerId?token=`).
@@ -67,6 +83,25 @@ na hora de começar. Spec:
 
 Os textos das DMs estão em `event/texts.go`.
 
+## Como o XP dos objetivos é pago
+
+1. A cada 10 s o `eventobjective.Service` lê as fotos das calls sem AFK
+   (`call.AFK.CallSnapshots()`, com `ChannelID`) e acha as salas de eventos em andamento
+   (`server_events.voice_channel_id` com objetivos). Só consulta o banco se houver call de canal.
+2. Quem pontua (Vou, conta real, em `Voice`, fora de `Away`; no tipo `game`, `Hub.GameName`
+   igual ao jogo do evento) soma tempo no `tracker` em memória. Minuto inteiro vira linha em
+   `event_objective_progress` (chave: objetivo, pessoa e início da ocorrência) e a pessoa recebe
+   `event:objective` com a barra nova. Quem sai da sala perde o resto do minuto.
+3. Ao bater a meta, uma **transação única** (`Repository.Complete`) marca a conclusão (só um
+   pedido ganha: `UPDATE ... WHERE completed_at IS NULL`), aplica o teto pessoal do dia
+   (`event_xp_daily`), soma o XP pessoal (`level.AddBonusXPTx`) e o do servidor
+   (`server_level_add(..., 'evento', ...)`). Falhou em qualquer etapa, nada vale e o próximo tick
+   tenta de novo (mesmo que a pessoa já tenha saído da sala).
+4. Depois do commit, `level.Service.Announce` manda `level:update` e, se subiu de nível,
+   `level:up`; o servidor recalcula o nível dele no ciclo de sempre.
+5. Até 1 minuto de progresso se perde num reinício que não grave a tempo; o que já foi gravado e
+   pago continua.
+
 ## API
 
 | Rota | Quem |
@@ -86,10 +121,14 @@ Os textos das DMs estão em `event/texts.go`.
 Erros vêm com `code`: `missing_permission`, `not_member`, `event_not_found`,
 `event_ended`, `event_in_past`, `invalid_title`, `invalid_description`,
 `invalid_recurrence`, `invalid_reminder`, `too_many_reminders`,
-`invalid_duration`, `event_running`, `role_not_found`, `invalid_banner`, `invalid_game`.
+`invalid_duration`, `event_running`, `role_not_found`, `invalid_banner`, `invalid_game`,
+`invalid_objective`.
 
 O evento (`Event`) e o corpo de criar/editar (`Input`) levam `game_name` (texto; vazio ou
-nulo = sem jogo).
+nulo = sem jogo) e `objectives`. No corpo, cada objetivo é `{kind, difficulty, minutes}`
+(`kind`: `time` ou `game`; `difficulty`: `easy`, `medium` ou `hard`). No evento que o app
+recebe, cada um vem também com `id`, `xp` (o XP pessoal que paga) e o meu progresso na
+ocorrência atual: `my_minutes` e `my_done`. A lista nunca é nula (vazia = sem objetivos).
 
 ## Tempo real
 
@@ -97,7 +136,11 @@ nulo = sem jogo).
 `delete` leva `{server_id, event_id}`; `rsvp` leva `{server_id, event_id,
 going_count}` (quantos vão agora na ocorrência atual, sem dizer quem).
 
+`event:objective` vai **só para a própria pessoa** (`user:<id>`), a cada minuto de progresso e
+ao cumprir: `{server_id, event_id, objective_id, minutes, done, xp, capped}` (`xp` = o XP
+pessoal pago agora; `capped` = o teto diário cortou parte).
+
 ## Fora de escopo (por enquanto)
 
-Objetivos e XP na call (fase 3; o bônus só vale para quem confirmou presença), evento global
-aberto a todo o Salinha (fase 4), resposta "talvez" e app mobile.
+Evento global aberto a todo o Salinha (fase 4), marcação manual de objetivos, objetivos com
+texto livre ou que não sejam de tempo, ranking de eventos, resposta "talvez" e app mobile.

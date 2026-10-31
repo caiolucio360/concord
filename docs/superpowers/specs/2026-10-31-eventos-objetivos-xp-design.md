@@ -69,7 +69,7 @@ transação). O molde de contar tempo é o do `serverlevel/tracker.go`.
 - `server_level_cap`: `WHEN 'evento' THEN 300`.
 
 ### Frontend (`features/events/`)
-- `lib/objectives.ts`: tabela de XP e rótulos, lista de metas por duração, título gerado, porcentagem da barra (puro, com teste).
+- `lib/objectives.ts`: rótulos, lista de metas por duração, título gerado, porcentagem da barra e formatação do XP (puro, com teste); o XP de cada objetivo vem do servidor. `lib/objectiveEvents.ts` junta o aviso ao cumprir.
 - `components/ObjectivesField.tsx` (formulário, até 3 linhas) e `ObjectiveRow.tsx`.
 - `components/ObjectivesList.tsx` e `ObjectiveBar.tsx` (detalhe): título, XP, barra, "Cumprido".
 - `api/events.ts`: tipos `Objective` / `ObjectiveInput`; `lib/eventForm.ts` valida e envia a lista.
