@@ -67,3 +67,21 @@ func TestCallSnapshotsCarryTheServer(t *testing.T) {
 		t.Fatalf("snapshots = %+v, quer ServerID %q", got, serverID)
 	}
 }
+
+// Os objetivos dos eventos (internal/eventobjective) acham a sala do evento pelo
+// canal de voz da chamada; chamada de DM vem sem canal.
+func TestCallSnapshotsCarryTheChannel(t *testing.T) {
+	s := serviceWithCall("call-1", "ana", "bia")
+	channelID := "canal-1"
+	s.calls["call-1"].info.ChannelID = &channelID
+
+	got := s.CallSnapshots()
+	if len(got) != 1 || got[0].ChannelID == nil || *got[0].ChannelID != channelID {
+		t.Fatalf("snapshots = %+v, quer ChannelID %q", got, channelID)
+	}
+
+	s.calls["call-1"].info.ChannelID = nil
+	if got := s.CallSnapshots(); got[0].ChannelID != nil {
+		t.Errorf("call sem canal deveria vir com ChannelID nil: %v", *got[0].ChannelID)
+	}
+}

@@ -171,6 +171,18 @@ func steamIcon(appID int64, hash string) (int64, string) {
 	return appID, hash
 }
 
+// GameName: o jogo que a pessoa está jogando agora ("" = nenhum). Só leitura do
+// que já está em memória; quem usa decide o que vale (o servidor não confia
+// nele sozinho: ver docs/adr/0037).
+func (h *Hub) GameName(userID string) string {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	if a := h.rich.games.get(userID); a != nil {
+		return a.Name
+	}
+	return ""
+}
+
 // SetActivity guarda (ou limpa, com nil) o jogo e avisa o público. Sem
 // conexão aberta, não guarda nada.
 func (h *Hub) SetActivity(userID string, a *Activity) {

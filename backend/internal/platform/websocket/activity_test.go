@@ -78,6 +78,31 @@ func TestActivityGoesOnlyToAudienceAndSelf(t *testing.T) {
 	}
 }
 
+// GameName é a leitura que os objetivos dos eventos usam para saber o que a
+// pessoa joga agora ("" = nada).
+func TestGameNameReadsWhatThePersonIsPlaying(t *testing.T) {
+	h, a, _, _ := activityHub()
+	if got := h.GameName("a"); got != "" {
+		t.Fatalf("sem jogo deveria ser vazio, veio %q", got)
+	}
+	setGame(h, "a", "Minecraft")
+	if got := h.GameName("a"); got != "Minecraft" {
+		t.Errorf("GameName = %q", got)
+	}
+	if got := h.GameName("friend"); got != "" {
+		t.Errorf("quem não joga: %q", got)
+	}
+	h.HandleActivity("a", "activity:clear", nil)
+	if got := h.GameName("a"); got != "" {
+		t.Errorf("depois de limpar: %q", got)
+	}
+	setGame(h, "a", "Valorant")
+	h.Unregister(a)
+	if got := h.GameName("a"); got != "" {
+		t.Errorf("desconectou, o jogo some: %q", got)
+	}
+}
+
 func TestActivityClearedOnLastDisconnect(t *testing.T) {
 	h, a, friend, _ := activityHub()
 	setGame(h, "a", "VALORANT")
