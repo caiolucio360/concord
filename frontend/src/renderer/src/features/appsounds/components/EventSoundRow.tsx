@@ -37,7 +37,7 @@ function EventSoundRow(props: EventSoundRowProps): React.JSX.Element {
           onChange={(e) => props.onChoice(e.target.value)}
           aria-label={`Som: ${label}`}
           aria-describedby={error ? errorId : undefined}
-          className="glass-input !py-2 w-full min-w-0 text-ds-sm sm:w-56"
+          className="glass-input !py-2 w-full min-w-0 text-ds-sm sm:w-auto sm:min-w-40 sm:flex-1 lg:w-56 lg:flex-none"
         >
           {eventOptions(props.packId, hasCustom).map((o) => (
             <option key={o.value} value={o.value} className="bg-floating">

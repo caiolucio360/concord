@@ -18,7 +18,7 @@ function SoundPackPicker({
   return (
     <fieldset>
       <legend className="mb-2 text-ds-md font-medium text-strong">Pacote de sons</legend>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {SOUND_PACKS.map((pack) => {
           const selected = pack.id === value
           return (
