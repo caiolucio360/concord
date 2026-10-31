@@ -3,6 +3,16 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const token = vi.hoisted(() => ({ ensure: vi.fn() }))
 vi.mock('../../chat/store/mediaToken', () => ({ ensureMediaToken: token.ensure }))
 vi.mock('../../../shared/lib/config', () => ({ API_BASE_URL: 'https://api' }))
+const disk = vi.hoisted(() => ({
+  read: vi.fn(),
+  save: vi.fn(),
+  clear: vi.fn()
+}))
+vi.mock('../lib/emojiDisk', () => ({
+  readEmojiDisk: disk.read,
+  saveEmojiDisk: disk.save,
+  clearEmojiDisk: disk.clear
+}))
 
 import { cachedEmojiSrc, clearEmojiSrcs, loadEmojiSrc, retryEmojiSrc, subscribeEmojiSrc } from './emojiSrc'
 
@@ -10,6 +20,28 @@ describe('emojiSrc', () => {
   beforeEach(() => {
     clearEmojiSrcs()
     token.ensure.mockReset()
+    disk.read.mockReset().mockResolvedValue(null)
+    disk.save.mockReset().mockResolvedValue(undefined)
+    disk.clear.mockReset().mockResolvedValue(undefined)
+  })
+
+  it('emoji já baixado em outra sessão vem do disco, sem pedir token nem rede', async () => {
+    disk.read.mockResolvedValue('blob:e1')
+    expect(await loadEmojiSrc('e1')).toBe('blob:e1')
+    expect(cachedEmojiSrc('e1')).toBe('blob:e1')
+    expect(token.ensure).not.toHaveBeenCalled()
+    expect(disk.save).not.toHaveBeenCalled()
+  })
+
+  it('emoji novo usa a URL com token e é guardado no disco pelo id', async () => {
+    token.ensure.mockResolvedValue('t1')
+    const url = await loadEmojiSrc('e1')
+    expect(disk.save).toHaveBeenCalledWith('e1', url)
+  })
+
+  it('trocar de conta limpa o disco também', () => {
+    clearEmojiSrcs()
+    expect(disk.clear).toHaveBeenCalled()
   })
 
   it('monta a URL uma vez por sessão, mesmo com o token renovado depois', async () => {
