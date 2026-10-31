@@ -49,6 +49,12 @@ describe('ObjectivesList', () => {
     expect(html).toContain('width:40%')
   })
 
+  it('os números de XP e de progresso usam algarismos de largura fixa', () => {
+    const html = render()
+    expect(html).toMatch(/class="[^"]*tabular-nums[^"]*">\+1\.000 XP/)
+    expect(html).toMatch(/class="[^"]*tabular-nums[^"]*">12 de 30 min/)
+  })
+
   it('cumprido mostra "Cumprido" no lugar de "N de M min"', () => {
     const html = render({ objectives: [objective({ my_done: true, my_minutes: 30 })] })
     expect(html).toContain('Cumprido')

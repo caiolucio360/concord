@@ -26,6 +26,9 @@ export default function ObjectiveRow({
   onChange: (next: ObjectiveInput) => void
   onRemove: () => void
 }): React.JSX.Element {
+  // As dicas explicam o campo Tipo (jogo desativado, contagem só no Windows).
+  const hintId = `objective-hint-${index}`
+  const hasHint = !hasGame || objective.kind === 'game'
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-subtle bg-fg/5 p-3">
       <div className="flex flex-col gap-3 md:flex-row md:items-end">
@@ -33,6 +36,7 @@ export default function ObjectiveRow({
           Tipo
           <select
             name={`objective-kind-${index}`}
+            aria-describedby={hasHint ? hintId : undefined}
             disabled={disabled}
             className="glass-input"
             value={objective.kind}
@@ -88,9 +92,13 @@ export default function ObjectiveRow({
           />
         )}
       </div>
-      {!hasGame && <p className="text-ds-xs text-muted">Escolha um jogo para o evento.</p>}
-      {objective.kind === 'game' && (
-        <p className="text-ds-xs text-muted">Conta só para quem usa o app para Windows.</p>
+      {hasHint && (
+        <div id={hintId} className="flex flex-col gap-1">
+          {!hasGame && <p className="text-ds-xs text-muted">Escolha um jogo para o evento.</p>}
+          {objective.kind === 'game' && (
+            <p className="text-ds-xs text-muted">Conta só para quem usa o app para Windows.</p>
+          )}
+        </div>
       )}
     </div>
   )

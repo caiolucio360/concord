@@ -65,6 +65,19 @@ describe('ObjectiveRow', () => {
     expect(render()).not.toContain('Conta só para quem usa o app para Windows.')
   })
 
+  it('as dicas ficam ligadas ao campo Tipo para o leitor de tela', () => {
+    const noGame = render({ hasGame: false, index: 1 })
+    expect(tag(noGame, 'objective-kind-1')).toContain('aria-describedby="objective-hint-1"')
+    expect(noGame).toMatch(/<div[^>]*id="objective-hint-1"[^>]*>[\s\S]*Escolha um jogo para o evento\./)
+
+    const game = render({ objective: { kind: 'game', difficulty: 'easy', minutes: 30 } })
+    expect(tag(game, 'objective-kind-0')).toContain('aria-describedby="objective-hint-0"')
+
+    // Sem nenhuma dica, não aponta para nada.
+    expect(tag(render(), 'objective-kind-0')).not.toContain('aria-describedby')
+    expect(render()).not.toContain('objective-hint-0')
+  })
+
   it('o botão de remover tem nome acessível', () => {
     expect(render()).toMatch(/<button[^>]*aria-label="Remover objetivo"/)
   })

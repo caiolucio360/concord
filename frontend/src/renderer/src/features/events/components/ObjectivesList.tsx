@@ -26,7 +26,7 @@ export default function ObjectivesList({
           return (
             <li key={o.id} className="flex min-w-0 flex-col gap-1.5 rounded-lg border border-subtle bg-fg/5 p-3">
               <p className="min-w-0 break-words text-ds-sm text-normal">{title}</p>
-              <p className="text-ds-xs text-secondary">{`+${formatXp(o.xp)} XP`}</p>
+              <p className="text-ds-xs tabular-nums text-secondary">{`+${formatXp(o.xp)} XP`}</p>
               <ObjectiveBar minutes={o.my_minutes} goal={o.minutes} label={title} />
               {o.my_done ? (
                 <p className="flex items-center gap-1 text-ds-xs text-success">
@@ -34,7 +34,7 @@ export default function ObjectivesList({
                   Cumprido
                 </p>
               ) : (
-                <p className="text-ds-xs text-muted">{`${o.my_minutes} de ${o.minutes} min`}</p>
+                <p className="text-ds-xs tabular-nums text-muted">{`${o.my_minutes} de ${o.minutes} min`}</p>
               )}
             </li>
           )
