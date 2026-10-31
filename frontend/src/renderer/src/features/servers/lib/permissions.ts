@@ -23,6 +23,8 @@ export const Perm = {
   MENTION_EVERYONE: 1 << 11,
   MANAGE_MESSAGES: 1 << 12,
   READ_MESSAGE_HISTORY: 1 << 13,
+  /** Criar, editar e cancelar eventos do servidor (fora do @everyone; único bit livre abaixo de 2^31). */
+  MANAGE_EVENTS: 1 << 14,
   /** Enviar emojis personalizados ao servidor (ADR 0028). */
   ADD_EMOJIS: 1 << 15,
   CONNECT: 1 << 16,

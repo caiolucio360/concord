@@ -25,6 +25,10 @@ const (
 	MentionEveryone int64 = 1 << 11
 	ManageMessages  int64 = 1 << 12
 	ReadHistory     int64 = 1 << 13
+	// Gerenciar eventos: criar, editar e cancelar eventos do servidor
+	// (docs/superpowers/specs/2026-10-30-eventos-do-servidor-design.md). Vale no
+	// servidor todo e fica fora do @everyone. É o único bit livre abaixo de 1<<31.
+	ManageEvents int64 = 1 << 14
 	// Enviar emojis personalizados novos ao servidor (vale no servidor todo).
 	// Ver docs/adr/0028-emojis-personalizados.md.
 	AddEmojis         int64 = 1 << 15
@@ -85,6 +89,7 @@ var Names = map[string]int64{
 	"ADD_SOUNDS":           AddSounds,
 	"ADD_STICKERS":         AddStickers,
 	"ADD_EMOJIS":           AddEmojis,
+	"MANAGE_EVENTS":         ManageEvents,
 	"SEND_TTS_MESSAGES":    SendTTSMessages,
 }
 
@@ -93,7 +98,7 @@ const All = ViewChannel | ManageChannels | ManageRoles | ManageServer | CreateIn
 	KickMembers | BanMembers | Administrator | SendMessages | AttachFiles | AddReactions |
 	MentionEveryone | ManageMessages | ReadHistory | Connect | Speak | Stream |
 	MuteMembers | DeafenMembers | MoveMembers | DisconnectMembers | InviteGuests | UseSoundboard | ManageExpressions |
-	ChangeNickname | ManageNicknames | AddSounds | AddStickers | SendTTSMessages | AddEmojis
+	ChangeNickname | ManageNicknames | AddSounds | AddStickers | SendTTSMessages | AddEmojis | ManageEvents
 
 // DefaultEveryone: o que qualquer membro faz num servidor novo. Nos servidores
 // que já existiam, a migration 000039 ligou o CHANGE_NICKNAME no @everyone, a

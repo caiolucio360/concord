@@ -76,6 +76,11 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
         name: 'ADD_EMOJIS',
         label: 'Adicionar emojis',
         description: 'Enviar emojis novos para este servidor.'
+      },
+      {
+        name: 'MANAGE_EVENTS',
+        label: 'Gerenciar eventos',
+        description: 'Criar, editar e cancelar os eventos do servidor.'
       }
     ]
   },
