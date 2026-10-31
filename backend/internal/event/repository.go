@@ -85,8 +85,25 @@ func (r *Repository) Create(ctx context.Context, e *Event, reminders []ReminderR
 		if err := insertReminders(ctx, tx, e.ID, reminders); err != nil {
 			return err
 		}
-		return eventobjective.ReplaceTx(ctx, tx, e.ID, inputsOf(e.Objectives))
+		return storeObjectives(ctx, tx, e)
 	})
+}
+
+// storeObjectives grava o conjunto de objetivos do evento e devolve no próprio evento
+// o que ficou no banco (com id e XP): é o que o app recebe de Create, Update e do aviso.
+func storeObjectives(ctx context.Context, tx pgx.Tx, e *Event) error {
+	if err := eventobjective.ReplaceTx(ctx, tx, e.ID, inputsOf(e.Objectives)); err != nil {
+		return err
+	}
+	stored, err := eventobjective.LoadFor(ctx, tx, "", []eventobjective.EventRef{{EventID: e.ID, Occurrence: e.NextStartAt}})
+	if err != nil {
+		return err
+	}
+	e.Objectives = stored[e.ID]
+	if e.Objectives == nil {
+		e.Objectives = []eventobjective.Objective{}
+	}
+	return nil
 }
 
 // inputsOf devolve os objetivos do evento como o repositório dos objetivos os grava.
@@ -122,7 +139,7 @@ func (r *Repository) Update(ctx context.Context, e *Event, reminders []ReminderR
 		if err := insertReminders(ctx, tx, e.ID, reminders); err != nil {
 			return err
 		}
-		return eventobjective.ReplaceTx(ctx, tx, e.ID, inputsOf(e.Objectives))
+		return storeObjectives(ctx, tx, e)
 	})
 }
 

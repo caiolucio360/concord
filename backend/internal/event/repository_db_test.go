@@ -284,6 +284,48 @@ func TestRepositoryStoresTheGame(t *testing.T) {
 	}
 }
 
+// O app faz upsert do evento que Create e Update devolvem (e do broadcast): os
+// objetivos têm que voltar com id e XP, senão a barra e o aviso não casam.
+func TestCreateAndUpdateReturnTheObjectivesWithIDAndXP(t *testing.T) {
+	db, ctx := eventDB(t)
+	repo := NewRepository(db)
+	owner, server := seedUserAndServer(t, db, "Objetivos devolvidos")
+	e := newTestEvent(server, owner, time.Now().Add(2*time.Hour).Truncate(time.Second))
+	e.Objectives = []eventobjective.Objective{
+		{Kind: eventobjective.KindTime, Difficulty: eventobjective.Medium, Minutes: 30},
+	}
+	if err := repo.Create(ctx, e, nil); err != nil {
+		t.Fatal(err)
+	}
+	if len(e.Objectives) != 1 || e.Objectives[0].ID == "" || e.Objectives[0].XP != 3000 {
+		t.Fatalf("depois de Create = %+v", e.Objectives)
+	}
+	firstID := e.Objectives[0].ID
+
+	e.Objectives = []eventobjective.Objective{
+		{Kind: eventobjective.KindTime, Difficulty: eventobjective.Hard, Minutes: 60},
+	}
+	if err := repo.Update(ctx, e, nil); err != nil {
+		t.Fatal(err)
+	}
+	if len(e.Objectives) != 1 || e.Objectives[0].ID == "" || e.Objectives[0].XP != 6000 || e.Objectives[0].ID == firstID {
+		t.Fatalf("depois de Update = %+v", e.Objectives)
+	}
+	stored, _ := repo.Find(ctx, server, e.ID)
+	if len(stored.Objectives) != 1 || stored.Objectives[0].ID != e.Objectives[0].ID {
+		t.Errorf("o devolvido tem que ser o que ficou no banco: %+v vs %+v", e.Objectives, stored.Objectives)
+	}
+
+	// Sem objetivos, a lista volta vazia (JSON []), não nula.
+	e.Objectives = nil
+	if err := repo.Update(ctx, e, nil); err != nil {
+		t.Fatal(err)
+	}
+	if e.Objectives == nil || len(e.Objectives) != 0 {
+		t.Errorf("sem objetivos deveria voltar lista vazia, veio %#v", e.Objectives)
+	}
+}
+
 func TestRepositoryStoresAndReadsObjectives(t *testing.T) {
 	db, ctx := eventDB(t)
 	repo := NewRepository(db)
