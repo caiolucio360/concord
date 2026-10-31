@@ -70,3 +70,4 @@ O que fica mais fácil, o que fica mais difícil, o que precisa ser feito depois
 - [0030. Manter a chamada do app mobile em segundo plano com um serviço em primeiro plano (`@notifee/react-native`)](0030-servico-em-primeiro-plano-da-chamada-no-app-mobile.md)
 - [0031. Transmitir a tela pelo helper Rust com o SDK Rust do LiveKit (marco 1, Linux)](0031-live-pelo-helper-rust.md)
 - [0032. Sinais de qualidade das lives e calls: só o que leva a uma ação](0032-sinais-de-qualidade-das-lives-e-calls.md)
+- [0034. GIFs favoritos guardados no backend, por usuário, dentro de `internal/giphy`](0034-gifs-favoritos.md)
