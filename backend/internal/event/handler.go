@@ -18,6 +18,9 @@ type eventService interface {
 	SetRSVP(ctx context.Context, serverID, eventID, userID string, going bool) error
 	ClearRSVP(ctx context.Context, serverID, eventID, userID string) error
 	ListGoing(ctx context.Context, serverID, eventID, userID string) ([]Going, error)
+	Access(ctx context.Context, serverID, userID string) (AccessView, error)
+	RoleSettings(ctx context.Context, serverID, userID string) ([]RoleAccess, error)
+	SetRoleActions(ctx context.Context, serverID, actorID, roleID string, actions Actions) error
 }
 
 type Handler struct {
@@ -47,6 +50,8 @@ var errorTable = []struct {
 	{ErrInvalidDuration, http.StatusBadRequest, "invalid_duration"},
 	{ErrEventRunning, http.StatusConflict, "event_running"},
 	{ErrInvalidBanner, http.StatusBadRequest, "invalid_banner"},
+	{ErrOwnerOnly, http.StatusForbidden, "owner_only"},
+	{ErrRoleNotFound, http.StatusNotFound, "role_not_found"},
 }
 
 func errorResponse(err error) (status int, code string) {

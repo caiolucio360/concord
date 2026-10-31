@@ -28,7 +28,9 @@ const (
 )
 
 var (
-	ErrMissingPermission  = errors.New("você não tem permissão para gerenciar eventos neste servidor")
+	ErrMissingPermission  = errors.New("você não tem permissão para isso com os eventos deste servidor")
+	ErrOwnerOnly          = errors.New("só o dono do servidor escolhe quem mexe nos eventos")
+	ErrRoleNotFound       = errors.New("cargo não encontrado")
 	ErrNotMember          = errors.New("você não é membro deste servidor")
 	ErrEventNotFound      = errors.New("evento não encontrado")
 	ErrInPast             = errors.New("o início do evento precisa estar no futuro")

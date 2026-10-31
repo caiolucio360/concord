@@ -19,8 +19,8 @@ func (a *app) wireEvents() {
 	// de começar e a apaga no fim.
 	rooms := event.NewRooms(a.channelService, a.permissionService, a.callService, repo)
 	banners := mustStore(filepath.Join(a.uploadsDir, event.BannerDir), "event banners dir")
-	service := event.NewService(repo, a.permissionService, a.permissionService, a.hub).WithRooms(rooms).WithBanners(banners)
-	bannerHandler := event.NewBannerHandler(banners, a.uploadSpace, a.permissionService, a.permissionService, a.authService, repo)
+	service := event.NewService(repo, repo, a.permissionService, a.hub).WithRooms(rooms).WithBanners(banners)
+	bannerHandler := event.NewBannerHandler(banners, a.uploadSpace, repo, a.permissionService, a.authService, repo)
 
 	notifier := salinhaBotNotifier{conversations: a.conversationService, messages: a.messageService}
 	go event.NewScheduler(repo, notifier, rooms, a.hub).Run(a.ctx)

@@ -6,8 +6,6 @@ import (
 	"errors"
 	"testing"
 	"time"
-
-	"gin-quickstart/backend/internal/permission"
 )
 
 var testNow = time.Date(2026, 11, 1, 12, 0, 0, 0, time.UTC)
@@ -108,12 +106,6 @@ func (f *fakeStore) ListGoing(_ context.Context, eventID string, occ time.Time) 
 	return out, nil
 }
 
-type fakePerms map[string]int64
-
-func (p fakePerms) ServerPerms(_ context.Context, _, userID string) (int64, error) {
-	return p[userID], nil
-}
-
 type fakeMembers map[string]bool
 
 func (m fakeMembers) IsMember(_ context.Context, _, userID string) (bool, error) {
@@ -134,20 +126,22 @@ func (p *fakePublisher) BroadcastToRoom(room string, raw []byte) {
 }
 
 type env struct {
-	svc   *Service
-	store *fakeStore
-	pub   *fakePublisher
+	svc    *Service
+	store  *fakeStore
+	pub    *fakePublisher
+	access *fakeAccess
 }
 
 func newEnv() env {
 	store := newFakeStore()
 	pub := &fakePublisher{}
-	svc := NewService(store,
-		fakePerms{"mod": permission.ManageEvents, "membro": 0},
-		fakeMembers{"mod": true, "membro": true},
+	access := newFakeAccess()
+	access.actions["mod"] = AllActions // cargo com as três ações
+	svc := NewService(store, access,
+		fakeMembers{"dono": true, "mod": true, "membro": true, "a": true, "b": true, "c": true},
 		pub)
 	svc.now = func() time.Time { return testNow }
-	return env{svc: svc, store: store, pub: pub}
+	return env{svc: svc, store: store, pub: pub, access: access}
 }
 
 func goodInput() Input {
@@ -157,7 +151,7 @@ func goodInput() Input {
 	}
 }
 
-func TestCreateRequiresManageEvents(t *testing.T) {
+func TestCreateNeedsTheCreatePermission(t *testing.T) {
 	e := newEnv()
 	if _, err := e.svc.Create(context.Background(), "s1", "membro", goodInput()); !errors.Is(err, ErrMissingPermission) {
 		t.Fatalf("erro = %v, esperava ErrMissingPermission", err)

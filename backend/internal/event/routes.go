@@ -8,6 +8,10 @@ func Routes(router *gin.RouterGroup, h *Handler, b *BannerHandler, authMiddlewar
 	events.Use(authMiddleware)
 	{
 		events.GET("", h.List)
+		// Antes de /:eventId, como o banner: não são ids de evento.
+		events.GET("/access", h.Access)
+		events.GET("/roles", h.RoleSettings)
+		events.PUT("/roles/:roleId", h.SetRoleActions)
 		events.POST("", h.Create)
 		if b != nil {
 			// Antes de /:eventId: "banner" não é id de evento.

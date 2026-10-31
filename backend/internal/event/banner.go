@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"gin-quickstart/backend/internal/permission"
 	"gin-quickstart/backend/internal/platform/media"
 
 	"github.com/gin-gonic/gin"
@@ -44,6 +43,11 @@ type mediaTokens interface {
 }
 
 // bannerFinder diz de qual servidor é o evento que usa o banner.
+// eventAccess é o que o upload do banner usa da configuração de cargos.
+type eventAccess interface {
+	EventActions(ctx context.Context, serverID, userID string) (Actions, error)
+}
+
 type bannerFinder interface {
 	ServerOfBanner(ctx context.Context, bannerID string) (serverID string, err error)
 }
@@ -52,7 +56,7 @@ type bannerFinder interface {
 type BannerHandler struct {
 	store   *media.Store
 	space   spaceChecker
-	perms   permChecker
+	access  eventAccess
 	members memberChecker
 	tokens  mediaTokens
 	finder  bannerFinder
@@ -61,12 +65,12 @@ type BannerHandler struct {
 func NewBannerHandler(
 	store *media.Store,
 	space spaceChecker,
-	perms permChecker,
+	access eventAccess,
 	members memberChecker,
 	tokens mediaTokens,
 	finder bannerFinder,
 ) *BannerHandler {
-	return &BannerHandler{store: store, space: space, perms: perms, members: members, tokens: tokens, finder: finder}
+	return &BannerHandler{store: store, space: space, access: access, members: members, tokens: tokens, finder: finder}
 }
 
 // uploadErr é a resposta de uma etapa do upload que recusou o pedido.
@@ -97,12 +101,13 @@ func (h *BannerHandler) Upload(c *gin.Context) {
 
 // receive confere quem envia e o corpo, salva o arquivo e valida o tipo.
 func (h *BannerHandler) receive(c *gin.Context, serverID, userID, id string) *uploadErr {
-	perms, err := h.perms.ServerPerms(c.Request.Context(), serverID, userID)
+	actions, err := h.access.EventActions(c.Request.Context(), serverID, userID)
 	if err != nil {
 		log.Printf("eventos: conferir permissões do banner: %v", err)
 		return refuse(http.StatusInternalServerError, "", errors.New("failed to check permissions"))
 	}
-	if !permission.Has(perms, permission.ManageEvents) {
+	// O banner é enviado ao criar ou ao editar o evento: basta poder uma das duas.
+	if !actions.Has(ActionCreate) && !actions.Has(ActionEdit) {
 		return refuse(http.StatusForbidden, "missing_permission", ErrMissingPermission)
 	}
 	if ue := h.checkBody(c); ue != nil {

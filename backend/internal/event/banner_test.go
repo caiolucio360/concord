@@ -12,7 +12,6 @@ import (
 	"syscall"
 	"testing"
 
-	"gin-quickstart/backend/internal/permission"
 	"gin-quickstart/backend/internal/platform/media"
 
 	"github.com/gin-gonic/gin"
@@ -77,9 +76,10 @@ func bannerRouter(t *testing.T, userID string, finder fakeFinder, room bool) (*g
 	if err != nil {
 		t.Fatal(err)
 	}
-	perms := fakePerms{"mod": permission.ManageEvents, "membro": 0}
+	access := newFakeAccess()
+	access.actions["mod"] = ActionEdit // para o banner basta poder criar ou editar
 	members := fakeMembers{"mod": true, "membro": true}
-	b := NewBannerHandler(store, fakeSpace(room), perms, members, fakeTokens{user: userID}, finder)
+	b := NewBannerHandler(store, fakeSpace(room), access, members, fakeTokens{user: userID}, finder)
 	r := gin.New()
 	auth := func(c *gin.Context) {
 		c.Set("userID", userID)
@@ -113,7 +113,7 @@ func postBanner(r *gin.Engine, body *bytes.Buffer, contentType string) *httptest
 	return w
 }
 
-func TestUploadBannerNeedsManageEvents(t *testing.T) {
+func TestUploadBannerNeedsToBeAbleToCreateOrEdit(t *testing.T) {
 	r, _ := bannerRouter(t, "membro", fakeFinder{}, true)
 	body, ct := uploadBody(t, pngHead)
 	w := postBanner(r, body, ct)

@@ -7,8 +7,6 @@ import (
 	"slices"
 	"time"
 
-	"gin-quickstart/backend/internal/permission"
-
 	"github.com/google/uuid"
 )
 
@@ -25,8 +23,13 @@ type store interface {
 	ListGoing(ctx context.Context, eventID string, occurrence time.Time) ([]Going, error)
 }
 
-type permChecker interface {
-	ServerPerms(ctx context.Context, serverID, userID string) (int64, error)
+// accessStore é a configuração do servidor: o que cada cargo pode fazer com os
+// eventos (o dono decide). Quem usa só a checagem precisa de EventActions.
+type accessStore interface {
+	EventActions(ctx context.Context, serverID, userID string) (Actions, error)
+	IsOwner(ctx context.Context, serverID, userID string) (bool, error)
+	RoleAccessList(ctx context.Context, serverID string) ([]RoleAccess, error)
+	SetRoleActions(ctx context.Context, serverID, roleID string, actions Actions) error
 }
 
 type memberChecker interface {
@@ -50,7 +53,7 @@ type bannerFiles interface {
 
 type Service struct {
 	store   store
-	perms   permChecker
+	access  accessStore
 	members memberChecker
 	pub     publisher
 	now     func() time.Time
@@ -58,8 +61,8 @@ type Service struct {
 	banners bannerFiles
 }
 
-func NewService(s store, p permChecker, m memberChecker, pub publisher) *Service {
-	return &Service{store: s, perms: p, members: m, pub: pub, now: time.Now}
+func NewService(s store, a accessStore, m memberChecker, pub publisher) *Service {
+	return &Service{store: s, access: a, members: m, pub: pub, now: time.Now}
 }
 
 // WithBanners liga a remoção dos arquivos de banner que deixam de valer (sem
@@ -76,14 +79,14 @@ func (s *Service) WithRooms(r roomControl) *Service {
 	return s
 }
 
-// requireManage: quem pode criar, editar e cancelar (o Administrador e o dono
-// já vêm com todos os bits em ServerPerms).
-func (s *Service) requireManage(ctx context.Context, serverID, userID string) error {
-	perms, err := s.perms.ServerPerms(ctx, serverID, userID)
+// requireAction confere se a pessoa tem a ação que o dono liberou para os
+// cargos dela (o dono tem todas).
+func (s *Service) requireAction(ctx context.Context, serverID, userID string, want Actions) error {
+	actions, err := s.access.EventActions(ctx, serverID, userID)
 	if err != nil {
 		return fmt.Errorf("conferir permissões: %w", err)
 	}
-	if !permission.Has(perms, permission.ManageEvents) {
+	if !actions.Has(want) {
 		return ErrMissingPermission
 	}
 	return nil
@@ -92,7 +95,7 @@ func (s *Service) requireManage(ctx context.Context, serverID, userID string) er
 // Create cria o evento (e os avisos da primeira ocorrência) de quem tem
 // Gerenciar eventos.
 func (s *Service) Create(ctx context.Context, serverID, actorID string, in Input) (*Event, error) {
-	if err := s.requireManage(ctx, serverID, actorID); err != nil {
+	if err := s.requireAction(ctx, serverID, actorID, ActionCreate); err != nil {
 		return nil, err
 	}
 	in, err := in.normalize(s.now())
@@ -125,7 +128,7 @@ func (e *Event) apply(in Input) {
 // Update troca os dados do evento vivo. Mudar o evento recomeça da primeira
 // ocorrência e refaz os avisos.
 func (s *Service) Update(ctx context.Context, serverID, eventID, actorID string, in Input) (*Event, error) {
-	if err := s.requireManage(ctx, serverID, actorID); err != nil {
+	if err := s.requireAction(ctx, serverID, actorID, ActionEdit); err != nil {
 		return nil, err
 	}
 	e, err := s.editable(ctx, serverID, eventID)
@@ -163,7 +166,7 @@ func (s *Service) editable(ctx context.Context, serverID, eventID string) (*Even
 
 // Cancel cancela o evento e os avisos que ainda não saíram.
 func (s *Service) Cancel(ctx context.Context, serverID, eventID, actorID string) error {
-	if err := s.requireManage(ctx, serverID, actorID); err != nil {
+	if err := s.requireAction(ctx, serverID, actorID, ActionDelete); err != nil {
 		return err
 	}
 	e, err := s.editable(ctx, serverID, eventID)

@@ -14,10 +14,12 @@ import (
 )
 
 type fakeService struct {
-	err     error
-	created Input
-	going   *bool
-	cleared bool
+	roleSet     string
+	roleActions Actions
+	err         error
+	created     Input
+	going       *bool
+	cleared     bool
 }
 
 func (f *fakeService) Create(_ context.Context, serverID, _ string, in Input) (*Event, error) {
@@ -48,6 +50,20 @@ func (f *fakeService) SetRSVP(_ context.Context, _, _, _ string, going bool) err
 
 func (f *fakeService) ClearRSVP(context.Context, string, string, string) error {
 	f.cleared = true
+	return f.err
+}
+
+func (f *fakeService) Access(context.Context, string, string) (AccessView, error) {
+	return AccessView{Create: true, Edit: true, Owner: true}, f.err
+}
+
+func (f *fakeService) RoleSettings(context.Context, string, string) ([]RoleAccess, error) {
+	return []RoleAccess{{RoleID: "r1", Name: "Cargo A", Create: true}}, f.err
+}
+
+func (f *fakeService) SetRoleActions(_ context.Context, _, _, roleID string, a Actions) error {
+	f.roleSet = roleID
+	f.roleActions = a
 	return f.err
 }
 
@@ -134,6 +150,8 @@ func TestDomainErrorsBecomeStatusAndCode(t *testing.T) {
 		{ErrInvalidDuration, http.StatusBadRequest, "invalid_duration"},
 		{ErrEventRunning, http.StatusConflict, "event_running"},
 		{ErrInvalidBanner, http.StatusBadRequest, "invalid_banner"},
+		{ErrOwnerOnly, http.StatusForbidden, "owner_only"},
+		{ErrRoleNotFound, http.StatusNotFound, "role_not_found"},
 	}
 	for _, c := range cases {
 		status, code := errorResponse(c.err)
@@ -183,5 +201,43 @@ func TestListUpdateAndCancel(t *testing.T) {
 	}
 	if w := call(r, http.MethodDelete, "/api/servers/s1/events/e1", ""); w.Code != http.StatusNoContent {
 		t.Errorf("DELETE = %d", w.Code)
+	}
+}
+
+func TestAccessEndpointTellsWhatIMayDo(t *testing.T) {
+	w := call(routerFor(&fakeService{}, "u1"), http.MethodGet, "/api/servers/s1/events/access", "")
+	if w.Code != http.StatusOK {
+		t.Fatalf("status = %d (%s)", w.Code, w.Body.String())
+	}
+	var got map[string]bool
+	_ = json.Unmarshal(w.Body.Bytes(), &got)
+	if !got["create"] || !got["edit"] || got["delete"] || !got["owner"] {
+		t.Fatalf("corpo = %s", w.Body.String())
+	}
+}
+
+func TestRoleSettingsEndpoints(t *testing.T) {
+	svc := &fakeService{}
+	r := routerFor(svc, "dono")
+	w := call(r, http.MethodGet, "/api/servers/s1/events/roles", "")
+	if w.Code != http.StatusOK || !strings.Contains(w.Body.String(), `"role_id":"r1"`) {
+		t.Fatalf("GET = %d %s", w.Code, w.Body.String())
+	}
+	w = call(r, http.MethodPut, "/api/servers/s1/events/roles/r1", `{"create":true,"edit":false,"delete":true}`)
+	if w.Code != http.StatusNoContent || svc.roleSet != "r1" || svc.roleActions != ActionCreate|ActionDelete {
+		t.Fatalf("PUT = %d, cargo %q ações %b", w.Code, svc.roleSet, svc.roleActions)
+	}
+	if w := call(r, http.MethodPut, "/api/servers/s1/events/roles/r1", `{`); w.Code != http.StatusBadRequest {
+		t.Errorf("corpo inválido = %d", w.Code)
+	}
+}
+
+func TestRoleSettingsRefusedForNonOwner(t *testing.T) {
+	r := routerFor(&fakeService{err: ErrOwnerOnly}, "u1")
+	if w := call(r, http.MethodGet, "/api/servers/s1/events/roles", ""); w.Code != http.StatusForbidden || errCode(t, w) != "owner_only" {
+		t.Errorf("GET = %d %s", w.Code, w.Body.String())
+	}
+	if w := call(r, http.MethodPut, "/api/servers/s1/events/roles/r1", `{"create":true}`); w.Code != http.StatusForbidden {
+		t.Errorf("PUT = %d", w.Code)
 	}
 }
