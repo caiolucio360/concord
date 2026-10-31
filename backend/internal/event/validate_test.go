@@ -101,11 +101,11 @@ func TestNormalizeDuration(t *testing.T) {
 func TestNormalizeGame(t *testing.T) {
 	now := time.Date(2026, 11, 1, 12, 0, 0, 0, time.UTC)
 	cases := map[string]string{
-		"":                       "",
-		"   ":                    "",
-		"  Minecraft  ":          "Minecraft",
-		strings.Repeat("j", 64):  strings.Repeat("j", 64),
-		"Counter-Strike 2":       "Counter-Strike 2",
+		"":                      "",
+		"   ":                   "",
+		"  Minecraft  ":         "Minecraft",
+		strings.Repeat("j", 64): strings.Repeat("j", 64),
+		"Counter-Strike 2":      "Counter-Strike 2",
 		"Jogo de Tabuleiro 🎲":   "Jogo de Tabuleiro 🎲",
 	}
 	for in, want := range cases {
