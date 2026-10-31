@@ -31,6 +31,7 @@ func (a *app) wireEngagement() {
 	// Level (XP por tempo em call, sem mute e sem estar AFK)
 	levelRepository := level.LevelRepository(a.db)
 	levelService := level.LevelService(levelRepository, a.hub, a.callAFK)
+	a.levelService = levelService
 	levelHandler := level.LevelHandler(levelService)
 	go levelService.Run(a.ctx)
 	rankingHandler := level.LevelRankingHandler(level.RankingServiceFor(levelRepository, relationship.NewRepository(a.db)))

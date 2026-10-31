@@ -11,6 +11,7 @@ import (
 	"gin-quickstart/backend/internal/conversation"
 	"gin-quickstart/backend/internal/friendship"
 	"gin-quickstart/backend/internal/guest"
+	"gin-quickstart/backend/internal/level"
 	"gin-quickstart/backend/internal/message"
 	"gin-quickstart/backend/internal/music"
 	"gin-quickstart/backend/internal/permission"
@@ -85,6 +86,8 @@ type app struct {
 	callService   *call.Service
 	// callAFK: o tempo de call (XP e badges) visto sem quem está 10 min sem falar.
 	callAFK *call.AFK
+	// levelService: o XP por tempo em call; os objetivos dos eventos o usam para avisar o nível novo.
+	levelService *level.Service
 	// callPresence: tira da call quem não está na sala de mídia (#374).
 	callPresence *call.MediaPresence
 	musicManager *music.Manager
@@ -135,6 +138,7 @@ func wire(ctx context.Context, db *pgxpool.Pool) *app {
 	a.wireEngagement()
 	a.wireEvents()
 	a.wireServerLevel()
+	a.wireEventObjectives()
 	a.wireMusicSessions()
 	a.wireRealtime()
 	a.wireAccount()
