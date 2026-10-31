@@ -72,3 +72,4 @@ O que fica mais fácil, o que fica mais difícil, o que precisa ser feito depois
 - [0032. Sinais de qualidade das lives e calls: só o que leva a uma ação](0032-sinais-de-qualidade-das-lives-e-calls.md)
 - [0033. Achar a faixa do "Ouvir também" no servidor, com APIs públicas e cache em memória](0033-links-diretos-do-ouvir-tambem.md)
 - [0034. GIFs favoritos guardados no backend, por usuário, dentro de `internal/giphy`](0034-gifs-favoritos.md)
+- [0035. Sons do app por pessoa: pacotes sintetizados no cliente, escolhas e áudio próprio no backend](0035-sons-do-app-personalizados.md)
