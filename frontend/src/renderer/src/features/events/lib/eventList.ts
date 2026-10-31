@@ -39,6 +39,22 @@ export function applyRsvp(
   })
 }
 
+/** Aplica o meu progresso num objetivo (aviso event:objective); cumprido não volta atrás. */
+export function applyObjectiveProgress(
+  list: ServerEvent[],
+  eventId: string,
+  objectiveId: string,
+  minutes: number,
+  done: boolean
+): ServerEvent[] {
+  return mapEvent(list, eventId, (e) => ({
+    ...e,
+    objectives: e.objectives.map((o) =>
+      o.id === objectiveId ? { ...o, my_minutes: minutes, my_done: done || o.my_done } : o
+    )
+  }))
+}
+
 /** Troca só a contagem de quem vai (aviso de outra pessoa); a minha resposta fica. */
 export function setGoingCount(list: ServerEvent[], eventId: string, count: number): ServerEvent[] {
   return mapEvent(list, eventId, (e) => ({ ...e, going_count: count }))

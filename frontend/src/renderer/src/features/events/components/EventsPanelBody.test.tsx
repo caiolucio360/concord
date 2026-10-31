@@ -111,6 +111,21 @@ describe('EventsPanelBody', () => {
     expect(render({ selectedId: 'a' })).not.toContain('Jogo')
   })
 
+  it('o detalhe mostra os objetivos com o meu progresso, e só quando há', () => {
+    const objectives = [
+      { id: 'o1', kind: 'time' as const, difficulty: 'easy' as const, minutes: 30, xp: 1000, my_minutes: 12, my_done: false }
+    ]
+    const html = render({ events: [ev('a', { objectives, my_rsvp: true })], selectedId: 'a' })
+    expect(html).toContain('Ficar 30 min na sala do evento')
+    expect(html).toContain('+1.000 XP')
+    expect(html).toContain('12 de 30 min')
+    expect(html).not.toContain('Confirme presença para ganhar XP')
+    expect(render({ events: [ev('a', { objectives, my_rsvp: null })], selectedId: 'a' })).toContain(
+      'Confirme presença para ganhar XP com os objetivos.'
+    )
+    expect(render({ selectedId: 'a' })).not.toContain('Objetivos')
+  })
+
   it('evento selecionado abre o detalhe com a descrição, a duração e a repetição', () => {
     const html = render({ selectedId: 'a' })
     expect(html).toContain('Traga a galera')

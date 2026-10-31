@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  SOURCE_LABEL,
   formatXP,
   levelUpMessage,
   parseLevelUp,
@@ -7,6 +8,12 @@ import {
   serverLevelPercent,
   weekBreakdown
 } from './serverLevel'
+
+describe('fontes de XP do servidor', () => {
+  it('os objetivos de eventos têm rótulo no detalhamento', () => {
+    expect(SOURCE_LABEL.evento).toBe('Objetivos de eventos')
+  })
+})
 
 describe('weekBreakdown', () => {
   it('ordena da fonte que mais rendeu e calcula a parte de cada uma', () => {

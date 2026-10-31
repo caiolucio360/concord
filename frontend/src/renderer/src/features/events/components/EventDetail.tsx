@@ -10,6 +10,7 @@ import { isRunning } from '../lib/running'
 import EventBanner from './EventBanner'
 import EventGame from './EventGame'
 import GoingList from './GoingList'
+import ObjectivesList from './ObjectivesList'
 import RsvpButtons from './RsvpButtons'
 
 function Fact({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }): React.JSX.Element {
@@ -101,6 +102,7 @@ export default function EventDetail({
         <p className="whitespace-pre-wrap break-words text-ds-sm text-normal">{event.description}</p>
       )}
       <RsvpButtons value={event.my_rsvp} onChange={onRespond} disabled={busy} />
+      <ObjectivesList objectives={event.objectives} game={event.game_name} going={event.my_rsvp === true} />
       <GoingList
         serverId={serverId}
         eventId={event.id}

@@ -10,12 +10,14 @@ import {
   formFromEvent,
   type EventFormValues
 } from '../lib/eventForm'
+import { NO_GAME } from '../lib/eventGame'
 import { saveEvent } from '../lib/eventSave'
 import { isRunning } from '../lib/running'
 import { useEventsStore } from '../store/eventsStore'
 import BannerField from './BannerField'
 import DurationField from './DurationField'
 import GameField from './GameField'
+import ObjectivesField from './ObjectivesField'
 import RecurrenceFields from './RecurrenceFields'
 import ReminderPicker from './ReminderPicker'
 
@@ -125,6 +127,13 @@ export default function EventForm({
           custom={values.customGame}
           disabled={running}
           onChange={patch}
+        />
+        <ObjectivesField
+          objectives={values.objectives}
+          durationMinutes={values.durationMinutes}
+          hasGame={values.gameChoice !== NO_GAME}
+          disabled={running}
+          onChange={(objectives) => patch({ objectives })}
         />
         <RecurrenceFields values={values} onChange={patch} disabled={running} />
         <ReminderPicker selected={values.reminders} onChange={(reminders) => patch({ reminders })} disabled={running} />

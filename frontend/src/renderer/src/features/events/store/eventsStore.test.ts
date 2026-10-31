@@ -10,6 +10,8 @@ const api = vi.hoisted(() => ({
   clearRsvp: vi.fn()
 }))
 vi.mock('../api/events', () => api)
+const toast = vi.hoisted(() => ({ success: vi.fn() }))
+vi.mock('../../../shared/store/toastStore', () => ({ showToast: toast }))
 
 import { resetEventsStore, useEventsStore } from './eventsStore'
 
@@ -135,6 +137,63 @@ describe('eventos em tempo real', () => {
     await vi.waitFor(() => expect(useEventsStore.getState().byServer.s1[0].title).toBe('Editado'))
     expect(api.fetchEvents).toHaveBeenCalledWith('s1')
     expect(useEventsStore.getState().byServer.s1[0].my_rsvp).toBe(true)
+  })
+
+  describe('event:objective', () => {
+    const withObjective = (): ServerEvent =>
+      ev('a', undefined, {
+        game_name: 'Minecraft',
+        objectives: [
+          { id: 'o1', kind: 'game', difficulty: 'easy', minutes: 30, xp: 1000, my_minutes: 0, my_done: false }
+        ]
+      })
+    const progress = (extra: Record<string, unknown>): Record<string, unknown> => ({
+      server_id: 's1',
+      event_id: 'a',
+      objective_id: 'o1',
+      minutes: 7,
+      done: false,
+      xp: 0,
+      capped: false,
+      ...extra
+    })
+
+    beforeEach(async () => {
+      toast.success.mockReset()
+      api.fetchEvents.mockResolvedValue([withObjective()])
+      await useEventsStore.getState().load('s1')
+    })
+
+    it('anda a barra, sem aviso enquanto não cumpriu', () => {
+      expect(send('event:objective', progress({}))).toBe(true)
+      expect(useEventsStore.getState().byServer.s1[0].objectives[0]).toMatchObject({ my_minutes: 7, my_done: false })
+      expect(toast.success).not.toHaveBeenCalled()
+    })
+
+    it('ao cumprir, marca como cumprido e avisa com o XP', () => {
+      send('event:objective', progress({ minutes: 30, done: true, xp: 1000 }))
+      expect(useEventsStore.getState().byServer.s1[0].objectives[0]).toMatchObject({ my_minutes: 30, my_done: true })
+      expect(toast.success).toHaveBeenCalledWith(
+        'Objetivo cumprido: Jogar Minecraft por 30 min. +1.000 XP',
+        6000
+      )
+    })
+
+    it('com o teto diário, o aviso diz que parte do XP ficou de fora', () => {
+      send('event:objective', progress({ minutes: 30, done: true, xp: 400, capped: true }))
+      expect(toast.success).toHaveBeenCalledWith(
+        'Objetivo cumprido: Jogar Minecraft por 30 min. +400 XP (limite diário de XP de eventos)',
+        6000
+      )
+    })
+
+    it('servidor não carregado ou aviso torto: reconhece e ignora', () => {
+      expect(send('event:objective', progress({ server_id: 'outro' }))).toBe(true)
+      expect(send('event:objective', progress({ minutes: 'x' }))).toBe(true)
+      expect(send('event:objective', {})).toBe(true)
+      expect(useEventsStore.getState().byServer.s1[0].objectives[0].my_minutes).toBe(0)
+      expect(toast.success).not.toHaveBeenCalled()
+    })
   })
 
   it('event:rsvp troca só a contagem', async () => {

@@ -29,7 +29,8 @@ export const SOURCE_LABEL: Record<string, string> = {
   voz: 'Tempo em call',
   live: 'Lives transmitidas',
   espectador: 'Lives assistidas',
-  presenca: 'Call cheia'
+  presenca: 'Call cheia',
+  evento: 'Objetivos de eventos'
 }
 
 export interface WeekRow {

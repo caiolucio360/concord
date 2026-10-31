@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { ServerEvent } from '../api/events'
-import { applyRsvp, removeEvent, setGoingCount, upsertEvent } from './eventList'
+import { applyObjectiveProgress, applyRsvp, removeEvent, setGoingCount, upsertEvent } from './eventList'
 
 function ev(id: string, next: string, extra: Partial<ServerEvent> = {}): ServerEvent {
   return {
@@ -80,6 +80,31 @@ describe('lista de eventos', () => {
   it('responder a evento que não está na lista devolve a mesma lista', () => {
     const list = [a]
     expect(applyRsvp(list, 'zzz', true)).toBe(list)
+  })
+
+  it('applyObjectiveProgress troca só o progresso do objetivo certo', () => {
+    const objective = (id: string) => ({
+      id,
+      kind: 'time' as const,
+      difficulty: 'easy' as const,
+      minutes: 30,
+      xp: 1000,
+      my_minutes: 0,
+      my_done: false
+    })
+    const list = [ev('a', a.next_start_at, { objectives: [objective('o1'), objective('o2')] }), b]
+    const out = applyObjectiveProgress(list, 'a', 'o2', 12, false)
+    expect(out[0].objectives.map((o) => [o.my_minutes, o.my_done])).toEqual([[0, false], [12, false]])
+    expect(out[1]).toBe(b)
+    // Cumprido não volta atrás por um aviso atrasado.
+    const done = applyObjectiveProgress(out, 'a', 'o2', 30, true)
+    expect(done[0].objectives[1]).toMatchObject({ my_minutes: 30, my_done: true })
+    expect(applyObjectiveProgress(done, 'a', 'o2', 31, false)[0].objectives[1].my_done).toBe(true)
+  })
+
+  it('applyObjectiveProgress com evento desconhecido devolve a mesma lista', () => {
+    const list = [a]
+    expect(applyObjectiveProgress(list, 'zzz', 'o1', 5, false)).toBe(list)
   })
 
   it('setGoingCount troca só a contagem e mantém a minha resposta', () => {

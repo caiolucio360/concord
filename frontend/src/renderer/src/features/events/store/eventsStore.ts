@@ -10,7 +10,8 @@ import {
   type EventInput,
   type ServerEvent
 } from '../api/events'
-import { applyRsvp, removeEvent, setGoingCount, upsertEvent } from '../lib/eventList'
+import { applyObjectiveProgress, applyRsvp, removeEvent, setGoingCount, upsertEvent } from '../lib/eventList'
+import { announceObjective, type ObjectivePayload } from '../lib/objectiveEvents'
 
 // Eventos dos servidores que a pessoa já abriu. Cada servidor carrega uma vez;
 // depois só os avisos do ws (event:*) e as ações dela mexem na lista. Servidor
@@ -27,9 +28,7 @@ interface EventsState {
   handleWsEvent: (event: WsEvent) => boolean
 }
 
-interface WsPayload {
-  server_id?: string
-  event_id?: string
+interface WsPayload extends ObjectivePayload {
   going_count?: number
   id?: string
 }
@@ -51,6 +50,13 @@ export const useEventsStore = create<EventsState>((set, get) => {
     },
     'event:delete': (p) => {
       if (loaded(p.server_id) && p.event_id) edit(p.server_id, (l) => removeEvent(l, p.event_id!))
+    },
+    // O meu progresso num objetivo: anda a barra e, ao cumprir, avisa com o XP.
+    'event:objective': (p) => {
+      if (!loaded(p.server_id) || !p.event_id || !p.objective_id || typeof p.minutes !== 'number') return
+      const event = get().byServer[p.server_id]?.find((e) => e.id === p.event_id)
+      edit(p.server_id, (l) => applyObjectiveProgress(l, p.event_id!, p.objective_id!, p.minutes!, p.done === true))
+      announceObjective(event, p)
     },
     'event:rsvp': (p) => {
       if (loaded(p.server_id) && p.event_id && typeof p.going_count === 'number') {

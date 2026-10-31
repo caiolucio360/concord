@@ -106,6 +106,32 @@ describe('EventForm', () => {
     expect(html).toContain('Traga a galera')
   })
 
+  it('tem a seção de objetivos, vazia para evento novo', () => {
+    const html = render()
+    expect(html).toContain('Objetivos (opcional)')
+    expect(html).toContain('Adicionar objetivo')
+    expect(html).not.toContain('name="objective-kind-0"')
+  })
+
+  it('editar abre com os objetivos do evento, e em andamento eles ficam travados', () => {
+    const objectives = [
+      { id: 'o1', kind: 'time' as const, difficulty: 'hard' as const, minutes: 60, xp: 6000, my_minutes: 0, my_done: false }
+    ]
+    const html = render({ event: { ...event, objectives } })
+    expect(html).toMatch(/<option[^>]*value="hard"[^>]*selected[^>]*>/)
+    expect(html).toMatch(/<option[^>]*value="60"[^>]*selected[^>]*>60 min/)
+    expect(html).toContain('Remover objetivo')
+
+    const running = {
+      ...event,
+      objectives,
+      next_start_at: new Date(Date.now() - 10 * 60_000).toISOString()
+    }
+    const locked = render({ event: running })
+    expect(locked).toMatch(/<select[^>]*name="objective-kind-0"[^>]*disabled/)
+    expect(locked).not.toContain('Adicionar objetivo')
+  })
+
   it('tem o campo de jogo opcional, em "nenhum jogo" para evento novo', () => {
     const html = render()
     expect(html).toContain('Jogo (opcional)')
