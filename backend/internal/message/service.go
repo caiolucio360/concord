@@ -201,66 +201,6 @@ func (s *Service) CreateConversationMessage(ctx context.Context, conversationID 
 	return msg, nil
 }
 
-func (s *Service) create(ctx context.Context, channelID string, conversationID string, authorID string, content string, replyToID *string, attachmentIDs []string, mentionEveryone *string, stickerID *string, gifURL *string, gifMetadata *GifMetadata) (*Message, error) {
-	hasMedia := len(attachmentIDs) > 0 || stickerID != nil || gifURL != nil
-	if err := validateNewMessageWithMedia(content, attachmentIDs, hasMedia); err != nil {
-		return nil, err
-	}
-
-	var normalizedReplyID *string
-	if replyToID != nil {
-		trimmed := strings.TrimSpace(*replyToID)
-		if trimmed != "" {
-			target, err := s.repository.FindByID(ctx, trimmed)
-			if err != nil || !SameRoomTarget(target, channelID, conversationID) {
-				return nil, ErrInvalidReply
-			}
-			normalizedReplyID = &trimmed
-		}
-	}
-
-	msg := &Message{
-		ID:              uuid.New().String(),
-		AuthorID:        authorID,
-		ChannelID:       &channelID,
-		ConversationID:  &conversationID,
-		ReplyToID:       normalizedReplyID,
-		Content:         content,
-		MentionEveryone: mentionEveryone,
-		StickerID:       stickerID,
-		GifURL:          gifURL,
-		GifMetadata:     gifMetadata,
-	}
-
-	if channelID == "" {
-		msg.ChannelID = nil
-	}
-	if conversationID == "" {
-		msg.ConversationID = nil
-	}
-
-	if len(attachmentIDs) == 0 {
-		if err := s.repository.Create(ctx, msg); err != nil {
-			return nil, err
-		}
-	} else if err := s.repository.CreateWithAttachments(ctx, msg, attachmentIDs); err != nil {
-		return nil, err
-	}
-
-	full, err := s.repository.FindByID(ctx, msg.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	// O message:create publicado já leva os anexos.
-	page := []Message{*full}
-	if err := s.repository.AttachAttachments(ctx, page); err != nil {
-		return nil, err
-	}
-
-	return &page[0], nil
-}
-
 func (s *Service) ListChannelMessages(ctx context.Context, channelID string, viewerID string, limit int, before string) ([]Message, error) {
 	messages, err := s.repository.ListByChannel(ctx, channelID, limit, before)
 	if err != nil {
