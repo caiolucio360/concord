@@ -1,0 +1,28 @@
+package main
+
+import (
+	"path/filepath"
+
+	"gin-quickstart/backend/internal/event"
+
+	"github.com/gin-gonic/gin"
+)
+
+// O Salinha Bot que avisa as propostas também avisa os eventos.
+var _ event.Notifier = salinhaBotNotifier{}
+
+// wireEvents: eventos do servidor, presença e o ticker dos avisos do Salinha
+// Bot (docs/EVENTOS.md). O ticker para junto com o contexto do app.
+func (a *app) wireEvents() {
+	repo := event.NewRepository(a.db)
+	service := event.NewService(repo, a.permissionService, a.permissionService, a.hub)
+	banners := mustStore(filepath.Join(a.uploadsDir, event.BannerDir), "event banners dir")
+	bannerHandler := event.NewBannerHandler(banners, a.uploadSpace, a.permissionService, a.permissionService, a.authService, repo)
+
+	notifier := salinhaBotNotifier{conversations: a.conversationService, messages: a.messageService}
+	go event.NewScheduler(repo, notifier).Run(a.ctx)
+
+	a.route(func(_ *gin.Engine, api *gin.RouterGroup) {
+		event.Routes(api, event.NewHandler(service), bannerHandler, a.authMiddleware)
+	})
+}
