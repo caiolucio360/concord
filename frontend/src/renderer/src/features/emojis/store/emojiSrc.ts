@@ -1,5 +1,6 @@
 import { ensureMediaToken } from '../../chat/store/mediaToken'
 import { emojiFileUrl } from '../api/emojis'
+import { clearEmojiDisk, readEmojiDisk, saveEmojiDisk } from '../lib/emojiDisk'
 
 // URL de cada emoji, montada uma vez por sessão: a mesma string em todas as
 // mensagens faz o navegador reaproveitar o cache (o arquivo é immutable) e a
@@ -13,9 +14,14 @@ export function cachedEmojiSrc(id: string): string | undefined {
 export async function loadEmojiSrc(id: string): Promise<string> {
   const cached = urls.get(id)
   if (cached) return cached
-  const url = emojiFileUrl(id, await ensureMediaToken())
+  // Baixado em outra sessão: sai do disco, sem media token e sem rede.
+  const local = await readEmojiDisk(id)
+  const url = local ?? emojiFileUrl(id, await ensureMediaToken())
   // Duas cargas ao mesmo tempo: fica a primeira, para a URL não mudar.
-  if (!urls.has(id)) urls.set(id, url)
+  if (!urls.has(id)) {
+    urls.set(id, url)
+    if (!local) void saveEmojiDisk(id, url)
+  }
   return urls.get(id) as string
 }
 
@@ -23,6 +29,7 @@ export async function loadEmojiSrc(id: string): Promise<string> {
 export function clearEmojiSrcs(): void {
   urls.clear()
   retried.clear()
+  void clearEmojiDisk()
 }
 
 export function primeEmojiSrc(id: string, url: string): void {
