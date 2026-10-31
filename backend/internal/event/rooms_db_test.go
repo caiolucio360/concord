@@ -2,6 +2,7 @@ package event
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 
@@ -188,5 +189,67 @@ func TestOpenTwiceForTheSameTitleGetsDistinctNames(t *testing.T) {
 	}
 	if names[0] == names[1] || names[0] != "evento-noite" {
 		t.Errorf("nomes = %v: o segundo evento de mesmo título precisa de nome diferente", names)
+	}
+}
+
+// O ciclo todo pelo agendador, com banco, canais e permissões de verdade: o
+// evento começa, a sala abre e o aviso diz onde entrar; a duração acaba, a sala
+// some e o evento passa para a semana seguinte.
+func TestSchedulerRunsTheWholeRoomCycle(t *testing.T) {
+	w := newRoomWorld(t)
+	owner, serverID := w.newServer(t)
+	going, outsider := w.newUser(t), w.newUser(t)
+	w.join(t, serverID, going)
+	w.join(t, serverID, outsider)
+
+	start := time.Now().Add(-time.Minute).Truncate(time.Second)
+	e := newTestEvent(serverID, owner, start)
+	e.Title, e.DurationMinutes = "Noite de jogos", 30
+	if err := w.repo.Create(w.ctx, e, reminderRows(start, nil, time.Now())); err != nil {
+		t.Fatal(err)
+	}
+	if err := w.repo.SetRSVP(w.ctx, e.ID, going, start, true); err != nil {
+		t.Fatal(err)
+	}
+
+	notifier := &fakeNotifier{}
+	sched := NewScheduler(w.repo, notifier, w.rooms, nil)
+	now := time.Now()
+	sched.now = func() time.Time { return now }
+
+	sched.tick(w.ctx)
+	running, err := w.repo.Find(w.ctx, serverID, e.ID)
+	if err != nil || running.VoiceChannelID == nil || running.TextChannelID == nil {
+		t.Fatalf("a sala devia ter aberto na hora do início: %+v err=%v", running, err)
+	}
+	voice, text := *running.VoiceChannelID, *running.TextChannelID
+	if !w.can(t, voice, going, permission.Connect) || w.can(t, voice, outsider, permission.ViewChannel) {
+		t.Fatal("só quem confirmou entra na sala")
+	}
+	msgs := notifier.sent[going]
+	if len(msgs) != 1 || !strings.Contains(msgs[0], "Entre na sala #evento-noite-de-jogos") {
+		t.Fatalf("o aviso do começo devia dizer onde entrar: %v", msgs)
+	}
+	if len(notifier.sent[outsider]) != 0 {
+		t.Fatalf("quem não confirmou não recebe aviso: %v", notifier.sent[outsider])
+	}
+	if running.OccurrencesDone != 0 {
+		t.Fatal("durante o evento ele não avança")
+	}
+
+	now = now.Add(31 * time.Minute) // a duração de 30 min acabou
+	sched.tick(w.ctx)
+	if n := w.channelCount(t, voice, text); n != 0 {
+		t.Fatalf("a sala devia ter sido apagada, sobraram %d canais", n)
+	}
+	if len(w.calls.closed) != 1 || w.calls.closed[0] != serverID+"|"+voice {
+		t.Errorf("a chamada devia ter sido derrubada: %v", w.calls.closed)
+	}
+	next, err := w.repo.Find(w.ctx, serverID, e.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if next.VoiceChannelID != nil || next.TextChannelID != nil || next.OccurrencesDone != 1 || !next.NextStartAt.Equal(start.AddDate(0, 0, 7)) {
+		t.Fatalf("o evento devia ir para a semana seguinte sem sala: %+v", next)
 	}
 }
