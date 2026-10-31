@@ -6,6 +6,7 @@ import { useNotifySettingsStore } from '../../notifications/store/notifySettings
 import { useUIStore } from '../../../shared/store/uiStore'
 import { Skeleton } from '../../../shared/ui/skeleton/Skeleton'
 import {
+  CalendarIcon,
   ChevronDownIcon,
   GearIcon,
   PencilIcon,
@@ -27,6 +28,8 @@ import ServerLevelCard from '../../serverlevel/components/ServerLevelCard'
 import ServerLevelChip from '../../serverlevel/components/ServerLevelChip'
 import ServerLevelModal from '../../serverlevel/components/ServerLevelModal'
 import { useServerLevelModalStore } from '../../serverlevel/store/serverLevelModalStore'
+import EventsPanelHost from '../../events/components/EventsPanelHost'
+import { useEventsPanelStore } from '../../events/store/eventsPanelStore'
 
 const LOOK: Record<
   ServerMenuItem,
@@ -38,6 +41,7 @@ const LOOK: Record<
     tone: 'brand'
   },
   nickname: { label: 'Alterar apelido', icon: <PencilIcon className="h-3.5 w-3.5" /> },
+  events: { label: 'Eventos', icon: <CalendarIcon className="h-3.5 w-3.5" /> },
   notifications: { label: 'Notificações do servidor' },
   settings: { label: 'Configurações do servidor', icon: <GearIcon className="h-3.5 w-3.5" /> },
   leave: { label: 'Sair do servidor', icon: <TrashIcon className="h-3.5 w-3.5" />, tone: 'danger' },
@@ -88,6 +92,7 @@ export function ServerMenuItems({
   const actions: Record<ServerMenuItem, () => void> = {
     invite: openInviteModal,
     nickname: () => server && user && askOwnNickname(server, user),
+    events: () => server && useEventsPanelStore.getState().open(server.id),
     notifications: () => server && openNotifyModal({ serverId: server.id, name: server.name }),
     settings: () => useServerSettingsStore.getState().openSettings(),
     leave: () => openConfirm('leave'),
@@ -159,6 +164,7 @@ function ServerHeaderMenu({
       </button>
       {open && <ServerMenuItems server={server} access={access} onPicked={() => setOpen(false)} />}
       <ServerLevelModal />
+      <EventsPanelHost serverId={server?.id} canManage={access.can(Perm.MANAGE_EVENTS)} />
     </div>
   )
 }
