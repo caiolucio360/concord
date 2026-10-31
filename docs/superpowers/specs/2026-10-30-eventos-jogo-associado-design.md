@@ -77,5 +77,4 @@ Casar por appid da Steam, filtrar eventos por jogo, objetivos e XP (Fase 3), usa
 7. `node scripts/affected-tests.mjs pr` verde.
 
 ## Ordem de entrega
-Esta fase parte de `feat/eventos-do-servidor`. O PR da fase só deve ser aberto contra a `develop`
-depois que o #462 entrar nela (ou, antes disso, contra a branch da Fase 1 no fork).
+A fase 1 (#462) já entrou na `develop`; esta fase parte dela e o PR vai direto para a `develop`.
