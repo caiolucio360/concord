@@ -3,6 +3,7 @@ package message
 import (
 	"context"
 	"errors"
+	"gin-quickstart/backend/internal/audit"
 	"gin-quickstart/backend/internal/bot"
 	"gin-quickstart/backend/internal/permission"
 	"log"
@@ -68,6 +69,7 @@ type Service struct {
 	perms           PermissionChecker
 	mentionLimiter  *mentionLimiter
 	stickerChecker  StickerChecker
+	audit           AuditRecorder
 }
 
 func MessageService(repository *Repository, publisher EventPublisher, channelResolver ChannelResolver, convResolver ConversationResolver, files FileRemover, perms PermissionChecker) *Service {
@@ -288,6 +290,7 @@ func (s *Service) DeleteChannelMessage(ctx context.Context, channelID string, me
 		ServerID:  serverID,
 		MessageID: messageID,
 	})
+	s.recordModeration(ctx, audit.MessageDelete, serverID, channelID, msg.AuthorID, userID)
 
 	return nil
 }

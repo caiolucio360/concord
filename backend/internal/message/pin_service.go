@@ -3,11 +3,11 @@ package message
 import (
 	"context"
 
+	"gin-quickstart/backend/internal/audit"
 	"gin-quickstart/backend/internal/permission"
 )
 
-// Fixar e desafixar mensagens do canal. Extraído do service.go sem mudar o
-// comportamento.
+// Fixar e desafixar mensagens do canal.
 
 func (s *Service) ListChannelPins(ctx context.Context, channelID string, userID string) ([]PinnedMessage, error) {
 	if s.perms != nil {
@@ -41,6 +41,7 @@ func (s *Service) PinChannelMessage(ctx context.Context, channelID string, messa
 		serverID, _ = s.channelResolver.ChannelServerID(ctx, channelID)
 	}
 
+	s.recordModeration(ctx, audit.MessagePin, serverID, channelID, msg.AuthorID, userID)
 	if s.publisher != nil {
 		s.publisher.PublishMessagePin(PinEvent{
 			ChannelID: channelID,
@@ -73,6 +74,7 @@ func (s *Service) UnpinChannelMessage(ctx context.Context, channelID string, mes
 		serverID, _ = s.channelResolver.ChannelServerID(ctx, channelID)
 	}
 
+	s.recordModeration(ctx, audit.MessageUnpin, serverID, channelID, msg.AuthorID, userID)
 	if s.publisher != nil {
 		s.publisher.PublishMessageUnpin(UnpinEvent{
 			ChannelID: channelID,
