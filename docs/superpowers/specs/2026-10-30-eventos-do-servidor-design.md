@@ -19,7 +19,7 @@ Salinha Bot nas antecedências escolhidas (no máximo 2) e sempre na hora de com
 
 | Decisão | Escolha | Por quê |
 |---|---|---|
-| Quem cria, edita e cancela | Nova permissão `ManageEvents` (bit 31), fora do @everyone; dono e Administrador sempre | Não existe mais cargo Moderador padrão; cada servidor escolhe quais cargos recebem. |
+| Quem cria, edita e cancela | Nova permissão `ManageEvents` (bit 14, o único livre abaixo de 2^31; o app faz bitwise em 32 bits), fora do @everyone; dono e Administrador sempre | Não existe mais cargo Moderador padrão; cada servidor escolhe quais cargos recebem. |
 | Recorrência | Presets: não repete, todo dia, toda semana, todo mês; fim opcional por data ou nº de vezes | Cobre o pedido sem RRULE nem dependência nova. Guarda só a regra e a ocorrência atual. |
 | Mês sem o dia (ex.: dia 31) | Usa o último dia do mês | Regra previsível. |
 | Presença em evento recorrente | Só vale para a ocorrência atual; a próxima começa sem respostas | Aviso só para quem confirmou aquele dia. |
@@ -34,8 +34,8 @@ Salinha Bot nas antecedências escolhidas (no máximo 2) e sempre na hora de com
 ## Arquitetura
 
 ### Permissão
-`ManageEvents = 1 << 31` em `backend/internal/permission/perms.go`. Vale no servidor
-todo (sem sobrescrita por canal). Atualizar `docs/CARGOS.md`,
+`ManageEvents = 1 << 14` em `backend/internal/permission/perms.go`. Vale no servidor
+todo (sem sobrescrita por canal). Atualizar `docs/CARGOS.md`, os testes de "bit desconhecido" (que usavam o bit 14),
 `permission/testdata/vectors.json` (backend e app rodam os mesmos casos) e
 `frontend/src/renderer/src/features/servers/lib/permissions.ts`. Ver os eventos e
 responder só exige ser membro.
@@ -46,7 +46,7 @@ responder só exige ser membro.
 `texts.go` (textos do bot). Ligação em `cmd/wire_events.go`. Não mexe em `call`,
 `message` nem em god stores.
 
-### Migration `000176_create_server_events`
+### Migration `000177_create_server_events`
 - `server_events`: `id`, `server_id`, `channel_id` (voz), `scope`, `title`,
   `description`, `banner_url`, `starts_at`, `next_start_at`, `recurrence`
   (`none|daily|weekly|monthly`), `recurrence_until`, `recurrence_count`,
