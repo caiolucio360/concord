@@ -1,6 +1,6 @@
 # Eventos do servidor
 
-Quem tem **Gerenciar eventos** marca um evento no servidor (banner, título,
+Quem o dono do servidor liberou (por cargo) marca um evento no servidor (banner, título,
 descrição, horário, duração e repetição). Os membros respondem **Vou** ou
 **Não vou**, e quem foi de **Vou** recebe, na DM, avisos do Salinha Bot antes e
 na hora de começar. Spec:
@@ -8,9 +8,14 @@ na hora de começar. Spec:
 
 ## Regras
 
-- **Permissão**: `ManageEvents` (bit 14, o único livre abaixo de 2^31: o app faz
-  bitwise em 32 bits, ver [CARGOS.md](CARGOS.md)). Fora do @everyone; dono e
-  Administrador têm sempre. Ver e responder só exige ser membro.
+- **Quem mexe nos eventos** é uma **configuração do servidor**, vale para todos os eventos: o
+  **dono** escolhe, cargo a cargo, o que cada um pode (**criar**, **editar**, **excluir**). O dono
+  sempre pode tudo; cargo sem nada marcado não pode nada; o Administrador não ganha isto só por
+  ser Administrador. A quarta chave, **configurar**, deixa o cargo abrir a seção *Eventos* das
+  configurações do servidor e escolher criar, editar e excluir dos cargos; só o dono liga ou
+  desliga o *configurar*. Tabela `event_role_actions` (`actions`: 1 criar, 2 editar, 4 excluir,
+  8 configurar). Ver e responder só exige ser membro. Não usa as permissões de cargo (o bit 14
+  continua livre).
 - **Sala própria**: o evento não usa um canal que já existe. Na hora do início o
   agendador cria um canal de voz e um de texto (`evento-<título>` e
   `evento-<título>-chat`), **privados**: o @everyone não vê; veem só quem respondeu
@@ -18,8 +23,10 @@ na hora de começar. Spec:
   privado). Quem confirma depois entra na hora; quem desiste sai (o organizador nunca
   sai). No fim da **duração** (30 min a 4 h, padrão 2 h) a chamada é derrubada
   (`call.CloseChannelCall`) e os dois canais são apagados, com o histórico do chat.
-  Em evento recorrente, cada ocorrência abre e apaga a sua. Evento em andamento não se
-  edita (`event_running`); cancelar fecha a sala na hora. Código: `event/rooms.go`.
+  Em evento recorrente, cada ocorrência abre e apaga a sua. Com o evento em andamento só dá para mudar **título, descrição e banner**
+  (`event_running` para o resto); cancelar fecha a sala na hora. Os canais são
+  **gerenciados** (`channels.managed`): ninguém os renomeia, apaga, muda permissões nem os
+  escolhe como canal principal; só o evento os apaga. Código: `event/rooms.go`.
 - **Repetição**: não repete, todo dia, toda semana ou todo mês, com fim opcional
   (data ou número de vezes). O mês sem o dia (ex.: 31) usa o último dia. Só a
   regra fica guardada; `next_start_at` é a ocorrência atual e `occurrences_done`
@@ -31,7 +38,8 @@ na hora de começar. Spec:
 - **Banner**: PNG, JPEG ou WEBP de até 10 MB, em `uploads/event-media/<id>`
   (fora da limpeza dos anexos do chat). O evento guarda só o `banner_id`; o app
   monta a URL com o token de mídia (`GET /event-banners/:bannerId?token=`).
-  Banner enviado e nunca usado, ou trocado depois, fica no disco.
+  **Banner trocado, tirado ou de evento cancelado é apagado na hora**; uma faxina por hora
+  (`event/banner_janitor.go`) apaga o que nenhum evento vivo usa e tem mais de 24 h.
 
 ## Como os avisos saem
 
@@ -57,9 +65,13 @@ Os textos das DMs estão em `event/texts.go`.
 | Rota | Quem |
 |---|---|
 | `GET /servers/:id/events` | membro (próximas ocorrências, contagem de "vou", minha resposta) |
-| `POST /servers/:id/events` | Gerenciar eventos |
-| `PATCH` / `DELETE /servers/:id/events/:eventId` | Gerenciar eventos |
-| `POST /servers/:id/events/banner` | Gerenciar eventos (multipart, devolve `banner_id`) |
+| `GET /servers/:id/events/access` | membro (o que posso: criar, editar, excluir, configurar) |
+| `GET /servers/:id/events/roles` | dono e quem tem *configurar* (cargos e o que cada um pode) |
+| `PUT /servers/:id/events/roles/:roleId` | dono e quem tem *configurar* (`{create, edit, delete, configure}`; o `configure` só vale do dono) |
+| `POST /servers/:id/events` | criar |
+| `PATCH /servers/:id/events/:eventId` | editar |
+| `DELETE /servers/:id/events/:eventId` | excluir |
+| `POST /servers/:id/events/banner` | criar ou editar (multipart, devolve `banner_id`) |
 | `PUT` / `DELETE …/events/:eventId/rsvp` | membro (`{"going": true\|false}` no PUT) |
 | `GET …/events/:eventId/rsvps` | membro (quem vai) |
 | `GET /event-banners/:bannerId?token=` | membro do servidor do evento |
@@ -67,11 +79,11 @@ Os textos das DMs estão em `event/texts.go`.
 Erros vêm com `code`: `missing_permission`, `not_member`, `event_not_found`,
 `event_ended`, `event_in_past`, `invalid_title`, `invalid_description`,
 `invalid_recurrence`, `invalid_reminder`, `too_many_reminders`,
-`invalid_duration`, `event_running`, `invalid_banner`.
+`invalid_duration`, `event_running`, `role_not_found`, `invalid_banner`.
 
 ## Tempo real
 
-`event:create`, `event:update` (também quando a sala abre ou fecha), `event:delete` e `event:rsvp` na sala `server:<id>`.
+`event:create`, `event:update` (também quando a sala abre ou fecha), `event:delete`, `event:rsvp` e `event:access` (o dono mudou a configuração por cargo) na sala `server:<id>`.
 `delete` leva `{server_id, event_id}`; `rsvp` leva `{server_id, event_id,
 going_count}` (quantos vão agora na ocorrência atual, sem dizer quem).
 

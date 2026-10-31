@@ -1486,3 +1486,12 @@ campo de duração e sala criada na hora do início. Isto **substitui** a escolh
 - **Task 19, app**: sai o seletor de canal; entram o campo "Duração" e o texto da sala no detalhe.
 
 Os textos da DM mudaram (antes da hora a sala não existe) e **aguardam aprovação**.
+
+### Mais mudanças pedidas durante a execução (2026-10-30)
+
+- **Permissão por cargo**: a permissão única "Gerenciar eventos" (bit 14) saiu. Agora é configuração do
+  servidor (`event_role_actions`): o dono escolhe, por cargo, criar, editar e excluir, e pode delegar a
+  configuração (quarta chave "configurar", só o dono liga). Seção *Eventos* nas configurações do servidor.
+- **Evento em andamento**: edição simples (título, descrição, banner).
+- **Banner trocado não fica salvo**: apagado na hora, mais faxina horária dos órfãos.
+- **Canais da sala travados** (`channels.managed`): só o evento os apaga.

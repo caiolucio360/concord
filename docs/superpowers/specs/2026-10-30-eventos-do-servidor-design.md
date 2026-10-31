@@ -10,7 +10,7 @@ Primeira de quatro fases. Cada uma tem spec, plano e PR próprios:
 
 ## Objetivo
 
-Quem tem a permissão **Gerenciar eventos** cria eventos num servidor, com banner,
+Quem o dono do servidor liberou (por cargo) cria eventos num servidor, com banner,
 título, descrição, horário, duração e recorrência opcional. Na hora do início o evento
 abre a própria sala (voz e texto), só para quem confirmou, e a apaga no fim. Os membros
 respondem **Vou** ou **Não vou**. Quem respondeu **Vou** recebe, na DM, avisos do
@@ -20,7 +20,8 @@ Salinha Bot nas antecedências escolhidas (no máximo 2) e sempre na hora de com
 
 | Decisão | Escolha | Por quê |
 |---|---|---|
-| Quem cria, edita e cancela | Nova permissão `ManageEvents` (bit 14, o único livre abaixo de 2^31; o app faz bitwise em 32 bits), fora do @everyone; dono e Administrador sempre | Não existe mais cargo Moderador padrão; cada servidor escolhe quais cargos recebem. |
+| Quem cria, edita e exclui | **Configuração do servidor**, vale para todos os eventos: o **dono** escolhe, cargo a cargo, o que cada um pode (criar, editar, excluir). O dono sempre pode tudo; cargo sem nada marcado não pode nada; Administrador não ganha isto sozinho. Fica numa tabela própria (`event_role_actions`), sem mexer nas permissões de cargo. | Pedido do usuário. Só existia um bit livre nas permissões (o app faz bitwise em 32 bits), e a escolha por ação por cargo não cabe nele. |
+| Delegar a configuração | Quarta chave por cargo, "Configurar eventos": esses cargos também abrem a seção **Eventos** das configurações do servidor e escolhem criar, editar e excluir dos cargos. **Só o dono liga ou desliga o "Configurar"** (quem recebeu não se promove nem promove ninguém). | Pedido do usuário. |
 | Recorrência | Presets: não repete, todo dia, toda semana, todo mês; fim opcional por data ou nº de vezes | Cobre o pedido sem RRULE nem dependência nova. Guarda só a regra e a ocorrência atual. |
 | Mês sem o dia (ex.: dia 31) | Usa o último dia do mês | Regra previsível. |
 | Presença em evento recorrente | Só vale para a ocorrência atual; a próxima começa sem respostas | Aviso só para quem confirmou aquele dia. |
@@ -30,21 +31,25 @@ Salinha Bot nas antecedências escolhidas (no máximo 2) e sempre na hora de com
 | Local | **Sala própria do evento**: um canal de voz e um de texto, criados na hora do início e apagados no fim da duração (com o histórico do chat). O evento não aponta para um canal que já existe. | Pedido do usuário (2026-10-30), no lugar do canal escolhido. A Fase 3 sabe qual call é a do evento (a voz da sala) e dá o bônus só a quem confirmou. |
 | Quem entra na sala | Só quem respondeu **Vou** e o organizador (quem criou). Dono e Administrador veem tudo, como em qualquer canal privado. Quem confirma depois da sala abrir entra na hora; quem desiste (Não vou ou tirar a resposta) sai. O organizador nunca perde o acesso. | Pedido do usuário: quem não participa não entra no chat de voz do evento. A sala é privada por construção (o @everyone não vê; cada confirmado ganha acesso), sem regra nova no `call`. |
 | Duração | Campo "Duração" no formulário: 30 min, 1 h, 2 h, 3 h ou 4 h (padrão 2 h). A ocorrência acaba em início + duração. | Sem fim definido não há quando apagar a sala. |
+| Evento em andamento | Só dá para mudar **título, descrição e banner** (edição simples): horário, duração, repetição e avisos ficam travados (`event_running`); a sala e os avisos não são tocados. Cancelar pode e fecha a sala. | Pedido do usuário. Mudar o horário com a sala aberta a deixaria fora do horário. |
+| Canais da sala | São **gerenciados** (`channels.managed`): só o evento os cria e apaga. Quem gerencia canais não os renomeia, apaga, muda permissões nem escolhe o chat como canal principal; só cancelar o evento (ou o fim da duração) os apaga. | Pedido do usuário. Não usei `is_system` porque o chat bloqueia mensagens nos canais de sistema. |
 | Fim da sala | Quem está na chamada é desconectado (`call.CloseChannelCall`) e os dois canais são apagados. Evento cancelado fecha a sala na hora; falha ao fechar é tentada de novo a cada rodada. | Apagar o canal sozinho não derruba a chamada. |
-| Evento em andamento | Não se edita (`event_running`); cancelar pode. | Editar horário ou duração com a sala aberta deixaria a sala fora do horário. |
 
 | Agendamento | Ticker de ~30 s sobre a tabela `event_reminders` com `FOR UPDATE SKIP LOCKED` | Mesmo padrão do aniversário, sobrevive a restart, sem dependência nova. Alternativas descartadas: timers em memória (perdem aviso, estado duplicado) e River (dependência com schema próprio, pesado para ~3 avisos). Sem ADR, pois segue o padrão do repo. |
-| Banner | Upload próprio, pasta `event-media` (fora dos anexos do chat), até 10 MB, imagem estática, exibido em 16:9 | Mesmo cuidado de `ProfileMediaDir`: a limpeza de anexos não pode apagá-lo. |
+| Banner | Upload próprio, pasta `event-media` (fora dos anexos do chat), até 10 MB, imagem estática, exibido em 16:9. **Banner trocado, tirado ou de evento cancelado é apagado do disco na hora**; uma faxina por hora (`BannerJanitor`) apaga o que nenhum evento vivo usa e tem mais de 24 h (enviado e nunca salvo, trocado dentro do formulário, evento encerrado). | Mesmo cuidado de `ProfileMediaDir`: a limpeza de anexos não pode apagá-lo. Pedido do usuário: o antigo não pode ficar salvo. |
 | Escopo no modelo | Coluna `scope` (`server`; a Fase 4 acrescenta `global`) | Evita migration quebrada depois. Nesta fase só existe `server`. |
 
 ## Arquitetura
 
-### Permissão
-`ManageEvents = 1 << 14` em `backend/internal/permission/perms.go`. Vale no servidor
-todo (sem sobrescrita por canal). Atualizar `docs/CARGOS.md`, os testes de "bit desconhecido" (que usavam o bit 14),
-`permission/testdata/vectors.json` (backend e app rodam os mesmos casos) e
-`frontend/src/renderer/src/features/servers/lib/permissions.ts`. Ver os eventos e
-responder só exige ser membro.
+### Permissão por cargo (configuração do servidor)
+Tabela `event_role_actions (role_id, server_id, actions)`, `actions` em bits: 1 criar, 2 editar,
+4 excluir, 8 configurar. O que a pessoa pode é o dono (tudo) ou a soma dos cargos dela
+(`Repository.EventActions`). Rotas: `GET /servers/:id/events/access` (membro: o que posso),
+`GET /servers/:id/events/roles` e `PUT /servers/:id/events/roles/:roleId` (dono e quem tem
+"configurar"; o servidor ignora o "configurar" do pedido de quem não é o dono). Mudou a
+configuração: `event:access` avisa o app. O app mostra a seção **Eventos** nas configurações do
+servidor para o dono e para quem tem "configurar", e os botões Criar, Editar e Cancelar evento
+por ação. Ver e responder só exige ser membro. O bit 14 das permissões continua livre.
 
 ### Backend: `backend/internal/event/`
 `model.go`, `repository.go`, `service.go`, `handler.go`, `routes.go`,
@@ -68,7 +73,7 @@ responder só exige ser membro.
 `components/` (`EventsPanel`, `EventCard`, `EventForm`, `ReminderPicker`),
 `store/eventsStore.ts` (Zustand só dos eventos), `lib/` (`recurrence.ts`,
 `reminders.ts`, `api.ts`). Botão "Eventos" na barra do servidor; "Criar evento" só
-com `ManageEvents`.
+com a ação de criar.
 
 ## Fluxos
 
@@ -98,15 +103,17 @@ atual; `DELETE` remove a resposta. `GET …/rsvps` lista quem vai.
 ### Erros
 Com `code`: `missing_permission`, `event_in_past`, `invalid_reminder`,
 `too_many_reminders`, `invalid_duration`, `event_running`, `event_not_found`. Quem perde o cargo ou sai continua tendo o evento no servidor; quem
-tem `ManageEvents` edita.
+pode editar (por cargo) edita.
 
 ### API
 
 | Rota | Quem |
 |---|---|
 | `GET /servers/:id/events` | membro (próximas ocorrências, contagem de "vou", minha resposta) |
-| `POST /servers/:id/events` | Gerenciar eventos |
-| `PATCH`/`DELETE /servers/:id/events/:eventId` | Gerenciar eventos |
+| `POST /servers/:id/events` | criar |
+| `PATCH /servers/:id/events/:eventId` | editar (em andamento, só título, descrição e banner) |
+| `DELETE /servers/:id/events/:eventId` | excluir (cancela e fecha a sala) |
+| `GET /servers/:id/events/access`, `GET`/`PUT …/events/roles` | membro; dono e quem tem "configurar" |
 | `PUT`/`DELETE …/events/:eventId/rsvp` | membro |
 | `GET …/events/:eventId/rsvps` | membro |
 
@@ -154,7 +161,7 @@ resposta "talvez", exportar para calendário, banner animado.
 
 ## Verificação de ponta a ponta
 
-1. Com um cargo com Gerenciar eventos, criar um evento semanal daqui a ~12 min, com
+1. Com um cargo com a ação de criar, criar um evento semanal daqui a ~12 min, com
    antecedências de 10 e 5 min e duração de 30 min. Sem o cargo, o botão "Criar evento"
    não aparece e o `POST` volta `missing_permission`.
 2. Com duas contas: uma responde Vou, a outra Não vou. A contagem muda em tempo real
