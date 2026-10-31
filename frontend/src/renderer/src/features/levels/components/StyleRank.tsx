@@ -1,4 +1,5 @@
 import { boostRank } from '../lib/boost'
+import './boost.css'
 
 interface StyleRankProps {
   percent: number

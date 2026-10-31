@@ -3,6 +3,7 @@ import { boostRank } from '../lib/boost'
 import StyleRank from './StyleRank'
 import { useMyBoostPercent } from '../hooks/useMyBoost'
 import { formatVoiceTime, levelPercent, levelTier, minutesToNext } from '../lib/levels'
+import './boost.css'
 
 /** Barra de XP de quem está logado, no painel "Voz conectada". */
 function VoiceXPBar({ paused }: { paused: boolean }): React.JSX.Element | null {

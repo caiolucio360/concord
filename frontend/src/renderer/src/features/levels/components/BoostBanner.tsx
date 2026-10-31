@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { boostRank, shouldPlayBoostBanner } from '../lib/boost'
 import { useBoostStore } from '../store/boostStore'
 import { useCallStore } from '../../call/store/callStore'
+import './boost.css'
 
 /**
  * Banner de ativação do buff de XP (quando a call ganha buff ou sobe de rank).
