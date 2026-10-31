@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/textproto"
+	"syscall"
 	"testing"
 
 	"gin-quickstart/backend/internal/permission"
@@ -193,5 +194,23 @@ func TestServeBannerHidesItFromOtherServers(t *testing.T) {
 	_, _, _ = store.Save(id, bytes.NewReader(pngHead), 1<<20)
 	if w := serveBanner(r, id, "ok"); w.Code != http.StatusNotFound {
 		t.Fatalf("quem não é membro = %d, esperava 404", w.Code)
+	}
+}
+
+func TestFormErrorStatusByCause(t *testing.T) {
+	cases := []struct {
+		err    error
+		status int
+	}{
+		{media.ErrMissingFile, http.StatusBadRequest},
+		{media.ErrBadForm, http.StatusBadRequest},
+		{media.ErrTooLarge, http.StatusRequestEntityTooLarge},
+		{syscall.ENOSPC, http.StatusInsufficientStorage},
+		{errors.New("disco quebrou"), http.StatusInternalServerError},
+	}
+	for _, c := range cases {
+		if got := formError(c.err); got.status != c.status {
+			t.Errorf("%v → %d, esperava %d", c.err, got.status, c.status)
+		}
 	}
 }

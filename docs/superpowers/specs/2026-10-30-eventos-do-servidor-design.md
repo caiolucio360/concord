@@ -4,7 +4,7 @@ Primeira de quatro fases. Cada uma tem spec, plano e PR próprios:
 
 1. **Eventos do servidor** (esta spec): criar, recorrência, presença e lembretes do bot.
 2. Jogo associado ao evento.
-3. Objetivos por dificuldade e bônus de XP na call do evento.
+3. Objetivos por dificuldade e bônus de XP na call do evento (o bônus só vale para quem confirmou presença, decisão de 2026-10-30).
 4. Evento global: aberto a todo o Salinha, com sala de voz e chat temporários
    (spec e ADR próprios; precisa de canal sem servidor e de acesso sem ser membro).
 
@@ -27,6 +27,7 @@ Salinha Bot nas antecedências escolhidas (no máximo 2) e sempre na hora de com
 | Lembretes | Lista fixa: 1 dia, 1 h, 30, 15, 10, 5 min; **no máximo 2** por evento; padrão 10 e 5 min. Na hora de começar: sempre | Validação simples e textos iguais para todos. |
 | Entrega | DM do Salinha Bot (`GetOrCreateBotDM` + `CreateConversationMessage`) | Caminho que o bot já usa nas propostas; o push de DM existente cobre quem está fora do app. |
 | Local | Canal de voz do servidor, obrigatório | A Fase 3 precisa saber qual call é a do evento. |
+| Voz restrita (opcional) | Opção por evento, desligada por padrão: "Só quem confirmou presença entra na voz". Ligada, durante a janela do evento (do início até 3 h depois) só entra no canal quem respondeu Vou, e quem tem Gerenciar eventos, Administrador ou é dono. Fora da janela o canal volta ao normal. Quem já estava no canal quando o evento começa não é tirado. | Pedido do usuário. A regra é checada no servidor, em `call.requireConnect` (entrar, iniciar, convite de amigo e prévia de tela), por um gancho `EntryGate`; falha do banco libera a entrada (não é fronteira de segurança). Bots (Maestro) entram sempre. |
 | Agendamento | Ticker de ~30 s sobre a tabela `event_reminders` com `FOR UPDATE SKIP LOCKED` | Mesmo padrão do aniversário, sobrevive a restart, sem dependência nova. Alternativas descartadas: timers em memória (perdem aviso, estado duplicado) e River (dependência com schema próprio, pesado para ~3 avisos). Sem ADR, pois segue o padrão do repo. |
 | Banner | Upload próprio, pasta `event-media` (fora dos anexos do chat), até 10 MB, imagem estática, exibido em 16:9 | Mesmo cuidado de `ProfileMediaDir`: a limpeza de anexos não pode apagá-lo. |
 | Escopo no modelo | Coluna `scope` (`server`; a Fase 4 acrescenta `global`) | Evita migration quebrada depois. Nesta fase só existe `server`. |

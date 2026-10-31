@@ -50,6 +50,8 @@ type fakeSchedStore struct {
 	going    map[string][]string
 	goingErr error
 	advanced int
+	// ticked: avisa o teste de cada AdvanceDue (sem bloquear o ticker).
+	ticked chan struct{}
 }
 
 func (f *fakeSchedStore) ClaimDue(context.Context, time.Time, int) ([]DueReminder, error) {
@@ -64,6 +66,10 @@ func (f *fakeSchedStore) Going(_ context.Context, eventID string, _ time.Time) (
 
 func (f *fakeSchedStore) AdvanceDue(context.Context, time.Time, time.Duration, *time.Location, int) (int, error) {
 	f.advanced++
+	select {
+	case f.ticked <- struct{}{}:
+	default:
+	}
 	return 0, nil
 }
 
@@ -154,5 +160,30 @@ func TestTickSurvivesGoingFailure(t *testing.T) {
 	schedulerAt(store, n, schedStart).tick(context.Background())
 	if len(n.sent) != 0 || store.advanced != 1 {
 		t.Fatalf("enviados=%+v advanced=%d", n.sent, store.advanced)
+	}
+}
+
+func TestRunTicksRepeatedlyUntilTheContextEnds(t *testing.T) {
+	store := &fakeSchedStore{going: map[string][]string{}, ticked: make(chan struct{}, 100)}
+	s := schedulerAt(store, &fakeNotifier{}, schedStart)
+	s.every = 5 * time.Millisecond
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+	go func() {
+		s.Run(ctx)
+		close(done)
+	}()
+	for i := 0; i < 3; i++ { // a rodada de partida e mais duas do ticker
+		select {
+		case <-store.ticked:
+		case <-time.After(2 * time.Second):
+			t.Fatalf("o ticker parou na rodada %d", i)
+		}
+	}
+	cancel()
+	select {
+	case <-done:
+	case <-time.After(2 * time.Second):
+		t.Fatal("Run não terminou com o contexto cancelado")
 	}
 }

@@ -46,6 +46,8 @@ type Scheduler struct {
 	notifier Notifier
 	loc      *time.Location
 	now      func() time.Time
+	// every: de quanto em quanto tempo o ticker confere (tickEvery; os testes encurtam).
+	every time.Duration
 }
 
 func NewScheduler(store schedulerStore, notifier Notifier) *Scheduler {
@@ -54,12 +56,12 @@ func NewScheduler(store schedulerStore, notifier Notifier) *Scheduler {
 		log.Printf("[eventos] fuso America/Sao_Paulo indisponível, usando UTC-3: %v", err)
 		loc = time.FixedZone("BRT", -3*60*60)
 	}
-	return &Scheduler{store: store, notifier: notifier, loc: loc, now: time.Now}
+	return &Scheduler{store: store, notifier: notifier, loc: loc, now: time.Now, every: tickEvery}
 }
 
 // Run confere os avisos a cada 30 s até o contexto acabar.
 func (s *Scheduler) Run(ctx context.Context) {
-	ticker := time.NewTicker(tickEvery)
+	ticker := time.NewTicker(s.every)
 	defer ticker.Stop()
 
 	s.tick(ctx)

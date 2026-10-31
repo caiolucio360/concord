@@ -3,15 +3,14 @@ import Button from '../../../shared/ui/Button'
 import Input from '../../../shared/ui/Input'
 import Modal from '../../../shared/ui/Modal'
 import type { ServerEvent } from '../api/events'
-import { eventErrorMessage } from '../lib/eventErrors'
 import {
   MAX_DESCRIPTION,
   MAX_TITLE,
   emptyForm,
   formFromEvent,
-  toInput,
   type EventFormValues
 } from '../lib/eventForm'
+import { saveEvent } from '../lib/eventSave'
 import { useEventsStore } from '../store/eventsStore'
 import BannerField from './BannerField'
 import RecurrenceFields from './RecurrenceFields'
@@ -90,16 +89,12 @@ export default function EventForm({
 
   const submit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
-    const result = toInput(values)
-    if (!result.ok) return setError(result.error)
     setError(null)
     setSaving(true)
-    try {
-      onSaved(await (event ? update(serverId, event.id, result.input) : create(serverId, result.input)))
-    } catch (err) {
-      setError(eventErrorMessage(err))
-      setSaving(false)
-    }
+    const result = await saveEvent(serverId, event, values, { create, update })
+    if (result.ok) return onSaved(result.event)
+    setError(result.error)
+    setSaving(false)
   }
 
   return (

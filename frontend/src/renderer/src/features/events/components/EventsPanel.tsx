@@ -2,10 +2,10 @@ import { useMemo, useState } from 'react'
 import Modal from '../../../shared/ui/Modal'
 import { useServerStore } from '../../servers/store/serverStore'
 import type { ServerEvent } from '../api/events'
+import { useEventAction } from '../hooks/useEventAction'
 import { useEvents } from '../hooks/useEvents'
-import { eventErrorMessage } from '../lib/eventErrors'
 import { useEventsStore } from '../store/eventsStore'
-import EventForm from './EventForm'
+import EventFormHost from './EventFormHost'
 import EventsPanelBody from './EventsPanelBody'
 
 /** O painel de eventos de um servidor: lista, detalhe, presença e (com permissão) criar, editar e cancelar. */
@@ -19,23 +19,15 @@ export default function EventsPanel({
   onClose: () => void
 }): React.JSX.Element {
   const { events, error, reload } = useEvents(serverId)
+  const { busy, notice, run } = useEventAction()
   const channels = useServerStore((s) => s.channels)
   const voiceChannels = useMemo(() => channels.filter((c) => c.type === 'voice'), [channels])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [editing, setEditing] = useState<ServerEvent | 'new' | null>(null)
-  const [notice, setNotice] = useState<string | null>(null)
-  const [busy, setBusy] = useState(false)
 
-  const run = async (action: () => Promise<void>): Promise<void> => {
-    setNotice(null)
-    setBusy(true)
-    try {
-      await action()
-    } catch (err) {
-      setNotice(eventErrorMessage(err))
-    } finally {
-      setBusy(false)
-    }
+  const cancelEvent = async (id: string): Promise<void> => {
+    await useEventsStore.getState().cancel(serverId, id)
+    setSelectedId(null)
   }
 
   return (
@@ -58,25 +50,18 @@ export default function EventsPanel({
         onEdit={setEditing}
         onRetry={reload}
         onRespond={(id, going) => void run(() => useEventsStore.getState().respond(serverId, id, going))}
-        onCancelEvent={(id) =>
-          void run(async () => {
-            await useEventsStore.getState().cancel(serverId, id)
-            setSelectedId(null)
-          })
-        }
+        onCancelEvent={(id) => void run(() => cancelEvent(id))}
       />
-      {editing && (
-        <EventForm
-          serverId={serverId}
-          event={editing === 'new' ? undefined : editing}
-          voiceChannels={voiceChannels}
-          onClose={() => setEditing(null)}
-          onSaved={(saved) => {
-            setEditing(null)
-            setSelectedId(saved.id)
-          }}
-        />
-      )}
+      <EventFormHost
+        serverId={serverId}
+        editing={editing}
+        voiceChannels={voiceChannels}
+        onClose={() => setEditing(null)}
+        onSaved={(saved) => {
+          setEditing(null)
+          setSelectedId(saved.id)
+        }}
+      />
     </Modal>
   )
 }

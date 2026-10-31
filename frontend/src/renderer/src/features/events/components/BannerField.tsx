@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import Button from '../../../shared/ui/Button'
 import { ImageAddIcon, TrashIcon } from '../../../shared/ui/icons'
-import { BANNER_ACCEPT, uploadEventBanner } from '../api/events'
-import { bannerFileError } from '../lib/bannerFile'
-import { eventErrorMessage } from '../lib/eventErrors'
+import { BANNER_ACCEPT } from '../api/events'
+import { uploadBanner } from '../lib/bannerUpload'
 import EventBanner from './EventBanner'
 
 /** Prévia local do arquivo escolhido (a URL é liberada ao trocar ou fechar). */
@@ -37,17 +36,12 @@ export default function BannerField({
 
   const pick = async (picked: File | undefined): Promise<void> => {
     if (!picked) return
-    const problem = bannerFileError(picked)
-    if (problem) return onError(problem)
     setUploading(true)
-    try {
-      onChange(await uploadEventBanner(serverId, picked))
-      setFile(picked)
-    } catch (err) {
-      onError(eventErrorMessage(err))
-    } finally {
-      setUploading(false)
-    }
+    const result = await uploadBanner(serverId, picked)
+    setUploading(false)
+    if (!result.ok) return onError(result.error)
+    onChange(result.bannerId)
+    setFile(picked)
   }
 
   const remove = (): void => {
