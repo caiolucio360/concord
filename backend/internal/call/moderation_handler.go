@@ -1,14 +1,16 @@
 package call
 
 import (
+	"context"
 	"errors"
 	"net/http"
+
+	"gin-quickstart/backend/internal/audit"
 
 	"github.com/gin-gonic/gin"
 )
 
-// Moderação de voz: mover, silenciar, ensurdecer e desconectar. Extraído do
-// handler.go sem mudar o comportamento.
+// Moderação de voz: mover, silenciar, ensurdecer e desconectar.
 
 // Move: um moderador tira alguém do canal de voz em que está e o põe em
 // outro canal de voz do mesmo servidor.
@@ -28,11 +30,13 @@ func (h *Handler) Move(c *gin.Context) {
 		return
 	}
 
-	call, err := h.service.MoveToChannel(c.Request.Context(), userID.(string), input.UserID, input.ChannelID)
+	from, _ := h.moderator.VoiceLocationOf(input.UserID)
+	call, err := h.moderator.MoveToChannel(c.Request.Context(), userID.(string), input.UserID, input.ChannelID)
 	if err != nil {
 		c.JSON(mapMoveError(err), gin.H{"error": err.Error()})
 		return
 	}
+	h.recordMove(c.Request.Context(), userID.(string), input.UserID, from, call)
 
 	c.JSON(http.StatusOK, call)
 }
@@ -72,19 +76,17 @@ func respondModeration(c *gin.Context, err error) {
 
 // ServerMute: POST /calls/:id/participants/:userId/server-mute {muted}.
 func (h *Handler) ServerMute(c *gin.Context) {
-	h.serverVoice(c, func(ctx *gin.Context, actor string, on bool) error {
-		return h.service.SetServerMute(ctx.Request.Context(), ctx.Param("id"), actor, ctx.Param("userId"), on)
-	})
+	h.serverVoice(c, audit.VoiceMute, "mute", h.moderator.SetServerMute)
 }
 
 // ServerDeafen: POST /calls/:id/participants/:userId/server-deafen {deafened}.
 func (h *Handler) ServerDeafen(c *gin.Context) {
-	h.serverVoice(c, func(ctx *gin.Context, actor string, on bool) error {
-		return h.service.SetServerDeafen(ctx.Request.Context(), ctx.Param("id"), actor, ctx.Param("userId"), on)
-	})
+	h.serverVoice(c, audit.VoiceDeafen, "deaf", h.moderator.SetServerDeafen)
 }
 
-func (h *Handler) serverVoice(c *gin.Context, apply func(*gin.Context, string, bool) error) {
+type voiceToggle func(ctx context.Context, callID, actorID, targetID string, on bool) error
+
+func (h *Handler) serverVoice(c *gin.Context, action audit.Action, field string, apply voiceToggle) {
 	var input struct {
 		Muted    *bool `json:"muted"`
 		Deafened *bool `json:"deafened"`
@@ -104,10 +106,12 @@ func (h *Handler) serverVoice(c *gin.Context, apply func(*gin.Context, string, b
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
-	if err := apply(c, userID.(string), on); err != nil {
+	callID, targetID := c.Param("id"), c.Param("userId")
+	if err := apply(c.Request.Context(), callID, userID.(string), targetID, on); err != nil {
 		respondModeration(c, err)
 		return
 	}
+	h.recordVoice(c.Request.Context(), userID.(string), callID, targetID, action, audit.Change{Field: field, After: on})
 	c.JSON(http.StatusOK, gin.H{"ok": true})
 }
 
@@ -118,9 +122,13 @@ func (h *Handler) Disconnect(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
-	if err := h.service.DisconnectParticipant(c.Request.Context(), c.Param("id"), userID.(string), c.Param("userId")); err != nil {
+	callID, targetID := c.Param("id"), c.Param("userId")
+	// O lugar sai antes: depois de desconectar, a pessoa não está mais na call.
+	loc, inCall := h.callLocation(callID, targetID)
+	if err := h.moderator.DisconnectParticipant(c.Request.Context(), callID, userID.(string), targetID); err != nil {
 		respondModeration(c, err)
 		return
 	}
+	h.recordAt(c.Request.Context(), userID.(string), targetID, audit.VoiceDisconnect, loc, inCall)
 	c.JSON(http.StatusOK, gin.H{"ok": true})
 }

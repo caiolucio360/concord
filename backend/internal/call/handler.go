@@ -11,14 +11,18 @@ import (
 )
 
 type Handler struct {
-	service *Service
-	tokens  *livekit.TokenIssuer
+	service   *Service
+	moderator VoiceModerator
+	tokens    *livekit.TokenIssuer
+	audit     AuditRecorder
+	channels  ChannelFinder
 }
 
 func CallHandler(service *Service, tokens *livekit.TokenIssuer) *Handler {
 	return &Handler{
-		service: service,
-		tokens:  tokens,
+		service:   service,
+		moderator: service,
+		tokens:    tokens,
 	}
 }
 
