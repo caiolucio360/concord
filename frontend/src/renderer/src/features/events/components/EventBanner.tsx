@@ -14,7 +14,15 @@ export default function EventBanner({
     <div className={`relative aspect-video w-full overflow-hidden bg-gradient-hero ${className}`}>
       {src ? (
         // Decorativo: o título do evento já está no texto ao lado.
-        <img src={src} alt="" loading="lazy" onError={onError} className="h-full w-full object-cover" />
+        <img
+          src={src}
+          alt=""
+          width={1280}
+          height={720}
+          loading="lazy"
+          onError={onError}
+          className="h-full w-full object-cover"
+        />
       ) : (
         <span className="absolute inset-0 flex items-center justify-center text-white/80">
           <CalendarIcon size={24} />

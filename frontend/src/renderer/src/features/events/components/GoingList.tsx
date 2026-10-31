@@ -33,7 +33,7 @@ export default function GoingList({
   return (
     <ul aria-label="Quem vai" className="flex flex-wrap gap-2">
       {people.map((p) => (
-        <li key={p.user_id} className="rounded-md bg-fg/5 px-2.5 py-1 text-ds-xs text-normal">
+        <li key={p.user_id} className="max-w-full truncate rounded-md bg-fg/5 px-2.5 py-1 text-ds-xs text-normal">
           {p.display_name || p.username}
         </li>
       ))}

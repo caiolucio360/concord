@@ -59,9 +59,15 @@ export default function BannerField({
     <div className="flex flex-col gap-2">
       <span className="text-ds-sm font-medium text-secondary">Banner (opcional)</span>
       {preview && bannerId ? (
-        <img src={preview} alt="" className="aspect-video w-full rounded-lg object-cover" />
+        <img
+          src={preview}
+          alt=""
+          width={1280}
+          height={720}
+          className="aspect-video w-full rounded-lg object-cover md:max-w-sm"
+        />
       ) : (
-        <EventBanner bannerId={bannerId} className="rounded-lg" />
+        <EventBanner bannerId={bannerId} className="rounded-lg md:max-w-sm" />
       )}
       <input
         ref={inputRef}

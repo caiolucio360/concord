@@ -32,7 +32,7 @@ function ListState({ events, error, onRetry }: Pick<BodyProps, 'events' | 'error
     return (
       <div role="alert" className="flex flex-col items-start gap-2 rounded-lg border border-danger/20 bg-danger/10 p-3">
         <p className="text-ds-sm text-danger">{error}</p>
-        <Button variant="ghost" size="sm" onClick={onRetry}>
+        <Button variant="ghost" onClick={onRetry}>
           Tentar de novo
         </Button>
       </div>

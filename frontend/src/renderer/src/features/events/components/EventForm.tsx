@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Button from '../../../shared/ui/Button'
 import Input from '../../../shared/ui/Input'
 import Modal from '../../../shared/ui/Modal'
@@ -44,7 +44,12 @@ function ChannelField({
   return (
     <label className={LABEL}>
       Canal de voz
-      <select className="glass-input" value={value} onChange={(e) => onChange(e.target.value)}>
+      <select
+        name="event-channel"
+        className="glass-input"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
         {channels.map((c) => (
           <option key={c.id} value={c.id} className="bg-floating">
             {c.name}
@@ -77,6 +82,11 @@ export default function EventForm({
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const patch = (change: Partial<EventFormValues>): void => setValues((v) => ({ ...v, ...change }))
+  // O botão fica no fim do formulário: leva o foco (e a tela) até o erro.
+  const alertRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (error) alertRef.current?.focus()
+  }, [error])
 
   const submit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
@@ -96,7 +106,12 @@ export default function EventForm({
     <Modal open wide title={event ? 'Editar evento' : 'Novo evento'} onClose={onClose}>
       <form onSubmit={submit} className="flex flex-col gap-4">
         {error && (
-          <div role="alert" className="rounded-lg border border-danger/20 bg-danger/10 p-2.5 text-ds-xs text-danger">
+          <div
+            ref={alertRef}
+            tabIndex={-1}
+            role="alert"
+            className="rounded-lg border border-danger/20 bg-danger/10 p-2.5 text-ds-xs text-danger"
+          >
             {error}
           </div>
         )}
@@ -108,6 +123,7 @@ export default function EventForm({
         />
         <Input
           label="Título"
+          name="event-title"
           value={values.title}
           maxLength={MAX_TITLE}
           autoComplete="off"
@@ -116,6 +132,8 @@ export default function EventForm({
         <label className={LABEL}>
           Descrição (opcional)
           <textarea
+            name="event-description"
+            autoComplete="off"
             className="glass-input resize-none text-ds-sm"
             rows={4}
             maxLength={MAX_DESCRIPTION}
@@ -132,6 +150,8 @@ export default function EventForm({
           Quando começa
           <input
             type="datetime-local"
+            name="event-starts-at"
+            autoComplete="off"
             className="glass-input"
             value={values.startsAt}
             onChange={(e) => patch({ startsAt: e.target.value })}
@@ -144,7 +164,7 @@ export default function EventForm({
             Cancelar
           </Button>
           <Button type="submit" loading={saving} disabled={saving || voiceChannels.length === 0}>
-            Salvar
+            Salvar evento
           </Button>
         </div>
       </form>

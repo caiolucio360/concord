@@ -31,6 +31,7 @@ export default function RecurrenceFields({
       <label className={LABEL}>
         Repetir
         <select
+          name="event-recurrence"
           className="glass-input"
           value={values.recurrence}
           onChange={(e) => onChange({ recurrence: e.target.value as Recurrence })}
@@ -47,6 +48,7 @@ export default function RecurrenceFields({
         <label className={LABEL}>
           Termina
           <select
+            name="event-end-mode"
             className="glass-input"
             value={values.endMode}
             onChange={(e) => onChange({ endMode: e.target.value as EndMode })}
@@ -62,6 +64,7 @@ export default function RecurrenceFields({
       {repeats && values.endMode === 'until' && (
         <Input
           label="Último dia"
+          name="event-until"
           type="date"
           value={values.until}
           onChange={(e) => onChange({ until: e.target.value })}
@@ -70,6 +73,7 @@ export default function RecurrenceFields({
       {repeats && values.endMode === 'count' && (
         <Input
           label="Número de vezes"
+          name="event-count"
           type="number"
           min={1}
           inputMode="numeric"

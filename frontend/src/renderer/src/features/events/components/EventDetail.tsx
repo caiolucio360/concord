@@ -65,7 +65,7 @@ export default function EventDetail({
 }): React.JSX.Element {
   return (
     <article className="flex min-w-0 flex-col gap-4">
-      <Button variant="ghost" size="sm" className="self-start xl:hidden" onClick={onBack}>
+      <Button variant="ghost" className="self-start xl:hidden" onClick={onBack}>
         Voltar à lista
       </Button>
       <EventBanner bannerId={event.banner_id} className="rounded-lg" />
