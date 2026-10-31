@@ -1,0 +1,57 @@
+-- Eventos do servidor (docs/superpowers/specs/2026-10-30-eventos-do-servidor-design.md).
+-- A recorrência guarda só a regra: next_start_at é a ocorrência atual e
+-- occurrences_done o índice dela (OccurrenceAt em internal/event/recurrence.go).
+CREATE TABLE server_events (
+    id UUID PRIMARY KEY,
+    server_id UUID NOT NULL REFERENCES servers (id) ON DELETE CASCADE,
+    channel_id UUID NOT NULL REFERENCES channels (id) ON DELETE CASCADE,
+    scope VARCHAR(16) NOT NULL DEFAULT 'server' CHECK (scope IN ('server')),
+    title VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    banner_id UUID,
+    starts_at TIMESTAMPTZ NOT NULL,
+    next_start_at TIMESTAMPTZ NOT NULL,
+    recurrence VARCHAR(8) NOT NULL DEFAULT 'none' CHECK (recurrence IN ('none', 'daily', 'weekly', 'monthly')),
+    recurrence_until TIMESTAMPTZ,
+    recurrence_count INT CHECK (recurrence_count IS NULL OR recurrence_count >= 1),
+    occurrences_done INT NOT NULL DEFAULT 0,
+    reminder_offsets INT[] NOT NULL DEFAULT '{10,5}',
+    created_by UUID REFERENCES users (id) ON DELETE SET NULL,
+    canceled_at TIMESTAMPTZ,
+    finished_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Lista do servidor (só os vivos) e varredura do ticker.
+CREATE INDEX idx_server_events_server ON server_events (server_id, next_start_at)
+    WHERE canceled_at IS NULL AND finished_at IS NULL;
+CREATE INDEX idx_server_events_active ON server_events (next_start_at)
+    WHERE canceled_at IS NULL AND finished_at IS NULL;
+
+-- O banner é servido pelo id do arquivo; este índice acha o evento dono dele.
+CREATE INDEX idx_server_events_banner ON server_events (banner_id) WHERE banner_id IS NOT NULL;
+
+-- Presença da ocorrência atual; as antigas ficam para trás (a chave inclui a ocorrência).
+CREATE TABLE event_rsvps (
+    event_id UUID NOT NULL REFERENCES server_events (id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    occurrence_start TIMESTAMPTZ NOT NULL,
+    going BOOLEAN NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (event_id, user_id, occurrence_start)
+);
+
+-- Fila do ticker: um aviso por (evento, ocorrência, antecedência).
+-- offset_minutes = 0 é o "começou".
+CREATE TABLE event_reminders (
+    id BIGSERIAL PRIMARY KEY,
+    event_id UUID NOT NULL REFERENCES server_events (id) ON DELETE CASCADE,
+    occurrence_start TIMESTAMPTZ NOT NULL,
+    offset_minutes INT NOT NULL CHECK (offset_minutes >= 0),
+    due_at TIMESTAMPTZ NOT NULL,
+    sent_at TIMESTAMPTZ,
+    UNIQUE (event_id, occurrence_start, offset_minutes)
+);
+
+CREATE INDEX idx_event_reminders_due ON event_reminders (due_at) WHERE sent_at IS NULL;
