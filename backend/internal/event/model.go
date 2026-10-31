@@ -38,7 +38,7 @@ var (
 	ErrInvalidReminder    = errors.New("antecedência de aviso inválida")
 	ErrTooManyReminders   = errors.New("escolha no máximo 2 antecedências de aviso")
 	ErrInvalidDuration    = errors.New("duração do evento inválida")
-	ErrEventRunning       = errors.New("este evento está em andamento: espere ele acabar para editar (ou cancele)")
+	ErrEventRunning       = errors.New("com o evento em andamento só dá para mudar título, descrição e banner")
 	ErrInvalidBanner      = errors.New("banner inválido")
 	ErrEventEnded         = errors.New("este evento já terminou")
 )

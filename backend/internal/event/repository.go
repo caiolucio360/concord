@@ -197,3 +197,40 @@ func (r *Repository) ServerOfBanner(ctx context.Context, bannerID string) (strin
 	}
 	return serverID, err
 }
+
+// UpdateBasics troca só título, descrição e banner do evento vivo (a edição de
+// um evento em andamento): horário, sala e avisos não mudam.
+func (r *Repository) UpdateBasics(ctx context.Context, e *Event) error {
+	tag, err := r.db.Exec(ctx, `
+		UPDATE server_events SET title = $3, description = $4, banner_id = $5, updated_at = NOW()
+		WHERE id = $1 AND server_id = $2 AND canceled_at IS NULL AND finished_at IS NULL`,
+		e.ID, e.ServerID, e.Title, e.Description, e.BannerID)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return ErrEventNotFound
+	}
+	return nil
+}
+
+// LiveBannerIDs: os arquivos de banner de eventos vivos (nem cancelados nem
+// encerrados). O resto, passado o prazo, é lixo e a faxina apaga.
+func (r *Repository) LiveBannerIDs(ctx context.Context) (map[string]bool, error) {
+	rows, err := r.db.Query(ctx, `
+		SELECT banner_id FROM server_events
+		WHERE banner_id IS NOT NULL AND canceled_at IS NULL AND finished_at IS NULL`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	live := map[string]bool{}
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		live[id] = true
+	}
+	return live, rows.Err()
+}

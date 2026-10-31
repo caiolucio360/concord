@@ -14,9 +14,12 @@ var testNow = time.Date(2026, 11, 1, 12, 0, 0, 0, time.UTC)
 
 // fakeStore guarda tudo em memória; só o que o service usa.
 type fakeStore struct {
-	events    map[string]*Event
-	reminders map[string][]ReminderRow
-	rsvps     map[string]bool
+	failUpdate  bool
+	basicsCalls int
+	updateCalls int
+	events      map[string]*Event
+	reminders   map[string][]ReminderRow
+	rsvps       map[string]bool
 }
 
 func newFakeStore() *fakeStore {
@@ -37,7 +40,18 @@ func (f *fakeStore) Create(_ context.Context, e *Event, rows []ReminderRow) erro
 	return nil
 }
 
+func (f *fakeStore) UpdateBasics(_ context.Context, e *Event) error {
+	f.basicsCalls++
+	cur := f.events[e.ID]
+	cur.Title, cur.Description, cur.BannerID = e.Title, e.Description, e.BannerID
+	return nil
+}
+
 func (f *fakeStore) Update(_ context.Context, e *Event, rows []ReminderRow) error {
+	f.updateCalls++
+	if f.failUpdate {
+		return errors.New("banco fora")
+	}
 	cp := *e
 	f.events[e.ID] = &cp
 	f.reminders[e.ID] = rows
@@ -332,15 +346,6 @@ func TestCreateStoresTheDuration(t *testing.T) {
 	}
 }
 
-func TestUpdateWhileTheEventIsRunningIsRejected(t *testing.T) {
-	e := newEnv()
-	created, _ := e.svc.Create(context.Background(), "s1", "mod", goodInput())
-	e.store.events[created.ID].NextStartAt = testNow.Add(-10 * time.Minute) // já começou
-	if _, err := e.svc.Update(context.Background(), "s1", created.ID, "mod", goodInput()); !errors.Is(err, ErrEventRunning) {
-		t.Fatalf("erro = %v, esperava ErrEventRunning", err)
-	}
-}
-
 func TestCancelClosesTheOpenRoom(t *testing.T) {
 	e, rooms := envWithRooms()
 	created, _ := e.svc.Create(context.Background(), "s1", "mod", goodInput())
@@ -385,5 +390,187 @@ func TestRSVPGivesAndTakesAccessToTheRoom(t *testing.T) {
 		if got := rooms.allowed[len(rooms.allowed)-1]; got != step.want || len(rooms.allowed) != i+1 {
 			t.Fatalf("passo %d: %v, esperava terminar em %q", i, rooms.allowed, step.want)
 		}
+	}
+}
+
+type fakeBanners struct{ removed []string }
+
+func (f *fakeBanners) Remove(id string) error {
+	f.removed = append(f.removed, id)
+	return nil
+}
+
+const (
+	bannerOne = "11111111-1111-4111-8111-111111111111"
+	bannerTwo = "22222222-2222-4222-8222-222222222222"
+)
+
+func envWithBanners() (env, *fakeBanners) {
+	e := newEnv()
+	banners := &fakeBanners{}
+	e.svc.WithBanners(banners)
+	return e, banners
+}
+
+func inputWithBanner(id *string) Input {
+	in := goodInput()
+	in.BannerID = id
+	return in
+}
+
+func strPtr(s string) *string { return &s }
+
+func TestUpdateReplacingTheBannerRemovesTheOldFile(t *testing.T) {
+	e, banners := envWithBanners()
+	created, _ := e.svc.Create(context.Background(), "s1", "mod", inputWithBanner(strPtr(bannerOne)))
+	if _, err := e.svc.Update(context.Background(), "s1", created.ID, "mod", inputWithBanner(strPtr(bannerTwo))); err != nil {
+		t.Fatal(err)
+	}
+	if len(banners.removed) != 1 || banners.removed[0] != bannerOne {
+		t.Fatalf("arquivos apagados = %v, esperava só o banner antigo", banners.removed)
+	}
+}
+
+func TestUpdateKeepingTheBannerKeepsTheFile(t *testing.T) {
+	e, banners := envWithBanners()
+	created, _ := e.svc.Create(context.Background(), "s1", "mod", inputWithBanner(strPtr(bannerOne)))
+	if _, err := e.svc.Update(context.Background(), "s1", created.ID, "mod", inputWithBanner(strPtr(bannerOne))); err != nil {
+		t.Fatal(err)
+	}
+	if len(banners.removed) != 0 {
+		t.Fatalf("o banner continua o mesmo: %v", banners.removed)
+	}
+}
+
+func TestUpdateRemovingTheBannerDeletesTheFile(t *testing.T) {
+	e, banners := envWithBanners()
+	created, _ := e.svc.Create(context.Background(), "s1", "mod", inputWithBanner(strPtr(bannerOne)))
+	if _, err := e.svc.Update(context.Background(), "s1", created.ID, "mod", inputWithBanner(nil)); err != nil {
+		t.Fatal(err)
+	}
+	if len(banners.removed) != 1 || banners.removed[0] != bannerOne {
+		t.Fatalf("arquivos apagados = %v", banners.removed)
+	}
+}
+
+func TestFailedUpdateKeepsTheOldBanner(t *testing.T) {
+	e, banners := envWithBanners()
+	created, _ := e.svc.Create(context.Background(), "s1", "mod", inputWithBanner(strPtr(bannerOne)))
+	e.store.failUpdate = true
+	if _, err := e.svc.Update(context.Background(), "s1", created.ID, "mod", inputWithBanner(strPtr(bannerTwo))); err == nil {
+		t.Fatal("esperava erro")
+	}
+	if len(banners.removed) != 0 {
+		t.Fatalf("se a edição falhou o banner antigo continua valendo: %v", banners.removed)
+	}
+}
+
+func TestCancelRemovesTheBannerFile(t *testing.T) {
+	e, banners := envWithBanners()
+	created, _ := e.svc.Create(context.Background(), "s1", "mod", inputWithBanner(strPtr(bannerOne)))
+	if err := e.svc.Cancel(context.Background(), "s1", created.ID, "mod"); err != nil {
+		t.Fatal(err)
+	}
+	if len(banners.removed) != 1 || banners.removed[0] != bannerOne {
+		t.Fatalf("arquivos apagados = %v", banners.removed)
+	}
+}
+
+// runningEvent cria um evento e o põe em andamento (começou há 10 min, na 3ª ocorrência).
+func runningEvent(t *testing.T, banner *string) (env, *fakeBanners, *Event) {
+	t.Helper()
+	e, banners := envWithBanners()
+	created, err := e.svc.Create(context.Background(), "s1", "mod", inputWithBanner(banner))
+	if err != nil {
+		t.Fatal(err)
+	}
+	stored := e.store.events[created.ID]
+	stored.NextStartAt = testNow.Add(-10 * time.Minute)
+	stored.OccurrencesDone = 2
+	return e, banners, created
+}
+
+func TestRunningEventAllowsOnlySimpleEdits(t *testing.T) {
+	e, _, created := runningEvent(t, nil)
+	remindersBefore := len(e.store.reminders[created.ID])
+	sentBefore := len(e.pub.sent)
+
+	in := goodInput()
+	in.Title, in.Description = "Novo título", "Nova descrição"
+	got, err := e.svc.Update(context.Background(), "s1", created.ID, "mod", in)
+	if err != nil {
+		t.Fatalf("editar o simples com o evento em andamento: %v", err)
+	}
+	if got.Title != "Novo título" || got.Description != "Nova descrição" {
+		t.Fatalf("evento = %+v", got)
+	}
+	stored := e.store.events[created.ID]
+	if stored.Title != "Novo título" || !stored.NextStartAt.Equal(testNow.Add(-10*time.Minute)) || stored.OccurrencesDone != 2 {
+		t.Fatalf("só o simples muda; a ocorrência em andamento fica: %+v", stored)
+	}
+	if e.store.updateCalls != 0 || e.store.basicsCalls != 1 {
+		t.Fatalf("edição completa=%d simples=%d: devia usar só a simples", e.store.updateCalls, e.store.basicsCalls)
+	}
+	if len(e.store.reminders[created.ID]) != remindersBefore {
+		t.Fatal("os avisos não podem ser refeitos")
+	}
+	if last := e.pub.sent[len(e.pub.sent)-1]; len(e.pub.sent) != sentBefore+1 || last.event["type"] != "event:update" {
+		t.Fatalf("o app precisa saber da mudança: %+v", last)
+	}
+}
+
+func TestRunningEventRejectsScheduleChanges(t *testing.T) {
+	cases := []struct {
+		name string
+		edit func(*Input)
+	}{
+		{"horário", func(i *Input) { i.StartsAt = i.StartsAt.Add(time.Hour) }},
+		{"duração", func(i *Input) { i.DurationMinutes = 60 }},
+		{"repetição", func(i *Input) { i.Recurrence = RecDaily }},
+		{"fim por contagem", func(i *Input) { n := 3; i.Recurrence = RecWeekly; i.RecurrenceCount = &n }},
+		{"antecedências", func(i *Input) { i.ReminderOffsets = []int{30} }},
+	}
+	for _, c := range cases {
+		e, _, created := runningEvent(t, nil)
+		in := goodInput()
+		c.edit(&in)
+		if _, err := e.svc.Update(context.Background(), "s1", created.ID, "mod", in); !errors.Is(err, ErrEventRunning) {
+			t.Errorf("%s: erro %v, esperava ErrEventRunning", c.name, err)
+		}
+		if e.store.basicsCalls != 0 || e.store.updateCalls != 0 {
+			t.Errorf("%s: nada devia ser gravado", c.name)
+		}
+	}
+}
+
+func TestRunningEventStillValidatesTheSimpleFields(t *testing.T) {
+	e, _, created := runningEvent(t, nil)
+	in := goodInput()
+	in.Title = "   "
+	if _, err := e.svc.Update(context.Background(), "s1", created.ID, "mod", in); !errors.Is(err, ErrInvalidTitle) {
+		t.Fatalf("erro = %v, esperava ErrInvalidTitle", err)
+	}
+	in = goodInput()
+	bad := "../../etc/passwd"
+	in.BannerID = &bad
+	if _, err := e.svc.Update(context.Background(), "s1", created.ID, "mod", in); !errors.Is(err, ErrInvalidBanner) {
+		t.Fatalf("erro = %v, esperava ErrInvalidBanner", err)
+	}
+}
+
+func TestRunningEventSimpleEditReplacesTheBanner(t *testing.T) {
+	e, banners, created := runningEvent(t, strPtr(bannerOne))
+	if _, err := e.svc.Update(context.Background(), "s1", created.ID, "mod", inputWithBanner(strPtr(bannerTwo))); err != nil {
+		t.Fatal(err)
+	}
+	if len(banners.removed) != 1 || banners.removed[0] != bannerOne {
+		t.Fatalf("arquivos apagados = %v", banners.removed)
+	}
+}
+
+func TestRunningEventEditNeedsPermission(t *testing.T) {
+	e, _, created := runningEvent(t, nil)
+	if _, err := e.svc.Update(context.Background(), "s1", created.ID, "membro", goodInput()); !errors.Is(err, ErrMissingPermission) {
+		t.Fatalf("erro = %v", err)
 	}
 }

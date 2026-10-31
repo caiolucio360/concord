@@ -96,11 +96,11 @@ func (r *Rooms) Open(ctx context.Context, req RoomRequest, going []string) error
 // create cria um canal da sala; nome repetido no servidor tenta de novo com
 // um pedaço do id do evento no fim.
 func (r *Rooms) create(ctx context.Context, req RoomRequest, name, chType string, overwrites []permission.Overwrite) (*channel.Channel, error) {
-	ch := &channel.Channel{ServerID: req.ServerID, Name: name, Type: chType, CreatedBy: creatorOf(req)}
+	ch := &channel.Channel{ServerID: req.ServerID, Name: name, Type: chType, CreatedBy: creatorOf(req), Managed: true}
 	if err := r.channels.Create(ctx, ch, overwrites...); err == nil {
 		return ch, nil
 	}
-	ch = &channel.Channel{ServerID: req.ServerID, Name: name + "-" + shortID(req.EventID), Type: chType, CreatedBy: creatorOf(req)}
+	ch = &channel.Channel{ServerID: req.ServerID, Name: name + "-" + shortID(req.EventID), Type: chType, CreatedBy: creatorOf(req), Managed: true}
 	if err := r.channels.Create(ctx, ch, overwrites...); err != nil {
 		return nil, err
 	}

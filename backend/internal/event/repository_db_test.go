@@ -170,3 +170,68 @@ func TestRepositoryUpdateReplacesPendingReminders(t *testing.T) {
 		t.Fatalf("Find depois do Update = %+v err=%v", got, err)
 	}
 }
+
+func TestRepositoryUpdateBasicsKeepsTheScheduleAndTheReminders(t *testing.T) {
+	db, ctx := eventDB(t)
+	repo := NewRepository(db)
+	owner, server := seedUserAndServer(t, db, "Servidor")
+	start := time.Now().Add(3 * time.Hour).Truncate(time.Second)
+	e := newTestEvent(server, owner, start)
+	if err := repo.Create(ctx, e, reminderRows(start, e.ReminderOffsets, time.Now())); err != nil {
+		t.Fatal(err)
+	}
+	banner := "11111111-1111-4111-8111-111111111111"
+	e.Title, e.Description, e.BannerID = "Outro nome", "Nova descrição", &banner
+	e.NextStartAt = start.Add(24 * time.Hour) // não pode ser gravado por esta consulta
+	if err := repo.UpdateBasics(ctx, e); err != nil {
+		t.Fatal(err)
+	}
+	got, err := repo.Find(ctx, server, e.ID)
+	if err != nil || got.Title != "Outro nome" || got.Description != "Nova descrição" || got.BannerID == nil || *got.BannerID != banner {
+		t.Fatalf("depois de editar: %+v err=%v", got, err)
+	}
+	if !got.NextStartAt.Equal(start) {
+		t.Errorf("o horário não muda na edição simples: %v", got.NextStartAt)
+	}
+	var pending int
+	_ = db.QueryRow(ctx, `SELECT COUNT(*) FROM event_reminders WHERE event_id = $1 AND sent_at IS NULL`, e.ID).Scan(&pending)
+	if pending != 3 {
+		t.Errorf("os avisos pendentes continuam (3), vieram %d", pending)
+	}
+	mustExec(t, db, `UPDATE server_events SET canceled_at = NOW() WHERE id = $1`, e.ID)
+	if err := repo.UpdateBasics(ctx, e); !errors.Is(err, ErrEventNotFound) {
+		t.Errorf("evento cancelado não se edita: %v", err)
+	}
+}
+
+func TestRepositoryLiveBannerIDsIgnoresCanceledAndFinished(t *testing.T) {
+	db, ctx := eventDB(t)
+	repo := NewRepository(db)
+	owner, server := seedUserAndServer(t, db, "Servidor")
+	start := time.Now().Add(time.Hour).Truncate(time.Second)
+	ids := map[string]string{
+		"vivo":      "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+		"cancelado": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+		"encerrado": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+	}
+	events := map[string]*Event{}
+	for name, banner := range ids {
+		b := banner
+		e := newTestEvent(server, owner, start)
+		e.BannerID = &b
+		if err := repo.Create(ctx, e, nil); err != nil {
+			t.Fatal(err)
+		}
+		events[name] = e
+	}
+	mustExec(t, db, `UPDATE server_events SET canceled_at = NOW() WHERE id = $1`, events["cancelado"].ID)
+	mustExec(t, db, `UPDATE server_events SET finished_at = NOW() WHERE id = $1`, events["encerrado"].ID)
+
+	live, err := repo.LiveBannerIDs(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !live[ids["vivo"]] || live[ids["cancelado"]] || live[ids["encerrado"]] {
+		t.Fatalf("banners em uso = %v: só o do evento vivo conta", live)
+	}
+}

@@ -18,12 +18,14 @@ func (a *app) wireEvents() {
 	// Cada evento abre a própria sala (voz e texto, só para quem confirmou) na hora
 	// de começar e a apaga no fim.
 	rooms := event.NewRooms(a.channelService, a.permissionService, a.callService, repo)
-	service := event.NewService(repo, a.permissionService, a.permissionService, a.hub).WithRooms(rooms)
 	banners := mustStore(filepath.Join(a.uploadsDir, event.BannerDir), "event banners dir")
+	service := event.NewService(repo, a.permissionService, a.permissionService, a.hub).WithRooms(rooms).WithBanners(banners)
 	bannerHandler := event.NewBannerHandler(banners, a.uploadSpace, a.permissionService, a.permissionService, a.authService, repo)
 
 	notifier := salinhaBotNotifier{conversations: a.conversationService, messages: a.messageService}
 	go event.NewScheduler(repo, notifier, rooms, a.hub).Run(a.ctx)
+	// Banner trocado, cancelado ou nunca usado não fica no disco.
+	go event.NewBannerJanitor(banners, repo).Run(a.ctx)
 
 	a.route(func(_ *gin.Engine, api *gin.RouterGroup) {
 		event.Routes(api, event.NewHandler(service), bannerHandler, a.authMiddleware)

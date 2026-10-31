@@ -188,9 +188,12 @@ func (h *Handler) Update(c *gin.Context) {
 		return
 	}
 
-	snap, _, herr := h.requireChannel(c.Request.Context(), serverID, channelID, userID.(string), permission.ManageChannels)
+	snap, current, herr := h.requireChannel(c.Request.Context(), serverID, channelID, userID.(string), permission.ManageChannels)
 	if herr != nil {
 		herr.respond(c)
+		return
+	}
+	if refuseManaged(c, current) {
 		return
 	}
 
@@ -218,8 +221,12 @@ func (h *Handler) Delete(c *gin.Context) {
 		return
 	}
 
-	if _, _, herr := h.requireChannel(c.Request.Context(), serverID, channelID, userID.(string), permission.ManageChannels); herr != nil {
+	_, current, herr := h.requireChannel(c.Request.Context(), serverID, channelID, userID.(string), permission.ManageChannels)
+	if herr != nil {
 		herr.respond(c)
+		return
+	}
+	if refuseManaged(c, current) {
 		return
 	}
 
@@ -313,6 +320,9 @@ func (h *Handler) changeOverwrite(c *gin.Context, next *permission.Overwrite) {
 	snap, ch, herr := h.requireChannel(c.Request.Context(), serverID, channelID, userID.(string), permission.ManageRoles)
 	if herr != nil {
 		herr.respond(c)
+		return
+	}
+	if refuseManaged(c, ch) {
 		return
 	}
 
@@ -430,4 +440,17 @@ func (h *Handler) requireChannel(ctx context.Context, serverID, channelID, userI
 	}
 	ch.Overwrites = OverwritesOf(snap, channelID)
 	return snap, ch, nil
+}
+
+// refuseManaged responde 403 se o canal é de uma sala de evento (só o evento o
+// cria e apaga) e diz se respondeu.
+func refuseManaged(c *gin.Context, ch *Channel) bool {
+	if !ch.Managed {
+		return false
+	}
+	c.JSON(http.StatusForbidden, gin.H{
+		"error": "canal de evento: ele some sozinho quando o evento acaba ou é cancelado",
+		"code":  "managed_channel",
+	})
+	return true
 }

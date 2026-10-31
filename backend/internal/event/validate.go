@@ -12,16 +12,9 @@ import (
 // normalize confere o pedido e devolve a versão limpa (título sem espaços nas
 // pontas, antecedências do maior para o menor e sem repetição).
 func (in Input) normalize(now time.Time) (Input, error) {
-	in.Title = strings.TrimSpace(in.Title)
-	in.Description = strings.TrimSpace(in.Description)
-	if n := utf8.RuneCountInString(in.Title); n < 1 || n > MaxTitleRunes {
-		return in, ErrInvalidTitle
-	}
-	if utf8.RuneCountInString(in.Description) > MaxDescriptionRunes {
-		return in, ErrInvalidDescription
-	}
-	if in.BannerID != nil && uuid.Validate(*in.BannerID) != nil {
-		return in, ErrInvalidBanner
+	in, err := in.cleanText()
+	if err != nil {
+		return in, err
 	}
 	if !in.StartsAt.After(now) {
 		return in, ErrInPast
@@ -53,6 +46,23 @@ func (in Input) checkRecurrence() error {
 		return ErrInvalidRecurrence
 	}
 	return nil
+}
+
+// cleanText confere (e limpa) só o que a edição simples de um evento em andamento
+// pode mudar: título, descrição e banner.
+func (in Input) cleanText() (Input, error) {
+	in.Title = strings.TrimSpace(in.Title)
+	in.Description = strings.TrimSpace(in.Description)
+	if n := utf8.RuneCountInString(in.Title); n < 1 || n > MaxTitleRunes {
+		return in, ErrInvalidTitle
+	}
+	if utf8.RuneCountInString(in.Description) > MaxDescriptionRunes {
+		return in, ErrInvalidDescription
+	}
+	if in.BannerID != nil && uuid.Validate(*in.BannerID) != nil {
+		return in, ErrInvalidBanner
+	}
+	return in, nil
 }
 
 // cleanDuration: sem escolha vale o padrão; senão, uma das durações da lista.
