@@ -3,23 +3,24 @@ import Modal from '../../../shared/ui/Modal'
 import { useServerStore } from '../../servers/store/serverStore'
 import type { ServerEvent } from '../api/events'
 import { useEventAction } from '../hooks/useEventAction'
+import { useEventAccess } from '../hooks/useEventAccess'
 import { useEvents } from '../hooks/useEvents'
 import { useEventsStore } from '../store/eventsStore'
 import EventFormHost from './EventFormHost'
 import EventsPanelBody from './EventsPanelBody'
 
-/** O painel de eventos de um servidor: lista, detalhe, presença e (com permissão) criar, editar e cancelar. */
+/** O painel de eventos de um servidor: lista, detalhe, presença e, para quem o dono liberou, criar, editar e cancelar. */
 export default function EventsPanel({
   serverId,
-  canManage,
   onClose
 }: {
   serverId: string
-  canManage: boolean
   onClose: () => void
 }): React.JSX.Element {
   const { events, error, reload } = useEvents(serverId)
   const { busy, notice, run } = useEventAction()
+  // O dono escolhe, por cargo, quem cria, edita e exclui; sem resposta, nenhum botão.
+  const access = useEventAccess(serverId)
   const channels = useServerStore((s) => s.channels)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [editing, setEditing] = useState<ServerEvent | 'new' | null>(null)
@@ -40,7 +41,9 @@ export default function EventsPanel({
         serverId={serverId}
         events={events}
         error={error}
-        canManage={canManage}
+        canCreate={Boolean(access?.create)}
+        canEdit={Boolean(access?.edit)}
+        canDelete={Boolean(access?.delete)}
         channels={channels}
         selectedId={selectedId}
         busy={busy}

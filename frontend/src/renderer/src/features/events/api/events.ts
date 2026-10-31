@@ -41,6 +41,34 @@ export interface EventInput {
   reminder_offsets: number[]
 }
 
+/** O que a pessoa pode fazer com os eventos do servidor (o dono escolhe, cargo a cargo). */
+export interface EventAccess {
+  create: boolean
+  edit: boolean
+  delete: boolean
+  /** Abre a configuração dos eventos (o dono sempre). */
+  configure: boolean
+  owner: boolean
+}
+
+/** Um cargo e o que ele pode fazer com os eventos. */
+export interface RoleSetting {
+  role_id: string
+  name: string
+  create: boolean
+  edit: boolean
+  delete: boolean
+  configure: boolean
+}
+
+export interface RoleActions {
+  create: boolean
+  edit: boolean
+  delete: boolean
+  /** Só vale se quem grava é o dono; para os outros o servidor mantém o que o cargo já tem. */
+  configure?: boolean
+}
+
 export interface EventGoing {
   user_id: string
   username: string
@@ -85,6 +113,21 @@ export function setRsvp(serverId: string, eventId: string, going: boolean): Prom
 export function clearRsvp(serverId: string, eventId: string): Promise<void> {
   return request<void>(`${base(serverId)}/${encodeURIComponent(eventId)}/rsvp`, {
     method: 'DELETE'
+  })
+}
+
+export function fetchEventAccess(serverId: string): Promise<EventAccess> {
+  return request<EventAccess>(`${base(serverId)}/access`)
+}
+
+export function fetchRoleSettings(serverId: string): Promise<RoleSetting[]> {
+  return request<RoleSetting[]>(`${base(serverId)}/roles`)
+}
+
+export function saveRoleActions(serverId: string, roleId: string, actions: RoleActions): Promise<void> {
+  return request<void>(`${base(serverId)}/roles/${encodeURIComponent(roleId)}`, {
+    method: 'PUT',
+    body: JSON.stringify(actions)
   })
 }
 

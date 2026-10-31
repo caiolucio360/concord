@@ -41,7 +41,9 @@ function render(props: Partial<React.ComponentProps<typeof EventsPanelBody>> = {
       serverId="s1"
       events={[ev('a'), ev('b')]}
       error={null}
-      canManage={false}
+      canCreate={false}
+      canEdit={false}
+      canDelete={false}
       channels={channels}
       selectedId={null}
       onSelect={() => {}}
@@ -67,9 +69,9 @@ describe('EventsPanelBody', () => {
     expect(html).toContain('3 vão')
   })
 
-  it('o botão Criar evento só aparece para quem gerencia eventos', () => {
-    expect(render({ canManage: false })).not.toContain('Criar evento')
-    expect(render({ canManage: true })).toContain('Criar evento')
+  it('o botão Criar evento só aparece para quem pode criar', () => {
+    expect(render({ canCreate: false })).not.toContain('Criar evento')
+    expect(render({ canCreate: true })).toContain('Criar evento')
   })
 
   it('sem eventos, mostra o estado vazio', () => {
@@ -109,11 +111,28 @@ describe('EventsPanelBody', () => {
     expect(html).toContain('Sala aberta')
   })
 
-  it('só quem gerencia vê Editar e Cancelar evento no detalhe', () => {
-    expect(render({ selectedId: 'a', canManage: false })).not.toContain('Cancelar evento')
-    const html = render({ selectedId: 'a', canManage: true })
-    expect(html).toContain('Editar')
-    expect(html).toContain('Cancelar evento')
+  it('Editar e Cancelar evento aparecem cada um para quem tem aquela ação', () => {
+    const none = render({ selectedId: 'a' })
+    expect(none).not.toContain('Editar')
+    expect(none).not.toContain('Cancelar evento')
+
+    const editOnly = render({ selectedId: 'a', canEdit: true })
+    expect(editOnly).toContain('Editar')
+    expect(editOnly).not.toContain('Cancelar evento')
+
+    const deleteOnly = render({ selectedId: 'a', canDelete: true })
+    expect(deleteOnly).not.toContain('Editar')
+    expect(deleteOnly).toContain('Cancelar evento')
+
+    const both = render({ selectedId: 'a', canEdit: true, canDelete: true })
+    expect(both).toContain('Editar')
+    expect(both).toContain('Cancelar evento')
+  })
+
+  it('quem só cria não vê Editar nem Cancelar no detalhe', () => {
+    const html = render({ selectedId: 'a', canCreate: true })
+    expect(html).not.toContain('Editar')
+    expect(html).not.toContain('Cancelar evento')
   })
 
   it('o evento marcado mostra a minha resposta na lista e no detalhe', () => {

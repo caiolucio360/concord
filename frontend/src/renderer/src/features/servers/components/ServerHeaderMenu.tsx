@@ -29,6 +29,7 @@ import ServerLevelChip from '../../serverlevel/components/ServerLevelChip'
 import ServerLevelModal from '../../serverlevel/components/ServerLevelModal'
 import { useServerLevelModalStore } from '../../serverlevel/store/serverLevelModalStore'
 import EventsPanelHost from '../../events/components/EventsPanelHost'
+import { useEventAccess } from '../../events/hooks/useEventAccess'
 import { useEventsPanelStore } from '../../events/store/eventsPanelStore'
 
 const LOOK: Record<
@@ -81,11 +82,13 @@ export function ServerMenuItems({
   const openInviteModal = useUIStore((s) => s.openServerInviteModal)
   const openNotifyModal = useNotifySettingsStore((s) => s.openModal)
   const openConfirm = useChannelSidebarStore((s) => s.openConfirm)
+  // O dono pode liberar a configuração dos eventos para um cargo sem dar nenhuma outra permissão.
+  const canConfigureEvents = Boolean(useEventAccess(server?.id)?.configure)
   const items = serverMenuItems({
     hasServer: Boolean(server),
     canInvite: access.can(Perm.CREATE_INVITE),
     canChangeOwnNickname: Boolean(user && access.canChangeNickname(user.id)),
-    canOpenSettings: canOpenServerSettings(access.perms),
+    canOpenSettings: canOpenServerSettings(access.perms, access.isOwner, canConfigureEvents),
     isOwner: access.isOwner
   })
   // Os itens que dependem do servidor só aparecem com ele (hasServer).
@@ -164,7 +167,7 @@ function ServerHeaderMenu({
       </button>
       {open && <ServerMenuItems server={server} access={access} onPicked={() => setOpen(false)} />}
       <ServerLevelModal />
-      <EventsPanelHost serverId={server?.id} canManage={access.can(Perm.MANAGE_EVENTS)} />
+      <EventsPanelHost serverId={server?.id} />
     </div>
   )
 }

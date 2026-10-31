@@ -3,10 +3,12 @@ import { DURATION_OPTIONS } from '../lib/duration'
 /** Quanto o evento dura: quando acaba, a sala própria dele (voz e texto) é apagada. */
 export default function DurationField({
   value,
-  onChange
+  onChange,
+  disabled = false
 }: {
   value: number
   onChange: (minutes: number) => void
+  disabled?: boolean
 }): React.JSX.Element {
   return (
     <div className="flex flex-col gap-1.5">
@@ -14,6 +16,7 @@ export default function DurationField({
         Duração
         <select
           name="event-duration"
+          disabled={disabled}
           className="glass-input"
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}

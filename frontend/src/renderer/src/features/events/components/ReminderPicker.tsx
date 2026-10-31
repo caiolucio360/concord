@@ -3,10 +3,12 @@ import { MAX_REMINDERS, REMINDER_OPTIONS, canPickReminder, toggleReminder } from
 /** Escolhe até duas antecedências para os avisos do Salinha Bot (a da hora de começar sempre sai). */
 export default function ReminderPicker({
   selected,
-  onChange
+  onChange,
+  disabled: locked = false
 }: {
   selected: number[]
   onChange: (next: number[]) => void
+  disabled?: boolean
 }): React.JSX.Element {
   return (
     <fieldset className="flex flex-col gap-2">
@@ -15,7 +17,7 @@ export default function ReminderPicker({
       </legend>
       <div className="flex flex-wrap gap-2">
         {REMINDER_OPTIONS.map(({ minutes, label }) => {
-          const disabled = !canPickReminder(selected, minutes)
+          const disabled = locked || !canPickReminder(selected, minutes)
           return (
             <label
               key={minutes}

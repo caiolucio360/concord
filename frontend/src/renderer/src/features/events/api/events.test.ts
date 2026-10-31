@@ -16,6 +16,9 @@ import { ApiError } from '../../../shared/api/client'
 import {
   cancelEvent,
   clearRsvp,
+  fetchEventAccess,
+  fetchRoleSettings,
+  saveRoleActions,
   createEvent,
   eventBannerUrl,
   fetchEvents,
@@ -83,6 +86,21 @@ describe('api de eventos', () => {
     })
     await clearRsvp('s1', 'e1')
     expect(api.request).toHaveBeenLastCalledWith('/servers/s1/events/e1/rsvp', { method: 'DELETE' })
+  })
+
+  it('pergunta o que eu posso fazer com os eventos', async () => {
+    await fetchEventAccess('s 1')
+    expect(api.request).toHaveBeenCalledWith('/servers/s%201/events/access')
+  })
+
+  it('o dono lê e grava a configuração por cargo', async () => {
+    await fetchRoleSettings('s1')
+    expect(api.request).toHaveBeenLastCalledWith('/servers/s1/events/roles')
+    await saveRoleActions('s1', 'r 1', { create: true, edit: false, delete: true })
+    expect(api.request).toHaveBeenLastCalledWith('/servers/s1/events/roles/r%201', {
+      method: 'PUT',
+      body: JSON.stringify({ create: true, edit: false, delete: true })
+    })
   })
 
   it('lista quem vai', async () => {

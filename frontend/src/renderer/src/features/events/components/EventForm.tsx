@@ -11,6 +11,7 @@ import {
   type EventFormValues
 } from '../lib/eventForm'
 import { saveEvent } from '../lib/eventSave'
+import { isRunning } from '../lib/running'
 import { useEventsStore } from '../store/eventsStore'
 import BannerField from './BannerField'
 import DurationField from './DurationField'
@@ -38,6 +39,8 @@ export default function EventForm({
   )
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  // Com o evento em andamento só título, descrição e banner mudam (o servidor confere de novo).
+  const running = event ? isRunning(event) : false
   const patch = (change: Partial<EventFormValues>): void => setValues((v) => ({ ...v, ...change }))
   // O botão fica no fim do formulário: leva o foco (e a tela) até o erro.
   const alertRef = useRef<HTMLDivElement>(null)
@@ -67,6 +70,11 @@ export default function EventForm({
           >
             {error}
           </div>
+        )}
+        {running && (
+          <p role="status" className="rounded-lg border border-warning/20 bg-warning/10 p-2.5 text-ds-xs text-warning">
+            O evento está em andamento: só dá para mudar título, descrição e banner.
+          </p>
         )}
         <BannerField
           serverId={serverId}
@@ -99,15 +107,20 @@ export default function EventForm({
           <input
             type="datetime-local"
             name="event-starts-at"
+            disabled={running}
             autoComplete="off"
             className="glass-input"
             value={values.startsAt}
             onChange={(e) => patch({ startsAt: e.target.value })}
           />
         </label>
-        <DurationField value={values.durationMinutes} onChange={(durationMinutes) => patch({ durationMinutes })} />
-        <RecurrenceFields values={values} onChange={patch} />
-        <ReminderPicker selected={values.reminders} onChange={(reminders) => patch({ reminders })} />
+        <DurationField
+          value={values.durationMinutes}
+          onChange={(durationMinutes) => patch({ durationMinutes })}
+          disabled={running}
+        />
+        <RecurrenceFields values={values} onChange={patch} disabled={running} />
+        <ReminderPicker selected={values.reminders} onChange={(reminders) => patch({ reminders })} disabled={running} />
         <div className="sticky bottom-0 -mx-1 flex justify-end gap-2 bg-modal px-1 pb-1 pt-3">
           <Button type="button" variant="ghost" onClick={onClose}>
             Cancelar

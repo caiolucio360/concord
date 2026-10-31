@@ -1,6 +1,7 @@
 import type { EventInput, ServerEvent } from '../api/events'
 import { eventErrorMessage } from './eventErrors'
 import { toInput, type EventFormValues } from './eventForm'
+import { isRunning } from './running'
 
 export type SaveResult = { ok: true; event: ServerEvent } | { ok: false; error: string }
 
@@ -20,7 +21,7 @@ export async function saveEvent(
   values: EventFormValues,
   actions: SaveActions
 ): Promise<SaveResult> {
-  const checked = toInput(values)
+  const checked = toInput(values, new Date(), existing ? isRunning(existing) : false)
   if (!checked.ok) return { ok: false, error: checked.error }
   try {
     const event = existing

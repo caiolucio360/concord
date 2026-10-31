@@ -100,17 +100,19 @@ function parseEnd(v: EventFormValues, startIso: string): End | string {
     : 'A repetição precisa terminar depois do início.'
 }
 
-function startError(startIso: string | null, now: Date): string | null {
+function startError(startIso: string | null, now: Date, running: boolean): string | null {
   if (!startIso) return 'Escolha a data e a hora de início.'
+  // Evento em andamento: o início é o de sempre (já passou) e não muda.
+  if (running) return null
   return Date.parse(startIso) > now.getTime() ? null : 'O início precisa estar no futuro.'
 }
 
 /** Confere o formulário e monta o pedido da API (ou diz o que está errado). */
-export function toInput(v: EventFormValues, now: Date = new Date()): FormResult {
+export function toInput(v: EventFormValues, now: Date = new Date(), running = false): FormResult {
   const text = textError(v)
   if (text) return fail(text)
   const startIso = fromLocalInput(v.startsAt)
-  const start = startError(startIso, now)
+  const start = startError(startIso, now, running)
   if (start || !startIso) return fail(start ?? '')
   const end = parseEnd(v, startIso)
   if (typeof end === 'string') return fail(end)

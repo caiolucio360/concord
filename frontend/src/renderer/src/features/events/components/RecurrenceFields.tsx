@@ -19,10 +19,12 @@ function ruleSummary(values: EventFormValues): string | null {
 /** Repetição do evento: a regra e, se repete, até quando. */
 export default function RecurrenceFields({
   values,
-  onChange
+  onChange,
+  disabled = false
 }: {
   values: EventFormValues
   onChange: (patch: Partial<EventFormValues>) => void
+  disabled?: boolean
 }): React.JSX.Element {
   const repeats = values.recurrence !== 'none'
   const summary = repeats ? ruleSummary(values) : null
@@ -32,6 +34,7 @@ export default function RecurrenceFields({
         Repetir
         <select
           name="event-recurrence"
+          disabled={disabled}
           className="glass-input"
           value={values.recurrence}
           onChange={(e) => onChange({ recurrence: e.target.value as Recurrence })}
@@ -49,6 +52,7 @@ export default function RecurrenceFields({
           Termina
           <select
             name="event-end-mode"
+            disabled={disabled}
             className="glass-input"
             value={values.endMode}
             onChange={(e) => onChange({ endMode: e.target.value as EndMode })}
@@ -65,6 +69,7 @@ export default function RecurrenceFields({
         <Input
           label="Último dia"
           name="event-until"
+          disabled={disabled}
           type="date"
           value={values.until}
           onChange={(e) => onChange({ until: e.target.value })}
@@ -74,6 +79,7 @@ export default function RecurrenceFields({
         <Input
           label="Número de vezes"
           name="event-count"
+          disabled={disabled}
           type="number"
           min={1}
           inputMode="numeric"

@@ -14,7 +14,9 @@ interface BodyProps {
   /** undefined = ainda carregando. */
   events: ServerEvent[] | undefined
   error: string | null
-  canManage: boolean
+  canCreate: boolean
+  canEdit: boolean
+  canDelete: boolean
   channels: ChannelName[]
   selectedId: string | null
   /** Resposta em andamento: trava os botões Vou / Não vou. */
@@ -56,7 +58,7 @@ function ListState({ events, error, onRetry }: Pick<BodyProps, 'events' | 'error
  * o detalhe do evento aberto); de 1280 px em diante, lado a lado.
  */
 export default function EventsPanelBody(props: BodyProps): React.JSX.Element {
-  const { events, selectedId, channels, canManage, busy = false } = props
+  const { events, selectedId, channels, canCreate, canEdit, canDelete, busy = false } = props
   const selected = events?.find((e) => e.id === selectedId) ?? null
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4 xl:flex-row">
@@ -64,7 +66,7 @@ export default function EventsPanelBody(props: BodyProps): React.JSX.Element {
         aria-label="Lista de eventos"
         className={`${selected ? 'hidden xl:flex' : 'flex'} min-w-0 flex-col gap-3 xl:w-80 xl:shrink-0`}
       >
-        {canManage && (
+        {canCreate && (
           <Button icon={PlusIcon} onClick={props.onCreate}>
             Criar evento
           </Button>
@@ -83,7 +85,8 @@ export default function EventsPanelBody(props: BodyProps): React.JSX.Element {
             serverId={props.serverId}
             event={selected}
             roomName={channels.find((c) => c.id === selected.voice_channel_id)?.name ?? null}
-            canManage={canManage}
+            canEdit={canEdit}
+            canDelete={canDelete}
             busy={busy}
             onRespond={(going) => props.onRespond(selected.id, going)}
             onEdit={() => props.onEdit(selected)}

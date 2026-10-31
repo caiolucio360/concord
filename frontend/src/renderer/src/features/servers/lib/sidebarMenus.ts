@@ -9,6 +9,8 @@ export interface ChannelMenuContext {
   isText: boolean
   /** Canal fixo de sistema ("musica", "avisos"): não se edita nem apaga. */
   isSystem: boolean
+  /** Canal da sala de um evento: só o evento o cria e apaga (não se edita, apaga nem vira canal principal). */
+  isManaged?: boolean
   isPrimary: boolean
   /** Posição do canal na seção (-1 = não achou) e tamanho da seção. */
   index: number
@@ -23,10 +25,10 @@ const CHANNEL_RULES: [ChannelMenuItem, (c: ChannelMenuContext) => boolean][] = [
   // Alternativa ao arrastar (teclado/leitor de tela).
   ['move-up', (c) => c.canManageChannels && c.index > 0],
   ['move-down', (c) => c.canManageChannels && c.index >= 0 && c.index < c.sectionLength - 1],
-  ['make-primary', (c) => c.canManageServer && c.isText && !c.isPrimary],
-  ['edit', (c) => c.canManageChannels && !c.isSystem],
-  ['permissions', (c) => c.canManageRolesHere && !c.isSystem],
-  ['delete', (c) => c.canManageChannels && !c.isSystem]
+  ['make-primary', (c) => c.canManageServer && c.isText && !c.isPrimary && !c.isManaged],
+  ['edit', (c) => c.canManageChannels && !c.isSystem && !c.isManaged],
+  ['permissions', (c) => c.canManageRolesHere && !c.isSystem && !c.isManaged],
+  ['delete', (c) => c.canManageChannels && !c.isSystem && !c.isManaged]
 ]
 
 /** Itens do menu "•••" de um canal, na ordem em que aparecem. */

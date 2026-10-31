@@ -55,7 +55,8 @@ export default function EventDetail({
   serverId,
   event,
   roomName,
-  canManage,
+  canEdit,
+  canDelete,
   busy,
   onRespond,
   onEdit,
@@ -66,7 +67,8 @@ export default function EventDetail({
   event: ServerEvent
   /** O nome do canal de voz da sala aberta (null se o canal não está na lista). */
   roomName: string | null
-  canManage: boolean
+  canEdit: boolean
+  canDelete: boolean
   busy: boolean
   onRespond: (going: boolean | null) => void
   onEdit: () => void
@@ -102,12 +104,14 @@ export default function EventDetail({
         occurrence={event.next_start_at}
         count={event.going_count}
       />
-      {canManage && (
+      {(canEdit || canDelete) && (
         <div className="flex flex-wrap items-center gap-2 border-t border-subtle pt-4">
-          <Button variant="ghost" icon={PencilIcon} onClick={onEdit}>
-            Editar
-          </Button>
-          <CancelEventButton onConfirm={onCancelEvent} />
+          {canEdit && (
+            <Button variant="ghost" icon={PencilIcon} onClick={onEdit}>
+              Editar
+            </Button>
+          )}
+          {canDelete && <CancelEventButton onConfirm={onCancelEvent} />}
         </div>
       )}
     </article>
