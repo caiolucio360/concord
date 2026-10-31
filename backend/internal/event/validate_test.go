@@ -33,6 +33,7 @@ func TestNormalizeRejects(t *testing.T) {
 			i.RecurrenceUntil = &d
 			i.Recurrence = RecWeekly
 		}, ErrInvalidRecurrence},
+		{"banner que não é um id de arquivo", func(i *Input) { b := "../../etc/passwd"; i.BannerID = &b }, ErrInvalidBanner},
 		{"antecedência fora da lista", func(i *Input) { i.ReminderOffsets = []int{7} }, ErrInvalidReminder},
 		{"mais de 2 antecedências", func(i *Input) { i.ReminderOffsets = []int{30, 10, 5} }, ErrTooManyReminders},
 	}

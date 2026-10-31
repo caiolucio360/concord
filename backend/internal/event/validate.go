@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
+
+	"github.com/google/uuid"
 )
 
 // normalize confere o pedido e devolve a versão limpa (título sem espaços nas
@@ -17,6 +19,9 @@ func (in Input) normalize(now time.Time) (Input, error) {
 	}
 	if utf8.RuneCountInString(in.Description) > MaxDescriptionRunes {
 		return in, ErrInvalidDescription
+	}
+	if in.BannerID != nil && uuid.Validate(*in.BannerID) != nil {
+		return in, ErrInvalidBanner
 	}
 	if !in.StartsAt.After(now) {
 		return in, ErrInPast

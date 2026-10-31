@@ -32,6 +32,7 @@ var (
 	ErrInvalidReminder    = errors.New("antecedência de aviso inválida")
 	ErrTooManyReminders   = errors.New("escolha no máximo 2 antecedências de aviso")
 	ErrInvalidChannel     = errors.New("escolha um canal de voz deste servidor")
+	ErrInvalidBanner      = errors.New("banner inválido")
 	ErrEventEnded         = errors.New("este evento já terminou")
 )
 

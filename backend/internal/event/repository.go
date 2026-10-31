@@ -196,3 +196,16 @@ func deletePendingReminders(ctx context.Context, tx pgx.Tx, eventID string) erro
 	_, err := tx.Exec(ctx, `DELETE FROM event_reminders WHERE event_id = $1 AND sent_at IS NULL`, eventID)
 	return err
 }
+
+// ServerOfBanner diz de qual servidor é o evento que usa o banner.
+func (r *Repository) ServerOfBanner(ctx context.Context, bannerID string) (string, error) {
+	if uuid.Validate(bannerID) != nil {
+		return "", ErrEventNotFound
+	}
+	var serverID string
+	err := r.db.QueryRow(ctx, `SELECT server_id FROM server_events WHERE banner_id = $1 LIMIT 1`, bannerID).Scan(&serverID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", ErrEventNotFound
+	}
+	return serverID, err
+}

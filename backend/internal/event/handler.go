@@ -45,6 +45,7 @@ var errorTable = []struct {
 	{ErrInvalidReminder, http.StatusBadRequest, "invalid_reminder"},
 	{ErrTooManyReminders, http.StatusBadRequest, "too_many_reminders"},
 	{ErrInvalidChannel, http.StatusBadRequest, "invalid_channel"},
+	{ErrInvalidBanner, http.StatusBadRequest, "invalid_banner"},
 }
 
 func errorResponse(err error) (status int, code string) {

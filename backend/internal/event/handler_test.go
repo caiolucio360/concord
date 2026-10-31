@@ -64,7 +64,7 @@ func routerFor(svc eventService, userID string) *gin.Engine {
 		}
 		c.Next()
 	}
-	Routes(r.Group("/api"), NewHandler(svc), auth)
+	Routes(r.Group("/api"), NewHandler(svc), nil, auth)
 	return r
 }
 
@@ -132,6 +132,7 @@ func TestDomainErrorsBecomeStatusAndCode(t *testing.T) {
 		{ErrInvalidReminder, http.StatusBadRequest, "invalid_reminder"},
 		{ErrTooManyReminders, http.StatusBadRequest, "too_many_reminders"},
 		{ErrInvalidChannel, http.StatusBadRequest, "invalid_channel"},
+		{ErrInvalidBanner, http.StatusBadRequest, "invalid_banner"},
 	}
 	for _, c := range cases {
 		status, code := errorResponse(c.err)
