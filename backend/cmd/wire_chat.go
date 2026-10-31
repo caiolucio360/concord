@@ -86,6 +86,7 @@ func (a *app) wireChat() {
 		soundboard.FavoriteRoutes(api, soundboard.NewFavoritesHandler(a.soundboardRepository, a.soundboardRepository, a.permissionService), a.authMiddleware)
 		sticker.Routes(api, stickerHandler, a.authMiddleware)
 		giphy.Routes(api, giphyHandler, a.authMiddleware)
+		giphy.FavoriteRoutes(api, giphy.NewFavoritesHandler(giphy.NewFavoriteRepository(a.db)), a.authMiddleware)
 	})
 }
 
