@@ -260,7 +260,7 @@ git commit -m "feat(eventos): modelo e validação dos objetivos do evento"
 ### Task 2: Tabelas e repositório dos objetivos
 
 **Files:**
-- Create: `backend/migrations/000182_event_objectives.up.sql`, `backend/migrations/000182_event_objectives.down.sql`, `backend/internal/eventobjective/repository.go`
+- Create: `backend/migrations/000183_event_objectives.up.sql`, `backend/migrations/000183_event_objectives.down.sql`, `backend/internal/eventobjective/repository.go`
 - Test: `backend/internal/eventobjective/repository_db_test.go`
 
 **Interfaces:**
@@ -274,11 +274,11 @@ git commit -m "feat(eventos): modelo e validação dos objetivos do evento"
   - `type Repository struct{ db *pgxpool.Pool }` e `func NewRepository(db *pgxpool.Pool) *Repository`
   - `func (r *Repository) AddMinutes(ctx context.Context, objectiveID, userID string, occurrence time.Time, minutes int) (int, error)` (devolve o total de minutos gravados)
 
-> Migrations: o número é o próximo livre da `develop` quando a fase começar (000182 hoje; `node scripts/check-migrations.mjs` confere duplicados). Se a `develop` já tiver 000182, use o seguinte e acerte também o número da Task 5.
+> Migrations: o número é o próximo livre da `develop` quando a fase começar (000183 hoje, depois da 000182 do jogo do evento; `node scripts/check-migrations.mjs` confere duplicados). Se a `develop` já tiver 000183, use o seguinte e acerte também o número da Task 5.
 
 - [ ] **Step 1: Migration**
 
-`000182_event_objectives.up.sql`:
+`000183_event_objectives.up.sql`:
 
 ```sql
 -- Objetivos dos eventos e o progresso de cada pessoa por ocorrência
@@ -314,7 +314,7 @@ CREATE TABLE event_xp_daily (
 );
 ```
 
-`000182_event_objectives.down.sql`:
+`000183_event_objectives.down.sql`:
 
 ```sql
 DROP TABLE IF EXISTS event_xp_daily;
@@ -610,7 +610,7 @@ Expected: `ok` e migrations sem duplicados.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add backend/migrations/000182_event_objectives.* backend/internal/eventobjective
+git add backend/migrations/000183_event_objectives.* backend/internal/eventobjective
 git commit -m "feat(eventos): tabelas e repositório dos objetivos do evento"
 ```
 
@@ -1277,7 +1277,7 @@ git commit -m "feat(eventos): quem pontua em cada objetivo e o contador de minut
 ### Task 5: Pagamento em transação única (XP pessoal, XP do servidor e tetos)
 
 **Files:**
-- Create: `backend/migrations/000183_event_server_level_source.up.sql`, `backend/migrations/000183_event_server_level_source.down.sql`, `backend/internal/level/repository_bonus.go`, `backend/internal/eventobjective/repository_pay.go`
+- Create: `backend/migrations/000184_event_server_level_source.up.sql`, `backend/migrations/000184_event_server_level_source.down.sql`, `backend/internal/level/repository_bonus.go`, `backend/internal/eventobjective/repository_pay.go`
 - Modify: `backend/internal/level/service.go` (extrair `Announce` de `give`), `backend/internal/serverlevel/sources.go` (fonte `evento`)
 - Test: `backend/internal/level/service_test.go`, `backend/internal/level/repository_bonus_db_test.go`, `backend/internal/serverlevel/sources_test.go` (ou o teste da lista de fontes que já existir), `backend/internal/eventobjective/repository_pay_db_test.go`
 
@@ -1293,7 +1293,7 @@ git commit -m "feat(eventos): quem pontua em cada objetivo e o contador de minut
 
 - [ ] **Step 1: Migration do teto do servidor**
 
-`000183_event_server_level_source.up.sql`:
+`000184_event_server_level_source.up.sql`:
 
 ```sql
 -- Fonte "evento" do XP do servidor: objetivos de evento cumpridos, até 300 por
@@ -1712,7 +1712,7 @@ Expected: `ok`; nenhuma função **tocada** acima de 15 (`level.Service.Run` e `
 - [ ] **Step 6: Commit**
 
 ```bash
-git add backend/migrations/000183_* backend/internal/level backend/internal/serverlevel backend/internal/eventobjective
+git add backend/migrations/000184_* backend/internal/level backend/internal/serverlevel backend/internal/eventobjective
 git commit -m "feat(eventos): pagamento do objetivo em transação única, com os tetos diários"
 ```
 

@@ -62,7 +62,7 @@ transação). O molde de contar tempo é o do `serverlevel/tracker.go`.
 - `event/`: `Event.Objectives` e `Input.Objectives` no JSON; `service.go` guarda o conjunto por uma interface pequena do `eventobjective`; `sameSchedule` passa a comparar os objetivos (`event_running`); erro `invalid_objective` na tabela do handler. O `event` não ganha regra de objetivo.
 - `cmd/wire_event_objectives.go`: liga tudo; sem dependência nova.
 
-**Migrations** (os números seguem o próximo livre da `develop` quando a fase começar; hoje, 000182 e 000183):
+**Migrations** (os números seguem o próximo livre da `develop` quando a fase começar; hoje, 000183 e 000184):
 - `event_objectives (id, event_id → server_events ON DELETE CASCADE, position, kind, difficulty, minutes)`.
 - `event_objective_progress (objective_id, user_id, occurrence_at, minutes, completed_at, xp_paid, PK (objective_id, user_id, occurrence_at))`.
 - `event_xp_daily (user_id, day, xp, PK (user_id, day))`, o teto pessoal.
