@@ -1,4 +1,5 @@
-import type { RoleActions, RoleSetting } from '../api/events'
+import { saveRoleActions, type RoleActions, type RoleSetting } from '../api/events'
+import { eventErrorMessage } from './eventErrors'
 
 // A configuração dos eventos por cargo: o que cada cargo faz com os eventos do
 // servidor (vale para todos). As quatro ações, na ordem da tela.
@@ -28,4 +29,24 @@ export function actionsFor(roles: RoleSetting[], roleId: string): RoleActions | 
   const role = roles.find((r) => r.role_id === roleId)
   if (!role) return null
   return { create: role.create, edit: role.edit, delete: role.delete, configure: role.configure }
+}
+
+/**
+ * Grava no servidor o que o cargo pode (já com a mudança aplicada na lista).
+ * Devolve o texto do problema, ou null se deu certo (ou se o cargo não existe).
+ */
+export async function persistRoleChange(
+  serverId: string,
+  roles: RoleSetting[],
+  roleId: string,
+  save: typeof saveRoleActions = saveRoleActions
+): Promise<string | null> {
+  const actions = actionsFor(roles, roleId)
+  if (!actions) return null
+  try {
+    await save(serverId, roleId, actions)
+    return null
+  } catch (err) {
+    return eventErrorMessage(err)
+  }
 }

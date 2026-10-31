@@ -2,6 +2,7 @@ package event
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -134,6 +135,15 @@ func TestRoomLifecycleWithRealChannelsAndPermissions(t *testing.T) {
 	}
 	if w.can(t, voice, outsider, permission.Connect) {
 		t.Error("quem não confirmou não conecta na voz")
+	}
+
+	// Os dois canais são "gerenciados": só o evento os apaga, e o texto não vira canal principal.
+	var managed int
+	if err := w.db.QueryRow(w.ctx, `SELECT COUNT(*) FROM channels WHERE id IN ($1, $2) AND managed`, voice, text).Scan(&managed); err != nil || managed != 2 {
+		t.Fatalf("canais gerenciados = %d err=%v, esperava os 2", managed, err)
+	}
+	if err := w.servers.SetPrimaryChannel(w.ctx, serverID, text); !errors.Is(err, server.ErrInvalidPrimaryChannel) {
+		t.Fatalf("o chat da sala não pode ser o canal principal: %v", err)
 	}
 
 	// Confirmar depois que a sala abriu libera; desistir tira. O organizador fica.

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { fetchRoleSettings, saveRoleActions, type RoleSetting } from '../api/events'
-import { eventErrorMessage } from '../lib/eventErrors'
-import { actionsFor, withAction, type RoleAction } from '../lib/roleSettings'
+import { fetchRoleSettings, type RoleSetting } from '../api/events'
+import { persistRoleChange, withAction, type RoleAction } from '../lib/roleSettings'
 
 /**
  * A configuração dos eventos por cargo: a lista (undefined até carregar), o erro,
@@ -33,19 +32,15 @@ export function useRoleSettings(serverId: string): {
     const before = current.current
     if (!before) return
     const next = withAction(before, roleId, action, value)
-    const actions = actionsFor(next, roleId)
-    if (!actions) return
     setRoles(next)
     setSaving(true)
     setError(null)
-    try {
-      await saveRoleActions(serverId, roleId, actions)
-    } catch (err) {
+    const failure = await persistRoleChange(serverId, next, roleId)
+    if (failure) {
       setRoles(before)
-      setError(eventErrorMessage(err))
-    } finally {
-      setSaving(false)
+      setError(failure)
     }
+    setSaving(false)
   }
 
   return { roles, error, saving, toggle, reload }
