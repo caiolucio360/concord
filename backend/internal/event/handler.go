@@ -50,7 +50,6 @@ var errorTable = []struct {
 	{ErrInvalidDuration, http.StatusBadRequest, "invalid_duration"},
 	{ErrEventRunning, http.StatusConflict, "event_running"},
 	{ErrInvalidBanner, http.StatusBadRequest, "invalid_banner"},
-	{ErrOwnerOnly, http.StatusForbidden, "owner_only"},
 	{ErrRoleNotFound, http.StatusNotFound, "role_not_found"},
 }
 

@@ -43,11 +43,13 @@ CREATE INDEX idx_server_events_banner ON server_events (banner_id) WHERE banner_
 
 -- Configuração do servidor, definida pelo dono: o que cada cargo pode fazer com os
 -- eventos (todos os eventos do servidor). actions é uma máscara: 1 criar, 2 editar,
--- 4 excluir. O dono sempre pode tudo; sem linha, o cargo não pode nada.
+-- 4 excluir, 8 configurar (abrir esta configuração e escolher criar, editar e excluir
+-- dos cargos; só o dono liga ou desliga o 8). O dono sempre pode tudo; sem linha, o
+-- cargo não pode nada.
 CREATE TABLE event_role_actions (
     role_id UUID PRIMARY KEY REFERENCES roles (id) ON DELETE CASCADE,
     server_id UUID NOT NULL REFERENCES servers (id) ON DELETE CASCADE,
-    actions SMALLINT NOT NULL CHECK (actions BETWEEN 1 AND 7)
+    actions SMALLINT NOT NULL CHECK (actions BETWEEN 1 AND 15)
 );
 
 CREATE INDEX idx_event_role_actions_server ON event_role_actions (server_id);

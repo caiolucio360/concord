@@ -27,14 +27,19 @@ func (w roomWorld) giveRole(t *testing.T, serverID, userID, roleID string) {
 func TestEventActionsAreTheUnionOfTheRolesTheOwnerChose(t *testing.T) {
 	w := newRoomWorld(t)
 	owner, serverID := w.newServer(t)
-	alice, bob, carol := w.newUser(t), w.newUser(t), w.newUser(t)
-	for _, id := range []string{alice, bob, carol} {
+	alice, bob, carol, dave := w.newUser(t), w.newUser(t), w.newUser(t), w.newUser(t)
+	for _, id := range []string{alice, bob, carol, dave} {
 		w.join(t, serverID, id)
 	}
 	roleA, roleB, roleC := w.newRole(t, serverID, "Cargo A"), w.newRole(t, serverID, "Cargo B"), w.newRole(t, serverID, "Cargo C")
 	w.giveRole(t, serverID, alice, roleA)
 	w.giveRole(t, serverID, alice, roleB)
 	w.giveRole(t, serverID, bob, roleC) // este cargo o dono nunca configurou
+	roleD := w.newRole(t, serverID, "Cargo D")
+	w.giveRole(t, serverID, dave, roleD)
+	if err := w.repo.SetRoleActions(w.ctx, serverID, roleD, ActionConfigure); err != nil {
+		t.Fatal(err)
+	}
 	if err := w.repo.SetRoleActions(w.ctx, serverID, roleA, ActionCreate); err != nil {
 		t.Fatal(err)
 	}
@@ -47,9 +52,10 @@ func TestEventActionsAreTheUnionOfTheRolesTheOwnerChose(t *testing.T) {
 		want Actions
 	}{
 		"dono tem tudo": {owner, AllActions},
-		"quem tem os cargos A e B soma criar e editar": {alice, ActionCreate | ActionEdit},
-		"cargo que o dono não configurou não dá nada":  {bob, 0},
-		"membro sem cargo nada":                        {carol, 0},
+		"cargo com configurar soma o bit de configurar": {dave, ActionConfigure},
+		"quem tem os cargos A e B soma criar e editar":  {alice, ActionCreate | ActionEdit},
+		"cargo que o dono não configurou não dá nada":   {bob, 0},
+		"membro sem cargo nada":                         {carol, 0},
 	}
 	for name, c := range cases {
 		got, err := w.repo.EventActions(w.ctx, serverID, c.user)
@@ -70,7 +76,7 @@ func TestSetRoleActionsAndList(t *testing.T) {
 	_, serverID := w.newServer(t)
 	roleA, roleB := w.newRole(t, serverID, "Cargo A"), w.newRole(t, serverID, "Cargo B")
 
-	if err := w.repo.SetRoleActions(w.ctx, serverID, roleA, ActionCreate|ActionDelete); err != nil {
+	if err := w.repo.SetRoleActions(w.ctx, serverID, roleA, ActionCreate|ActionDelete|ActionConfigure); err != nil {
 		t.Fatal(err)
 	}
 	list, err := w.repo.RoleAccessList(w.ctx, serverID)
@@ -81,10 +87,10 @@ func TestSetRoleActionsAndList(t *testing.T) {
 	for _, r := range list {
 		byID[r.RoleID] = r
 	}
-	if a := byID[roleA]; !a.Create || a.Edit || !a.Delete || a.Name != "Cargo A" {
+	if a := byID[roleA]; !a.Create || a.Edit || !a.Delete || !a.Configure || a.Name != "Cargo A" {
 		t.Errorf("cargo A = %+v", a)
 	}
-	if b, ok := byID[roleB]; !ok || b.Create || b.Edit || b.Delete {
+	if b, ok := byID[roleB]; !ok || b.Create || b.Edit || b.Delete || b.Configure {
 		t.Errorf("cargo B (sem nada marcado) tem que aparecer: %+v ok=%v", b, ok)
 	}
 	for _, r := range list {

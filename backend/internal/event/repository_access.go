@@ -73,6 +73,7 @@ func (r *Repository) RoleAccessList(ctx context.Context, serverID string) ([]Rol
 		}
 		actions := Actions(mask)
 		item.Create, item.Edit, item.Delete = actions.Has(ActionCreate), actions.Has(ActionEdit), actions.Has(ActionDelete)
+		item.Configure = actions.Has(ActionConfigure)
 		out = append(out, item)
 	}
 	return out, rows.Err()

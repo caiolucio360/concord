@@ -34,7 +34,7 @@ func (f *fakeAccess) RoleAccessList(context.Context, string) ([]RoleAccess, erro
 	out := []RoleAccess{}
 	for _, id := range []string{"cargo-a", "cargo-b"} {
 		a := f.roles[id]
-		out = append(out, RoleAccess{RoleID: id, Name: f.names[id], Create: a.Has(ActionCreate), Edit: a.Has(ActionEdit), Delete: a.Has(ActionDelete)})
+		out = append(out, RoleAccess{RoleID: id, Name: f.names[id], Create: a.Has(ActionCreate), Edit: a.Has(ActionEdit), Delete: a.Has(ActionDelete), Configure: a.Has(ActionConfigure)})
 	}
 	return out, nil
 }
@@ -55,8 +55,8 @@ func TestActionsBitmask(t *testing.T) {
 	if !a.Has(ActionCreate|ActionDelete) || a.Has(ActionCreate|ActionEdit) {
 		t.Fatal("Has com várias ações exige todas")
 	}
-	if AllActions != 7 {
-		t.Fatalf("AllActions = %d, esperava 7 (as três ações)", AllActions)
+	if CrudActions != 7 || AllActions != 15 {
+		t.Fatalf("CrudActions = %d, AllActions = %d, esperava 7 e 15 (criar, editar e excluir; mais configurar)", CrudActions, AllActions)
 	}
 }
 
@@ -122,11 +122,11 @@ func TestAccessTellsWhatTheMemberCanDo(t *testing.T) {
 	ctx := context.Background()
 
 	got, err := e.svc.Access(ctx, "s1", "a")
-	if err != nil || got != (AccessView{Create: true, Edit: true, Delete: false}) {
+	if err != nil || got != (AccessView{Create: true, Edit: true}) {
 		t.Fatalf("a = %+v err=%v", got, err)
 	}
 	owner, _ := e.svc.Access(ctx, "s1", "dono")
-	if owner != (AccessView{Create: true, Edit: true, Delete: true, Owner: true}) {
+	if owner != (AccessView{Create: true, Edit: true, Delete: true, Configure: true, Owner: true}) {
 		t.Fatalf("dono = %+v", owner)
 	}
 	if _, err := e.svc.Access(ctx, "s1", "estranho"); !errors.Is(err, ErrNotMember) {
@@ -134,30 +134,81 @@ func TestAccessTellsWhatTheMemberCanDo(t *testing.T) {
 	}
 }
 
-func TestOnlyTheOwnerSeesAndChangesTheRoleSettings(t *testing.T) {
+func TestWithoutConfigureOnlyTheOwnerIsNotEnough(t *testing.T) {
 	e := newEnv()
-	e.access.actions["a"] = AllActions // ter todas as ações num cargo não dá o poder de configurar
+	e.access.actions["a"] = CrudActions // criar, editar e excluir não dão o poder de configurar
 	ctx := context.Background()
 
-	if _, err := e.svc.RoleSettings(ctx, "s1", "a"); !errors.Is(err, ErrOwnerOnly) {
+	if _, err := e.svc.RoleSettings(ctx, "s1", "a"); !errors.Is(err, ErrMissingPermission) {
 		t.Fatalf("ver a configuração: %v", err)
 	}
-	if err := e.svc.SetRoleActions(ctx, "s1", "a", "cargo-a", ActionEdit); !errors.Is(err, ErrOwnerOnly) {
+	if err := e.svc.SetRoleActions(ctx, "s1", "a", "cargo-a", ActionEdit); !errors.Is(err, ErrMissingPermission) {
 		t.Fatalf("mudar a configuração: %v", err)
 	}
 	if len(e.pub.sent) != 0 {
 		t.Fatalf("nada devia ser publicado: %+v", e.pub.sent)
 	}
+}
 
-	if err := e.svc.SetRoleActions(ctx, "s1", "dono", "cargo-a", ActionCreate|ActionEdit); err != nil {
+func TestOwnerSeesAndChangesTheRoleSettings(t *testing.T) {
+	e := newEnv()
+	ctx := context.Background()
+	if err := e.svc.SetRoleActions(ctx, "s1", "dono", "cargo-a", ActionCreate|ActionEdit|ActionConfigure); err != nil {
 		t.Fatal(err)
 	}
 	roles, err := e.svc.RoleSettings(ctx, "s1", "dono")
 	if err != nil || len(roles) != 2 {
 		t.Fatalf("cargos = %+v err=%v", roles, err)
 	}
-	if !roles[0].Create || !roles[0].Edit || roles[0].Delete || roles[1].Create {
+	if !roles[0].Create || !roles[0].Edit || roles[0].Delete || !roles[0].Configure || roles[1].Create {
 		t.Fatalf("configuração = %+v", roles)
+	}
+}
+
+// O dono liberou o cargo A para configurar: quem tem o cargo A abre a configuração e
+// escolhe criar, editar e excluir dos cargos, mas não liga nem desliga o "configurar".
+func TestDelegateConfiguresButCannotGrantConfigure(t *testing.T) {
+	e := newEnv()
+	e.access.actions["delegado"] = ActionConfigure
+	e.access.roles["cargo-a"] = ActionConfigure | ActionEdit
+	ctx := context.Background()
+
+	roles, err := e.svc.RoleSettings(ctx, "s1", "delegado")
+	if err != nil || len(roles) != 2 {
+		t.Fatalf("o delegado vê a configuração: %+v err=%v", roles, err)
+	}
+
+	// Muda o cargo B: criar e excluir sim, "configurar" pedido é ignorado.
+	if err := e.svc.SetRoleActions(ctx, "s1", "delegado", "cargo-b", ActionCreate|ActionDelete|ActionConfigure); err != nil {
+		t.Fatal(err)
+	}
+	if got := e.access.roles["cargo-b"]; got != ActionCreate|ActionDelete {
+		t.Fatalf("cargo B = %04b, esperava criar e excluir sem configurar", got)
+	}
+
+	// No cargo A (que já configura) o "configurar" fica, mesmo se o delegado tentar tirar.
+	if err := e.svc.SetRoleActions(ctx, "s1", "delegado", "cargo-a", ActionCreate); err != nil {
+		t.Fatal(err)
+	}
+	if got := e.access.roles["cargo-a"]; got != ActionCreate|ActionConfigure {
+		t.Fatalf("cargo A = %04b, esperava criar e continuar configurando", got)
+	}
+}
+
+func TestOnlyTheOwnerGrantsOrRevokesConfigure(t *testing.T) {
+	e := newEnv()
+	ctx := context.Background()
+	if err := e.svc.SetRoleActions(ctx, "s1", "dono", "cargo-b", ActionConfigure); err != nil {
+		t.Fatal(err)
+	}
+	if got := e.access.roles["cargo-b"]; got != ActionConfigure {
+		t.Fatalf("o dono liga: %04b", got)
+	}
+	if err := e.svc.SetRoleActions(ctx, "s1", "dono", "cargo-b", 0); err != nil {
+		t.Fatal(err)
+	}
+	if got := e.access.roles["cargo-b"]; got != 0 {
+		t.Fatalf("o dono desliga: %04b", got)
 	}
 }
 
@@ -174,7 +225,10 @@ func TestChangingTheRoleSettingsTellsTheApp(t *testing.T) {
 
 func TestSetRoleActionsUnknownRole(t *testing.T) {
 	e := newEnv()
-	if err := e.svc.SetRoleActions(context.Background(), "s1", "dono", "outro", ActionEdit); !errors.Is(err, ErrRoleNotFound) {
-		t.Fatalf("erro = %v", err)
+	e.access.actions["delegado"] = ActionConfigure
+	for _, actor := range []string{"dono", "delegado"} {
+		if err := e.svc.SetRoleActions(context.Background(), "s1", actor, "outro", ActionEdit); !errors.Is(err, ErrRoleNotFound) {
+			t.Fatalf("%s: erro = %v", actor, err)
+		}
 	}
 }

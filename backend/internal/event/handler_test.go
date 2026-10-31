@@ -54,7 +54,7 @@ func (f *fakeService) ClearRSVP(context.Context, string, string, string) error {
 }
 
 func (f *fakeService) Access(context.Context, string, string) (AccessView, error) {
-	return AccessView{Create: true, Edit: true, Owner: true}, f.err
+	return AccessView{Create: true, Edit: true, Configure: true, Owner: true}, f.err
 }
 
 func (f *fakeService) RoleSettings(context.Context, string, string) ([]RoleAccess, error) {
@@ -150,7 +150,6 @@ func TestDomainErrorsBecomeStatusAndCode(t *testing.T) {
 		{ErrInvalidDuration, http.StatusBadRequest, "invalid_duration"},
 		{ErrEventRunning, http.StatusConflict, "event_running"},
 		{ErrInvalidBanner, http.StatusBadRequest, "invalid_banner"},
-		{ErrOwnerOnly, http.StatusForbidden, "owner_only"},
 		{ErrRoleNotFound, http.StatusNotFound, "role_not_found"},
 	}
 	for _, c := range cases {
@@ -211,7 +210,7 @@ func TestAccessEndpointTellsWhatIMayDo(t *testing.T) {
 	}
 	var got map[string]bool
 	_ = json.Unmarshal(w.Body.Bytes(), &got)
-	if !got["create"] || !got["edit"] || got["delete"] || !got["owner"] {
+	if !got["create"] || !got["edit"] || got["delete"] || !got["configure"] || !got["owner"] {
 		t.Fatalf("corpo = %s", w.Body.String())
 	}
 }
@@ -223,8 +222,8 @@ func TestRoleSettingsEndpoints(t *testing.T) {
 	if w.Code != http.StatusOK || !strings.Contains(w.Body.String(), `"role_id":"r1"`) {
 		t.Fatalf("GET = %d %s", w.Code, w.Body.String())
 	}
-	w = call(r, http.MethodPut, "/api/servers/s1/events/roles/r1", `{"create":true,"edit":false,"delete":true}`)
-	if w.Code != http.StatusNoContent || svc.roleSet != "r1" || svc.roleActions != ActionCreate|ActionDelete {
+	w = call(r, http.MethodPut, "/api/servers/s1/events/roles/r1", `{"create":true,"edit":false,"delete":true,"configure":true}`)
+	if w.Code != http.StatusNoContent || svc.roleSet != "r1" || svc.roleActions != ActionCreate|ActionDelete|ActionConfigure {
 		t.Fatalf("PUT = %d, cargo %q ações %b", w.Code, svc.roleSet, svc.roleActions)
 	}
 	if w := call(r, http.MethodPut, "/api/servers/s1/events/roles/r1", `{`); w.Code != http.StatusBadRequest {
@@ -232,9 +231,9 @@ func TestRoleSettingsEndpoints(t *testing.T) {
 	}
 }
 
-func TestRoleSettingsRefusedForNonOwner(t *testing.T) {
-	r := routerFor(&fakeService{err: ErrOwnerOnly}, "u1")
-	if w := call(r, http.MethodGet, "/api/servers/s1/events/roles", ""); w.Code != http.StatusForbidden || errCode(t, w) != "owner_only" {
+func TestRoleSettingsRefusedWithoutPermission(t *testing.T) {
+	r := routerFor(&fakeService{err: ErrMissingPermission}, "u1")
+	if w := call(r, http.MethodGet, "/api/servers/s1/events/roles", ""); w.Code != http.StatusForbidden || errCode(t, w) != "missing_permission" {
 		t.Errorf("GET = %d %s", w.Code, w.Body.String())
 	}
 	if w := call(r, http.MethodPut, "/api/servers/s1/events/roles/r1", `{"create":true}`); w.Code != http.StatusForbidden {
