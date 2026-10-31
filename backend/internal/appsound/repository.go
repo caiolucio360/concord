@@ -29,9 +29,6 @@ func (r *Repository) Settings(ctx context.Context, userID string) (Settings, err
 	if err != nil {
 		return s, fmt.Errorf("ler sons do app: %w", err)
 	}
-	if s.Events == nil {
-		s.Events = map[string]string{}
-	}
 	return s, nil
 }
 
@@ -48,23 +45,24 @@ func (r *Repository) SaveSettings(ctx context.Context, userID string, s Settings
 	return nil
 }
 
+type fileRow struct {
+	Event  string
+	FileID string
+}
+
 // Files: evento → id do arquivo do áudio próprio.
 func (r *Repository) Files(ctx context.Context, userID string) (map[string]string, error) {
-	rows, err := r.db.Query(ctx,
+	rows, _ := r.db.Query(ctx,
 		`SELECT event, file_id::text FROM user_app_sound_files WHERE user_id = $1`, userID)
+	list, err := pgx.CollectRows(rows, pgx.RowToStructByPos[fileRow])
 	if err != nil {
 		return nil, fmt.Errorf("ler áudios próprios: %w", err)
 	}
-	files := map[string]string{}
-	for rows.Next() {
-		var event, id string
-		if err := rows.Scan(&event, &id); err != nil {
-			rows.Close()
-			return nil, fmt.Errorf("ler áudios próprios: %w", err)
-		}
-		files[event] = id
+	files := make(map[string]string, len(list))
+	for _, f := range list {
+		files[f.Event] = f.FileID
 	}
-	return files, rows.Err()
+	return files, nil
 }
 
 // SetFile grava o áudio do evento e devolve o id do anterior ("" se não havia),
