@@ -48,10 +48,10 @@ responder só exige ser membro.
 
 ### Migration `000177_create_server_events`
 - `server_events`: `id`, `server_id`, `channel_id` (voz), `scope`, `title`,
-  `description`, `banner_url`, `starts_at`, `next_start_at`, `recurrence`
+  `description`, `banner_id` (id do arquivo; servido por `GET /event-banners/:bannerId?token=`), `starts_at`, `next_start_at`, `recurrence`
   (`none|daily|weekly|monthly`), `recurrence_until`, `recurrence_count`,
   `occurrences_done`, `reminder_offsets` (0 a 2 valores da lista fixa),
-  `created_by`, `canceled_at`, `created_at`, `updated_at`.
+  `created_by`, `canceled_at`, `finished_at` (evento sem repetição ou com a repetição acabada), `created_at`, `updated_at`.
 - `event_rsvps`: (`event_id`, `user_id`, `occurrence_start`) como chave, `going`.
 - `event_reminders`: `event_id`, `occurrence_start`, `offset_minutes` (0 = na hora),
   `due_at`, `sent_at`; índice parcial em `due_at` onde `sent_at IS NULL`.
@@ -104,7 +104,7 @@ tem `ManageEvents` edita.
 | `PUT`/`DELETE …/events/:eventId/rsvp` | membro |
 | `GET …/events/:eventId/rsvps` | membro |
 
-Tempo real: `event:create|update|delete` na sala `server:<id>`.
+Tempo real: `event:create|update|delete|rsvp` na sala `server:<id>` (`rsvp` leva só `going_count`, a contagem nova de quem vai).
 
 ## Textos aprovados
 
