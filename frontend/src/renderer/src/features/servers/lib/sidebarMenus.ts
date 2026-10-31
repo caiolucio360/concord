@@ -35,7 +35,7 @@ export function channelMenuItems(context: ChannelMenuContext): ChannelMenuItem[]
 }
 
 export type ServerMenuItem =
-  'invite' | 'nickname' | 'notifications' | 'settings' | 'leave' | 'delete'
+  'invite' | 'nickname' | 'events' | 'notifications' | 'settings' | 'leave' | 'delete'
 
 export interface ServerMenuContext {
   hasServer: boolean
@@ -50,6 +50,8 @@ const SERVER_RULES: [ServerMenuItem, (c: ServerMenuContext) => boolean][] = [
   ['invite', (c) => c.canInvite],
   // O próprio apelido neste servidor ("Alterar apelido", todo mundo por padrão).
   ['nickname', (c) => c.canChangeOwnNickname],
+  // Todo membro vê os eventos e responde; criar exige Gerenciar eventos (dentro do painel).
+  ['events', (c) => c.hasServer],
   ['notifications', (c) => c.hasServer],
   ['settings', (c) => c.canOpenSettings],
   // O dono não sai: apaga o servidor.
