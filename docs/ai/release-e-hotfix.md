@@ -18,10 +18,15 @@ tipo. Editar o título refaz a checagem. Para testar na mão:
 
 1. `git fetch origin` e confira que a `develop` está como deve ir.
 2. `node scripts/affected-tests.mjs full` e `node scripts/check-migrations.mjs origin/main`.
-3. Abra o PR `develop` → `main` com o template:
-   `https://github.com/hugoemannuel/concord/compare/main...develop?template=release.md&expand=1`
-4. "O que muda": um item por PR que entra, com `closes #N`. Título com os destaques.
-5. Peça confirmação do usuário antes de abrir o PR.
+3. Gere o título e o corpo: `node scripts/release-notes.mjs`. Ele lê os PRs mergeados
+   na `develop` desde a `main` (precisa do `gh` logado) e imprime o `release: ...` e o
+   "O que muda" (um item por `feat`/`fix`/`perf`, com link e `closes #N` lido do texto do
+   PR; `refactor`, `docs`, `chore` etc. viram uma linha `Manutenção: #N`). O "Como
+   testar" vem de `.github/PULL_REQUEST_TEMPLATE/release.md`.
+4. Confira o texto e abra o PR `develop` → `main`:
+   `node scripts/release-notes.mjs --create` mostra o texto, pergunta `[s/N]` e roda
+   `gh pr create`. Peça confirmação do usuário antes.
+5. Marque os itens de "Como testar" que você rodou de fato.
 
 ## Hotfix
 

@@ -334,7 +334,19 @@ git commit -m "feat(gitflow): checagem de título e branch em PR para a main"
 
 ---
 
-## Depois das duas tasks
+### Task 3 (acrescentada em 2026-10-31): mensagens do release geradas por script
+
+**Files:**
+- Create: `scripts/release-notes.test.mjs`, `scripts/release-notes.mjs`
+- Modify: `docs/ai/release-e-hotfix.md` (passos 3 a 5 do release)
+
+**Interfaces:**
+- Consumes: `.github/PULL_REQUEST_TEMPLATE/release.md` (seção `## Como testar`).
+- Produces: `parseMergedPrs(subjects: string[]): number[]`, `extractCloses(text: string): number[]`, `buildRelease(prs: {number,title,body,url}[], template: string): { title: string, body: string }`; CLI `node scripts/release-notes.mjs [--create]`.
+
+Passos (TDD): escrever `release-notes.test.mjs` e ver falhar por módulo inexistente; implementar `release-notes.mjs`; rodar `node --test scripts/release-notes.test.mjs`; conferir com PRs reais (`gh pr view`); atualizar o doc; `node scripts/affected-tests.mjs pr`; commit `feat(gitflow): gera título e corpo do PR de release`.
+
+## Depois das tasks
 
 - Mostrar ao usuário a saída verde de `node scripts/affected-tests.mjs pr`.
 - Perguntar se pode dar push e abrir o PR para `develop` com o `.github/pull_request_template.md` (nada de push nem PR sem o "ok").
