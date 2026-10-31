@@ -3,6 +3,7 @@ package sticker
 import (
 	"context"
 	"errors"
+	"gin-quickstart/backend/internal/audit"
 	"gin-quickstart/backend/internal/permission"
 	"log"
 	"mime"
@@ -51,6 +52,7 @@ type Handler struct {
 	publisher       eventPublisher
 	maxPerServer    int
 	maxStickerBytes int64
+	audit           AuditRecorder
 }
 
 func NewHandler(
@@ -132,6 +134,7 @@ func (h *Handler) Delete(c *gin.Context) {
 		}))
 	}
 
+	h.record(ctx, audit.StickerDelete, actorID, stk.ServerID, stk.ID, stk.Name)
 	c.JSON(http.StatusOK, gin.H{"message": "sticker deleted"})
 }
 

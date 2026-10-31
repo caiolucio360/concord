@@ -3,6 +3,7 @@ package soundboard
 import (
 	"context"
 	"errors"
+	"gin-quickstart/backend/internal/audit"
 	"gin-quickstart/backend/internal/permission"
 	"log"
 	"mime"
@@ -54,6 +55,7 @@ type Handler struct {
 	visitors      visitorChecker
 	maxSoundBytes int64
 	maxPerServer  int
+	audit         AuditRecorder
 }
 
 func NewHandler(
@@ -108,6 +110,7 @@ func (h *Handler) Delete(c *gin.Context) {
 		}))
 	}
 
+	h.record(ctx, audit.SoundDelete, actorID, sound.ServerID, sound.ID, sound.Name)
 	c.JSON(http.StatusOK, gin.H{"message": "sound deleted"})
 }
 
