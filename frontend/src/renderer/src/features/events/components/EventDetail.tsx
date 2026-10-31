@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import Button from '../../../shared/ui/Button'
-import { CalendarIcon, PencilIcon, TrashIcon, VolumeIcon } from '../../../shared/ui/icons'
+import { CalendarIcon, ClockIcon, PencilIcon, TrashIcon, VolumeIcon } from '../../../shared/ui/icons'
 import type { ServerEvent } from '../api/events'
-import { formatWhen } from '../lib/eventTime'
+import { durationLabel } from '../lib/duration'
+import { endTimeLabel, formatWhen } from '../lib/eventTime'
 import { goingText } from '../lib/eventText'
 import { recurrenceLabel } from '../lib/recurrence'
 import EventBanner from './EventBanner'
@@ -16,6 +17,14 @@ function Fact({ icon, children }: { icon: React.ReactNode; children: React.React
       <span className="min-w-0 break-words">{children}</span>
     </p>
   )
+}
+
+/** A sala própria do evento: aberta (com o nome do canal) ou ainda por abrir. */
+function roomText(event: ServerEvent, roomName: string | null): string {
+  if (!event.voice_channel_id) {
+    return 'A sala abre na hora de começar; só entra quem confirmou presença.'
+  }
+  return roomName ? `Sala aberta: #${roomName}` : 'Sala aberta'
 }
 
 /** Cancelar o evento pede uma confirmação, no próprio lugar do botão. */
@@ -45,7 +54,7 @@ function CancelEventButton({ onConfirm }: { onConfirm: () => void }): React.JSX.
 export default function EventDetail({
   serverId,
   event,
-  channelName,
+  roomName,
   canManage,
   busy,
   onRespond,
@@ -55,7 +64,8 @@ export default function EventDetail({
 }: {
   serverId: string
   event: ServerEvent
-  channelName: string
+  /** O nome do canal de voz da sala aberta (null se o canal não está na lista). */
+  roomName: string | null
   canManage: boolean
   busy: boolean
   onRespond: (going: boolean | null) => void
@@ -77,7 +87,10 @@ export default function EventDetail({
         <Fact icon={<CalendarIcon size={16} />}>
           {`${formatWhen(event.next_start_at)} · ${recurrenceLabel(event.recurrence, new Date(event.starts_at))}`}
         </Fact>
-        <Fact icon={<VolumeIcon size={16} />}>{channelName}</Fact>
+        <Fact icon={<ClockIcon size={16} />}>
+          {`Dura ${durationLabel(event.duration_minutes)}, até ${endTimeLabel(event.next_start_at, event.duration_minutes)}`}
+        </Fact>
+        <Fact icon={<VolumeIcon size={16} />}>{roomText(event, roomName)}</Fact>
       </div>
       {event.description && (
         <p className="whitespace-pre-wrap break-words text-ds-sm text-normal">{event.description}</p>

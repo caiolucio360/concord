@@ -11,7 +11,7 @@ function valid(extra: Partial<EventFormValues> = {}): EventFormValues {
   const future = new Date(Date.now() + 48 * 3600 * 1000)
   const pad = (n: number): string => String(n).padStart(2, '0')
   const startsAt = `${future.getFullYear()}-${pad(future.getMonth() + 1)}-${pad(future.getDate())}T20:00`
-  return { ...emptyForm('voz'), title: 'Noite', startsAt, ...extra }
+  return { ...emptyForm(), title: 'Noite', startsAt, ...extra }
 }
 
 function actions() {

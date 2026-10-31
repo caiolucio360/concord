@@ -42,3 +42,10 @@ const WHEN = new Intl.DateTimeFormat('pt-BR', {
 export function formatWhen(iso: string): string {
   return WHEN.format(new Date(iso))
 }
+
+const HOUR_MINUTE = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' })
+
+/** "22:30": a hora em que a sala fecha (início + duração). */
+export function endTimeLabel(startIso: string, minutes: number): string {
+  return HOUR_MINUTE.format(new Date(Date.parse(startIso) + minutes * 60_000))
+}

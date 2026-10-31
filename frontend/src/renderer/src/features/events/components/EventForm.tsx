@@ -13,70 +13,28 @@ import {
 import { saveEvent } from '../lib/eventSave'
 import { useEventsStore } from '../store/eventsStore'
 import BannerField from './BannerField'
+import DurationField from './DurationField'
 import RecurrenceFields from './RecurrenceFields'
 import ReminderPicker from './ReminderPicker'
 
 const LABEL = 'flex flex-col gap-1.5 text-ds-sm font-medium text-secondary'
 
-interface ChannelOption {
-  id: string
-  name: string
-}
-
-/** Escolhe o canal de voz do evento; sem nenhum canal de voz, explica o que falta. */
-function ChannelField({
-  channels,
-  value,
-  onChange
-}: {
-  channels: ChannelOption[]
-  value: string
-  onChange: (id: string) => void
-}): React.JSX.Element {
-  if (channels.length === 0) {
-    return (
-      <p role="status" className="rounded-lg border border-warning/20 bg-warning/10 p-2.5 text-ds-xs text-warning">
-        Este servidor não tem canal de voz. Crie um para marcar eventos.
-      </p>
-    )
-  }
-  return (
-    <label className={LABEL}>
-      Canal de voz
-      <select
-        name="event-channel"
-        className="glass-input"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        {channels.map((c) => (
-          <option key={c.id} value={c.id} className="bg-floating">
-            {c.name}
-          </option>
-        ))}
-      </select>
-    </label>
-  )
-}
-
 /** Criar ou editar um evento. Salvar manda o pedido e avisa quem abriu com o evento salvo. */
 export default function EventForm({
   serverId,
   event,
-  voiceChannels,
   onClose,
   onSaved
 }: {
   serverId: string
   event?: ServerEvent
-  voiceChannels: ChannelOption[]
   onClose: () => void
   onSaved: (event: ServerEvent) => void
 }): React.JSX.Element {
   const create = useEventsStore((s) => s.create)
   const update = useEventsStore((s) => s.update)
   const [values, setValues] = useState<EventFormValues>(() =>
-    event ? formFromEvent(event) : emptyForm(voiceChannels[0]?.id ?? '')
+    event ? formFromEvent(event) : emptyForm()
   )
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
@@ -136,11 +94,6 @@ export default function EventForm({
             onChange={(e) => patch({ description: e.target.value })}
           />
         </label>
-        <ChannelField
-          channels={voiceChannels}
-          value={values.channelId}
-          onChange={(channelId) => patch({ channelId })}
-        />
         <label className={LABEL}>
           Quando começa
           <input
@@ -152,13 +105,14 @@ export default function EventForm({
             onChange={(e) => patch({ startsAt: e.target.value })}
           />
         </label>
+        <DurationField value={values.durationMinutes} onChange={(durationMinutes) => patch({ durationMinutes })} />
         <RecurrenceFields values={values} onChange={patch} />
         <ReminderPicker selected={values.reminders} onChange={(reminders) => patch({ reminders })} />
         <div className="sticky bottom-0 -mx-1 flex justify-end gap-2 bg-modal px-1 pb-1 pt-3">
           <Button type="button" variant="ghost" onClick={onClose}>
             Cancelar
           </Button>
-          <Button type="submit" loading={saving} disabled={saving || voiceChannels.length === 0}>
+          <Button type="submit" loading={saving} disabled={saving}>
             Salvar evento
           </Button>
         </div>

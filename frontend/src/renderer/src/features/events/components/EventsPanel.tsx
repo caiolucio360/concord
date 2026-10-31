@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import Modal from '../../../shared/ui/Modal'
 import { useServerStore } from '../../servers/store/serverStore'
 import type { ServerEvent } from '../api/events'
@@ -21,7 +21,6 @@ export default function EventsPanel({
   const { events, error, reload } = useEvents(serverId)
   const { busy, notice, run } = useEventAction()
   const channels = useServerStore((s) => s.channels)
-  const voiceChannels = useMemo(() => channels.filter((c) => c.type === 'voice'), [channels])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [editing, setEditing] = useState<ServerEvent | 'new' | null>(null)
 
@@ -55,7 +54,6 @@ export default function EventsPanel({
       <EventFormHost
         serverId={serverId}
         editing={editing}
-        voiceChannels={voiceChannels}
         onClose={() => setEditing(null)}
         onSaved={(saved) => {
           setEditing(null)

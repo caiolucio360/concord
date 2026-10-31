@@ -82,7 +82,7 @@ export default function EventsPanelBody(props: BodyProps): React.JSX.Element {
           <EventDetail
             serverId={props.serverId}
             event={selected}
-            channelName={channels.find((c) => c.id === selected.channel_id)?.name ?? 'Canal removido'}
+            roomName={channels.find((c) => c.id === selected.voice_channel_id)?.name ?? null}
             canManage={canManage}
             busy={busy}
             onRespond={(going) => props.onRespond(selected.id, going)}

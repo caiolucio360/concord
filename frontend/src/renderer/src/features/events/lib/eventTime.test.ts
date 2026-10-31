@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatWhen, fromLocalInput, toLocalInput } from './eventTime'
+import { endTimeLabel, formatWhen, fromLocalInput, toLocalInput } from './eventTime'
 
 // Tudo em horário local do aparelho, como o <input type="datetime-local">.
 const local = new Date(2026, 10, 4, 20, 30)
@@ -27,5 +27,10 @@ describe('datas do evento', () => {
     const text = formatWhen(local.toISOString())
     expect(text).toContain('20:30')
     expect(text).toContain('4')
+  })
+
+  it('endTimeLabel mostra a hora em que a sala fecha', () => {
+    expect(endTimeLabel(local.toISOString(), 120)).toBe('22:30')
+    expect(endTimeLabel(local.toISOString(), 30)).toBe('21:00')
   })
 })

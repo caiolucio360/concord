@@ -4,7 +4,7 @@ import { emptyForm, type EventFormValues } from '../lib/eventForm'
 import RecurrenceFields from './RecurrenceFields'
 
 function render(patch: Partial<EventFormValues>): string {
-  const values = { ...emptyForm('voz', new Date(2026, 10, 1, 12, 0)), startsAt: '2026-11-04T20:00', ...patch }
+  const values = { ...emptyForm(new Date(2026, 10, 1, 12, 0)), startsAt: '2026-11-04T20:00', ...patch }
   return renderToStaticMarkup(<RecurrenceFields values={values} onChange={() => {}} />)
 }
 

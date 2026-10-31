@@ -11,20 +11,17 @@ vi.mock('../hooks/useBannerSrc', () => ({ useBannerSrc: () => ({ src: null, onEr
 import { renderToStaticMarkup } from 'react-dom/server'
 import EventForm from './EventForm'
 
-const channels = [
-  { id: 'voz', name: 'Sala de jogos' },
-  { id: 'voz2', name: 'Conversa' }
-]
-
 const event: ServerEvent = {
   id: 'e1',
   server_id: 's1',
-  channel_id: 'voz2',
   title: 'Noite de jogos',
   description: 'Traga a galera',
   banner_id: null,
   starts_at: new Date(2026, 10, 4, 20, 0).toISOString(),
   next_start_at: new Date(2026, 10, 4, 20, 0).toISOString(),
+  duration_minutes: 180,
+  voice_channel_id: null,
+  text_channel_id: null,
   recurrence: 'none',
   recurrence_until: null,
   recurrence_count: null,
@@ -36,7 +33,7 @@ const event: ServerEvent = {
 
 function render(props: Partial<React.ComponentProps<typeof EventForm>> = {}): string {
   return renderToStaticMarkup(
-    <EventForm serverId="s1" voiceChannels={channels} onClose={() => {}} onSaved={() => {}} {...props} />
+    <EventForm serverId="s1" onClose={() => {}} onSaved={() => {}} {...props} />
   )
 }
 
@@ -45,12 +42,11 @@ describe('EventForm', () => {
     vi.stubGlobal('document', { body: {} })
   })
 
-  it('evento novo: título "Novo evento", campos em branco e os dois canais de voz', () => {
+  it('evento novo: título "Novo evento", campos em branco e a duração padrão de 2 horas', () => {
     const html = render()
     expect(html).toContain('Novo evento')
-    expect(html).toContain('Sala de jogos')
-    expect(html).toContain('Conversa')
-    expect(html).toContain('Salvar')
+    expect(html).toMatch(/<option[^>]*value="120"[^>]*selected[^>]*>2 horas/)
+    expect(html).toContain('Salvar evento')
   })
 
   it('editar: título "Editar evento" e os dados do evento nos campos', () => {
@@ -59,11 +55,12 @@ describe('EventForm', () => {
     expect(html).toContain('value="Noite de jogos"')
     expect(html).toContain('Traga a galera')
     expect(html).toContain('value="2026-11-04T20:00"')
+    expect(html).toMatch(/<option[^>]*value="180"[^>]*selected[^>]*>3 horas/)
   })
 
   it('tem os campos do pedido: título, descrição, canal, início, repetição, avisos e banner', () => {
     const html = render()
-    for (const label of ['Título', 'Descrição', 'Canal de voz', 'Quando começa', 'Repetir', 'Avisar antes', 'Banner']) {
+    for (const label of ['Título', 'Descrição', 'Quando começa', 'Duração', 'Repetir', 'Avisar antes', 'Banner']) {
       expect(html).toContain(label)
     }
   })
@@ -74,9 +71,9 @@ describe('EventForm', () => {
     expect(html).toContain('maxLength="100"')
   })
 
-  it('sem canal de voz no servidor, explica e trava o Salvar', () => {
-    const html = render({ voiceChannels: [] })
-    expect(html).toContain('Este servidor não tem canal de voz')
-    expect(html).toMatch(/<button[^>]*disabled[^>]*>(?:(?!<\/button>)[\s\S])*Salvar/)
+  it('explica que a sala própria abre na hora e quem entra', () => {
+    const html = render()
+    expect(html).toContain('A sala de voz e a de texto do evento abrem na hora de começar')
+    expect(html).toContain('só quem confirmar presença entra')
   })
 })

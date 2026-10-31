@@ -7,13 +7,17 @@ import type { Recurrence } from '../lib/recurrence'
 export interface ServerEvent {
   id: string
   server_id: string
-  channel_id: string
   title: string
   description: string
   banner_id: string | null
   starts_at: string
   /** A ocorrência atual (a que vale para presença e avisos). */
   next_start_at: string
+  /** A sala fecha quando a duração acaba. */
+  duration_minutes: number
+  /** A sala da ocorrência em andamento (voz e texto); null fora do horário do evento. */
+  voice_channel_id: string | null
+  text_channel_id: string | null
   recurrence: Recurrence
   recurrence_until: string | null
   recurrence_count: number | null
@@ -26,11 +30,11 @@ export interface ServerEvent {
 
 /** O que o formulário manda ao criar ou editar. */
 export interface EventInput {
-  channel_id: string
   title: string
   description: string
   banner_id: string | null
   starts_at: string
+  duration_minutes: number
   recurrence: Recurrence
   recurrence_until: string | null
   recurrence_count: number | null

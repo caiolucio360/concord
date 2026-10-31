@@ -7,7 +7,7 @@ const now = new Date(2026, 10, 1, 12, 0)
 
 function valid(extra: Partial<EventFormValues> = {}): EventFormValues {
   return {
-    ...emptyForm('voz', now),
+    ...emptyForm(now),
     title: 'Noite de jogos',
     startsAt: '2026-11-04T20:00',
     ...extra
@@ -21,9 +21,9 @@ const err = (v: EventFormValues): string => {
 }
 
 describe('formulário do evento', () => {
-  it('começa com o canal, os lembretes padrão e o início na próxima hora cheia', () => {
-    const form = emptyForm('voz', now)
-    expect(form.channelId).toBe('voz')
+  it('começa com a duração e os lembretes padrão e o início na próxima hora cheia', () => {
+    const form = emptyForm(now)
+    expect(form.durationMinutes).toBe(120)
     expect(form.reminders).toEqual(DEFAULT_REMINDERS)
     expect(form.startsAt).toBe('2026-11-01T13:00')
     expect(form.recurrence).toBe('none')
@@ -34,11 +34,11 @@ describe('formulário do evento', () => {
     expect(r.ok).toBe(true)
     if (!r.ok) return
     expect(r.input).toEqual({
-      channel_id: 'voz',
       title: 'Noite de jogos',
       description: 'Traga a galera',
       banner_id: null,
       starts_at: new Date(2026, 10, 4, 20, 0).toISOString(),
+      duration_minutes: 120,
       recurrence: 'none',
       recurrence_until: null,
       recurrence_count: null,
@@ -46,11 +46,10 @@ describe('formulário do evento', () => {
     })
   })
 
-  it('recusa título vazio ou grande, descrição grande, sem canal e sem data', () => {
+  it('recusa título vazio ou grande, descrição grande e sem data', () => {
     expect(err(valid({ title: '   ' }))).toBe('Dê um título ao evento.')
     expect(err(valid({ title: 'a'.repeat(101) }))).toBe('O título pode ter até 100 caracteres.')
     expect(err(valid({ description: 'a'.repeat(1001) }))).toBe('A descrição pode ter até 1000 caracteres.')
-    expect(err(valid({ channelId: '' }))).toBe('Escolha um canal de voz.')
     expect(err(valid({ startsAt: '' }))).toBe('Escolha a data e a hora de início.')
   })
 
@@ -86,6 +85,11 @@ describe('formulário do evento', () => {
     expect(r.ok && [r.input.recurrence_count, r.input.recurrence_until]).toEqual([null, null])
   })
 
+  it('leva a duração escolhida', () => {
+    const r = toInput(valid({ durationMinutes: 60 }), now)
+    expect(r.ok && r.input.duration_minutes).toBe(60)
+  })
+
   it('leva o banner e os lembretes escolhidos', () => {
     const r = toInput(valid({ bannerId: 'b1', reminders: [30] }), now)
     expect(r.ok && [r.input.banner_id, r.input.reminder_offsets]).toEqual(['b1', [30]])
@@ -95,12 +99,14 @@ describe('formulário do evento', () => {
     const event: ServerEvent = {
       id: 'e1',
       server_id: 's1',
-      channel_id: 'voz',
       title: 'Noite',
       description: 'Desc',
       banner_id: 'b1',
       starts_at: new Date(2026, 10, 4, 20, 0).toISOString(),
       next_start_at: new Date(2026, 10, 11, 20, 0).toISOString(),
+      duration_minutes: 180,
+      voice_channel_id: null,
+      text_channel_id: null,
       recurrence: 'weekly',
       recurrence_until: new Date(2026, 11, 1, 23, 59).toISOString(),
       recurrence_count: null,
@@ -112,7 +118,7 @@ describe('formulário do evento', () => {
     expect(formFromEvent(event)).toEqual({
       title: 'Noite',
       description: 'Desc',
-      channelId: 'voz',
+      durationMinutes: 180,
       startsAt: '2026-11-04T20:00',
       recurrence: 'weekly',
       endMode: 'until',

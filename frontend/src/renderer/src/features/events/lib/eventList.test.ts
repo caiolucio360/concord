@@ -6,7 +6,9 @@ function ev(id: string, next: string, extra: Partial<ServerEvent> = {}): ServerE
   return {
     id,
     server_id: 's1',
-    channel_id: 'voz',
+    duration_minutes: 120,
+    voice_channel_id: null,
+    text_channel_id: null,
     title: `Evento ${id}`,
     description: '',
     banner_id: null,

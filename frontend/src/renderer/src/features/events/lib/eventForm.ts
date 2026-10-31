@@ -1,4 +1,5 @@
 import type { EventInput, ServerEvent } from '../api/events'
+import { DEFAULT_DURATION } from './duration'
 import { endOfLocalDay, fromLocalInput, toLocalDate, toLocalInput } from './eventTime'
 import type { Recurrence } from './recurrence'
 import { DEFAULT_REMINDERS } from './reminders'
@@ -14,9 +15,9 @@ export type EndMode = 'never' | 'until' | 'count'
 export interface EventFormValues {
   title: string
   description: string
-  channelId: string
   /** "AAAA-MM-DDTHH:mm", horário local. */
   startsAt: string
+  durationMinutes: number
   recurrence: Recurrence
   endMode: EndMode
   /** "AAAA-MM-DD", horário local. */
@@ -30,16 +31,16 @@ export type FormResult = { ok: true; input: EventInput } | { ok: false; error: s
 
 const fail = (error: string): FormResult => ({ ok: false, error })
 
-/** Formulário em branco: começa na próxima hora cheia, com os lembretes padrão. */
-export function emptyForm(channelId: string, now: Date = new Date()): EventFormValues {
+/** Formulário em branco: começa na próxima hora cheia, com a duração e os lembretes padrão. */
+export function emptyForm(now: Date = new Date()): EventFormValues {
   const start = new Date(now)
   start.setMinutes(0, 0, 0)
   start.setHours(start.getHours() + 1)
   return {
     title: '',
     description: '',
-    channelId,
     startsAt: toLocalInput(start.toISOString()),
+    durationMinutes: DEFAULT_DURATION,
     recurrence: 'none',
     endMode: 'never',
     until: '',
@@ -59,8 +60,8 @@ export function formFromEvent(event: ServerEvent): EventFormValues {
   return {
     title: event.title,
     description: event.description,
-    channelId: event.channel_id,
     startsAt: toLocalInput(event.starts_at),
+    durationMinutes: event.duration_minutes,
     recurrence: event.recurrence,
     endMode: endModeOf(event),
     until: event.recurrence_until ? toLocalDate(event.recurrence_until) : '',
@@ -77,7 +78,7 @@ function textError(v: EventFormValues): string | null {
   if (v.description.trim().length > MAX_DESCRIPTION) {
     return `A descrição pode ter até ${MAX_DESCRIPTION} caracteres.`
   }
-  return v.channelId ? null : 'Escolha um canal de voz.'
+  return null
 }
 
 interface End {
@@ -116,11 +117,11 @@ export function toInput(v: EventFormValues, now: Date = new Date()): FormResult 
   return {
     ok: true,
     input: {
-      channel_id: v.channelId,
       title: v.title.trim(),
       description: v.description.trim(),
       banner_id: v.bannerId,
       starts_at: startIso,
+      duration_minutes: v.durationMinutes,
       recurrence: v.recurrence,
       recurrence_until: end.until,
       recurrence_count: end.count,

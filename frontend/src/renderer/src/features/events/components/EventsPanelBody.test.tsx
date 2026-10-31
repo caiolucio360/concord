@@ -14,7 +14,9 @@ function ev(id: string, extra: Partial<ServerEvent> = {}): ServerEvent {
   return {
     id,
     server_id: 's1',
-    channel_id: 'voz',
+    duration_minutes: 120,
+    voice_channel_id: null,
+    text_channel_id: null,
     title: `Evento ${id}`,
     description: 'Traga a galera',
     banner_id: null,
@@ -31,7 +33,7 @@ function ev(id: string, extra: Partial<ServerEvent> = {}): ServerEvent {
   }
 }
 
-const channels = [{ id: 'voz', name: 'Sala de jogos' }]
+const channels = [{ id: 'voz', name: 'evento-noite-de-jogos' }]
 
 function render(props: Partial<React.ComponentProps<typeof EventsPanelBody>> = {}): string {
   return renderToStaticMarkup(
@@ -84,11 +86,27 @@ describe('EventsPanelBody', () => {
     expect(html).toContain('Tentar de novo')
   })
 
-  it('evento selecionado abre o detalhe com a descrição, o canal e a repetição', () => {
+  it('evento selecionado abre o detalhe com a descrição, a duração e a repetição', () => {
     const html = render({ selectedId: 'a' })
     expect(html).toContain('Traga a galera')
-    expect(html).toContain('Sala de jogos')
+    expect(html).toContain('Dura 2 horas')
     expect(html).toMatch(/Toda (segunda|terça|quarta|quinta|sexta)-feira|Todo (sábado|domingo)/)
+  })
+
+  it('antes de começar, o detalhe explica que a sala abre na hora e é só de quem confirmou', () => {
+    const html = render({ selectedId: 'a' })
+    expect(html).toContain('A sala abre na hora de começar')
+    expect(html).toContain('só entra quem confirmou presença')
+  })
+
+  it('com a sala aberta, o detalhe mostra o canal de voz do evento', () => {
+    const html = render({ events: [ev('a', { voice_channel_id: 'voz' })], selectedId: 'a' })
+    expect(html).toContain('Sala aberta: #evento-noite-de-jogos')
+  })
+
+  it('sala aberta cujo canal não está na lista (sem acesso) não quebra', () => {
+    const html = render({ events: [ev('a', { voice_channel_id: 'outro' })], selectedId: 'a' })
+    expect(html).toContain('Sala aberta')
   })
 
   it('só quem gerencia vê Editar e Cancelar evento no detalhe', () => {

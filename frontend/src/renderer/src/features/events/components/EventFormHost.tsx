@@ -5,13 +5,11 @@ import EventForm from './EventForm'
 export default function EventFormHost({
   serverId,
   editing,
-  voiceChannels,
   onClose,
   onSaved
 }: {
   serverId: string
   editing: ServerEvent | 'new' | null
-  voiceChannels: { id: string; name: string }[]
   onClose: () => void
   onSaved: (event: ServerEvent) => void
 }): React.JSX.Element | null {
@@ -20,7 +18,6 @@ export default function EventFormHost({
     <EventForm
       serverId={serverId}
       event={editing === 'new' ? undefined : editing}
-      voiceChannels={voiceChannels}
       onClose={onClose}
       onSaved={onSaved}
     />
