@@ -50,7 +50,7 @@ selo **Jogando** na lista de quem vai.
 
 - Antecedência: `🔔 O evento "{título}" começa em {N}, no servidor {servidor}. Jogo: {jogo}. A sala abre na hora de começar.`
 - Começou: `📅 O evento "{título}" está começando agora. Jogo: {jogo}. Entre na sala #{canal}, no servidor {servidor}.`
-- Começou, se a sala não abriu (variante que a Fase 1 já tem, **não coberta pela aprovação acima**, só ganha o trecho do jogo no fim): `📅 O evento "{título}" está começando agora, no servidor {servidor}. Jogo: {jogo}.`
+- Começou, se a sala não abriu (variante que a Fase 1 já tem; só ganha o trecho do jogo no fim; aprovada também em 2026-10-30): `📅 O evento "{título}" está começando agora, no servidor {servidor}. Jogo: {jogo}.`
 
 Rótulos da UI (aprovados): "Jogo (opcional)", "Nenhum jogo", "Outro jogo…", "Nome do jogo" e o selo "Jogando".
 
