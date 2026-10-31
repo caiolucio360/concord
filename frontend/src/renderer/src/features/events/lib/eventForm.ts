@@ -1,4 +1,4 @@
-import type { EventInput, ServerEvent } from '../api/events'
+import type { EventInput, ObjectiveInput, ServerEvent } from '../api/events'
 import { DEFAULT_DURATION } from './duration'
 import { NO_GAME, gameChoiceOf, gameNameOf } from './eventGame'
 import { endOfLocalDay, fromLocalInput, toLocalDate, toLocalInput } from './eventTime'
@@ -24,6 +24,7 @@ export interface EventFormValues {
   gameChoice: string
   /** O nome digitado quando a opção é "Outro jogo…". */
   customGame: string
+  objectives: ObjectiveInput[]
   recurrence: Recurrence
   endMode: EndMode
   /** "AAAA-MM-DD", horário local. */
@@ -49,6 +50,7 @@ export function emptyForm(now: Date = new Date()): EventFormValues {
     durationMinutes: DEFAULT_DURATION,
     gameChoice: NO_GAME,
     customGame: '',
+    objectives: [],
     recurrence: 'none',
     endMode: 'never',
     until: '',
@@ -72,6 +74,7 @@ export function formFromEvent(event: ServerEvent): EventFormValues {
     durationMinutes: event.duration_minutes,
     gameChoice: gameChoiceOf(event.game_name).choice,
     customGame: gameChoiceOf(event.game_name).custom,
+    objectives: event.objectives.map((o) => ({ kind: o.kind, difficulty: o.difficulty, minutes: o.minutes })),
     recurrence: event.recurrence,
     endMode: endModeOf(event),
     until: event.recurrence_until ? toLocalDate(event.recurrence_until) : '',
@@ -86,6 +89,17 @@ function gameError(v: EventFormValues): string | null {
   const name = gameNameOf(v.gameChoice, v.customGame)
   if (v.gameChoice !== NO_GAME && !name) return 'Digite o nome do jogo.'
   return name.length > MAX_GAME ? `O nome do jogo pode ter até ${MAX_GAME} caracteres.` : null
+}
+
+/** Objetivo de jogo sem jogo no evento, ou com meta maior que a duração. */
+function objectivesError(v: EventFormValues): string | null {
+  if (v.objectives.some((o) => o.kind === 'game') && v.gameChoice === NO_GAME) {
+    return 'Escolha um jogo para o evento antes de usar o objetivo de jogo.'
+  }
+  if (v.objectives.some((o) => o.minutes > v.durationMinutes)) {
+    return 'Escolha uma meta que caiba na duração do evento.'
+  }
+  return null
 }
 
 function textError(v: EventFormValues): string | null {
@@ -126,7 +140,7 @@ function startError(startIso: string | null, now: Date, running: boolean): strin
 
 /** Confere o formulário e monta o pedido da API (ou diz o que está errado). */
 export function toInput(v: EventFormValues, now: Date = new Date(), running = false): FormResult {
-  const text = textError(v) ?? gameError(v)
+  const text = textError(v) ?? gameError(v) ?? objectivesError(v)
   if (text) return fail(text)
   const startIso = fromLocalInput(v.startsAt)
   const start = startError(startIso, now, running)
@@ -142,6 +156,7 @@ export function toInput(v: EventFormValues, now: Date = new Date(), running = fa
       starts_at: startIso,
       duration_minutes: v.durationMinutes,
       game_name: gameNameOf(v.gameChoice, v.customGame),
+      objectives: v.objectives,
       recurrence: v.recurrence,
       recurrence_until: end.until,
       recurrence_count: end.count,

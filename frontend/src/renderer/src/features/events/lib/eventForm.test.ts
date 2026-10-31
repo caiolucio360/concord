@@ -41,6 +41,7 @@ describe('formulário do evento', () => {
       starts_at: new Date(2026, 10, 4, 20, 0).toISOString(),
       duration_minutes: 120,
       game_name: '',
+      objectives: [],
       recurrence: 'none',
       recurrence_until: null,
       recurrence_count: null,
@@ -108,6 +109,7 @@ describe('formulário do evento', () => {
       next_start_at: new Date(2026, 10, 11, 20, 0).toISOString(),
       duration_minutes: 180,
       game_name: 'Minecraft',
+      objectives: [{ id: 'o1', kind: 'game', difficulty: 'hard', minutes: 60, xp: 6000, my_minutes: 5, my_done: false }],
       voice_channel_id: null,
       text_channel_id: null,
       recurrence: 'weekly',
@@ -130,7 +132,8 @@ describe('formulário do evento', () => {
       until: '2026-12-01',
       count: '',
       reminders: [30],
-      bannerId: 'b1'
+      bannerId: 'b1',
+      objectives: [{ kind: 'game', difficulty: 'hard', minutes: 60 }]
     })
     expect(formFromEvent({ ...event, recurrence_until: null, recurrence_count: 4 }).endMode).toBe('count')
     expect(formFromEvent({ ...event, recurrence_until: null }).endMode).toBe('never')
@@ -160,6 +163,33 @@ describe('formulário do evento', () => {
   })
 })
 
+describe('objetivos no formulário', () => {
+  const game = { kind: 'game', difficulty: 'easy', minutes: 30 } as const
+  const time = { kind: 'time', difficulty: 'medium', minutes: 60 } as const
+
+  it('começa sem objetivos', () => {
+    expect(emptyForm(now).objectives).toEqual([])
+  })
+
+  it('manda os objetivos no pedido', () => {
+    const r = toInput(valid({ gameChoice: 'VALORANT', objectives: [game, time] }), now)
+    expect(r.ok && r.input.objectives).toEqual([game, time])
+  })
+
+  it('recusa objetivo de jogo sem jogo no evento', () => {
+    expect(err(valid({ objectives: [game] }))).toBe(
+      'Escolha um jogo para o evento antes de usar o objetivo de jogo.'
+    )
+    expect(toInput(valid({ objectives: [time] }), now).ok).toBe(true)
+  })
+
+  it('recusa meta maior que a duração do evento', () => {
+    expect(err(valid({ durationMinutes: 30, objectives: [time] }))).toBe(
+      'Escolha uma meta que caiba na duração do evento.'
+    )
+  })
+})
+
 function eventWith(gameName: string | null): ServerEvent {
   return {
     id: 'e1',
@@ -171,6 +201,7 @@ function eventWith(gameName: string | null): ServerEvent {
     next_start_at: new Date(2026, 10, 4, 20, 0).toISOString(),
     duration_minutes: 120,
     game_name: gameName,
+    objectives: [],
     voice_channel_id: null,
     text_channel_id: null,
     recurrence: 'none',

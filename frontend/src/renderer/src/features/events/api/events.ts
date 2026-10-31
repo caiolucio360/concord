@@ -3,6 +3,29 @@ import { useAuthStore } from '../../auth/store/authStore'
 import { ApiError, refreshTokens, request } from '../../../shared/api/client'
 import type { Recurrence } from '../lib/recurrence'
 
+export type ObjectiveKind = 'time' | 'game'
+export type ObjectiveDifficulty = 'easy' | 'medium' | 'hard'
+
+/** Um objetivo do evento, com o meu progresso na ocorrência atual (internal/eventobjective). */
+export interface EventObjective {
+  id: string
+  kind: ObjectiveKind
+  difficulty: ObjectiveDifficulty
+  /** A meta, em minutos. */
+  minutes: number
+  /** O XP pessoal que paga (o do servidor é 5% disso). */
+  xp: number
+  my_minutes: number
+  my_done: boolean
+}
+
+/** O que o formulário manda para cada objetivo. */
+export interface ObjectiveInput {
+  kind: ObjectiveKind
+  difficulty: ObjectiveDifficulty
+  minutes: number
+}
+
 /** Evento do servidor, como o backend (internal/event) o manda. */
 export interface ServerEvent {
   id: string
@@ -17,6 +40,8 @@ export interface ServerEvent {
   duration_minutes: number
   /** O jogo do evento (nome); null = sem jogo. */
   game_name: string | null
+  /** Até 3 objetivos (lista vazia, nunca nula, sem objetivos). */
+  objectives: EventObjective[]
   /** A sala da ocorrência em andamento (voz e texto); null fora do horário do evento. */
   voice_channel_id: string | null
   text_channel_id: string | null
@@ -39,6 +64,7 @@ export interface EventInput {
   duration_minutes: number
   /** O nome do jogo ('' = sem jogo). */
   game_name: string
+  objectives: ObjectiveInput[]
   recurrence: Recurrence
   recurrence_until: string | null
   recurrence_count: number | null

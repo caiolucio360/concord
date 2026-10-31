@@ -21,6 +21,7 @@ const event: ServerEvent = {
   next_start_at: new Date(2099, 10, 4, 20, 0).toISOString(),
   duration_minutes: 180,
   game_name: null,
+  objectives: [],
   voice_channel_id: null,
   text_channel_id: null,
   recurrence: 'none',

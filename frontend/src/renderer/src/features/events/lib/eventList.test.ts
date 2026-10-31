@@ -8,6 +8,7 @@ function ev(id: string, next: string, extra: Partial<ServerEvent> = {}): ServerE
     server_id: 's1',
     duration_minutes: 120,
     game_name: null,
+    objectives: [],
     voice_channel_id: null,
     text_channel_id: null,
     title: `Evento ${id}`,
