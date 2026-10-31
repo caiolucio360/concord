@@ -122,7 +122,7 @@ só faz deploy a cada merge na `main`: **quem garante os testes é você, localm
   [modelo](.github/pull_request_template.md). Merge na `main` publica atualização
   para todos os apps instalados.
 - Commit estrutural (refatorar/mover) separado do commit de comportamento.
-- Texto que o usuário final lê (UI, bot, e-mail) precisa de aprovação humana.
+- Texto que o usuário final lê (UI, bot, e-mail) precisa de aprovação humana. A nota de changelog (`changelog/pending/`) é exceção: escreva e siga, sem pedir aprovação.
 - Peça confirmação antes de push, PR, deploy ou qualquer coisa difícil de desfazer.
 
 ## Pegadinhas do ambiente (Windows)
