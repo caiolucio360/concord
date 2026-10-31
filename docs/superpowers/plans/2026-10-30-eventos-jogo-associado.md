@@ -18,14 +18,14 @@
 
 ## Estrutura de arquivos
 
-Backend (`backend/internal/event/`): `model.go`, `validate.go`, `service.go`, `repository.go`, `repository_schedule.go`, `texts.go`, `scheduler.go`, `handler.go` (alterados); `backend/migrations/000179_event_game.{up,down}.sql` (novos).
+Backend (`backend/internal/event/`): `model.go`, `validate.go`, `service.go`, `repository.go`, `repository_schedule.go`, `texts.go`, `scheduler.go`, `handler.go` (alterados); `backend/migrations/000182_event_game.{up,down}.sql` (novos).
 App (`frontend/src/renderer/src/features/events/`): `api/events.ts`, `lib/eventForm.ts`, `components/EventForm.tsx`, `EventListItem.tsx`, `EventDetail.tsx`, `GoingList.tsx` (alterados); `lib/eventGame.ts`, `components/GameField.tsx`, `components/EventGame.tsx` (novos).
 
 ---
 
 ### Task 1: Banco, modelo e validação do jogo
 
-**Files:** `backend/migrations/000179_event_game.up.sql`/`.down.sql`; `model.go`; `validate.go`; `validate_test.go`.
+**Files:** `backend/migrations/000182_event_game.up.sql`/`.down.sql`; `model.go`; `validate.go`; `validate_test.go`.
 
 **Interfaces:** Produz `Event.GameName *string` (`json:"game_name"`), `Input.GameName string` (`json:"game_name"`), `ErrInvalidGame`, `func (in Input) cleanText() (Input, error)` agora também limpa/valida o jogo (mantém a assinatura).
 

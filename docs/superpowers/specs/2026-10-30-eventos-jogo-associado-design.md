@@ -28,7 +28,7 @@ selo **Jogando** na lista de quem vai.
 ## Arquitetura
 
 ### Backend (`backend/internal/event/`)
-- Migration `000179_event_game.up.sql`/`.down.sql`: `ALTER TABLE server_events ADD COLUMN game_name VARCHAR(64)`.
+- Migration `000182_event_game.up.sql`/`.down.sql`: `ALTER TABLE server_events ADD COLUMN game_name VARCHAR(64)`.
 - `model.go`: `Event.GameName *string` (`game_name`), `Input.GameName string`, `ErrInvalidGame`.
 - `validate.go`: `cleanGame` (parte de `cleanText`, que a edição simples também usa para não aceitar jogo inválido).
 - `service.go`: `apply` grava o jogo; `sameSchedule` passa a comparar o jogo (mudar o jogo com o evento em andamento volta `event_running`).
