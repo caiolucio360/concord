@@ -105,7 +105,7 @@ describe('bits compartilhados com o backend', () => {
   })
 
   it('normalize descarta bits desconhecidos', () => {
-    expect(normalize(ALL_PERMISSIONS | (1 << 31))).toBe(ALL_PERMISSIONS)
+    expect(normalize(ALL_PERMISSIONS | (1 << 14) | (1 << 29))).toBe(ALL_PERMISSIONS)
   })
 })
 

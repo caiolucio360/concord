@@ -28,7 +28,6 @@
     "CHANGE_NICKNAME": 67108864,
     "MANAGE_NICKNAMES": 134217728,
     "ADD_SOUNDS": 268435456,
-    "MANAGE_EVENTS": 16384,
     "ADD_EMOJIS": 32768,
     "ADD_STICKERS": 536870912,
     "SEND_TTS_MESSAGES": 1073741824
@@ -44,15 +43,6 @@
       "channel": {"type": "voice", "overwrites": [{"target_type": "role", "target_id": "everyone", "allow": [], "deny": ["USE_SOUNDBOARD"]}]},
       "expect_base": ["VIEW_CHANNEL", "CONNECT", "USE_SOUNDBOARD", "ADD_SOUNDS", "ADD_STICKERS", "ADD_EMOJIS"],
       "expect_channel": ["VIEW_CHANNEL", "CONNECT", "ADD_SOUNDS", "ADD_STICKERS", "ADD_EMOJIS"]
-    },
-    {
-      "name": "gerenciar eventos só vem pelo cargo: o @everyone não tem e o canal não muda",
-      "owner_id": "dono", "user_id": "ana",
-      "everyone": ["VIEW_CHANNEL"],
-      "roles": [{"id": "org", "position": 1, "permissions": ["MANAGE_EVENTS"]}], "member_roles": ["org"],
-      "channel": {"type": "text", "overwrites": []},
-      "expect_base": ["VIEW_CHANNEL", "MANAGE_EVENTS"],
-      "expect_channel": ["VIEW_CHANNEL", "MANAGE_EVENTS"]
     },
     {
       "name": "dono tem tudo, mesmo negado no canal",

@@ -38,7 +38,6 @@ O cálculo é o mesmo no backend (`backend/internal/permission`) e no app (`fron
 | | Adicionar sons | Enviar sons novos para a mesa de áudio do servidor. Vale no servidor todo (não há sobrescrita por canal). |
 | | Adicionar figurinhas | Enviar figurinhas novas para o servidor. Vale no servidor todo. |
 | | Adicionar emojis | Enviar emojis personalizados novos para o servidor (até 50). Vale no servidor todo. |
-| | Gerenciar eventos | Criar, editar e cancelar os eventos do servidor (os membros veem e respondem sem esta permissão). Vale no servidor todo e **fora do @everyone**: só o dono, o Administrador e os cargos que ganharem. |
 | Membros | Expulsar / Banir | Tirar o membro (o ban impede de voltar até desbanir). |
 | | Administrador | Tudo, ignorando os canais. |
 | Texto | Enviar mensagens, Enviar arquivos, Adicionar reações, Ver histórico | Uso normal do chat. |

@@ -104,10 +104,10 @@ func TestRolesOfOrderedAndHighest(t *testing.T) {
 }
 
 func TestNormalizeDropsUnknownBits(t *testing.T) {
-	if got := Normalize(All | 1<<35 | 1<<40); got != All {
+	if got := Normalize(All | 1<<14 | 1<<40); got != All {
 		t.Fatalf("Normalize = %d, want %d", got, All)
 	}
-	snap := NewSnapshot("s1", "dono", ViewChannel|1<<35).WithMember("ana").WithChannel("c", ChannelText)
+	snap := NewSnapshot("s1", "dono", ViewChannel|1<<14).WithMember("ana").WithChannel("c", ChannelText)
 	if got := snap.Server("ana"); got != ViewChannel {
 		t.Fatalf("bit desconhecido vazou: %d", got)
 	}
@@ -146,20 +146,5 @@ func TestServiceRequire(t *testing.T) {
 	}
 	if _, code, _ := HTTPError(ErrNotMember); code != "not_member" {
 		t.Fatal("código de not_member mudou")
-	}
-}
-
-func TestManageEventsIsAdminOnlyByDefault(t *testing.T) {
-	if ManageEvents != 1<<14 {
-		t.Fatalf("ManageEvents = %d, o contrato com o app é 1<<14", ManageEvents)
-	}
-	if DefaultEveryone&ManageEvents != 0 {
-		t.Fatal("Gerenciar eventos não pode vir no @everyone")
-	}
-	if All&ManageEvents == 0 {
-		t.Fatal("dono e Administrador precisam ter Gerenciar eventos")
-	}
-	if Names["MANAGE_EVENTS"] != ManageEvents {
-		t.Fatal("MANAGE_EVENTS fora do mapa Names")
 	}
 }
