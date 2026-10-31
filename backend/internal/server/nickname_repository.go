@@ -16,3 +16,15 @@ func (r *Repository) SetNickname(ctx context.Context, serverID, userID string, n
 	}
 	return tag.RowsAffected() > 0, nil
 }
+
+// MemberNickname: o apelido do membro no servidor (nil = sem apelido).
+func (r *Repository) MemberNickname(ctx context.Context, serverID, userID string) (*string, error) {
+	var nick *string
+	err := r.db.QueryRow(
+		ctx,
+		`SELECT nickname FROM server_members WHERE server_id = $1 AND user_id = $2`,
+		serverID,
+		userID,
+	).Scan(&nick)
+	return nick, err
+}

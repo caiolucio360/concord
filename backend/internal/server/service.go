@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"gin-quickstart/backend/internal/audit"
 	"gin-quickstart/backend/internal/bot"
 
 	"github.com/google/uuid"
@@ -39,6 +40,7 @@ type Service struct {
 	roles      RoleDefaults
 	presence   PresenceLookup
 	previews   *previewCache
+	audit      AuditRecorder
 
 	// Chamados quando o Maestro é removido de um servidor (fecha o player dele).
 	onMusicBotDisabled []func(serverID string)
@@ -259,7 +261,14 @@ func (s *Service) InviteUser(ctx context.Context, serverID string, inviterID str
 		InviterID: inviterID,
 		InviteeID: inviteeID,
 	}
-	return s.repository.CreateInvite(ctx, invite)
+	if err := s.repository.CreateInvite(ctx, invite); err != nil {
+		return err
+	}
+	record(ctx, s.audit, audit.Event{
+		ServerID: serverID, ActorID: inviterID, Action: audit.InviteCreate,
+		TargetType: audit.TargetMember, TargetID: inviteeID,
+	})
+	return nil
 }
 
 func (s *Service) FindPendingInvite(ctx context.Context, serverID string, inviteeID string) (*ServerInvite, error) {

@@ -11,49 +11,42 @@ import (
 )
 
 // Configurações do servidor: nome, ícone, canal principal e o Maestro.
-// Extraído do handler.go sem mudar o comportamento.
+
+// ServerSettings é o que as configurações usam do Service.
+type ServerSettings interface {
+	FindByID(ctx context.Context, id string) (*Server, error)
+	Update(ctx context.Context, id string, name string, iconURL *string) (*Server, error)
+	SetPrimaryChannel(ctx context.Context, serverID string, channelID string) (*Server, error)
+	SetMusicBot(ctx context.Context, serverID, actorID string, enabled bool) error
+}
 
 func (h *Handler) Update(c *gin.Context) {
-	serverID := c.Param("id")
-
 	var input struct {
 		Name string `json:"name"`
 		// Sem icon_url o ícone fica como está (o app troca o ícone por
 		// upload; só apps antigos mandam a URL).
 		IconURL *string `json:"icon_url"`
 	}
-
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
-
-	userID, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+	if !h.requireManageServer(c) {
 		return
 	}
-
-	if err := h.perms.Require(c.Request.Context(), serverID, userID.(string), permission.ManageServer); err != nil {
-		if !respondPermission(c, err) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "server not found"})
-		}
-		return
-	}
-
-	updated, err := h.service.Update(c.Request.Context(), serverID, input.Name, input.IconURL)
+	ctx, serverID := c.Request.Context(), c.Param("id")
+	before, _ := h.settings.FindByID(ctx, serverID)
+	updated, err := h.settings.Update(ctx, serverID, input.Name, input.IconURL)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	h.recordServerUpdate(ctx, c.GetString("userID"), before, updated)
 	c.JSON(http.StatusOK, updated)
 }
 
 // SetPrimaryChannel: dono ou moderador escolhe o canal principal.
 func (h *Handler) SetPrimaryChannel(c *gin.Context) {
-	serverID := c.Param("id")
-
 	var input struct {
 		ChannelID string `json:"channel_id"`
 	}
@@ -61,31 +54,25 @@ func (h *Handler) SetPrimaryChannel(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "channel_id is required"})
 		return
 	}
-
-	userID, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+	if !h.requireManageServer(c) {
 		return
 	}
-
-	if err := h.perms.Require(c.Request.Context(), serverID, userID.(string), permission.ManageServer); err != nil {
-		if !respondPermission(c, err) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "server not found"})
-		}
-		return
-	}
-
-	updated, err := h.service.SetPrimaryChannel(c.Request.Context(), serverID, input.ChannelID)
+	ctx, serverID := c.Request.Context(), c.Param("id")
+	before, _ := h.settings.FindByID(ctx, serverID)
+	updated, err := h.settings.SetPrimaryChannel(ctx, serverID, input.ChannelID)
 	if err != nil {
-		status := http.StatusInternalServerError
-		if errors.Is(err, ErrInvalidPrimaryChannel) {
-			status = http.StatusBadRequest
-		}
-		c.JSON(status, gin.H{"error": err.Error()})
+		c.JSON(primaryChannelStatus(err), gin.H{"error": err.Error()})
 		return
 	}
-
+	h.recordPrimaryChannel(ctx, c.GetString("userID"), before, updated)
 	c.JSON(http.StatusOK, updated)
+}
+
+func primaryChannelStatus(err error) int {
+	if errors.Is(err, ErrInvalidPrimaryChannel) {
+		return http.StatusBadRequest
+	}
+	return http.StatusInternalServerError
 }
 
 // requireManageServer confere a permissão de editar o servidor antes de
@@ -118,6 +105,7 @@ func (h *Handler) UploadIcon(c *gin.Context) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "server not found"})
 			return nil, false
 		}
+		h.recordIcon(ctx, c.GetString("userID"), updated, old)
 		c.JSON(http.StatusOK, updated)
 		return old, true
 	})
@@ -133,6 +121,7 @@ func (h *Handler) DeleteIcon(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "server not found"})
 		return
 	}
+	h.recordIcon(c.Request.Context(), c.GetString("userID"), updated, old)
 	h.images.RemoveMediaURL(old)
 	c.JSON(http.StatusOK, updated)
 }
@@ -146,7 +135,7 @@ func (h *Handler) setMusicBot(c *gin.Context, enabled bool) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
-	if err := h.service.SetMusicBot(c.Request.Context(), c.Param("id"), userID.(string), enabled); err != nil {
+	if err := h.settings.SetMusicBot(c.Request.Context(), c.Param("id"), userID.(string), enabled); err != nil {
 		if errors.Is(err, ErrOnlyOwnerBot) {
 			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 			return
@@ -154,5 +143,6 @@ func (h *Handler) setMusicBot(c *gin.Context, enabled bool) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "server not found"})
 		return
 	}
+	h.recordMusicBot(c.Request.Context(), c.Param("id"), userID.(string), enabled)
 	c.Status(http.StatusNoContent)
 }

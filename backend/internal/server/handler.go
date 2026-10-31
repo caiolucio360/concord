@@ -38,6 +38,9 @@ type IconSetter interface {
 type Handler struct {
 	images         ImageUploader
 	icons          IconSetter
+	settings       ServerSettings
+	codes          InviteCodeRotator
+	audit          AuditRecorder
 	service        *Service
 	friendService  *friendship.Service
 	userService    *user.Service
@@ -53,6 +56,8 @@ func ServerHandler(service *Service, friendService *friendship.Service, userServ
 	return &Handler{
 		images:         images,
 		icons:          service,
+		settings:       service,
+		codes:          service,
 		service:        service,
 		friendService:  friendService,
 		userService:    userService,
